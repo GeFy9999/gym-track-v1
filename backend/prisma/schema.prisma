@@ -10,4 +10,74 @@ generator client {
 
 datasource db {
   provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+ model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+
+  schedule  Schedule?
+  weeks     Week[]
+}
+
+model Schedule {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  frequency Int
+  days      String
+
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Week {
+  id          String   @id @default(uuid())
+  userId      String
+  weekNumber  Int
+  year        Int
+  status      String   @default("active")
+  streakCount Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  user        User      @relation(fields: [userId], references: [id])
+  sessions    Session[]
+}
+
+model Session {
+  id          String   @id @default(uuid())
+  weekId      String
+  muscleGroup String
+  completed   Boolean  @default(false)
+  date        DateTime @default(now())
+
+  week        Week       @relation(fields: [weekId], references: [id])
+  exercises   Exercise[]
+}
+
+model Exercise {
+  id        String  @id @default(uuid())
+  sessionId String
+  name      String
+  isCustom  Boolean @default(false)
+
+  session   Session  @relation(fields: [sessionId], references: [id])
+  sets      Set[]
+}
+
+model Set {
+  id         String  @id @default(uuid())
+  exerciseId String
+  weight     Float
+  reps       Int
+  unit       String  @default("lb")
+
+  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+}
+
+model ExerciseLibrary {
+  id          String @id @default(uuid())
+  name        String
+  muscleGroup String
 }
