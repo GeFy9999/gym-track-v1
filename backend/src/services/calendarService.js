@@ -1,4 +1,4 @@
-import { getSessionsForUser } from "../repositories/databaseRepository";
+import { getSessionsForUser } from "../repositories/databaseRepository.js";
 
 export async function getCalendar(userId, startDate, endDate) {
   const sessions = await getSessionsForUser(userId, startDate, endDate);

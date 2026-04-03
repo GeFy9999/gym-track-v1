@@ -31,35 +31,42 @@ model Schedule {
 }
 
 model Session {
-  id          String   @id @default(uuid())
-  userId      String
-  muscleGroup String
-  completed   Boolean  @default(false)
-  date        DateTime @default(now()) 
-  exercises   Exercise[]
+  id            String   @id @default(uuid())
+  userId        String
+  muscleGroup   String
+  completed     Boolean  @default(false)
+  date          DateTime @default(now())   
+  sessionExercises SessionExercise[]
   user        User      @relation(fields: [userId], references: [id])
 }
 
 model Exercise {
   id            String  @id @default(uuid())
-  sessionId     String
+  
   muscleGroupId String
   name          String
-  isCustom      Boolean @default(false)
+  isCustom      Boolean @default(false)  
+  muscleGroup   MuscleGroup  @relation(fields: [muscleGroupId], references: [id])  
+  sessionExercises SessionExercise[]
+}
 
-  session       Session  @relation(fields: [sessionId], references: [id])
-  muscleGroup   MuscleGroup  @relation(fields: [muscleGroupId], references: [id])
+model SessionExercise {
+  id            String  @id @default(uuid())
+  sessionId     String
+  exerciseId    String
   sets          Set[]
+  exercise      Exercise @relation(fields: [exerciseId], references: [id])
+  session       Session  @relation(fields: [sessionId], references: [id])
 }
 
 model Set {
   id         String  @id @default(uuid())
-  exerciseId String
+  sessionExerciseId String
   weight     Float
   reps       Int
   unit       String  @default("lb")
 
-  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+  sessionExercise   SessionExercise @relation(fields: [sessionExerciseId], references: [id])
 }
 
 model MuscleGroup {
