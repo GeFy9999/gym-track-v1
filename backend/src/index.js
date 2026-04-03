@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import { calendarRouter } from "./controllers/calendarController";
+import { metaRouter } from "./controllers/metaController";
 
 dotenv.config();
 
@@ -14,9 +16,8 @@ app.use(
 );
 app.use(express.json());
 
-app.get("/api/health", (req, res) => {
-  res.json({ status: "ok", message: "Server is running" });
-});
+app.use("/api/calendar", calendarRouter);
+app.use("/api/meta", metaRouter);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
