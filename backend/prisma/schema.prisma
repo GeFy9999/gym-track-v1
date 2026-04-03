@@ -10,7 +10,6 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
 }
 
  model User {
@@ -18,9 +17,8 @@ datasource db {
   email     String   @unique
   password  String
   createdAt DateTime @default(now())
-
-  schedule  Schedule?
-  weeks     Week[]
+  schedule  Schedule? 
+  sessions Session[]
 }
 
 model Schedule {
@@ -32,38 +30,26 @@ model Schedule {
   user      User     @relation(fields: [userId], references: [id])
 }
 
-model Week {
-  id          String   @id @default(uuid())
-  userId      String
-  weekNumber  Int
-  year        Int
-  status      String   @default("active")
-  streakCount Int      @default(0)
-  createdAt   DateTime @default(now())
-
-  user        User      @relation(fields: [userId], references: [id])
-  sessions    Session[]
-}
-
 model Session {
   id          String   @id @default(uuid())
-  weekId      String
+  userId      String
   muscleGroup String
   completed   Boolean  @default(false)
-  date        DateTime @default(now())
-
-  week        Week       @relation(fields: [weekId], references: [id])
+  date        DateTime @default(now()) 
   exercises   Exercise[]
+  user        User      @relation(fields: [userId], references: [id])
 }
 
 model Exercise {
-  id        String  @id @default(uuid())
-  sessionId String
-  name      String
-  isCustom  Boolean @default(false)
+  id            String  @id @default(uuid())
+  sessionId     String
+  muscleGroupId String
+  name          String
+  isCustom      Boolean @default(false)
 
-  session   Session  @relation(fields: [sessionId], references: [id])
-  sets      Set[]
+  session       Session  @relation(fields: [sessionId], references: [id])
+  muscleGroup   MuscleGroup  @relation(fields: [muscleGroupId], references: [id])
+  sets          Set[]
 }
 
 model Set {
@@ -76,8 +62,11 @@ model Set {
   exercise   Exercise @relation(fields: [exerciseId], references: [id])
 }
 
-model ExerciseLibrary {
+model MuscleGroup {
   id          String @id @default(uuid())
   name        String
-  muscleGroup String
+  description String?
+  image       String?
+
+  exercises   Exercise[]
 }
