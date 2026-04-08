@@ -8,7 +8,7 @@ export const muscleGroupsRouter = express.Router();
 
 muscleGroupsRouter.get("", async (req, res) => {
   try {
-    const muscleGroups = await ICI();
+    const muscleGroups = await getMuscleGroups();
     return res.status(200).json(muscleGroups);
   } catch (error) {
     return res.status(500).json({ error: error.message });
