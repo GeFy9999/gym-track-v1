@@ -8,7 +8,7 @@ export const muscleGroupsRouter = express.Router();
 
 muscleGroupsRouter.get("", async (req, res) => {
   try {
-    const muscleGroups = await ICI();
+    const muscleGroups = await getMuscleGroups();
     return res.status(200).json(muscleGroups);
   } catch (error) {
     return res.status(500).json({ error: error.message });
@@ -31,7 +31,7 @@ muscleGroupsRouter.post("", async (req, res) => {
       return res.status(400).json("image not provided");
     }
     await createMuscleGroup(payload);
-    return res.status(201);
+    return res.status(201).json();
   } catch (error) {
     console.error(error.message, error);
     return res.status(500).json({ error: error.message });

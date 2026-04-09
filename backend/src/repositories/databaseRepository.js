@@ -39,6 +39,13 @@ export async function insertExercise(exercise) {
   });
 }
 
+//insert dans la table muscleGroups un nouvel muscleGroup
+export async function insertMuscleGroup(muscleGroup) {
+  await prisma.muscleGroup.create({
+    data: muscleGroup,
+  });
+}
+
 //Meme chose que getAllExercises mais filtree a la place de
 //retourner tous les exercices, retourne juste ceux qui
 //appartiennent a un MuscleGroup specifique

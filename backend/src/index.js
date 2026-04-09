@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import { calendarRouter } from "./controllers/calendarController.js";
 import { metaRouter } from "./controllers/metaController.js";
 import { exercisesRouter } from "./controllers/exercisesController.js";
-import { muscleGroups } from "./controllers/muscleGroupsController.js";
+import { muscleGroupsRouter } from "./controllers/muscleGroupsController.js";
 
 dotenv.config();
 
