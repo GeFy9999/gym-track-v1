@@ -5,6 +5,8 @@ import { calendarRouter } from "./controllers/calendarController.js";
 import { metaRouter } from "./controllers/metaController.js";
 import { exercisesRouter } from "./controllers/exercisesController.js";
 import { muscleGroupsRouter } from "./controllers/muscleGroupsController.js";
+import { scheduleRouter } from "./controllers/scheduleController.js";
+import { sessionsRouter } from "./controllers/sessionsController.js";
 
 dotenv.config();
 
@@ -22,6 +24,8 @@ app.use("/api/calendar", calendarRouter);
 app.use("/api/meta", metaRouter);
 app.use("/api/exercises", exercisesRouter);
 app.use("/api/muscleGroups", muscleGroupsRouter);
+app.use("/api/schedule", scheduleRouter);
+app.use("/api/sessions", sessionsRouter);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

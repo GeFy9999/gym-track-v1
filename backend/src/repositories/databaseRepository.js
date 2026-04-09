@@ -82,3 +82,33 @@ export async function updateSchedule(userId, schedule) {
     data: schedule,
   });
 }
+
+// Récupère une session par son id
+export async function getSessionById(sessionId) {
+  return await prisma.session.findUnique({
+    where: { id: sessionId },
+    include: {
+      sessionExercises: {
+        include: {
+          exercise: true,
+          sets: true,
+        },
+      },
+    },
+  });
+}
+
+// Crée une nouvelle session
+export async function insertSession(session) {
+  return await prisma.session.create({
+    data: session,
+  });
+}
+
+// Met à jour le statut completed d'une session
+export async function updateSession(sessionId, data) {
+  return await prisma.session.update({
+    where: { id: sessionId },
+    data,
+  });
+}
