@@ -71,7 +71,7 @@ model Set {
 
 model MuscleGroup {
   id          String @id @default(uuid())
-  name        String
+  name        String @unique
   description String?
   image       String?
 
