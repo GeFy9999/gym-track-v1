@@ -25,7 +25,7 @@ exercisesRouter.post("", async (req, res) => {
       return res.status(400).json("muscleGroupId not provided");
     }
     await createExercise(payload);
-    return res.status(201);
+    return res.status(201).json();
   } catch (error) {
     console.error(error.message, error);
     return res.status(500).json({ error: error.message });
