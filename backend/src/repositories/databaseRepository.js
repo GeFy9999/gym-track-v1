@@ -60,3 +60,25 @@ export async function getExercisesByMuscleGroup(muscleGroupId) {
 export async function getAllMuscleGroups() {
   return await prisma.muscleGroup.findMany();
 }
+
+// Récupère le schedule d'un utilisateur
+export async function getScheduleByUserId(userId) {
+  return await prisma.schedule.findUnique({
+    where: { userId },
+  });
+}
+
+// Crée le schedule d'un utilisateur
+export async function insertSchedule(schedule) {
+  return await prisma.schedule.create({
+    data: schedule,
+  });
+}
+
+// Met à jour le schedule d'un utilisateur
+export async function updateSchedule(userId, schedule) {
+  return await prisma.schedule.update({
+    where: { userId },
+    data: schedule,
+  });
+}
