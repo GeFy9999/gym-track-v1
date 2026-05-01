@@ -112,3 +112,34 @@ export async function updateSession(sessionId, data) {
     data,
   });
 }
+
+// === Set ===
+
+// Crée un nouveau set
+export async function insertSet(set) {
+  return await prisma.set.create({
+    data: set,
+  });
+}
+
+// Met à jour un set (poids, reps, unit)
+export async function updateSet(setId, data) {
+  return await prisma.set.update({
+    where: { id: setId },
+    data,
+  });
+}
+
+// Supprime un set
+export async function deleteSet(setId) {
+  return await prisma.set.delete({
+    where: { id: setId },
+  });
+}
+
+// Récupère tous les sets d'un sessionExercise
+export async function getSetsBySessionExerciseId(sessionExerciseId) {
+  return await prisma.set.findMany({
+    where: { sessionExerciseId },
+  });
+}
