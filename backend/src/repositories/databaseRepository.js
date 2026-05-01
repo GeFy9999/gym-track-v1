@@ -143,3 +143,23 @@ export async function getSetsBySessionExerciseId(sessionExerciseId) {
     where: { sessionExerciseId },
   });
 }
+
+// === SessionExercise ===
+
+// Ajoute un exercice à une session
+export async function insertSessionExercise(sessionExercise) {
+  return await prisma.sessionExercise.create({
+    data: sessionExercise,
+    include: {
+      exercise: true,
+      sets: true,
+    },
+  });
+}
+
+// Supprime un exercice d'une session
+export async function deleteSessionExercise(sessionExerciseId) {
+  return await prisma.sessionExercise.delete({
+    where: { id: sessionExerciseId },
+  });
+}
