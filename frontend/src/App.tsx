@@ -8,23 +8,23 @@ import { useEffect, useState } from "react";
 const API_URL = "http://localhost:3000/api";
 
 function App() {
-  const [error, setError] = useState(undefined);
+  const [error, setError] = useState<string | undefined>(undefined);
 
-  const getApiHealth = async () => {
+  const getApiHealth = async (): Promise<void> => {
     try {
       const response = await fetch(`${API_URL}/health`);
       if (!response.ok) {
         throw new Error("API is not healthy");
       }
     } catch (e) {
-      setError(e.message);
+      if (e instanceof Error) {
+        setError(e.message);
+      }
     }
   };
 
   useEffect(() => {
     console.log("error", error);
-    // run this code if the dependencies change
-    // if dependencies are empty, run this code once on mount
     getApiHealth();
   }, [error]);
 

@@ -15,7 +15,8 @@ scheduleRouter.get("/:userId", async (req, res) => {
     if (!schedule) return res.status(404).json({ error: "Schedule not found" });
     return res.status(200).json(schedule);
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    const message = error instanceof Error ? error.message : String(error);
+    return res.status(500).json({ error: message });
   }
 });
 
@@ -32,7 +33,8 @@ scheduleRouter.post("/", async (req, res) => {
     const schedule = await createSchedule(payload);
     return res.status(201).json(schedule);
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    const message = error instanceof Error ? error.message : String(error);
+    return res.status(500).json({ error: message });
   }
 });
 
@@ -45,6 +47,7 @@ scheduleRouter.put("/:userId", async (req, res) => {
     const schedule = await editSchedule(userId, payload);
     return res.status(200).json(schedule);
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    const message = error instanceof Error ? error.message : String(error);
+    return res.status(500).json({ error: message });
   }
 });

@@ -8,7 +8,8 @@ exercisesRouter.get("", async (req, res) => {
     const exercises = await getExercises();
     return res.status(200).json(exercises);
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    const message = error instanceof Error ? error.message : String(error);
+    return res.status(500).json({ error: message });
   }
 });
 
@@ -27,7 +28,8 @@ exercisesRouter.post("", async (req, res) => {
     await createExercise(payload);
     return res.status(201).json();
   } catch (error) {
-    console.error(error.message, error);
-    return res.status(500).json({ error: error.message });
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(message, error);
+    return res.status(500).json({ error: message });
   }
 });
