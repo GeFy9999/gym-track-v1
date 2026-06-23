@@ -23,7 +23,7 @@ app.use(
 app.use(express.json());
 
 app.use("/api/calendar", calendarRouter);
-app.use("/api/meta", metaRouter);
+app.use("/api", metaRouter);
 app.use("/api/exercises", exercisesRouter);
 app.use("/api/muscleGroups", muscleGroupsRouter);
 app.use("/api/schedule", scheduleRouter);

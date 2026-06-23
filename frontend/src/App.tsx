@@ -1,9 +1,11 @@
-import "./index.css";
 import { Header } from "./components/header/Header";
 import { Alert } from "./components/Alert";
 import { Content } from "./components/Content";
-
+import { Routes, Route } from "react-router-dom";
 import { useEffect, useState } from "react";
+import "./index.css";
+import DashboardPage from "./pages/Dashboard";
+import BottomNav from "./components/bottomNav/index.tsx";
 
 const API_URL = "http://localhost:3000/api";
 
@@ -33,7 +35,11 @@ function App() {
       {error && <Alert message={error} />}
       <Header />
       <div className="test">
-        <Content />
+        <Routes>
+          <Route path="/" element={<Content />} />
+          <Route path="/Dashboard" element={<DashboardPage />} />
+        </Routes>
+        <BottomNav />
       </div>
     </>
   );
