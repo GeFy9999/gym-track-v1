@@ -1,5 +1,5 @@
 import "./index.css";
-import { Header } from "./components/Header";
+import { Header } from "./components/header/Header";
 import { Alert } from "./components/Alert";
 import { Content } from "./components/Content";
 
