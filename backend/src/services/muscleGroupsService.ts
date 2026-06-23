@@ -5,6 +5,6 @@ export async function getMuscleGroups() {
   return await getAllMuscleGroups();
 }
 
-export async function createMuscleGroup(muscleGroup) {
+export async function createMuscleGroup(muscleGroup: { name: string; description: string; image: string }) {
   await insertMuscleGroup(muscleGroup);
 }

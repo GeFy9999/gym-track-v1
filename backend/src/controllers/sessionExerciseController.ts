@@ -2,7 +2,7 @@ import express from "express";
 import {
   addExerciseToSession,
   removeExerciseFromSession,
-} from "../services/sessionExercisesService.js";
+} from "../services/sessionExerciseService.js";
 
 export const sessionExercisesRouter = express.Router();
 
@@ -19,8 +19,9 @@ sessionExercisesRouter.post("", async (req, res) => {
     const sessionExercise = await addExerciseToSession(payload);
     return res.status(201).json(sessionExercise);
   } catch (error) {
-    console.error(error.message, error);
-    return res.status(500).json({ error: error.message });
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(message, error);
+    return res.status(500).json({ error: message });
   }
 });
 
@@ -31,7 +32,8 @@ sessionExercisesRouter.delete("/:id", async (req, res) => {
     await removeExerciseFromSession(id);
     return res.status(204).send();
   } catch (error) {
-    console.error(error.message, error);
-    return res.status(500).json({ error: error.message });
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(message, error);
+    return res.status(500).json({ error: message });
   }
 });

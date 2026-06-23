@@ -15,7 +15,8 @@ sessionsRouter.get("/:sessionId", async (req, res) => {
     if (!session) return res.status(404).json({ error: "Session not found" });
     return res.status(200).json(session);
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    const message = error instanceof Error ? error.message : String(error);
+    return res.status(500).json({ error: message });
   }
 });
 
@@ -30,7 +31,8 @@ sessionsRouter.post("/", async (req, res) => {
     const session = await createSession(payload);
     return res.status(201).json(session);
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    const message = error instanceof Error ? error.message : String(error);
+    return res.status(500).json({ error: message });
   }
 });
 
@@ -41,6 +43,7 @@ sessionsRouter.patch("/:sessionId/complete", async (req, res) => {
     const session = await completeSession(sessionId);
     return res.status(200).json(session);
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    const message = error instanceof Error ? error.message : String(error);
+    return res.status(500).json({ error: message });
   }
 });

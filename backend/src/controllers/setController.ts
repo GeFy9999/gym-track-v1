@@ -4,7 +4,7 @@ import {
   editSet,
   removeSet,
   getSetsBySessionExercise,
-} from "../services/setsService.js";
+} from "../services/setService.js";
 
 export const setsRouter = express.Router();
 
@@ -15,7 +15,8 @@ setsRouter.get("/:sessionExerciseId", async (req, res) => {
     const sets = await getSetsBySessionExercise(sessionExerciseId);
     return res.status(200).json(sets);
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    const message = error instanceof Error ? error.message : String(error);
+    return res.status(500).json({ error: message });
   }
 });
 
@@ -35,8 +36,9 @@ setsRouter.post("", async (req, res) => {
     const set = await createSet(payload);
     return res.status(201).json(set);
   } catch (error) {
-    console.error(error.message, error);
-    return res.status(500).json({ error: error.message });
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(message, error);
+    return res.status(500).json({ error: message });
   }
 });
 
@@ -48,8 +50,9 @@ setsRouter.patch("/:id", async (req, res) => {
     const set = await editSet(id, payload);
     return res.status(200).json(set);
   } catch (error) {
-    console.error(error.message, error);
-    return res.status(500).json({ error: error.message });
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(message, error);
+    return res.status(500).json({ error: message });
   }
 });
 
@@ -60,7 +63,8 @@ setsRouter.delete("/:id", async (req, res) => {
     await removeSet(id);
     return res.status(204).send();
   } catch (error) {
-    console.error(error.message, error);
-    return res.status(500).json({ error: error.message });
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(message, error);
+    return res.status(500).json({ error: message });
   }
 });

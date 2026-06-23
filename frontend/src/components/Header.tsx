@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 export function Header() {
-  const [titleName, setTitleName] = useState("Gym Tracker");
+  const [titleName, setTitleName] = useState<string>("Gym Tracker");
 
   return (
     <>
