@@ -33,7 +33,6 @@ function App() {
   return (
     <>
       {error && <Alert message={error} />}
-      <Header />
       <div className="test">
         <Routes>
           <Route path="/" element={<Content />} />
