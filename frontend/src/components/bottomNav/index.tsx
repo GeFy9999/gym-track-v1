@@ -2,10 +2,10 @@ import { Link, useLocation } from "react-router-dom";
 import { Home, BarChart3, History, User, Plus } from "lucide-react";
 
 const links = [
-  { to: "/dashboard", label: "Home", icon: Home },
+  { to: "/dashboard", label: "Acceuil", icon: Home },
   { to: "/stats", label: "Stats", icon: BarChart3 },
-  { to: "/history", label: "History", icon: History },
-  { to: "/profil", label: "Profil", icon: User },
+  { to: "/history", label: "Historique", icon: History },
+  { to: "/profil", label: "Profile", icon: User },
 ];
 
 export default function BottomNav() {
@@ -39,7 +39,7 @@ export default function BottomNav() {
   return (
     <nav
       aria-label="Navigation"
-      className="fixed bottom-0 left-0 w-full bg-white border-t border-slate-200 flex justify-around items-center py-2 px-4 z-50"
+      className="fixed bottom-0 left-0 w-full bg-zinc-800 border-t border-zinc-700 flex justify-around items-center py-2 px-4 z-50"
     >
       <ul className="flex w-full justify-around items-center">
         {links.slice(0, 2).map(renderLink)}
