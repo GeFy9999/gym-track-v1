@@ -1,6 +1,10 @@
 import { prisma } from "../prisma.js";
 
-export async function getSessionsForUser(userId: string, startDate: Date, endDate: Date) {
+export async function getSessionsForUser(
+  userId: string,
+  startDate: Date,
+  endDate: Date,
+) {
   return await prisma.session.findMany({
     where: {
       userId,
@@ -28,13 +32,21 @@ export async function getAllExercises() {
   });
 }
 
-export async function insertExercise(exercise: { name: string; muscleGroupId: string; isCustom?: boolean }) {
+export async function insertExercise(exercise: {
+  name: string;
+  muscleGroupId: string;
+  isCustom?: boolean;
+}) {
   await prisma.exercise.create({
     data: exercise,
   });
 }
 
-export async function insertMuscleGroup(muscleGroup: { name: string; description: string; image: string }) {
+export async function insertMuscleGroup(muscleGroup: {
+  name: string;
+  description: string;
+  image: string;
+}) {
   await prisma.muscleGroup.create({
     data: muscleGroup,
   });
@@ -57,13 +69,20 @@ export async function getScheduleByUserId(userId: string) {
   });
 }
 
-export async function insertSchedule(schedule: { userId: string; frequency: number; days: string }) {
+export async function insertSchedule(schedule: {
+  userId: string;
+  frequency: number;
+  days: string;
+}) {
   return await prisma.schedule.create({
     data: schedule,
   });
 }
 
-export async function updateSchedule(userId: string, schedule: { frequency?: number; days?: string }) {
+export async function updateSchedule(
+  userId: string,
+  schedule: { frequency?: number; days?: string },
+) {
   return await prisma.schedule.update({
     where: { userId },
     data: schedule,
@@ -84,13 +103,19 @@ export async function getSessionById(sessionId: string) {
   });
 }
 
-export async function insertSession(session: { userId: string; muscleGroup: string }) {
+export async function insertSession(session: {
+  userId: string;
+  muscleGroup: string;
+}) {
   return await prisma.session.create({
     data: session,
   });
 }
 
-export async function updateSession(sessionId: string, data: { completed?: boolean }) {
+export async function updateSession(
+  sessionId: string,
+  data: { completed?: boolean },
+) {
   return await prisma.session.update({
     where: { id: sessionId },
     data,
@@ -146,5 +171,21 @@ export async function insertSessionExercise(sessionExercise: {
 export async function deleteSessionExercise(sessionExerciseId: string) {
   return await prisma.sessionExercise.delete({
     where: { id: sessionExerciseId },
+  });
+}
+
+export async function getUserByEmail(email: string) {
+  return await prisma.user.findUnique({
+    where: { email },
+  });
+}
+
+export async function insertUser(user: {
+  email: string;
+  password: string;
+  name: string;
+}) {
+  return await prisma.user.create({
+    data: user,
   });
 }

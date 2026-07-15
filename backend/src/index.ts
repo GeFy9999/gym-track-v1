@@ -9,6 +9,7 @@ import { scheduleRouter } from "./controllers/scheduleController.js";
 import { sessionsRouter } from "./controllers/sessionsController.js";
 import { setsRouter } from "./controllers/setController.js";
 import { sessionExercisesRouter } from "./controllers/sessionExerciseController.js";
+import { authRouter } from "./controllers/authController.js";
 
 dotenv.config();
 
@@ -30,6 +31,7 @@ app.use("/api/schedule", scheduleRouter);
 app.use("/api/sessions", sessionsRouter);
 app.use("/api/sets", setsRouter);
 app.use("/api/session-exercises", sessionExercisesRouter);
+app.use("/api/auth", authRouter);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
