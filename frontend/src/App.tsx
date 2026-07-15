@@ -1,4 +1,3 @@
-import { Header } from "./components/header/Header";
 import { Alert } from "./components/Alert";
 import { Content } from "./components/Content";
 import { Routes, Route } from "react-router-dom";
@@ -6,6 +5,7 @@ import { useEffect, useState } from "react";
 import "./index.css";
 import DashboardPage from "./pages/Dashboard";
 import BottomNav from "./components/bottomNav/index.tsx";
+import StatsPage from "./pages/Stats.tsx";
 
 const API_URL = "http://localhost:3000/api";
 
@@ -37,6 +37,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Content />} />
           <Route path="/Dashboard" element={<DashboardPage />} />
+          <Route path="/Stats" element={<StatsPage />} />
         </Routes>
         <BottomNav />
       </div>
