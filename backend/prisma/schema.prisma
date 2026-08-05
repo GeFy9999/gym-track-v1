@@ -46,6 +46,7 @@ model Exercise {
   
   muscleGroupId String
   name          String
+  image         String?
   isCustom      Boolean @default(false)  
   muscleGroup   MuscleGroup  @relation(fields: [muscleGroupId], references: [id])  
   sessionExercises SessionExercise[]
