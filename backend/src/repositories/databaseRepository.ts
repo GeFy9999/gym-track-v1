@@ -169,6 +169,10 @@ export async function insertSessionExercise(sessionExercise: {
 }
 
 export async function deleteSessionExercise(sessionExerciseId: string) {
+  // Delete sets first (FK constraint)
+  await prisma.set.deleteMany({
+    where: { sessionExerciseId },
+  });
   return await prisma.sessionExercise.delete({
     where: { id: sessionExerciseId },
   });

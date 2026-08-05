@@ -1,11 +1,18 @@
 import express from "express";
-import { createExercise, getExercises } from "../services/exercisesService.js";
+import {
+  createExercise,
+  getExercises,
+  getExercisesForMuscleGroup,
+} from "../services/exercisesService.js";
 
 export const exercisesRouter = express.Router();
 
 exercisesRouter.get("", async (req, res) => {
   try {
-    const exercises = await getExercises();
+    const muscleGroupId = req.query.muscleGroupId as string | undefined;
+    const exercises = muscleGroupId
+      ? await getExercisesForMuscleGroup(muscleGroupId)
+      : await getExercises();
     return res.status(200).json(exercises);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

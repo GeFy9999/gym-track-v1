@@ -1,11 +1,80 @@
 import express from "express";
 import {
   getSession,
+  getUserSessions,
   createSession,
   completeSession,
 } from "../services/sessionsService.js";
+import {
+  authMiddleware,
+  type AuthRequest,
+} from "../middleware/authMiddleware.js";
 
 export const sessionsRouter = express.Router();
+
+// GET /api/sessions/me/streak
+sessionsRouter.get(
+  "/me/streak",
+  authMiddleware,
+  async (req: AuthRequest, res) => {
+    try {
+      const userId = req.userId!;
+
+      // Check week by week going backwards
+      let streak = 0;
+      const now = new Date();
+
+      // Start from current week's Monday
+      const day = now.getDay();
+      const diff = day === 0 ? 6 : day - 1;
+      const monday = new Date(now);
+      monday.setDate(now.getDate() - diff);
+      monday.setHours(0, 0, 0, 0);
+
+      // Check current week first
+      const currentWeekSessions = await getUserSessions(userId, monday, now);
+      if (currentWeekSessions.length > 0) {
+        streak++;
+      }
+
+      // Then check previous weeks
+      let checkMonday = new Date(monday);
+      while (true) {
+        const prevMonday = new Date(checkMonday);
+        prevMonday.setDate(checkMonday.getDate() - 7);
+        const prevSunday = new Date(checkMonday);
+        prevSunday.setMilliseconds(-1);
+
+        const sessions = await getUserSessions(userId, prevMonday, prevSunday);
+        if (sessions.length === 0) break;
+
+        streak++;
+        checkMonday = prevMonday;
+      }
+
+      return res.status(200).json({ streak });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      return res.status(500).json({ error: message });
+    }
+  },
+);
+
+// GET /api/sessions/me?start=...&end=...
+sessionsRouter.get("/me", authMiddleware, async (req: AuthRequest, res) => {
+  try {
+    const userId = req.userId!;
+    const start = req.query.start
+      ? new Date(req.query.start as string)
+      : new Date(0);
+    const end = req.query.end ? new Date(req.query.end as string) : new Date();
+    const sessions = await getUserSessions(userId, start, end);
+    return res.status(200).json(sessions);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return res.status(500).json({ error: message });
+  }
+});
 
 // GET /api/sessions/:sessionId
 sessionsRouter.get("/:sessionId", async (req, res) => {
