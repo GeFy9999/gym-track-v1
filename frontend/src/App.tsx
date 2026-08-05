@@ -1,16 +1,32 @@
 import { Alert } from "./components/Alert";
 import { Content } from "./components/Content";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "./index.css";
 import DashboardPage from "./pages/Dashboard";
 import BottomNav from "./components/bottomNav/index.tsx";
 import StatsPage from "./pages/Stats.tsx";
+import LoginPage from "./pages/Login.tsx";
+import RegisterPage from "./pages/Register.tsx";
+import SessionPage from "./pages/Session.tsx";
 
 const API_URL = "http://localhost:3000/api";
 
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+  return <>{children}</>;
+}
+
 function App() {
   const [error, setError] = useState<string | undefined>(undefined);
+  const location = useLocation();
+
+  const hideNav =
+    ["/login", "/register"].includes(location.pathname) ||
+    location.pathname.startsWith("/session/");
 
   const getApiHealth = async (): Promise<void> => {
     try {
@@ -26,20 +42,43 @@ function App() {
   };
 
   useEffect(() => {
-    console.log("error", error);
     getApiHealth();
-  }, [error]);
+  }, []);
 
   return (
     <>
       {error && <Alert message={error} />}
       <div className="test">
         <Routes>
-          <Route path="/" element={<Content />} />
-          <Route path="/Dashboard" element={<DashboardPage />} />
-          <Route path="/Stats" element={<StatsPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/session/:sessionId"
+            element={
+              <ProtectedRoute>
+                <SessionPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/stats"
+            element={
+              <ProtectedRoute>
+                <StatsPage />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
-        <BottomNav />
+        {!hideNav && <BottomNav />}
       </div>
     </>
   );
