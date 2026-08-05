@@ -1,5 +1,5 @@
 import express from "express";
-import { register, login } from "../services/authService.js";
+import { register, login, googleLogin } from "../services/authService.js";
 
 export const authRouter = express.Router();
 
@@ -29,6 +29,21 @@ authRouter.post("/login", async (req, res) => {
       return res.status(400).json({ error: "Mot de passe requis" });
 
     const result = await login({ email, password });
+    return res.status(200).json(result);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return res.status(400).json({ error: message });
+  }
+});
+
+// POST /api/auth/google
+authRouter.post("/google", async (req, res) => {
+  try {
+    const { credential } = req.body;
+    if (!credential)
+      return res.status(400).json({ error: "Token Google requis" });
+
+    const result = await googleLogin(credential);
     return res.status(200).json(result);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
