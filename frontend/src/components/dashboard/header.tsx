@@ -1,3 +1,7 @@
+import { useEffect, useState } from "react";
+
+const API_URL = "http://localhost:3000/api";
+
 export default function HeaderDashboard() {
   const today = new Date();
   const formattedDate = today.toLocaleDateString("fr-FR", {
@@ -8,8 +12,29 @@ export default function HeaderDashboard() {
   const capitalizedDate =
     formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
 
-  const userName = "Alex";
-  const streak = 0;
+  const stored = localStorage.getItem("user");
+  const userName = stored ? JSON.parse(stored).name : "Utilisateur";
+
+  const [streak, setStreak] = useState(0);
+
+  useEffect(() => {
+    const fetchStreak = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      try {
+        const res = await fetch(`${API_URL}/sessions/me/streak`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        setStreak(data.streak);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchStreak();
+  }, []);
 
   return (
     <div className="flex justify-between items-center px-4 pt-5 pb-4">

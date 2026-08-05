@@ -16,6 +16,7 @@ datasource db {
   id        String   @id @default(uuid())
   email     String   @unique
   password  String
+  name      String   
   createdAt DateTime @default(now())
   schedule  Schedule? 
   sessions Session[]
@@ -45,6 +46,7 @@ model Exercise {
   
   muscleGroupId String
   name          String
+  image         String?
   isCustom      Boolean @default(false)  
   muscleGroup   MuscleGroup  @relation(fields: [muscleGroupId], references: [id])  
   sessionExercises SessionExercise[]
