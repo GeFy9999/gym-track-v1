@@ -10,13 +10,38 @@ import LoginPage from "./pages/Login.tsx";
 import RegisterPage from "./pages/Register.tsx";
 import SessionPage from "./pages/Session.tsx";
 
-const API_URL = "http://localhost:3000/api";
+const API_URL = "/api";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    return <Navigate to="/login" replace />;
-  }
+  const [checking, setChecking] = useState(true);
+  const [valid, setValid] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setChecking(false);
+      return;
+    }
+
+    fetch(`${API_URL}/sessions/me/streak`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => {
+        if (res.ok) {
+          setValid(true);
+        } else {
+          localStorage.clear();
+        }
+        setChecking(false);
+      })
+      .catch(() => {
+        localStorage.clear();
+        setChecking(false);
+      });
+  }, []);
+
+  if (checking) return null;
+  if (!valid) return <Navigate to="/login" replace />;
   return <>{children}</>;
 }
 

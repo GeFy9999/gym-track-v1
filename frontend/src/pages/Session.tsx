@@ -133,6 +133,18 @@ export default function SessionPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
+
+      // Update local state so addSet can read current values
+      setSession((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          sessionExercises: prev.sessionExercises.map((se) => ({
+            ...se,
+            sets: se.sets.map((s) => (s.id === setId ? { ...s, ...data } : s)),
+          })),
+        };
+      });
     } catch (err) {
       console.error(err);
     }

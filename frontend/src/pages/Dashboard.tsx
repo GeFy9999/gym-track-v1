@@ -5,7 +5,7 @@ import RecentActivity from "../components/dashboard/recentActivity";
 import { useState } from "react";
 import { CheckCircle } from "lucide-react";
 
-const API_URL = "http://localhost:3000/api";
+const API_URL = "/api";
 
 export default function DashboardPage() {
   const [weekActive, setWeekActive] = useState<boolean>(false);
