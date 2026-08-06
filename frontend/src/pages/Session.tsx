@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Plus, Trash2, ChevronDown, Search } from "lucide-react";
 
-const API_URL = "http://localhost:3000/api";
+const API_URL = "/api";
 
 type SetData = {
   id: string;
