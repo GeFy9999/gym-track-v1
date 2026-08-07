@@ -20,6 +20,7 @@ datasource db {
   createdAt DateTime @default(now())
   schedule  Schedule? 
   sessions Session[]
+  bodyWeights BodyWeight[]
 }
 
 model Schedule {
@@ -78,4 +79,13 @@ model MuscleGroup {
   image       String?
 
   exercises   Exercise[]
+}
+
+model BodyWeight {
+  id        String   @id @default(uuid())
+  userId    String
+  value     Float
+  date      DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id])
 }
