@@ -1,7 +1,26 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+const API_URL = "/api";
 
 export default function HeaderStats() {
   const [hasCompletedWeek, setHasCompletedWeek] = useState<boolean>(false);
+
+  useEffect(() => {
+    const checkHistory = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      const res = await fetch(`${API_URL}/sessions/me/streak`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setHasCompletedWeek(data.streak > 0);
+      }
+    };
+    checkHistory();
+  }, []);
 
   const message = hasCompletedWeek
     ? "Tes statistiques de progression"
