@@ -44,12 +44,6 @@ export default function BottomNav() {
       <ul className="flex w-full justify-around items-center">
         {links.slice(0, 2).map(renderLink)}
 
-        <li>
-          <button className="flex items-center justify-center w-12 h-12 rounded-full bg-orange-500 text-white -mt-6 shadow-lg">
-            <Plus size={24} />
-          </button>
-        </li>
-
         {links.slice(2).map(renderLink)}
       </ul>
     </nav>

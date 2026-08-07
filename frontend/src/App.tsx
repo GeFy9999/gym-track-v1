@@ -9,6 +9,7 @@ import StatsPage from "./pages/Stats.tsx";
 import LoginPage from "./pages/Login.tsx";
 import RegisterPage from "./pages/Register.tsx";
 import SessionPage from "./pages/Session.tsx";
+import HistoryPage from "./pages/History.tsx";
 
 const API_URL = "/api";
 
@@ -99,6 +100,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <StatsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/history"
+            element={
+              <ProtectedRoute>
+                <HistoryPage />
               </ProtectedRoute>
             }
           />

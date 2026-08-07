@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeft, Plus, Trash2, ChevronDown, Search } from "lucide-react";
 
 const API_URL = "/api";
@@ -35,6 +35,9 @@ type AvailableExercise = {
 export default function SessionPage() {
   const { sessionId } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const readOnly = searchParams.get("readonly") === "true";
+
   const [session, setSession] = useState<SessionData | null>(null);
   const [exercises, setExercises] = useState<AvailableExercise[]>([]);
   const [showExerciseList, setShowExerciseList] = useState(false);
@@ -42,7 +45,6 @@ export default function SessionPage() {
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Fetch session details
   const fetchSession = async () => {
     try {
       const res = await fetch(`${API_URL}/sessions/${sessionId}`);
@@ -56,10 +58,8 @@ export default function SessionPage() {
     }
   };
 
-  // Fetch available exercises for this muscle group
   const fetchExercises = async (muscleGroupName: string) => {
     try {
-      // Get all exercises then filter by muscle group name
       const res = await fetch(`${API_URL}/exercises`);
       if (!res.ok) return;
       const all: AvailableExercise[] = await res.json();
@@ -84,7 +84,6 @@ export default function SessionPage() {
     }
   }, [session?.muscleGroup]);
 
-  // Add exercise to session
   const addExercise = async (exerciseId: string) => {
     try {
       const res = await fetch(`${API_URL}/session-exercises`, {
@@ -94,13 +93,12 @@ export default function SessionPage() {
       });
       if (!res.ok) throw new Error("Erreur ajout exercice");
       setShowExerciseList(false);
-      fetchSession(); // refresh
+      fetchSession();
     } catch (err) {
       console.error(err);
     }
   };
 
-  // Add a set to a session exercise (copies last set values)
   const addSet = async (sessionExerciseId: string, sets: SetData[]) => {
     const lastSet = sets.length > 0 ? sets[sets.length - 1] : null;
 
@@ -122,7 +120,6 @@ export default function SessionPage() {
     }
   };
 
-  // Update a set
   const updateSet = async (
     setId: string,
     data: { weight?: number; reps?: number },
@@ -134,7 +131,6 @@ export default function SessionPage() {
         body: JSON.stringify(data),
       });
 
-      // Update local state so addSet can read current values
       setSession((prev) => {
         if (!prev) return prev;
         return {
@@ -150,7 +146,6 @@ export default function SessionPage() {
     }
   };
 
-  // Delete a set
   const deleteSet = async (setId: string) => {
     try {
       await fetch(`${API_URL}/sets/${setId}`, { method: "DELETE" });
@@ -176,16 +171,14 @@ export default function SessionPage() {
     );
   }
 
-  // Filter out exercises already in the session
   const addedIds = session.sessionExercises.map((se) => se.exercise.id);
   const availableExercises = exercises.filter((e) => !addedIds.includes(e.id));
 
   return (
     <div className="min-h-screen bg-zinc-900 pb-8">
-      {/* Header */}
       <div className="flex items-center gap-3 px-4 pt-5 pb-4">
         <button
-          onClick={() => navigate("/dashboard")}
+          onClick={() => navigate(-1)}
           className="text-zinc-400 hover:text-white transition-colors"
         >
           <ArrowLeft size={24} />
@@ -204,14 +197,12 @@ export default function SessionPage() {
         </div>
       </div>
 
-      {/* Exercises */}
       <div className="px-4 space-y-4">
         {session.sessionExercises.map((se) => (
           <div
             key={se.id}
             className="bg-zinc-800 border border-zinc-700 rounded-xl overflow-hidden"
           >
-            {/* Hero image with name overlay */}
             <div className="relative">
               {se.exercise.image ? (
                 <img
@@ -226,17 +217,17 @@ export default function SessionPage() {
               <p className="absolute bottom-3 left-4 text-lg font-bold text-white">
                 {se.exercise.name}
               </p>
-              <button
-                onClick={() => setConfirmDelete(se.id)}
-                className="absolute top-3 right-3 bg-zinc-900/60 p-2 rounded-lg text-zinc-300 hover:text-red-400 transition-colors"
-              >
-                <Trash2 size={16} />
-              </button>
+              {!readOnly && (
+                <button
+                  onClick={() => setConfirmDelete(se.id)}
+                  className="absolute top-3 right-3 bg-zinc-900/60 p-2 rounded-lg text-zinc-300 hover:text-red-400 transition-colors"
+                >
+                  <Trash2 size={16} />
+                </button>
+              )}
             </div>
 
-            {/* Sets table */}
             <div className="p-4">
-              {/* Column headers */}
               {se.sets.length > 0 && (
                 <div className="flex items-center gap-3 mb-2 px-1">
                   <span className="w-6" />
@@ -262,7 +253,12 @@ export default function SessionPage() {
                       onBlur={(e) =>
                         updateSet(set.id, { weight: Number(e.target.value) })
                       }
-                      className="w-24 bg-zinc-700 border border-zinc-600 rounded-xl px-3 py-2.5 text-base text-white text-center font-semibold focus:outline-none focus:border-orange-500 transition-colors"
+                      disabled={readOnly}
+                      className={`w-24 border rounded-xl px-3 py-2.5 text-base text-white text-center font-semibold focus:outline-none transition-colors ${
+                        readOnly
+                          ? "bg-zinc-800 border-zinc-700"
+                          : "bg-zinc-700 border-zinc-600 focus:border-orange-500"
+                      }`}
                     />
                     <span className="text-sm text-zinc-500">×</span>
                     <input
@@ -271,111 +267,118 @@ export default function SessionPage() {
                       onBlur={(e) =>
                         updateSet(set.id, { reps: Number(e.target.value) })
                       }
-                      className="w-20 bg-zinc-700 border border-zinc-600 rounded-xl px-3 py-2.5 text-base text-white text-center font-semibold focus:outline-none focus:border-orange-500 transition-colors"
+                      disabled={readOnly}
+                      className={`w-20 border rounded-xl px-3 py-2.5 text-base text-white text-center font-semibold focus:outline-none transition-colors ${
+                        readOnly
+                          ? "bg-zinc-800 border-zinc-700"
+                          : "bg-zinc-700 border-zinc-600 focus:border-orange-500"
+                      }`}
                     />
                     <span className="text-xs text-zinc-500">reps</span>
-                    <button
-                      onClick={() => deleteSet(set.id)}
-                      className="ml-auto text-zinc-600 hover:text-red-400 transition-colors"
-                    >
-                      <Trash2 size={15} />
-                    </button>
+                    {!readOnly && (
+                      <button
+                        onClick={() => deleteSet(set.id)}
+                        className="ml-auto text-zinc-600 hover:text-red-400 transition-colors"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    )}
                   </div>
                 ))}
               </div>
 
-              <button
-                onClick={() => addSet(se.id, se.sets)}
-                className="mt-4 text-sm text-orange-400 font-semibold flex items-center gap-1.5 hover:text-orange-300"
-              >
-                <Plus size={16} /> Ajouter un set
-              </button>
+              {!readOnly && (
+                <button
+                  onClick={() => addSet(se.id, se.sets)}
+                  className="mt-4 text-sm text-orange-400 font-semibold flex items-center gap-1.5 hover:text-orange-300"
+                >
+                  <Plus size={16} /> Ajouter un set
+                </button>
+              )}
             </div>
           </div>
         ))}
 
-        {/* Add exercise dropdown */}
-        <div className="bg-zinc-800 border border-zinc-700 rounded-xl overflow-hidden">
-          <button
-            onClick={() => {
-              setShowExerciseList(!showExerciseList);
-              setSearchQuery("");
-            }}
-            className="w-full flex items-center justify-between px-4 py-3.5 hover:bg-zinc-750 transition-colors"
-          >
-            <span className="text-sm font-semibold text-white flex items-center gap-2">
-              <Plus size={16} className="text-orange-400" />
-              Ajouter un exercice
-            </span>
-            <ChevronDown
-              size={18}
-              className={`text-zinc-400 transition-transform duration-200 ${
-                showExerciseList ? "rotate-180" : ""
-              }`}
-            />
-          </button>
+        {!readOnly && (
+          <div className="bg-zinc-800 border border-zinc-700 rounded-xl overflow-hidden">
+            <button
+              onClick={() => {
+                setShowExerciseList(!showExerciseList);
+                setSearchQuery("");
+              }}
+              className="w-full flex items-center justify-between px-4 py-3.5 hover:bg-zinc-750 transition-colors"
+            >
+              <span className="text-sm font-semibold text-white flex items-center gap-2">
+                <Plus size={16} className="text-orange-400" />
+                Ajouter un exercice
+              </span>
+              <ChevronDown
+                size={18}
+                className={`text-zinc-400 transition-transform duration-200 ${
+                  showExerciseList ? "rotate-180" : ""
+                }`}
+              />
+            </button>
 
-          {showExerciseList && (
-            <div className="border-t border-zinc-700">
-              {/* Search bar */}
-              <div className="px-3 py-2">
-                <div className="relative">
-                  <Search
-                    size={16}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500"
-                  />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Rechercher un exercice..."
-                    autoFocus
-                    className="w-full bg-zinc-700 border border-zinc-600 rounded-lg pl-9 pr-3 py-2 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-orange-500 transition-colors"
-                  />
+            {showExerciseList && (
+              <div className="border-t border-zinc-700">
+                <div className="px-3 py-2">
+                  <div className="relative">
+                    <Search
+                      size={16}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500"
+                    />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Rechercher un exercice..."
+                      autoFocus
+                      className="w-full bg-zinc-700 border border-zinc-600 rounded-lg pl-9 pr-3 py-2 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-orange-500 transition-colors"
+                    />
+                  </div>
+                </div>
+
+                <div className="max-h-64 overflow-y-auto px-3 pb-3 space-y-1">
+                  {availableExercises
+                    .filter((ex) =>
+                      ex.name.toLowerCase().includes(searchQuery.toLowerCase()),
+                    )
+                    .map((ex) => (
+                      <button
+                        key={ex.id}
+                        onClick={() => {
+                          addExercise(ex.id);
+                          setSearchQuery("");
+                        }}
+                        className="w-full text-left bg-zinc-700/50 hover:bg-zinc-700 rounded-lg px-3 py-2.5 text-sm text-zinc-200 transition-colors flex items-center gap-3"
+                      >
+                        {ex.image && (
+                          <img
+                            src={ex.image}
+                            alt={ex.name}
+                            className="w-14 h-14 rounded-lg object-cover bg-zinc-600 flex-shrink-0"
+                          />
+                        )}
+                        <span className="text-sm">{ex.name}</span>
+                      </button>
+                    ))}
+                  {availableExercises.filter((ex) =>
+                    ex.name.toLowerCase().includes(searchQuery.toLowerCase()),
+                  ).length === 0 && (
+                    <p className="text-xs text-zinc-500 text-center py-3">
+                      {availableExercises.length === 0
+                        ? `Aucun exercice disponible pour ${session.muscleGroup}`
+                        : "Aucun résultat"}
+                    </p>
+                  )}
                 </div>
               </div>
-
-              {/* Filtered list */}
-              <div className="max-h-64 overflow-y-auto px-3 pb-3 space-y-1">
-                {availableExercises
-                  .filter((ex) =>
-                    ex.name.toLowerCase().includes(searchQuery.toLowerCase()),
-                  )
-                  .map((ex) => (
-                    <button
-                      key={ex.id}
-                      onClick={() => {
-                        addExercise(ex.id);
-                        setSearchQuery("");
-                      }}
-                      className="w-full text-left bg-zinc-700/50 hover:bg-zinc-700 rounded-lg px-3 py-2.5 text-sm text-zinc-200 transition-colors flex items-center gap-3"
-                    >
-                      {ex.image && (
-                        <img
-                          src={ex.image}
-                          alt={ex.name}
-                          className="w-14 h-14 rounded-lg object-cover bg-zinc-600 flex-shrink-0"
-                        />
-                      )}
-                      <span className="text-sm">{ex.name}</span>
-                    </button>
-                  ))}
-                {availableExercises.filter((ex) =>
-                  ex.name.toLowerCase().includes(searchQuery.toLowerCase()),
-                ).length === 0 && (
-                  <p className="text-xs text-zinc-500 text-center py-3">
-                    {availableExercises.length === 0
-                      ? `Aucun exercice disponible pour ${session.muscleGroup}`
-                      : "Aucun résultat"}
-                  </p>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
       </div>
 
-      {/* Confirmation modal */}
       {confirmDelete && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-6">
           <div className="bg-zinc-800 border border-zinc-700 rounded-2xl p-6 w-full max-w-sm">
