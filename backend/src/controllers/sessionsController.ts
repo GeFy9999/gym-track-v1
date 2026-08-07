@@ -4,13 +4,33 @@ import {
   getUserSessions,
   createSession,
   completeSession,
+  getUserPersonalRecords,
+  getUserMuscleVolume,
+  getUserExerciseProgress,
 } from "../services/sessionsService.js";
 import {
   authMiddleware,
   type AuthRequest,
 } from "../middleware/authMiddleware.js";
+import { auth } from "google-auth-library";
 
 export const sessionsRouter = express.Router();
+
+// GET /api/sessions/me/records
+sessionsRouter.get(
+  "/me/records",
+  authMiddleware,
+  async (req: AuthRequest, res) => {
+    try {
+      const userId = req.userId!;
+      const records = await getUserPersonalRecords(userId);
+      return res.status(200).json(records);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      return res.status(500).json({ error: message });
+    }
+  },
+);
 
 // GET /api/sessions/me/streak
 sessionsRouter.get(
@@ -75,6 +95,39 @@ sessionsRouter.get("/me", authMiddleware, async (req: AuthRequest, res) => {
     return res.status(500).json({ error: message });
   }
 });
+
+// GET /api/sessions/me/volume
+sessionsRouter.get(
+  "/me/volume",
+  authMiddleware,
+  async (req: AuthRequest, res) => {
+    try {
+      const userId = req.userId!;
+      const volume = await getUserMuscleVolume(userId);
+      return res.status(200).json(volume);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      return res.status(500).json({ error: message });
+    }
+  },
+);
+
+// GET /api/sessions/me/progress/:exerciseId
+sessionsRouter.get(
+  "/me/progress/:exerciseId",
+  authMiddleware,
+  async (req: AuthRequest, res) => {
+    try {
+      const userId = req.userId!;
+      const exerciseId = req.params.exerciseId as string;
+      const progress = await getUserExerciseProgress(userId, exerciseId);
+      return res.status(200).json(progress);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      return res.status(500).json({ error: message });
+    }
+  },
+);
 
 // GET /api/sessions/:sessionId
 sessionsRouter.get("/:sessionId", async (req, res) => {

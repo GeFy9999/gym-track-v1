@@ -193,3 +193,31 @@ export async function insertUser(user: {
     data: user,
   });
 }
+
+export async function getAllUserSessions(userId: string) {
+  return await prisma.session.findMany({
+    where: { userId },
+    include: {
+      sessionExercises: {
+        include: {
+          exercise: true,
+          sets: true,
+        },
+      },
+    },
+  });
+}
+
+export async function insertBodyWeight(data: {
+  userId: string;
+  value: number;
+}) {
+  return await prisma.bodyWeight.create({ data });
+}
+
+export async function getBodyWeights(userId: string) {
+  return await prisma.bodyWeight.findMany({
+    where: { userId },
+    orderBy: { date: "asc" },
+  });
+}
