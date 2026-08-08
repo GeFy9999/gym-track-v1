@@ -1,5 +1,4 @@
 import { Alert } from "./components/Alert";
-import { Content } from "./components/Content";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "./index.css";
@@ -10,6 +9,7 @@ import LoginPage from "./pages/Login.tsx";
 import RegisterPage from "./pages/Register.tsx";
 import SessionPage from "./pages/Session.tsx";
 import HistoryPage from "./pages/History.tsx";
+import ProfilePage from "./pages/Profile.tsx";
 
 const API_URL = "/api";
 
@@ -108,6 +108,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <HistoryPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profil"
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
               </ProtectedRoute>
             }
           />
