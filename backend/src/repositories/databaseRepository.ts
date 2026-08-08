@@ -188,6 +188,7 @@ export async function insertUser(user: {
   email: string;
   password: string;
   name: string;
+  authProvider?: string;
 }) {
   return await prisma.user.create({
     data: user,

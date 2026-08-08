@@ -5,6 +5,7 @@ import {
   getUserByEmail,
   insertUser,
 } from "../repositories/databaseRepository.js";
+import { prisma } from "../prisma.js";
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -27,7 +28,17 @@ export const register = async (payload: {
     expiresIn: "7d",
   });
 
-  return { token, user: { id: user.id, email: user.email, name: user.name } };
+  return {
+    token,
+    user: {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      recoveryEmail: user.recoveryEmail,
+      weightUnit: user.weightUnit,
+      authProvider: user.authProvider,
+    },
+  };
 };
 
 export const login = async (payload: { email: string; password: string }) => {
@@ -41,7 +52,17 @@ export const login = async (payload: { email: string; password: string }) => {
     expiresIn: "7d",
   });
 
-  return { token, user: { id: user.id, email: user.email, name: user.name } };
+  return {
+    token,
+    user: {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      recoveryEmail: user.recoveryEmail,
+      weightUnit: user.weightUnit,
+      authProvider: user.authProvider,
+    },
+  };
 };
 
 export const googleLogin = async (credential: string) => {
@@ -69,6 +90,7 @@ export const googleLogin = async (credential: string) => {
       email,
       password: randomPassword,
       name,
+      authProvider: "google",
     });
   }
 
@@ -76,5 +98,96 @@ export const googleLogin = async (credential: string) => {
     expiresIn: "7d",
   });
 
-  return { token, user: { id: user.id, email: user.email, name: user.name } };
+  return {
+    token,
+    user: {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      recoveryEmail: user.recoveryEmail,
+      weightUnit: user.weightUnit,
+      authProvider: user.authProvider,
+    },
+  };
+};
+
+export const changePassword = async (
+  userId: string,
+  currentPassword: string | null,
+  newPassword: string,
+) => {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw new Error("Utilisateur introuvable");
+
+  if (user.authProvider === "email") {
+    if (!currentPassword) throw new Error("Mot de passe actuel requis");
+    const valid = await bcrypt.compare(currentPassword, user.password);
+    if (!valid) throw new Error("Mot de passe actuel incorrect");
+  }
+
+  const hashed = await bcrypt.hash(newPassword, 10);
+  await prisma.user.update({
+    where: { id: userId },
+    data: { password: hashed },
+  });
+};
+
+export const deleteAccount = async (userId: string) => {
+  await prisma.set.deleteMany({
+    where: { sessionExercise: { session: { userId } } },
+  });
+  await prisma.sessionExercise.deleteMany({
+    where: { session: { userId } },
+  });
+  await prisma.session.deleteMany({ where: { userId } });
+  await prisma.bodyWeight.deleteMany({ where: { userId } });
+  await prisma.schedule.deleteMany({ where: { userId } });
+  await prisma.user.delete({ where: { id: userId } });
+};
+
+export const updateRecoveryEmail = async (
+  userId: string,
+  recoveryEmail: string,
+) => {
+  await prisma.user.update({
+    where: { id: userId },
+    data: { recoveryEmail },
+  });
+};
+
+export const updateWeightUnit = async (userId: string, weightUnit: string) => {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw new Error("Utilisateur introuvable");
+
+  const currentUnit = user.weightUnit;
+  if (currentUnit === weightUnit) return;
+
+  const factor = weightUnit === "kg" ? 0.453592 : 2.20462;
+
+  const sets = await prisma.set.findMany({
+    where: { sessionExercise: { session: { userId } } },
+  });
+
+  for (const set of sets) {
+    await prisma.set.update({
+      where: { id: set.id },
+      data: { weight: Math.round(set.weight * factor * 10) / 10 },
+    });
+  }
+
+  const weights = await prisma.bodyWeight.findMany({
+    where: { userId },
+  });
+
+  for (const w of weights) {
+    await prisma.bodyWeight.update({
+      where: { id: w.id },
+      data: { value: Math.round(w.value * factor * 10) / 10 },
+    });
+  }
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: { weightUnit },
+  });
 };

@@ -1,5 +1,17 @@
 import express from "express";
-import { register, login, googleLogin } from "../services/authService.js";
+import {
+  register,
+  login,
+  googleLogin,
+  changePassword,
+  deleteAccount,
+  updateRecoveryEmail,
+  updateWeightUnit,
+} from "../services/authService.js";
+import {
+  authMiddleware,
+  type AuthRequest,
+} from "../middleware/authMiddleware.js";
 
 export const authRouter = express.Router();
 
@@ -50,3 +62,95 @@ authRouter.post("/google", async (req, res) => {
     return res.status(400).json({ error: message });
   }
 });
+
+// POST /api/auth/change-password
+authRouter.post(
+  "/change-password",
+  authMiddleware,
+  async (req: AuthRequest, res) => {
+    try {
+      const userId = req.userId!;
+      const { currentPassword, newPassword } = req.body;
+
+      if (!currentPassword || !newPassword) {
+        return res
+          .status(400)
+          .json({ error: "Les deux mots de passe sont requis" });
+      }
+
+      if (newPassword.length < 8) {
+        return res.status(400).json({
+          error: "Le nouveau mot de passe doit contenir au moins 8 caractères",
+        });
+      }
+
+      await changePassword(userId, currentPassword, newPassword);
+      return res.status(200).json({ message: "Mot de passe modifié" });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      return res.status(400).json({ error: message });
+    }
+  },
+);
+
+// DELETE /api/auth/delete-account
+authRouter.delete(
+  "/delete-account",
+  authMiddleware,
+  async (req: AuthRequest, res) => {
+    try {
+      const userId = req.userId!;
+      await deleteAccount(userId);
+      return res.status(200).json({ message: "Compte supprimé" });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      return res.status(500).json({ error: message });
+    }
+  },
+);
+
+// PATCH /api/auth/recovery-email
+authRouter.patch(
+  "/recovery-email",
+  authMiddleware,
+  async (req: AuthRequest, res) => {
+    try {
+      const userId = req.userId!;
+      const { recoveryEmail } = req.body;
+
+      if (!recoveryEmail) {
+        return res.status(400).json({ error: "Courriel requis" });
+      }
+
+      await updateRecoveryEmail(userId, recoveryEmail);
+      return res
+        .status(200)
+        .json({ message: "Courriel de récupération mis à jour" });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      return res.status(400).json({ error: message });
+    }
+  },
+);
+
+// PATCH /api/auth/weight-unit
+authRouter.patch(
+  "/weight-unit",
+  authMiddleware,
+  async (req: AuthRequest, res) => {
+    try {
+      const userId = req.userId!;
+      const { weightUnit } = req.body;
+
+      if (!weightUnit || !["lb", "kg"].includes(weightUnit)) {
+        return res.status(400).json({ error: "Unité invalide (lb ou kg)" });
+      }
+
+      await updateWeightUnit(userId, weightUnit);
+      return res.status(200).json({ message: "Unité mise à jour" });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      return res.status(400).json({ error: message });
+    }
+  },
+);
