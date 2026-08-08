@@ -29,10 +29,27 @@ export default function MuscleVolume() {
   }, []);
 
   if (volumes.length === 0) {
+    const placeholders = [
+      { name: "Chest", pct: 100 },
+      { name: "Dos", pct: 75 },
+      { name: "Legs", pct: 60 },
+      { name: "Épaules", pct: 45 },
+    ];
     return (
-      <p className="text-sm text-zinc-500 text-center py-4">
-        Aucune donnée encore
-      </p>
+      <div className="space-y-3 opacity-40">
+        {placeholders.map(({ name, pct }) => (
+          <div key={name} className="flex items-center gap-3">
+            <span className="text-sm text-zinc-500 w-24 shrink-0">{name}</span>
+            <div className="flex-1 h-3 bg-zinc-800 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-zinc-600 rounded-full"
+                style={{ width: `${pct}%` }}
+              />
+            </div>
+            <span className="text-xs text-zinc-600 w-12 text-right">--</span>
+          </div>
+        ))}
+      </div>
     );
   }
 

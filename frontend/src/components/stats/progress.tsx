@@ -46,11 +46,56 @@ export default function ProgressChart() {
   }, []);
 
   if (entries.length === 0) {
+    const fakePoints = [40, 55, 45, 60, 50, 65];
+    const fakeMax = Math.max(...fakePoints);
+    const cw = 300;
+    const ch = 120;
+
+    const fakePath = fakePoints
+      .map((p, i) => {
+        const x = (i / (fakePoints.length - 1)) * cw;
+        const y = ch - (p / fakeMax) * ch * 0.8 - ch * 0.1;
+        return `${i === 0 ? "M" : "L"} ${x} ${y}`;
+      })
+      .join(" ");
+
     return (
-      <div className="bg-zinc-800 border border-zinc-700 rounded-xl p-4">
-        <p className="text-center text-sm text-zinc-500 py-4">
-          Aucune donnée — ton poids sera enregistré à la fin de chaque semaine
-        </p>
+      <div className="bg-zinc-800 border border-zinc-700 rounded-xl p-4 relative overflow-hidden">
+        <div className="opacity-20">
+          <svg
+            viewBox={`0 0 ${cw} ${ch}`}
+            className="w-full h-36"
+            preserveAspectRatio="none"
+          >
+            <path
+              d={`${fakePath} L ${cw} ${ch} L 0 ${ch} Z`}
+              fill="rgba(249,115,22,0.15)"
+            />
+            <path
+              d={fakePath}
+              fill="none"
+              stroke="rgb(249,115,22)"
+              strokeWidth="2"
+            />
+            {fakePoints.map((p, i) => (
+              <circle
+                key={i}
+                cx={(i / (fakePoints.length - 1)) * cw}
+                cy={ch - (p / fakeMax) * ch * 0.8 - ch * 0.1}
+                r="4"
+                fill="rgb(249,115,22)"
+              />
+            ))}
+          </svg>
+        </div>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <p className="text-sm text-zinc-400 font-semibold mb-1">
+            Pas encore de données
+          </p>
+          <p className="text-xs text-zinc-500">
+            Ton poids sera enregistré chaque semaine
+          </p>
+        </div>
       </div>
     );
   }

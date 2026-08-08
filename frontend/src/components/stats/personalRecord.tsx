@@ -29,25 +29,38 @@ export default function PersonalRecordCards() {
     fetchRecords();
   }, []);
 
-  return (
-    <div className="grid grid-cols-2 gap-4">
-      {records.length > 0 ? (
-        records.map(({ name, weight }) => (
+  if (records.length === 0) {
+    const placeholders = ["Bench Press", "Squat", "Deadlift", "Rowing"];
+    return (
+      <div className="grid grid-cols-2 gap-4">
+        {placeholders.map((name) => (
           <div
             key={name}
-            className="bg-zinc-800 border border-zinc-700 rounded-xl p-4 flex flex-col justify-between"
+            className="bg-zinc-800/50 border border-dashed border-zinc-700 rounded-xl p-4 flex flex-col justify-between"
           >
-            <p className="text-xs text-zinc-400 mb-1">{name}</p>
-            <p className="text-lg font-semibold text-orange-400">
-              {Math.round(weight * 10) / 10} {getWeightUnit()}
+            <p className="text-xs text-zinc-600 mb-1">{name}</p>
+            <p className="text-lg font-semibold text-zinc-700">
+              -- {getWeightUnit()}
             </p>
           </div>
-        ))
-      ) : (
-        <p className="text-sm text-zinc-500 col-span-2 text-center py-4">
-          Aucun record encore — commence à t'entraîner !
-        </p>
-      )}
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-2 gap-4">
+      {records.map(({ name, weight }) => (
+        <div
+          key={name}
+          className="bg-zinc-800 border border-zinc-700 rounded-xl p-4 flex flex-col justify-between"
+        >
+          <p className="text-xs text-zinc-400 mb-1">{name}</p>
+          <p className="text-lg font-semibold text-orange-400">
+            {Math.round(weight * 10) / 10} {getWeightUnit()}
+          </p>
+        </div>
+      ))}
     </div>
   );
 }
