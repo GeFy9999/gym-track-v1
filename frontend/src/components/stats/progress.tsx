@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { getWeightUnit } from "../../utils/units";
 
 const API_URL = "/api";
 
@@ -104,36 +105,46 @@ export default function ProgressChart() {
 
   const diff =
     entries.length >= 2
-      ? entries[entries.length - 1].value - entries[entries.length - 2].value
+      ? Math.round(
+          (entries[entries.length - 1].value -
+            entries[entries.length - 2].value) *
+            10,
+        ) / 10
       : 0;
 
   const totalDiff =
     entries.length >= 2
-      ? entries[entries.length - 1].value - entries[0].value
+      ? Math.round(
+          (entries[entries.length - 1].value - entries[0].value) * 10,
+        ) / 10
       : 0;
 
   return (
     <div className="bg-zinc-800 border border-zinc-700 rounded-xl p-4">
       {/* Header */}
       <div className="flex flex-col items-center mb-4">
-        <span className="text-xs text-zinc-500 mb-2">Poids corporel</span>
+        <span className="text-xs text-zinc-500 mb-2">
+          Poids corporel ({getWeightUnit()})
+        </span>
 
         <span className="text-2xl font-bold text-white">
           {activeIndex !== null
-            ? `${entries[activeIndex].value} lb`
-            : `${entries[entries.length - 1].value} lb`}
+            ? `${Math.round(entries[activeIndex].value * 10) / 10} ${getWeightUnit()}`
+            : `${Math.round(entries[entries.length - 1].value * 10) / 10} ${getWeightUnit()}`}
         </span>
 
         {activeIndex === null && (
           <div className="flex items-center gap-4 mt-2">
             {diff !== 0 && (
               <span className="text-sm text-orange-400 font-semibold">
-                {diff > 0 ? "↑" : "↓"} {Math.abs(diff)} lb cette semaine
+                {diff > 0 ? "↑" : "↓"} {Math.abs(diff)} {getWeightUnit()} cette
+                semaine
               </span>
             )}
             {entries.length >= 2 && (
               <span className="text-xs text-zinc-400">
-                {totalDiff > 0 ? "↑" : "↓"} {Math.abs(totalDiff)} lb au total
+                {totalDiff > 0 ? "↑" : "↓"} {Math.abs(totalDiff)}{" "}
+                {getWeightUnit()} au total
               </span>
             )}
           </div>

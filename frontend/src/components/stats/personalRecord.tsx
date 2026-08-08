@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { getWeightUnit } from "../../utils/units";
 
 const API_URL = "/api";
 
@@ -37,7 +38,9 @@ export default function PersonalRecordCards() {
             className="bg-zinc-800 border border-zinc-700 rounded-xl p-4 flex flex-col justify-between"
           >
             <p className="text-xs text-zinc-400 mb-1">{name}</p>
-            <p className="text-lg font-semibold text-orange-400">{weight} lb</p>
+            <p className="text-lg font-semibold text-orange-400">
+              {Math.round(weight * 10) / 10} {getWeightUnit()}
+            </p>
           </div>
         ))
       ) : (

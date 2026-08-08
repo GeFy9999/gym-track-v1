@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeft, Plus, Trash2, ChevronDown, Search } from "lucide-react";
+import { getWeightUnit } from "../utils/units";
 
 const API_URL = "/api";
 
@@ -110,7 +111,7 @@ export default function SessionPage() {
           sessionExerciseId,
           weight: lastSet ? lastSet.weight : 0,
           reps: lastSet ? lastSet.reps : 0,
-          unit: lastSet ? lastSet.unit : "lb",
+          unit: lastSet ? lastSet.unit : getWeightUnit(),
         }),
       });
       if (!res.ok) throw new Error("Erreur ajout set");
