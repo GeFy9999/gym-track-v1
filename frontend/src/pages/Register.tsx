@@ -93,9 +93,13 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-900 flex flex-col justify-center px-6">
+    <div className="min-h-screen bg-zinc-900 flex flex-col pt-16 px-6">
       <div className="mb-10 text-center">
-        <h1 className="text-3xl font-bold text-white">GymTrack</h1>
+        <img
+          src="/logoGymsTrack.webp"
+          alt="GymTrack"
+          className="h-16 mx-auto mb-2"
+        />
         <p className="text-zinc-400 text-sm mt-2">Crée ton compte</p>
       </div>
 
