@@ -68,7 +68,6 @@ export default function GoogleLoginButton() {
         window.google.accounts.id.renderButton(buttonRef.current, {
           theme: "filled_black",
           size: "large",
-          width: 400,
           text: "continue_with",
           shape: "pill",
           locale: "fr",
