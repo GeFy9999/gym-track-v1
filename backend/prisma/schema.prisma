@@ -21,6 +21,9 @@ datasource db {
   schedule  Schedule? 
   sessions Session[]
   bodyWeights BodyWeight[]
+  recoveryEmail String?
+  weightUnit    String   @default("lb")
+  authProvider  String   @default("email")
 }
 
 model Schedule {
