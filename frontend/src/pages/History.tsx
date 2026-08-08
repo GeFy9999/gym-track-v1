@@ -46,7 +46,6 @@ export default function HistoryPage() {
 
       const sessions: SessionData[] = await res.json();
 
-      // Grouper par semaine
       const grouped: { [key: string]: SessionData[] } = {};
 
       for (const session of sessions) {
@@ -62,7 +61,6 @@ export default function HistoryPage() {
         grouped[key].push(session);
       }
 
-      // Convertir en tableau trié
       const weekList: WeekGroup[] = Object.entries(grouped)
         .map(([key, sessions]) => {
           const startDate = new Date(key);
@@ -99,81 +97,97 @@ export default function HistoryPage() {
         </p>
       </div>
 
-      <div className="space-y-3">
-        {weeks.map((week) => {
-          const isOpen = openWeek === week.label;
-          const totalSessions = week.sessions.length;
-          const totalSets = week.sessions.reduce(
-            (acc, s) =>
-              acc + s.sessionExercises.reduce((a, se) => a + se.sets.length, 0),
-            0,
-          );
+      {weeks.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20">
+          <div className="w-16 h-16 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center mb-4">
+            <ChevronDown size={28} className="text-zinc-600" />
+          </div>
+          <p className="text-sm text-zinc-400 font-semibold mb-1">
+            Aucun historique
+          </p>
+          <p className="text-xs text-zinc-500 text-center px-8">
+            Tes séances apparaîtront ici une fois que tu auras commencé à
+            t'entraîner
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {weeks.map((week) => {
+            const isOpen = openWeek === week.label;
+            const totalSessions = week.sessions.length;
+            const totalSets = week.sessions.reduce(
+              (acc, s) =>
+                acc +
+                s.sessionExercises.reduce((a, se) => a + se.sets.length, 0),
+              0,
+            );
 
-          return (
-            <div
-              key={week.label}
-              className="bg-zinc-800 border border-zinc-700 rounded-xl overflow-hidden"
-            >
-              <button
-                onClick={() => setOpenWeek(isOpen ? null : week.label)}
-                className="w-full flex items-center justify-between px-4 py-3.5"
+            return (
+              <div
+                key={week.label}
+                className="bg-zinc-800 border border-zinc-700 rounded-xl overflow-hidden"
               >
-                <div className="text-left">
-                  <p className="text-sm font-semibold text-white">
-                    {week.label}
-                  </p>
-                  <p className="text-xs text-zinc-500 mt-0.5">
-                    {totalSessions} séance{totalSessions > 1 ? "s" : ""} ·{" "}
-                    {totalSets} sets
-                  </p>
-                </div>
-                <ChevronDown
-                  size={18}
-                  className={`text-zinc-400 transition-transform duration-200 ${
-                    isOpen ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
+                <button
+                  onClick={() => setOpenWeek(isOpen ? null : week.label)}
+                  className="w-full flex items-center justify-between px-4 py-3.5"
+                >
+                  <div className="text-left">
+                    <p className="text-sm font-semibold text-white">
+                      {week.label}
+                    </p>
+                    <p className="text-xs text-zinc-500 mt-0.5">
+                      {totalSessions} séance{totalSessions > 1 ? "s" : ""} ·{" "}
+                      {totalSets} sets
+                    </p>
+                  </div>
+                  <ChevronDown
+                    size={18}
+                    className={`text-zinc-400 transition-transform duration-200 ${
+                      isOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
 
-              {isOpen && (
-                <div className="border-t border-zinc-700 px-4 py-3 space-y-2">
-                  {week.sessions.map((session) => {
-                    const exerciseCount = session.sessionExercises.length;
-                    const date = new Date(session.date).toLocaleDateString(
-                      "fr-FR",
-                      { weekday: "short", day: "numeric", month: "short" },
-                    );
+                {isOpen && (
+                  <div className="border-t border-zinc-700 px-4 py-3 space-y-2">
+                    {week.sessions.map((session) => {
+                      const exerciseCount = session.sessionExercises.length;
+                      const date = new Date(session.date).toLocaleDateString(
+                        "fr-FR",
+                        { weekday: "short", day: "numeric", month: "short" },
+                      );
 
-                    return (
-                      <button
-                        key={session.id}
-                        onClick={() =>
-                          navigate(`/session/${session.id}?readonly=true`)
-                        }
-                        className="w-full flex items-center justify-between bg-zinc-700/50 hover:bg-zinc-700 rounded-lg px-3 py-3 transition-colors"
-                      >
-                        <div className="text-left">
-                          <p className="text-sm font-medium text-zinc-200">
-                            {session.muscleGroup}
-                          </p>
-                          <p className="text-xs text-zinc-500 mt-0.5">
-                            {date} · {exerciseCount} exercice
-                            {exerciseCount > 1 ? "s" : ""}
-                          </p>
-                        </div>
-                        <ChevronDown
-                          size={16}
-                          className="text-zinc-500 -rotate-90"
-                        />
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
+                      return (
+                        <button
+                          key={session.id}
+                          onClick={() =>
+                            navigate(`/session/${session.id}?readonly=true`)
+                          }
+                          className="w-full flex items-center justify-between bg-zinc-700/50 hover:bg-zinc-700 rounded-lg px-3 py-3 transition-colors"
+                        >
+                          <div className="text-left">
+                            <p className="text-sm font-medium text-zinc-200">
+                              {session.muscleGroup}
+                            </p>
+                            <p className="text-xs text-zinc-500 mt-0.5">
+                              {date} · {exerciseCount} exercice
+                              {exerciseCount > 1 ? "s" : ""}
+                            </p>
+                          </div>
+                          <ChevronDown
+                            size={16}
+                            className="text-zinc-500 -rotate-90"
+                          />
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
