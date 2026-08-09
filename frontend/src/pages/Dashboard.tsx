@@ -4,8 +4,7 @@ import MuscleGroupsCards from "../components/dashboard/muscleGroupGrid";
 import RecentActivity from "../components/dashboard/recentActivity";
 import { useState } from "react";
 import { CheckCircle } from "lucide-react";
-
-const API_URL = "/api";
+import { API_URL } from "../lib/api";
 
 export default function DashboardPage() {
   const [weekActive, setWeekActive] = useState<boolean>(false);

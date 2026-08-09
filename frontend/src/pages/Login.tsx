@@ -5,8 +5,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
 import GoogleLoginButton from "../components/GoogleLoginButton";
-
-const API_URL = "/api";
+import { API_URL } from "../lib/api";
 
 const loginSchema = z.object({
   email: z.string().min(1, "Le courriel est requis").email("Courriel invalide"),

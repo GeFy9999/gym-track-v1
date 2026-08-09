@@ -1,6 +1,5 @@
 import { useEffect } from "react";
-
-const API_URL = "/api";
+import { API_URL } from "../../lib/api";
 
 type Props = {
   weekActive: boolean;

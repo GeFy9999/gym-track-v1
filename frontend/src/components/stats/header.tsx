@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-
-const API_URL = "/api";
+import { API_URL } from "../../lib/api";
 
 export default function HeaderStats() {
   const [hasCompletedWeek, setHasCompletedWeek] = useState<boolean>(false);

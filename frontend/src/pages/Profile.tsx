@@ -10,8 +10,7 @@ import {
   MailPlus,
   X,
 } from "lucide-react";
-
-const API_URL = "/api";
+import { API_URL } from "../lib/api";
 
 export default function ProfilePage() {
   const navigate = useNavigate();

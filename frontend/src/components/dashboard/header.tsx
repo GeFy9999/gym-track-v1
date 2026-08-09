@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-
-const API_URL = "/api";
+import { API_URL } from "../../lib/api";
 
 export default function HeaderDashboard() {
   const today = new Date();

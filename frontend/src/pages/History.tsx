@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
-
-const API_URL = "/api";
+import { API_URL } from "../lib/api";
 
 type SessionData = {
   id: string;

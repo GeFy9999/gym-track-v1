@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../lib/api";
 
-const API_URL = "/api";
 const GOOGLE_CLIENT_ID =
   "535959553524-5nicf9d43pi0ssp9da782qb38em3anhn.apps.googleusercontent.com";
 

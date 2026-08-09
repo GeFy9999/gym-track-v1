@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeft, Plus, Trash2, ChevronDown, Search } from "lucide-react";
 import { getWeightUnit } from "../utils/units";
-
-const API_URL = "/api";
+import { API_URL } from "../lib/api";
 
 type SetData = {
   id: string;

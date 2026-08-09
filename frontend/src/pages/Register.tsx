@@ -5,8 +5,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
 import GoogleLoginButton from "../components/GoogleLoginButton";
-
-const API_URL = "/api";
+import { API_URL } from "../lib/api";
 
 const passwordRules = [
   { regex: /.{8,}/, label: "Minimum 8 caractères" },

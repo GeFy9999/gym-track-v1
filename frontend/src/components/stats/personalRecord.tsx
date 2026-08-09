@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { getWeightUnit } from "../../utils/units";
-
-const API_URL = "/api";
+import { API_URL } from "../../lib/api";
 
 type Record = {
   name: string;

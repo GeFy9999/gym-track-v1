@@ -10,8 +10,7 @@ import RegisterPage from "./pages/Register.tsx";
 import SessionPage from "./pages/Session.tsx";
 import HistoryPage from "./pages/History.tsx";
 import ProfilePage from "./pages/Profile.tsx";
-
-const API_URL = "/api";
+import { API_URL } from "./lib/api";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const [checking, setChecking] = useState(true);

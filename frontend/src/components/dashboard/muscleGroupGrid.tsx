@@ -1,8 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Dumbbell } from "lucide-react";
 import { useEffect, useState } from "react";
-
-const API_URL = "/api";
+import { API_URL } from "../../lib/api";
 
 const colors = [
   "bg-blue-500/15 text-blue-400",
