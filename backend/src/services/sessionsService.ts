@@ -7,7 +7,6 @@ import {
   updateSession,
 } from "../repositories/databaseRepository.js";
 import { prisma } from "../prisma.js";
-import { Weight } from "lucide-react";
 
 // Récupère une session par son id
 export async function getSession(sessionId: string) {
