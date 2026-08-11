@@ -4,18 +4,18 @@
   "description": "Suivi d'entraînement et progression fitness",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#18181b",
+  "background_color": "#1a1a1c",
   "theme_color": "#f97316",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/icon-192x192.png",
+      "src": "/logoMobileGymsTrack192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icon-512x512.png",
+      "src": "/logoMobileGymsTrack512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
