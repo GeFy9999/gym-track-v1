@@ -12,7 +12,7 @@ import {
   authMiddleware,
   type AuthRequest,
 } from "../middleware/authMiddleware.js";
-import { auth } from "google-auth-library";
+import { prisma } from "../prisma.js";
 
 export const sessionsRouter = express.Router();
 
@@ -128,6 +128,28 @@ sessionsRouter.get(
     }
   },
 );
+
+// DELETE /api/sessions/:sessionId
+sessionsRouter.delete("/:sessionId", async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+
+    await prisma.set.deleteMany({
+      where: { sessionExercise: { sessionId } },
+    });
+    await prisma.sessionExercise.deleteMany({
+      where: { sessionId },
+    });
+    await prisma.session.delete({
+      where: { id: sessionId },
+    });
+
+    return res.status(200).json({ message: "Session supprimée" });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return res.status(500).json({ error: message });
+  }
+});
 
 // GET /api/sessions/:sessionId
 sessionsRouter.get("/:sessionId", async (req, res) => {

@@ -16,7 +16,6 @@ export default function DashboardPage() {
     if (!token) return;
 
     try {
-      // Fetch today's sessions only
       const todayStart = new Date();
       todayStart.setHours(0, 0, 0, 0);
 
@@ -28,11 +27,21 @@ export default function DashboardPage() {
       if (res.ok) {
         const sessions = await res.json();
 
-        // Complete only today's incomplete sessions
         for (const session of sessions) {
-          if (!session.completed) {
+          if (session.completed) continue;
+
+          const hasSets = session.sessionExercises.some(
+            (se: { sets: { weight: number; reps: number }[] }) =>
+              se.sets.length > 0,
+          );
+
+          if (hasSets) {
             await fetch(`${API_URL}/sessions/${session.id}/complete`, {
               method: "PATCH",
+            });
+          } else {
+            await fetch(`${API_URL}/sessions/${session.id}`, {
+              method: "DELETE",
             });
           }
         }

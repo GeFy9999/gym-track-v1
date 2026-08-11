@@ -45,9 +45,11 @@ export default function HistoryPage() {
 
       const sessions: SessionData[] = await res.json();
 
+      const filtered = sessions.filter((s) => s.completed);
+
       const grouped: { [key: string]: SessionData[] } = {};
 
-      for (const session of sessions) {
+      for (const session of filtered) {
         const date = new Date(session.date);
         const day = date.getDay();
         const diff = day === 0 ? 6 : day - 1;
