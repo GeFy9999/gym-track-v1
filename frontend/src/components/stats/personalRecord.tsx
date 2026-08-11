@@ -56,7 +56,7 @@ export default function PersonalRecordCards() {
         >
           <p className="text-xs text-zinc-400 mb-1">{name}</p>
           <p className="text-lg font-semibold text-orange-400">
-            {Math.round(weight * 10) / 10} {getWeightUnit()}
+            {Math.round(weight)} {getWeightUnit()}
           </p>
         </div>
       ))}

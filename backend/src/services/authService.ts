@@ -171,7 +171,7 @@ export const updateWeightUnit = async (userId: string, weightUnit: string) => {
   for (const set of sets) {
     await prisma.set.update({
       where: { id: set.id },
-      data: { weight: Math.round(set.weight * factor * 10) / 10 },
+      data: { weight: Math.round(set.weight * factor) },
     });
   }
 
@@ -182,7 +182,7 @@ export const updateWeightUnit = async (userId: string, weightUnit: string) => {
   for (const w of weights) {
     await prisma.bodyWeight.update({
       where: { id: w.id },
-      data: { value: Math.round(w.value * factor * 10) / 10 },
+      data: { value: Math.round(w.value * factor) },
     });
   }
 

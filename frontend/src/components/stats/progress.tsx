@@ -173,8 +173,8 @@ export default function ProgressChart() {
 
         <span className="text-2xl font-bold text-white">
           {activeIndex !== null
-            ? `${Math.round(entries[activeIndex].value * 10) / 10} ${getWeightUnit()}`
-            : `${Math.round(entries[entries.length - 1].value * 10) / 10} ${getWeightUnit()}`}
+            ? `${Math.round(entries[activeIndex].value)} ${getWeightUnit()}`
+            : `${Math.round(entries[entries.length - 1].value)} ${getWeightUnit()}`}
         </span>
 
         {activeIndex === null && (
