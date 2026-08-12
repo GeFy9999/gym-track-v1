@@ -12,6 +12,8 @@ import HistoryPage from "./pages/History.tsx";
 import ProfilePage from "./pages/Profile.tsx";
 import { API_URL } from "./lib/api";
 import AddExercisePage from "./pages/AddExercise.tsx";
+import ForgotPasswordPage from "./pages/ForgotPassword.tsx";
+import ResetPasswordPage from "./pages/ResetPassword.tsx";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const [checking, setChecking] = useState(true);
@@ -127,6 +129,8 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
         </Routes>
         {!hideNav && <BottomNav />}
       </div>

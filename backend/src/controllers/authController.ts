@@ -7,6 +7,8 @@ import {
   deleteAccount,
   updateRecoveryEmail,
   updateWeightUnit,
+  forgotPassword,
+  resetPassword,
 } from "../services/authService.js";
 import {
   authMiddleware,
@@ -154,3 +156,33 @@ authRouter.patch(
     }
   },
 );
+
+// POST /api/auth/forgot-password
+authRouter.post("/forgot-password", async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: "Courriel requis" });
+
+    await forgotPassword(email);
+    return res.status(200).json({ message: "Courriel envoyé" });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return res.status(400).json({ error: message });
+  }
+});
+
+// POST /api/auth/reset-password
+authRouter.post("/reset-password", async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+    if (!token || !newPassword) {
+      return res.status(400).json({ error: "Token et mot de passe requis" });
+    }
+
+    await resetPassword(token, newPassword);
+    return res.status(200).json({ message: "Mot de passe réinitialisé" });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return res.status(400).json({ error: message });
+  }
+});
