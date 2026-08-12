@@ -16,13 +16,25 @@ export default function PersonalRecordCards() {
       const token = localStorage.getItem("token");
       if (!token) return;
 
-      const res = await fetch(`${API_URL}/sessions/me/records`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const [recRes, trRes] = await Promise.all([
+        fetch(`${API_URL}/sessions/me/records`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        fetch(`${API_URL}/tracked-exercises`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+      ]);
 
-      if (res.ok) {
-        const data = await res.json();
-        setRecords(data);
+      if (recRes.ok && trRes.ok) {
+        const allRecords = await recRes.json();
+        const tracked = await trRes.json();
+        const trackedIds = tracked.map(
+          (t: { exerciseId: string }) => t.exerciseId,
+        );
+
+        setRecords(
+          allRecords.filter((r: Record) => trackedIds.includes(r.exerciseId)),
+        );
       }
     };
     fetchRecords();
