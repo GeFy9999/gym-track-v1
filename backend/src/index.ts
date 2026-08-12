@@ -11,6 +11,7 @@ import { setsRouter } from "./controllers/setController.js";
 import { sessionExercisesRouter } from "./controllers/sessionExerciseController.js";
 import { authRouter } from "./controllers/authController.js";
 import { bodyWeightRouter } from "./controllers/bodyWeightController.js";
+import { trackedExerciseRouter } from "./controllers/trackedExerciseController.js";
 
 dotenv.config();
 
@@ -38,6 +39,7 @@ app.use("/api/sets", setsRouter);
 app.use("/api/session-exercises", sessionExercisesRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/body-weight", bodyWeightRouter);
+app.use("/api/tracked-exercises", trackedExerciseRouter);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

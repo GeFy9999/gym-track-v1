@@ -222,3 +222,22 @@ export async function getBodyWeights(userId: string) {
     orderBy: { date: "asc" },
   });
 }
+
+export async function getTrackedExercises(userId: string) {
+  return await prisma.trackedExercise.findMany({
+    where: { userId },
+    include: { exercise: true },
+  });
+}
+
+export async function addTrackedExercise(userId: string, exerciseId: string) {
+  return await prisma.trackedExercise.create({
+    data: { userId, exerciseId },
+  });
+}
+
+export async function removeTrackedExercise(id: string) {
+  return await prisma.trackedExercise.delete({
+    where: { id },
+  });
+}
