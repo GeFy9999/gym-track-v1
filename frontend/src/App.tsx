@@ -11,6 +11,7 @@ import SessionPage from "./pages/Session.tsx";
 import HistoryPage from "./pages/History.tsx";
 import ProfilePage from "./pages/Profile.tsx";
 import { API_URL } from "./lib/api";
+import AddExercisePage from "./pages/AddExercise.tsx";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const [checking, setChecking] = useState(true);
@@ -115,6 +116,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/add-exercise"
+            element={
+              <ProtectedRoute>
+                <AddExercisePage />
               </ProtectedRoute>
             }
           />

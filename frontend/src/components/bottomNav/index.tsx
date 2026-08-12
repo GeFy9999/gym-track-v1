@@ -44,6 +44,15 @@ export default function BottomNav() {
       <ul className="flex w-full justify-around items-center">
         {links.slice(0, 2).map(renderLink)}
 
+        <li>
+          <Link
+            to="/add-exercise"
+            className="flex items-center justify-center w-10 h-10 rounded-full bg-orange-500"
+          >
+            <Plus size={22} className="text-white" />
+          </Link>
+        </li>
+
         {links.slice(2).map(renderLink)}
       </ul>
     </nav>
