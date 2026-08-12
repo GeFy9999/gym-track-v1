@@ -2,14 +2,63 @@ import HeaderDashboard from "../components/dashboard/header";
 import WeekProgress from "../components/dashboard/weekProgressCard";
 import MuscleGroupsCards from "../components/dashboard/muscleGroupGrid";
 import RecentActivity from "../components/dashboard/recentActivity";
-import { useState } from "react";
-import { CheckCircle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { CheckCircle, Scale } from "lucide-react";
 import { API_URL } from "../lib/api";
 
 export default function DashboardPage() {
   const [weekActive, setWeekActive] = useState<boolean>(false);
   const [showEndConfirm, setShowEndConfirm] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showWeightPrompt, setShowWeightPrompt] = useState(false);
+  const [bodyWeight, setBodyWeight] = useState("");
+
+  useEffect(() => {
+    const checkBodyWeight = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      const snoozed = localStorage.getItem("weightSnooze");
+      if (snoozed) {
+        const snoozeDate = new Date(snoozed);
+        const now = new Date();
+        if (
+          snoozeDate.getDate() === now.getDate() &&
+          snoozeDate.getMonth() === now.getMonth() &&
+          snoozeDate.getFullYear() === now.getFullYear()
+        ) {
+          return;
+        }
+      }
+
+      const res = await fetch(`${API_URL}/body-weight`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.ok) return;
+      const entries = await res.json();
+
+      const now = new Date();
+      const day = now.getDay();
+      const diff = day === 0 ? 6 : day - 1;
+      const thisMonday = new Date(now);
+      thisMonday.setDate(now.getDate() - diff);
+      thisMonday.setHours(0, 0, 0, 0);
+
+      const prevMonday = new Date(thisMonday);
+      prevMonday.setDate(thisMonday.getDate() - 7);
+
+      const hasEntryThisWeek = entries.some((e: { date: string }) => {
+        const d = new Date(e.date);
+        return d >= thisMonday;
+      });
+
+      if (!hasEntryThisWeek) {
+        setShowWeightPrompt(true);
+      }
+    };
+    checkBodyWeight();
+  }, []);
 
   const handleEndSession = async () => {
     const token = localStorage.getItem("token");
@@ -53,6 +102,33 @@ export default function DashboardPage() {
     } catch (err) {
       console.error(err);
     }
+  };
+
+  const handleSaveWeight = async () => {
+    const token = localStorage.getItem("token");
+    if (!token || !bodyWeight) return;
+
+    try {
+      await fetch(`${API_URL}/body-weight`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ value: Number(bodyWeight) }),
+      });
+
+      setShowWeightPrompt(false);
+      setBodyWeight("");
+      localStorage.removeItem("weightSnooze");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleSnoozeWeight = () => {
+    localStorage.setItem("weightSnooze", new Date().toISOString());
+    setShowWeightPrompt(false);
   };
 
   return (
@@ -108,6 +184,57 @@ export default function DashboardPage() {
                 className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold transition-colors"
               >
                 Terminer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showWeightPrompt && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-6">
+          <div className="bg-zinc-800 border border-zinc-700 rounded-2xl p-6 w-full max-w-sm">
+            <div className="flex flex-col items-center mb-4">
+              <div className="w-12 h-12 rounded-full bg-orange-500/15 flex items-center justify-center mb-3">
+                <Scale size={24} className="text-orange-400" />
+              </div>
+              <p className="text-base font-semibold text-white text-center">
+                Quel est ton poids ?
+              </p>
+              <p className="text-xs text-zinc-500 text-center mt-1">
+                Entre ton poids pour suivre ta progression
+              </p>
+            </div>
+
+            <div className="relative mb-4">
+              <input
+                type="number"
+                value={bodyWeight}
+                onChange={(e) => setBodyWeight(e.target.value)}
+                placeholder="0"
+                className="w-full bg-zinc-700 border border-zinc-600 rounded-xl px-4 py-3 text-center text-xl font-semibold text-white placeholder-zinc-600 focus:outline-none focus:border-orange-500"
+              />
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-zinc-500">
+                {(() => {
+                  const stored = localStorage.getItem("user");
+                  if (!stored) return "lb";
+                  return JSON.parse(stored).weightUnit || "lb";
+                })()}
+              </span>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={handleSnoozeWeight}
+                className="flex-1 bg-zinc-700 hover:bg-zinc-600 text-white py-3 rounded-xl font-semibold transition-colors"
+              >
+                Plus tard
+              </button>
+              <button
+                onClick={handleSaveWeight}
+                disabled={!bodyWeight}
+                className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white py-3 rounded-xl font-semibold transition-colors"
+              >
+                Sauvegarder
               </button>
             </div>
           </div>
