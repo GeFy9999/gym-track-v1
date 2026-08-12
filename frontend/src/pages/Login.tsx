@@ -133,6 +133,12 @@ export default function LoginPage() {
         >
           {loading ? "Connexion..." : "Se connecter"}
         </button>
+        <Link
+          to="/forgot-password"
+          className="text-xs text-zinc-500 text-center mt-2"
+        >
+          Mot de passe oublié ?
+        </Link>
       </form>
 
       <div className="flex items-center gap-3 my-6">
