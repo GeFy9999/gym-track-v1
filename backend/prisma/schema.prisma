@@ -21,9 +21,10 @@ datasource db {
   schedule  Schedule? 
   sessions Session[]
   bodyWeights BodyWeight[]
+  trackedExercises TrackedExercise[]
   recoveryEmail String?
   weightUnit    String   @default("lb")
-  authProvider  String   @default("email")
+  authProvider  String   @default("email")  
 }
 
 model Schedule {
@@ -54,6 +55,7 @@ model Exercise {
   isCustom      Boolean @default(false)  
   muscleGroup   MuscleGroup  @relation(fields: [muscleGroupId], references: [id])  
   sessionExercises SessionExercise[]
+  trackedBy TrackedExercise[]
 }
 
 model SessionExercise {
@@ -91,4 +93,16 @@ model BodyWeight {
   date      DateTime @default(now())
   
   user      User     @relation(fields: [userId], references: [id])
+}
+
+model TrackedExercise {
+  id         String   @id @default(uuid())
+  userId     String
+  exerciseId String
+  createdAt  DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id])
+  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+
+  @@unique([userId, exerciseId])
 }
