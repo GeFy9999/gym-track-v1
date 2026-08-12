@@ -24,7 +24,9 @@ datasource db {
   trackedExercises TrackedExercise[]
   recoveryEmail String?
   weightUnit    String   @default("lb")
-  authProvider  String   @default("email")  
+  authProvider  String   @default("email")
+  resetToken    String?
+  resetTokenExpiry DateTime?  
 }
 
 model Schedule {
