@@ -6,7 +6,9 @@ import {
   insertUser,
 } from "../repositories/databaseRepository.js";
 import { prisma } from "../prisma.js";
+import { Resend } from "resend";
 
+const resend = new Resend(process.env.RESEND_API_KEY);
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export const register = async (payload: {
@@ -189,5 +191,61 @@ export const updateWeightUnit = async (userId: string, weightUnit: string) => {
   await prisma.user.update({
     where: { id: userId },
     data: { weightUnit },
+  });
+};
+
+export const forgotPassword = async (email: string) => {
+  const user = await getUserByEmail(email);
+  if (!user) throw new Error("Aucun compte avec ce courriel");
+
+  const token = crypto.randomUUID();
+  const expiry = new Date(Date.now() + 60 * 60 * 1000);
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { resetToken: token, resetTokenExpiry: expiry },
+  });
+
+  const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+
+  await resend.emails.send({
+    from: "GymsTrack <noreply@gymstrack.com>",
+    to: email,
+    subject: "Réinitialiser ton mot de passe — GymsTrack",
+    html: `
+      <h2>Réinitialisation du mot de passe</h2>
+      <p>Clique sur le lien ci-dessous pour réinitialiser ton mot de passe :</p>
+      <a href="${resetUrl}" style="display:inline-block;background:#f97316;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;">
+        Réinitialiser mon mot de passe
+      </a>
+      <p style="color:#888;margin-top:16px;">Ce lien expire dans 1 heure.</p>
+      <p style="color:#888;">Si tu n'as pas demandé cette réinitialisation, ignore ce courriel.</p>
+    `,
+  });
+};
+
+export const resetPassword = async (token: string, newPassword: string) => {
+  const user = await prisma.user.findFirst({
+    where: {
+      resetToken: token,
+      resetTokenExpiry: { gt: new Date() },
+    },
+  });
+
+  if (!user) throw new Error("Lien expiré ou invalide");
+
+  const samePassword = await bcrypt.compare(newPassword, user.password);
+  if (samePassword)
+    throw new Error("Le nouveau mot de passe doit être différent de l'ancien");
+
+  const hashed = await bcrypt.hash(newPassword, 10);
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      password: hashed,
+      resetToken: null,
+      resetTokenExpiry: null,
+    },
   });
 };
