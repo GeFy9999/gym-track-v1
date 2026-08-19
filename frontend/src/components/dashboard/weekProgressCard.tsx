@@ -44,27 +44,27 @@ export default function WeekProgress({ weekActive, setWeekActive }: Props) {
   }, [setWeekActive]);
 
   return (
-    <div className="bg-zinc-800 border border-zinc-700 rounded-2xl p-6 mx-4 mb-6">
+    <div className="bg-white border border-gray-200 rounded-2xl p-6 mx-4 mb-6">
       {weekActive ? (
         <>
-          <p className="text-base font-semibold text-white text-center mb-1">
+          <p className="text-base font-semibold text-gray-900 text-center mb-1">
             Semaine en cours
           </p>
-          <p className="text-xs text-zinc-500 text-center">
+          <p className="text-xs text-gray-400 text-center">
             Ta semaine est active — choisis un groupe musculaire ci-dessous
           </p>
         </>
       ) : (
         <>
-          <p className="text-base font-semibold text-white text-center mb-1">
+          <p className="text-base font-semibold text-gray-900 text-center mb-1">
             Aucune semaine active
           </p>
-          <p className="text-xs text-zinc-500 text-center mb-4">
+          <p className="text-xs text-gray-400 text-center mb-4">
             Démarre ta semaine pour commencer à suivre tes entraînements
           </p>
           <button
             onClick={() => setWeekActive(true)}
-            className="w-full bg-orange-500 hover:bg-orange-600 active:scale-[0.98] text-white py-3.5 rounded-xl font-semibold transition-all shadow-lg shadow-orange-500/20"
+            className="w-full bg-orange-500 hover:bg-orange-600 active:scale-[0.98] text-gray-900 py-3.5 rounded-xl font-semibold transition-all shadow-lg shadow-orange-500/20"
           >
             Démarrer une nouvelle semaine
           </button>

@@ -59,7 +59,7 @@ export default function ProgressChart() {
       .join(" ");
 
     return (
-      <div className="bg-zinc-800 border border-zinc-700 rounded-xl p-4 relative overflow-hidden">
+      <div className="bg-white border border-gray-200 rounded-xl p-4 relative overflow-hidden">
         <div className="opacity-20">
           <svg
             viewBox={`0 0 ${cw} ${ch}`}
@@ -88,10 +88,10 @@ export default function ProgressChart() {
           </svg>
         </div>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <p className="text-sm text-zinc-400 font-semibold mb-1">
+          <p className="text-sm text-gray-500 font-semibold mb-1">
             Pas encore de données
           </p>
-          <p className="text-xs text-zinc-500">
+          <p className="text-xs text-gray-400">
             Ton poids sera enregistré chaque semaine
           </p>
         </div>
@@ -164,14 +164,14 @@ export default function ProgressChart() {
       : 0;
 
   return (
-    <div className="bg-zinc-800 border border-zinc-700 rounded-xl p-4">
+    <div className="bg-white border border-gray-200 rounded-xl p-4">
       {/* Header */}
       <div className="flex flex-col items-center mb-4">
-        <span className="text-xs text-zinc-500 mb-2">
+        <span className="text-xs text-gray-400 mb-2">
           Poids corporel ({getWeightUnit()})
         </span>
 
-        <span className="text-2xl font-bold text-white">
+        <span className="text-2xl font-bold text-gray-900">
           {activeIndex !== null
             ? `${Math.round(entries[activeIndex].value)} ${getWeightUnit()}`
             : `${Math.round(entries[entries.length - 1].value)} ${getWeightUnit()}`}
@@ -186,7 +186,7 @@ export default function ProgressChart() {
               </span>
             )}
             {entries.length >= 2 && (
-              <span className="text-xs text-zinc-400">
+              <span className="text-xs text-gray-500">
                 {totalDiff > 0 ? "↑" : "↓"} {Math.abs(totalDiff)}{" "}
                 {getWeightUnit()} au total
               </span>
@@ -195,7 +195,7 @@ export default function ProgressChart() {
         )}
 
         {activeIndex !== null && (
-          <span className="text-xs text-zinc-400 mt-1">
+          <span className="text-xs text-gray-500 mt-1">
             {new Date(entries[activeIndex].date).toLocaleDateString("fr-FR", {
               day: "numeric",
               month: "long",
@@ -255,18 +255,18 @@ export default function ProgressChart() {
       </svg>
 
       {/* Date labels */}
-      <div className="flex justify-between mt-2 border-t border-zinc-700 pt-2">
+      <div className="flex justify-between mt-2 border-t border-gray-200 pt-2">
         {dates.map((d, i) => {
           const showMonth = i === 0 || d.getMonth() !== dates[i - 1].getMonth();
           return (
             <div key={entries[i].id} className="flex-1 text-center">
               <span
-                className={`text-xs ${activeIndex === i ? "text-orange-400 font-semibold" : "text-zinc-500"}`}
+                className={`text-xs ${activeIndex === i ? "text-orange-400 font-semibold" : "text-gray-400"}`}
               >
                 {d.getDate()}
               </span>
               {showMonth && (
-                <p className="text-xs text-zinc-600 -mt-0.5">
+                <p className="text-xs text-gray-400 -mt-0.5">
                   {MONTHS[d.getMonth()]}
                 </p>
               )}

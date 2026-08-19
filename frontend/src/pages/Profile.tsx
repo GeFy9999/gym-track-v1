@@ -145,35 +145,35 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="pb-24 bg-zinc-900 min-h-screen px-4">
+    <div className="pb-24 bg-gray-50 min-h-screen px-4">
       {/* Avatar et nom */}
       <div className="flex flex-col items-center pt-8 mb-6">
-        <div className="w-20 h-20 rounded-full bg-orange-500 flex items-center justify-center text-2xl font-semibold text-white">
+        <div className="w-20 h-20 rounded-full bg-orange-500 flex items-center justify-center text-2xl font-semibold text-gray-900">
           {initials}
         </div>
-        <p className="text-lg font-semibold text-white mt-3">{user?.name}</p>
-        <p className="text-sm text-zinc-400">{user?.email}</p>
+        <p className="text-lg font-semibold text-gray-900 mt-3">{user?.name}</p>
+        <p className="text-sm text-gray-500">{user?.email}</p>
       </div>
 
       {/* Success toast */}
       {success && (
-        <div className="bg-green-600 text-white text-sm font-medium px-4 py-3 rounded-xl mb-4 text-center">
+        <div className="bg-green-600 text-gray-900 text-sm font-medium px-4 py-3 rounded-xl mb-4 text-center">
           {success}
         </div>
       )}
 
       {/* Section Compte */}
-      <p className="text-xs text-zinc-500 uppercase tracking-wider mb-2 px-1">
+      <p className="text-xs text-gray-400 uppercase tracking-wider mb-2 px-1">
         Compte
       </p>
-      <div className="bg-zinc-800 border border-zinc-700 rounded-xl mb-4">
-        <button className="w-full flex items-center gap-3 px-4 py-3.5 border-b border-zinc-700">
-          <Mail size={18} className="text-zinc-400" />
+      <div className="bg-white border border-gray-200 rounded-xl mb-4">
+        <button className="w-full flex items-center gap-3 px-4 py-3.5 border-b border-gray-200">
+          <Mail size={18} className="text-gray-500" />
           <div className="flex-1 text-left">
-            <p className="text-sm text-white">Courriel</p>
-            <p className="text-xs text-zinc-500">{user?.email}</p>
+            <p className="text-sm text-gray-900">Courriel</p>
+            <p className="text-xs text-gray-400">{user?.email}</p>
           </div>
-          <ChevronRight size={16} className="text-zinc-600" />
+          <ChevronRight size={16} className="text-gray-400" />
         </button>
 
         <button
@@ -181,18 +181,18 @@ export default function ProfilePage() {
             setActiveModal("password");
             setError(null);
           }}
-          className="w-full flex items-center gap-3 px-4 py-3.5 border-b border-zinc-700"
+          className="w-full flex items-center gap-3 px-4 py-3.5 border-b border-gray-200"
         >
-          <Lock size={18} className="text-zinc-400" />
+          <Lock size={18} className="text-gray-500" />
           <div className="flex-1 text-left">
-            <p className="text-sm text-white">Mot de passe</p>
-            <p className="text-xs text-zinc-500">
+            <p className="text-sm text-gray-900">Mot de passe</p>
+            <p className="text-xs text-gray-400">
               {user?.authProvider === "google"
                 ? "Définir un mot de passe"
                 : "Changer le mot de passe"}
             </p>
           </div>
-          <ChevronRight size={16} className="text-zinc-600" />
+          <ChevronRight size={16} className="text-gray-400" />
         </button>
 
         <button
@@ -202,42 +202,42 @@ export default function ProfilePage() {
           }}
           className="w-full flex items-center gap-3 px-4 py-3.5"
         >
-          <MailPlus size={18} className="text-zinc-400" />
+          <MailPlus size={18} className="text-gray-500" />
           <div className="flex-1 text-left">
-            <p className="text-sm text-white">Courriel de récupération</p>
-            <p className="text-xs text-zinc-500">
+            <p className="text-sm text-gray-900">Courriel de récupération</p>
+            <p className="text-xs text-gray-400">
               {user?.recoveryEmail || "Non configuré"}
             </p>
           </div>
-          <ChevronRight size={16} className="text-zinc-600" />
+          <ChevronRight size={16} className="text-gray-400" />
         </button>
       </div>
 
       {/* Section Préférences */}
-      <p className="text-xs text-zinc-500 uppercase tracking-wider mb-2 px-1">
+      <p className="text-xs text-gray-400 uppercase tracking-wider mb-2 px-1">
         Préférences
       </p>
-      <div className="bg-zinc-800 border border-zinc-700 rounded-xl mb-4">
+      <div className="bg-white border border-gray-200 rounded-xl mb-4">
         <button
           onClick={() => setActiveModal("unit")}
           className="w-full flex items-center gap-3 px-4 py-3.5"
         >
-          <Scale size={18} className="text-zinc-400" />
+          <Scale size={18} className="text-gray-500" />
           <div className="flex-1 text-left">
-            <p className="text-sm text-white">Unité de poids</p>
-            <p className="text-xs text-zinc-500">
+            <p className="text-sm text-gray-900">Unité de poids</p>
+            <p className="text-xs text-gray-400">
               {weightUnit === "lb" ? "lb (livres)" : "kg (kilogrammes)"}
             </p>
           </div>
-          <ChevronRight size={16} className="text-zinc-600" />
+          <ChevronRight size={16} className="text-gray-400" />
         </button>
       </div>
 
       {/* Zone de danger */}
-      <p className="text-xs text-zinc-500 uppercase tracking-wider mb-2 px-1">
+      <p className="text-xs text-gray-400 uppercase tracking-wider mb-2 px-1">
         Zone de danger
       </p>
-      <div className="bg-zinc-800 border border-zinc-700 rounded-xl mb-4">
+      <div className="bg-white border border-gray-200 rounded-xl mb-4">
         <button
           onClick={() => {
             setActiveModal("delete");
@@ -248,7 +248,7 @@ export default function ProfilePage() {
           <Trash2 size={18} className="text-red-400" />
           <div className="flex-1 text-left">
             <p className="text-sm text-red-400">Supprimer le compte</p>
-            <p className="text-xs text-zinc-500">
+            <p className="text-xs text-gray-400">
               Toutes tes données seront perdues
             </p>
           </div>
@@ -266,24 +266,24 @@ export default function ProfilePage() {
 
       {/* Modal déconnexion */}
       {activeModal === "logout" && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-6">
-          <div className="bg-zinc-800 border border-zinc-700 rounded-2xl p-6 w-full max-w-sm">
-            <p className="text-base font-semibold text-white text-center mb-2">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-6">
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 w-full max-w-sm">
+            <p className="text-base font-semibold text-gray-900 text-center mb-2">
               Se déconnecter ?
             </p>
-            <p className="text-sm text-zinc-400 text-center mb-6">
+            <p className="text-sm text-gray-500 text-center mb-6">
               Tu devras te reconnecter pour accéder à ton compte.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setActiveModal(null)}
-                className="flex-1 bg-zinc-700 hover:bg-zinc-600 text-white py-3 rounded-xl font-semibold"
+                className="flex-1 bg-gray-100 hover:bg-zinc-600 text-gray-900 py-3 rounded-xl font-semibold"
               >
                 Annuler
               </button>
               <button
                 onClick={handleLogout}
-                className="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl font-semibold"
+                className="flex-1 bg-red-600 hover:bg-red-700 text-gray-900 py-3 rounded-xl font-semibold"
               >
                 Déconnexion
               </button>
@@ -294,16 +294,16 @@ export default function ProfilePage() {
 
       {/* Modal changer mot de passe */}
       {activeModal === "password" && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-6">
-          <div className="bg-zinc-800 border border-zinc-700 rounded-2xl p-6 w-full max-w-sm">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-6">
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 w-full max-w-sm">
             <div className="flex justify-between items-center mb-4">
-              <p className="text-base font-semibold text-white">
+              <p className="text-base font-semibold text-gray-900">
                 {user?.authProvider === "google"
                   ? "Définir un mot de passe"
                   : "Changer le mot de passe"}
               </p>
               <button onClick={() => setActiveModal(null)}>
-                <X size={20} className="text-zinc-400" />
+                <X size={20} className="text-gray-500" />
               </button>
             </div>
 
@@ -316,26 +316,26 @@ export default function ProfilePage() {
             <div className="space-y-3 mb-4">
               {user?.authProvider !== "google" && (
                 <div>
-                  <label className="text-xs text-zinc-400 mb-1 block">
+                  <label className="text-xs text-gray-500 mb-1 block">
                     Mot de passe actuel
                   </label>
                   <input
                     type="password"
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
-                    className="w-full bg-zinc-700 border border-zinc-600 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-orange-500"
+                    className="w-full bg-gray-100 border border-gray-300 rounded-xl px-4 py-3 text-gray-900 placeholder-zinc-500 focus:outline-none focus:border-orange-500"
                   />
                 </div>
               )}
               <div>
-                <label className="text-xs text-zinc-400 mb-1 block">
+                <label className="text-xs text-gray-500 mb-1 block">
                   Nouveau mot de passe
                 </label>
                 <input
                   type="password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-full bg-zinc-700 border border-zinc-600 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-orange-500"
+                  className="w-full bg-gray-100 border border-gray-300 rounded-xl px-4 py-3 text-gray-900 placeholder-zinc-500 focus:outline-none focus:border-orange-500"
                 />
               </div>
             </div>
@@ -346,7 +346,7 @@ export default function ProfilePage() {
                 (!currentPassword && user?.authProvider !== "google") ||
                 !newPassword
               }
-              className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white py-3 rounded-xl font-semibold"
+              className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-gray-900 py-3 rounded-xl font-semibold"
             >
               Confirmer
             </button>
@@ -356,18 +356,18 @@ export default function ProfilePage() {
 
       {/* Modal supprimer compte */}
       {activeModal === "delete" && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-6">
-          <div className="bg-zinc-800 border border-zinc-700 rounded-2xl p-6 w-full max-w-sm">
-            <p className="text-base font-semibold text-white text-center mb-2">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-6">
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 w-full max-w-sm">
+            <p className="text-base font-semibold text-gray-900 text-center mb-2">
               Supprimer le compte ?
             </p>
-            <p className="text-sm text-zinc-400 text-center mb-4">
+            <p className="text-sm text-gray-500 text-center mb-4">
               Cette action est irréversible. Toutes tes sessions, exercices et
               données seront définitivement supprimées.
             </p>
-            <p className="text-sm text-zinc-400 text-center mb-4">
+            <p className="text-sm text-gray-500 text-center mb-4">
               Tape{" "}
-              <span className="font-mono text-xs bg-zinc-700 px-2 py-1 rounded">
+              <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
                 SUPPRIMER
               </span>{" "}
               pour confirmer
@@ -377,19 +377,19 @@ export default function ProfilePage() {
               value={confirmText}
               onChange={(e) => setConfirmText(e.target.value)}
               placeholder="SUPPRIMER"
-              className="w-full bg-zinc-700 border border-zinc-600 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-red-500 mb-4"
+              className="w-full bg-gray-100 border border-gray-300 rounded-xl px-4 py-3 text-gray-900 placeholder-zinc-500 focus:outline-none focus:border-red-500 mb-4"
             />
             <div className="flex gap-3">
               <button
                 onClick={() => setActiveModal(null)}
-                className="flex-1 bg-zinc-700 hover:bg-zinc-600 text-white py-3 rounded-xl font-semibold"
+                className="flex-1 bg-gray-100 hover:bg-zinc-600 text-gray-900 py-3 rounded-xl font-semibold"
               >
                 Annuler
               </button>
               <button
                 onClick={handleDeleteAccount}
                 disabled={confirmText !== "SUPPRIMER"}
-                className="flex-1 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white py-3 rounded-xl font-semibold"
+                className="flex-1 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-gray-900 py-3 rounded-xl font-semibold"
               >
                 Supprimer
               </button>
@@ -399,14 +399,14 @@ export default function ProfilePage() {
       )}
 
       {activeModal === "recovery" && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-6">
-          <div className="bg-zinc-800 border border-zinc-700 rounded-2xl p-6 w-full max-w-sm">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-6">
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 w-full max-w-sm">
             <div className="flex justify-between items-center mb-4">
-              <p className="text-base font-semibold text-white">
+              <p className="text-base font-semibold text-gray-900">
                 Courriel de récupération
               </p>
               <button onClick={() => setActiveModal(null)}>
-                <X size={20} className="text-zinc-400" />
+                <X size={20} className="text-gray-500" />
               </button>
             </div>
 
@@ -416,7 +416,7 @@ export default function ProfilePage() {
               </div>
             )}
 
-            <label className="text-xs text-zinc-400 mb-1 block">
+            <label className="text-xs text-gray-500 mb-1 block">
               Courriel alternatif
             </label>
             <input
@@ -424,13 +424,13 @@ export default function ProfilePage() {
               value={recoveryEmail}
               onChange={(e) => setRecoveryEmail(e.target.value)}
               placeholder="ton@autre-courriel.com"
-              className="w-full bg-zinc-700 border border-zinc-600 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-orange-500 mb-4"
+              className="w-full bg-gray-100 border border-gray-300 rounded-xl px-4 py-3 text-gray-900 placeholder-zinc-500 focus:outline-none focus:border-orange-500 mb-4"
             />
 
             <button
               onClick={handleRecoveryEmail}
               disabled={!recoveryEmail}
-              className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white py-3 rounded-xl font-semibold"
+              className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-gray-900 py-3 rounded-xl font-semibold"
             >
               Sauvegarder
             </button>
@@ -439,14 +439,14 @@ export default function ProfilePage() {
       )}
 
       {activeModal === "unit" && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-6">
-          <div className="bg-zinc-800 border border-zinc-700 rounded-2xl p-6 w-full max-w-sm">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-6">
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 w-full max-w-sm">
             <div className="flex justify-between items-center mb-4">
-              <p className="text-base font-semibold text-white">
+              <p className="text-base font-semibold text-gray-900">
                 Unité de poids
               </p>
               <button onClick={() => setActiveModal(null)}>
-                <X size={20} className="text-zinc-400" />
+                <X size={20} className="text-gray-500" />
               </button>
             </div>
 
@@ -456,11 +456,11 @@ export default function ProfilePage() {
                 className={`w-full text-left px-4 py-3.5 rounded-xl border transition-colors ${
                   weightUnit === "lb"
                     ? "border-orange-500 bg-orange-500/10 text-orange-400"
-                    : "border-zinc-700 bg-zinc-700/50 text-zinc-200 hover:bg-zinc-700"
+                    : "border-gray-200 bg-gray-100/50 text-gray-700 hover:bg-gray-100"
                 }`}
               >
                 <p className="text-sm font-semibold">lb (livres)</p>
-                <p className="text-xs text-zinc-500 mt-0.5">Système impérial</p>
+                <p className="text-xs text-gray-400 mt-0.5">Système impérial</p>
               </button>
 
               <button
@@ -468,11 +468,11 @@ export default function ProfilePage() {
                 className={`w-full text-left px-4 py-3.5 rounded-xl border transition-colors ${
                   weightUnit === "kg"
                     ? "border-orange-500 bg-orange-500/10 text-orange-400"
-                    : "border-zinc-700 bg-zinc-700/50 text-zinc-200 hover:bg-zinc-700"
+                    : "border-gray-200 bg-gray-100/50 text-gray-700 hover:bg-gray-100"
                 }`}
               >
                 <p className="text-sm font-semibold">kg (kilogrammes)</p>
-                <p className="text-xs text-zinc-500 mt-0.5">Système métrique</p>
+                <p className="text-xs text-gray-400 mt-0.5">Système métrique</p>
               </button>
             </div>
           </div>

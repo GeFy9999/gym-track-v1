@@ -27,8 +27,8 @@ export default function HeaderStats() {
 
   return (
     <div className="pt-5">
-      <p className="text-2xl font-bold text-white mb-1">Stats</p>
-      <p className="text-sm text-zinc-400">{message}</p>
+      <p className="text-2xl font-bold text-gray-900 mb-1">Stats</p>
+      <p className="text-sm text-gray-500">{message}</p>
     </div>
   );
 }

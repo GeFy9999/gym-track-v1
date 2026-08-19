@@ -47,9 +47,9 @@ export default function PersonalRecordCards() {
         {placeholders.map((name) => (
           <div
             key={name}
-            className="bg-zinc-800/50 border border-dashed border-zinc-700 rounded-xl p-4 flex flex-col justify-between"
+            className="bg-white/50 border border-dashed border-gray-200 rounded-xl p-4 flex flex-col justify-between"
           >
-            <p className="text-xs text-zinc-600 mb-1">{name}</p>
+            <p className="text-xs text-gray-400 mb-1">{name}</p>
             <p className="text-lg font-semibold text-zinc-700">
               -- {getWeightUnit()}
             </p>
@@ -64,9 +64,9 @@ export default function PersonalRecordCards() {
       {records.map(({ name, weight }) => (
         <div
           key={name}
-          className="bg-zinc-800 border border-zinc-700 rounded-xl p-4 flex flex-col justify-between"
+          className="bg-white border border-gray-200 rounded-xl p-4 flex flex-col justify-between"
         >
-          <p className="text-xs text-zinc-400 mb-1">{name}</p>
+          <p className="text-xs text-gray-500 mb-1">{name}</p>
           <p className="text-lg font-semibold text-orange-400">
             {Math.round(weight)} {getWeightUnit()}
           </p>

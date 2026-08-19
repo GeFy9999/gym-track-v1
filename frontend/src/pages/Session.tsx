@@ -157,15 +157,15 @@ export default function SessionPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-zinc-900 flex items-center justify-center">
-        <p className="text-zinc-500">Chargement...</p>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <p className="text-gray-400">Chargement...</p>
       </div>
     );
   }
 
   if (!session) {
     return (
-      <div className="min-h-screen bg-zinc-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <p className="text-red-400">Session introuvable</p>
       </div>
     );
@@ -175,19 +175,19 @@ export default function SessionPage() {
   const availableExercises = exercises.filter((e) => !addedIds.includes(e.id));
 
   return (
-    <div className="min-h-screen bg-zinc-900 pb-8">
+    <div className="min-h-screen bg-gray-50 pb-8">
       <div className="flex items-center gap-3 px-4 pt-5 pb-4">
         <button
           onClick={() => navigate(-1)}
-          className="text-zinc-400 hover:text-white transition-colors"
+          className="text-gray-500 hover:text-gray-900 transition-colors"
         >
           <ArrowLeft size={24} />
         </button>
         <div>
-          <h1 className="text-xl font-bold text-white">
+          <h1 className="text-xl font-bold text-gray-900">
             {session.muscleGroup}
           </h1>
-          <p className="text-xs text-zinc-500">
+          <p className="text-xs text-gray-400">
             {new Date(session.date).toLocaleDateString("fr-FR", {
               weekday: "long",
               day: "numeric",
@@ -201,7 +201,7 @@ export default function SessionPage() {
         {session.sessionExercises.map((se) => (
           <div
             key={se.id}
-            className="bg-zinc-800 border border-zinc-700 rounded-xl overflow-hidden"
+            className="bg-white border border-gray-200 rounded-xl overflow-hidden"
           >
             <div className="relative">
               {se.exercise.image ? (
@@ -211,16 +211,16 @@ export default function SessionPage() {
                   className="w-full h-40 object-cover"
                 />
               ) : (
-                <div className="w-full h-40 bg-zinc-700" />
+                <div className="w-full h-40 bg-gray-100" />
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-              <p className="absolute bottom-3 left-4 text-lg font-bold text-white">
+              <p className="absolute bottom-3 left-4 text-lg font-bold text-gray-900">
                 {se.exercise.name}
               </p>
               {!readOnly && (
                 <button
                   onClick={() => setConfirmDelete(se.id)}
-                  className="absolute top-3 right-3 bg-zinc-900/60 p-2 rounded-lg text-zinc-300 hover:text-red-400 transition-colors"
+                  className="absolute top-3 right-3 bg-gray-50/60 p-2 rounded-lg text-zinc-300 hover:text-red-400 transition-colors"
                 >
                   <Trash2 size={16} />
                 </button>
@@ -231,11 +231,11 @@ export default function SessionPage() {
               {se.sets.length > 0 && (
                 <div className="flex items-center gap-3 mb-2 px-1">
                   <span className="w-6" />
-                  <span className="w-24 text-xs text-zinc-500 uppercase tracking-wide text-center">
+                  <span className="w-24 text-xs text-gray-400 uppercase tracking-wide text-center">
                     Poids
                   </span>
                   <span className="w-4" />
-                  <span className="w-20 text-xs text-zinc-500 uppercase tracking-wide text-center">
+                  <span className="w-20 text-xs text-gray-400 uppercase tracking-wide text-center">
                     Reps
                   </span>
                 </div>
@@ -244,7 +244,7 @@ export default function SessionPage() {
               <div className="space-y-2">
                 {se.sets.map((set, i) => (
                   <div key={set.id} className="flex items-center gap-3">
-                    <span className="text-sm text-zinc-500 w-6 text-center font-medium">
+                    <span className="text-sm text-gray-400 w-6 text-center font-medium">
                       {i + 1}
                     </span>
                     <input
@@ -254,13 +254,13 @@ export default function SessionPage() {
                         updateSet(set.id, { weight: Number(e.target.value) })
                       }
                       disabled={readOnly}
-                      className={`w-24 border rounded-xl px-3 py-2.5 text-base text-white text-center font-semibold focus:outline-none transition-colors ${
+                      className={`w-24 border rounded-xl px-3 py-2.5 text-base text-gray-900 text-center font-semibold focus:outline-none transition-colors ${
                         readOnly
-                          ? "bg-zinc-800 border-zinc-700"
-                          : "bg-zinc-700 border-zinc-600 focus:border-orange-500"
+                          ? "bg-white border-gray-200"
+                          : "bg-gray-100 border-gray-300 focus:border-orange-500"
                       }`}
                     />
-                    <span className="text-sm text-zinc-500">×</span>
+                    <span className="text-sm text-gray-400">×</span>
                     <input
                       type="number"
                       defaultValue={set.reps}
@@ -268,17 +268,17 @@ export default function SessionPage() {
                         updateSet(set.id, { reps: Number(e.target.value) })
                       }
                       disabled={readOnly}
-                      className={`w-20 border rounded-xl px-3 py-2.5 text-base text-white text-center font-semibold focus:outline-none transition-colors ${
+                      className={`w-20 border rounded-xl px-3 py-2.5 text-base text-gray-900 text-center font-semibold focus:outline-none transition-colors ${
                         readOnly
-                          ? "bg-zinc-800 border-zinc-700"
-                          : "bg-zinc-700 border-zinc-600 focus:border-orange-500"
+                          ? "bg-white border-gray-200"
+                          : "bg-gray-100 border-gray-300 focus:border-orange-500"
                       }`}
                     />
-                    <span className="text-xs text-zinc-500">reps</span>
+                    <span className="text-xs text-gray-400">reps</span>
                     {!readOnly && (
                       <button
                         onClick={() => deleteSet(set.id)}
-                        className="ml-auto text-zinc-600 hover:text-red-400 transition-colors"
+                        className="ml-auto text-gray-400 hover:text-red-400 transition-colors"
                       >
                         <Trash2 size={15} />
                       </button>
@@ -300,7 +300,7 @@ export default function SessionPage() {
         ))}
 
         {!readOnly && (
-          <div className="bg-zinc-800 border border-zinc-700 rounded-xl overflow-hidden">
+          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
             <button
               onClick={() => {
                 setShowExerciseList(!showExerciseList);
@@ -308,25 +308,25 @@ export default function SessionPage() {
               }}
               className="w-full flex items-center justify-between px-4 py-3.5 hover:bg-zinc-750 transition-colors"
             >
-              <span className="text-sm font-semibold text-white flex items-center gap-2">
+              <span className="text-sm font-semibold text-gray-900 flex items-center gap-2">
                 <Plus size={16} className="text-orange-400" />
                 Ajouter un exercice
               </span>
               <ChevronDown
                 size={18}
-                className={`text-zinc-400 transition-transform duration-200 ${
+                className={`text-gray-500 transition-transform duration-200 ${
                   showExerciseList ? "rotate-180" : ""
                 }`}
               />
             </button>
 
             {showExerciseList && (
-              <div className="border-t border-zinc-700">
+              <div className="border-t border-gray-200">
                 <div className="px-3 py-2">
                   <div className="relative">
                     <Search
                       size={16}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
                     />
                     <input
                       type="text"
@@ -334,7 +334,7 @@ export default function SessionPage() {
                       onChange={(e) => setSearchQuery(e.target.value)}
                       placeholder="Rechercher un exercice..."
                       autoFocus
-                      className="w-full bg-zinc-700 border border-zinc-600 rounded-lg pl-9 pr-3 py-2 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-orange-500 transition-colors"
+                      className="w-full bg-gray-100 border border-gray-300 rounded-lg pl-9 pr-3 py-2 text-sm text-gray-900 placeholder-zinc-500 focus:outline-none focus:border-orange-500 transition-colors shadow-sm"
                     />
                   </div>
                 </div>
@@ -351,7 +351,7 @@ export default function SessionPage() {
                           addExercise(ex.id);
                           setSearchQuery("");
                         }}
-                        className="w-full text-left bg-zinc-700/50 hover:bg-zinc-700 rounded-lg px-3 py-2.5 text-sm text-zinc-200 transition-colors flex items-center gap-3"
+                        className="w-full text-left bg-gray-100/50 hover:bg-gray-100 rounded-lg px-3 py-2.5 text-sm text-gray-700 transition-colors flex items-center gap-3"
                       >
                         {ex.image && (
                           <img
@@ -366,7 +366,7 @@ export default function SessionPage() {
                   {availableExercises.filter((ex) =>
                     ex.name.toLowerCase().includes(searchQuery.toLowerCase()),
                   ).length === 0 && (
-                    <p className="text-xs text-zinc-500 text-center py-3">
+                    <p className="text-xs text-gray-400 text-center py-3">
                       {availableExercises.length === 0
                         ? `Aucun exercice disponible pour ${session.muscleGroup}`
                         : "Aucun résultat"}
@@ -380,18 +380,18 @@ export default function SessionPage() {
       </div>
 
       {confirmDelete && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-6">
-          <div className="bg-zinc-800 border border-zinc-700 rounded-2xl p-6 w-full max-w-sm">
-            <p className="text-base font-semibold text-white text-center mb-2">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-6">
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 w-full max-w-sm">
+            <p className="text-base font-semibold text-gray-900 text-center mb-2">
               Supprimer cet exercice ?
             </p>
-            <p className="text-sm text-zinc-400 text-center mb-6">
+            <p className="text-sm text-gray-500 text-center mb-6">
               Tous les sets associés seront aussi supprimés.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setConfirmDelete(null)}
-                className="flex-1 bg-zinc-700 hover:bg-zinc-600 text-white py-3 rounded-xl font-semibold transition-colors"
+                className="flex-1 bg-gray-100 hover:bg-zinc-600 text-gray-900 py-3 rounded-xl font-semibold transition-colors"
               >
                 Annuler
               </button>
@@ -408,7 +408,7 @@ export default function SessionPage() {
                     console.error(err);
                   }
                 }}
-                className="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl font-semibold transition-colors"
+                className="flex-1 bg-red-600 hover:bg-red-700 text-gray-900 py-3 rounded-xl font-semibold transition-colors"
               >
                 Supprimer
               </button>

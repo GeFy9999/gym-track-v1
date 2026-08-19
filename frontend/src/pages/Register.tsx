@@ -92,14 +92,14 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-900 flex flex-col pt-16 px-6">
+    <div className="min-h-screen bg-gray-50 flex flex-col pt-16 px-6">
       <div className="mb-10 text-center">
         <img
           src="/logoGymsTrack.webp"
           alt="GymTrack"
           className="h-16 mx-auto mb-2"
         />
-        <p className="text-zinc-400 text-sm mt-2">Crée ton compte</p>
+        <p className="text-gray-500 text-sm mt-2">Crée ton compte</p>
       </div>
 
       {serverError && (
@@ -111,17 +111,17 @@ export default function RegisterPage() {
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         {/* Nom */}
         <div>
-          <label htmlFor="name" className="text-sm text-zinc-400 mb-1 block">
+          <label htmlFor="name" className="text-sm text-gray-500 mb-1 block">
             Nom
           </label>
           <input
             id="name"
             type="text"
             {...register("name")}
-            className={`w-full bg-zinc-800 border rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none transition-colors ${
+            className={`w-full bg-white border rounded-xl px-4 py-3 text-gray-900 placeholder-zinc-500 focus:outline-none transition-colors ${
               errors.name
                 ? "border-red-500"
-                : "border-zinc-700 focus:border-orange-500"
+                : "border-gray-200 focus:border-orange-500"
             }`}
             placeholder="Ton nom"
           />
@@ -132,17 +132,17 @@ export default function RegisterPage() {
 
         {/* Email */}
         <div>
-          <label htmlFor="email" className="text-sm text-zinc-400 mb-1 block">
+          <label htmlFor="email" className="text-sm text-gray-500 mb-1 block">
             Courriel
           </label>
           <input
             id="email"
             type="text"
             {...register("email")}
-            className={`w-full bg-zinc-800 border rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none transition-colors ${
+            className={`w-full bg-white border rounded-xl px-4 py-3 text-gray-900 placeholder-zinc-500 focus:outline-none transition-colors ${
               errors.email
                 ? "border-red-500"
-                : "border-zinc-700 focus:border-orange-500"
+                : "border-gray-200 focus:border-orange-500"
             }`}
             placeholder="ton@courriel.com"
           />
@@ -155,7 +155,7 @@ export default function RegisterPage() {
         <div className="relative">
           <label
             htmlFor="password"
-            className="text-sm text-zinc-400 mb-1 block"
+            className="text-sm text-gray-500 mb-1 block"
           >
             Mot de passe
           </label>
@@ -163,17 +163,17 @@ export default function RegisterPage() {
             id="password"
             type={showPassword ? "text" : "password"}
             {...register("password")}
-            className={`w-full bg-zinc-800 border rounded-xl px-4 py-3 pr-12 text-white placeholder-zinc-500 focus:outline-none transition-colors ${
+            className={`w-full bg-white border rounded-xl px-4 py-3 pr-12 text-gray-900 placeholder-zinc-500 focus:outline-none transition-colors ${
               errors.password
                 ? "border-red-500"
-                : "border-zinc-700 focus:border-orange-500"
+                : "border-gray-200 focus:border-orange-500"
             }`}
             placeholder="••••••••"
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-4 top-9 text-zinc-500 hover:text-zinc-300 transition-colors"
+            className="absolute right-4 top-9 text-gray-400 hover:text-zinc-300 transition-colors"
           >
             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
@@ -189,12 +189,12 @@ export default function RegisterPage() {
                     className="flex items-center gap-2 text-xs"
                   >
                     <span
-                      className={passes ? "text-green-400" : "text-zinc-500"}
+                      className={passes ? "text-green-400" : "text-gray-400"}
                     >
                       {passes ? "✓" : "✗"}
                     </span>
                     <span
-                      className={passes ? "text-green-400" : "text-zinc-500"}
+                      className={passes ? "text-green-400" : "text-gray-400"}
                     >
                       {rule.label}
                     </span>
@@ -209,7 +209,7 @@ export default function RegisterPage() {
         <div className="relative">
           <label
             htmlFor="confirmPassword"
-            className="text-sm text-zinc-400 mb-1 block"
+            className="text-sm text-gray-500 mb-1 block"
           >
             Confirmer le mot de passe
           </label>
@@ -217,17 +217,17 @@ export default function RegisterPage() {
             id="confirmPassword"
             type={showConfirm ? "text" : "password"}
             {...register("confirmPassword")}
-            className={`w-full bg-zinc-800 border rounded-xl px-4 py-3 pr-12 text-white placeholder-zinc-500 focus:outline-none transition-colors ${
+            className={`w-full bg-white border rounded-xl px-4 py-3 pr-12 text-gray-900 placeholder-zinc-500 focus:outline-none transition-colors ${
               errors.confirmPassword
                 ? "border-red-500"
-                : "border-zinc-700 focus:border-orange-500"
+                : "border-gray-200 focus:border-orange-500"
             }`}
             placeholder="••••••••"
           />
           <button
             type="button"
             onClick={() => setShowConfirm(!showConfirm)}
-            className="absolute right-4 top-9 text-zinc-500 hover:text-zinc-300 transition-colors"
+            className="absolute right-4 top-9 text-gray-400 hover:text-zinc-300 transition-colors"
           >
             {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
@@ -241,21 +241,21 @@ export default function RegisterPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white py-3.5 rounded-xl font-semibold transition-all shadow-lg shadow-orange-500/20 mt-2"
+          className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-gray-900 py-3.5 rounded-xl font-semibold transition-all shadow-lg shadow-orange-500/20 mt-2"
         >
           {loading ? "Création..." : "Créer mon compte"}
         </button>
       </form>
 
       <div className="flex items-center gap-3 my-6">
-        <div className="flex-1 h-px bg-zinc-700" />
-        <span className="text-xs text-zinc-500">ou</span>
-        <div className="flex-1 h-px bg-zinc-700" />
+        <div className="flex-1 h-px bg-gray-100" />
+        <span className="text-xs text-gray-400">ou</span>
+        <div className="flex-1 h-px bg-gray-100" />
       </div>
 
       <GoogleLoginButton />
 
-      <p className="text-center text-sm text-zinc-400 mt-8">
+      <p className="text-center text-sm text-gray-500 mt-8">
         Déjà un compte ?{" "}
         <Link to="/login" className="text-orange-400 font-semibold">
           Se connecter

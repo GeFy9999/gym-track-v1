@@ -99,14 +99,14 @@ export default function MuscleGroupsCards({ weekActive }: Props) {
   if (loading) {
     return (
       <div className="px-4">
-        <p className="text-sm text-zinc-500 text-center py-8">Chargement...</p>
+        <p className="text-sm text-gray-400 text-center py-8">Chargement...</p>
       </div>
     );
   }
 
   return (
     <div className="px-4">
-      <p className="text-base font-semibold text-white mb-4 px-4">
+      <p className="text-base font-semibold text-gray-900 mb-4 px-4">
         Groupes musculaires
       </p>
       <div className="grid grid-cols-2 gap-4">
@@ -120,8 +120,8 @@ export default function MuscleGroupsCards({ weekActive }: Props) {
               disabled={!weekActive}
               className={`rounded-xl p-4 flex items-center gap-3 transition-colors text-left ${
                 weekActive
-                  ? "bg-zinc-800 border border-zinc-700 hover:border-orange-500/50 cursor-pointer"
-                  : "bg-zinc-800/40 border border-zinc-800 opacity-50 cursor-not-allowed"
+                  ? "bg-white border border-gray-200 hover:border-orange-500/50 cursor-pointer"
+                  : "bg-white/40 border border-gray-100 opacity-50 cursor-not-allowed"
               }`}
             >
               <div
@@ -129,7 +129,7 @@ export default function MuscleGroupsCards({ weekActive }: Props) {
               >
                 <Dumbbell size={18} />
               </div>
-              <span className="font-medium text-sm text-zinc-200">
+              <span className="font-medium text-sm text-gray-700">
                 {group.name}
               </span>
             </button>

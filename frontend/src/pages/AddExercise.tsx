@@ -123,24 +123,26 @@ export default function AddExercisePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-zinc-900 flex items-center justify-center">
-        <p className="text-zinc-500">Chargement...</p>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <p className="text-gray-400">Chargement...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-zinc-900 pb-8">
+    <div className="min-h-screen bg-gray-50 pb-8">
       <div className="flex items-center gap-3 px-4 pt-5 pb-4">
         <button
           onClick={() => navigate(-1)}
-          className="text-zinc-400 hover:text-white transition-colors"
+          className="text-gray-500 hover:text-gray-900 transition-colors"
         >
           <ArrowLeft size={24} />
         </button>
         <div>
-          <h1 className="text-xl font-bold text-white">Records personnels</h1>
-          <p className="text-xs text-zinc-500 mt-0.5">
+          <h1 className="text-xl font-bold text-gray-900">
+            Records personnels
+          </h1>
+          <p className="text-xs text-gray-400 mt-0.5">
             Choisis les exercices à suivre dans tes stats
           </p>
         </div>
@@ -150,14 +152,14 @@ export default function AddExercisePage() {
         <div className="relative">
           <Search
             size={16}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
           />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Rechercher un exercice..."
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl pl-9 pr-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-orange-500 transition-colors"
+            className="w-full bg-white border border-gray-200 rounded-xl pl-9 pr-4 py-3 text-sm text-gray-900 placeholder-zinc-500 focus:outline-none focus:border-orange-500 transition-colors shadow-sm"
           />
         </div>
       </div>
@@ -175,14 +177,14 @@ export default function AddExercisePage() {
           return (
             <div
               key={group}
-              className="bg-zinc-800 border border-zinc-700 rounded-xl overflow-hidden"
+              className="bg-white border border-gray-200 rounded-xl overflow-hidden"
             >
               <button
                 onClick={() => toggleGroup(group)}
                 className="w-full flex items-center justify-between px-4 py-3"
               >
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-semibold text-white">
+                  <span className="text-sm font-semibold text-gray-900">
                     {group}
                   </span>
                   {trackedCount > 0 && (
@@ -193,42 +195,42 @@ export default function AddExercisePage() {
                 </div>
                 <ChevronDown
                   size={18}
-                  className={`text-zinc-400 transition-transform duration-200 ${
+                  className={`text-gray-500 transition-transform duration-200 ${
                     isOpen ? "rotate-180" : ""
                   }`}
                 />
               </button>
 
               {isOpen && (
-                <div className="border-t border-zinc-700 px-3 py-2 space-y-1">
+                <div className="border-t border-gray-200 px-3 py-2 space-y-1">
                   {visible.map((ex) => {
                     const active = isTracked(ex.id);
                     return (
                       <button
                         key={ex.id}
                         onClick={() => handleToggle(ex.id)}
-                        className="w-full flex items-center gap-3 bg-zinc-700/30 hover:bg-zinc-700 rounded-lg px-3 py-2.5 transition-colors"
+                        className="w-full flex items-center gap-3 bg-gray-100/30 hover:bg-gray-100 rounded-lg px-3 py-2.5 transition-colors"
                       >
                         {ex.image && (
                           <img
                             src={ex.image}
                             alt={ex.name}
-                            className="w-10 h-10 rounded-lg object-cover bg-zinc-700 flex-shrink-0"
+                            className="w-10 h-10 rounded-lg object-cover bg-gray-100 flex-shrink-0"
                           />
                         )}
-                        <span className="flex-1 text-left text-sm text-zinc-200">
+                        <span className="flex-1 text-left text-sm text-gray-700">
                           {ex.name}
                         </span>
                         {active ? (
                           <Check size={18} className="text-orange-400" />
                         ) : (
-                          <Plus size={18} className="text-zinc-600" />
+                          <Plus size={18} className="text-gray-400" />
                         )}
                       </button>
                     );
                   })}
                   {hasMore && (
-                    <p className="text-xs text-zinc-500 text-center py-2">
+                    <p className="text-xs text-gray-400 text-center py-2">
                       Scroll pour voir plus...
                     </p>
                   )}

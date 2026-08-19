@@ -76,7 +76,7 @@ export default function RecentActivity() {
   if (loading) {
     return (
       <div className="px-4 mt-6">
-        <p className="text-sm text-zinc-500 text-center py-4">Chargement...</p>
+        <p className="text-sm text-gray-400 text-center py-4">Chargement...</p>
       </div>
     );
   }
@@ -92,20 +92,20 @@ export default function RecentActivity() {
 
   return (
     <div className="px-4 mt-6">
-      <p className="text-base font-semibold text-white mb-4">
+      <p className="text-base font-semibold text-gray-900 mb-4">
         Semaine précédente
       </p>
 
       {lastSession && firstExercise && bestSet ? (
-        <div className="bg-zinc-800 border border-zinc-700 rounded-xl p-4 flex justify-between items-center">
+        <div className="bg-white border border-gray-200 rounded-xl p-4 flex justify-between items-center">
           <div>
-            <p className="text-sm font-medium text-zinc-200">
+            <p className="text-sm font-medium text-gray-700">
               {firstExercise.exercise.name}
             </p>
-            <p className="text-xs text-zinc-400 mt-0.5">
+            <p className="text-xs text-gray-500 mt-0.5">
               {bestSet.weight} {bestSet.unit} × {bestSet.reps} reps
             </p>
-            <p className="text-xs text-zinc-500 mt-1">
+            <p className="text-xs text-gray-400 mt-1">
               {lastSession.muscleGroup} —{" "}
               {new Date(lastSession.date).toLocaleDateString("fr-FR", {
                 weekday: "short",
@@ -116,8 +116,8 @@ export default function RecentActivity() {
           </div>
         </div>
       ) : (
-        <div className="bg-zinc-800/40 border border-zinc-800 rounded-xl p-5 text-center">
-          <p className="text-sm text-zinc-500">
+        <div className="bg-white/40 border border-gray-100 rounded-xl p-5 text-center">
+          <p className="text-sm text-gray-400">
             Aucune séance la semaine dernière
           </p>
         </div>

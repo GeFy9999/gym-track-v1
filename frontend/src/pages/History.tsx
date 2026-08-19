@@ -81,17 +81,17 @@ export default function HistoryPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-zinc-900 flex items-center justify-center">
-        <p className="text-zinc-500">Chargement...</p>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <p className="text-gray-400">Chargement...</p>
       </div>
     );
   }
 
   return (
-    <div className="pb-24 bg-zinc-900 min-h-screen px-4">
+    <div className="pb-24 bg-gray-50 min-h-screen px-4">
       <div className="pt-5 mb-6">
-        <p className="text-2xl font-bold text-white mb-1">Historique</p>
-        <p className="text-sm text-zinc-400">
+        <p className="text-2xl font-bold text-gray-900 mb-1">Historique</p>
+        <p className="text-sm text-gray-500">
           {weeks.length > 0
             ? `${weeks.length} semaine${weeks.length > 1 ? "s" : ""} d'entraînement`
             : "Aucun historique encore"}
@@ -100,13 +100,13 @@ export default function HistoryPage() {
 
       {weeks.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20">
-          <div className="w-16 h-16 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center mb-4">
-            <ChevronDown size={28} className="text-zinc-600" />
+          <div className="w-16 h-16 rounded-full bg-white border border-gray-200 flex items-center justify-center mb-4">
+            <ChevronDown size={28} className="text-gray-400" />
           </div>
-          <p className="text-sm text-zinc-400 font-semibold mb-1">
+          <p className="text-sm text-gray-500 font-semibold mb-1">
             Aucun historique
           </p>
-          <p className="text-xs text-zinc-500 text-center px-8">
+          <p className="text-xs text-gray-400 text-center px-8">
             Tes séances apparaîtront ici une fois que tu auras commencé à
             t'entraîner
           </p>
@@ -126,31 +126,31 @@ export default function HistoryPage() {
             return (
               <div
                 key={week.label}
-                className="bg-zinc-800 border border-zinc-700 rounded-xl overflow-hidden"
+                className="bg-white border border-gray-200 rounded-xl overflow-hidden"
               >
                 <button
                   onClick={() => setOpenWeek(isOpen ? null : week.label)}
                   className="w-full flex items-center justify-between px-4 py-3.5"
                 >
                   <div className="text-left">
-                    <p className="text-sm font-semibold text-white">
+                    <p className="text-sm font-semibold text-gray-900">
                       {week.label}
                     </p>
-                    <p className="text-xs text-zinc-500 mt-0.5">
+                    <p className="text-xs text-gray-400 mt-0.5">
                       {totalSessions} séance{totalSessions > 1 ? "s" : ""} ·{" "}
                       {totalSets} sets
                     </p>
                   </div>
                   <ChevronDown
                     size={18}
-                    className={`text-zinc-400 transition-transform duration-200 ${
+                    className={`text-gray-500 transition-transform duration-200 ${
                       isOpen ? "rotate-180" : ""
                     }`}
                   />
                 </button>
 
                 {isOpen && (
-                  <div className="border-t border-zinc-700 px-4 py-3 space-y-2">
+                  <div className="border-t border-gray-200 px-4 py-3 space-y-2">
                     {week.sessions.map((session) => {
                       const exerciseCount = session.sessionExercises.length;
                       const date = new Date(session.date).toLocaleDateString(
@@ -164,20 +164,20 @@ export default function HistoryPage() {
                           onClick={() =>
                             navigate(`/session/${session.id}?readonly=true`)
                           }
-                          className="w-full flex items-center justify-between bg-zinc-700/50 hover:bg-zinc-700 rounded-lg px-3 py-3 transition-colors"
+                          className="w-full flex items-center justify-between bg-gray-100/50 hover:bg-gray-100 rounded-lg px-3 py-3 transition-colors"
                         >
                           <div className="text-left">
-                            <p className="text-sm font-medium text-zinc-200">
+                            <p className="text-sm font-medium text-gray-700">
                               {session.muscleGroup}
                             </p>
-                            <p className="text-xs text-zinc-500 mt-0.5">
+                            <p className="text-xs text-gray-400 mt-0.5">
                               {date} · {exerciseCount} exercice
                               {exerciseCount > 1 ? "s" : ""}
                             </p>
                           </div>
                           <ChevronDown
                             size={16}
-                            className="text-zinc-500 -rotate-90"
+                            className="text-gray-400 -rotate-90"
                           />
                         </button>
                       );

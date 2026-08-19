@@ -52,16 +52,18 @@ export default function ForgotPasswordPage() {
 
   if (sent) {
     return (
-      <div className="min-h-screen bg-zinc-900 flex flex-col pt-16 px-6">
+      <div className="min-h-screen bg-gray-50 flex flex-col pt-16 px-6">
         <div className="text-center">
           <div className="w-16 h-16 rounded-full bg-green-500/15 flex items-center justify-center mx-auto mb-4">
             <span className="text-3xl">✉️</span>
           </div>
-          <h1 className="text-xl font-bold text-white mb-2">Courriel envoyé</h1>
-          <p className="text-sm text-zinc-400 mb-8">
+          <h1 className="text-xl font-bold text-gray-900 mb-2">
+            Courriel envoyé
+          </h1>
+          <p className="text-sm text-gray-500 mb-8">
             Un lien de réinitialisation a été envoyé à{" "}
-            <span className="text-white">{sentEmail}</span>. Vérifie ta boîte de
-            réception.
+            <span className="text-gray-900">{sentEmail}</span>. Vérifie ta boîte
+            de réception.
           </p>
           <Link to="/login" className="text-orange-400 font-semibold text-sm">
             Retour à la connexion
@@ -72,15 +74,15 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-900 flex flex-col pt-16 px-6">
-      <Link to="/login" className="text-zinc-400 hover:text-white mb-8">
+    <div className="min-h-screen bg-gray-50 flex flex-col pt-16 px-6">
+      <Link to="/login" className="text-gray-500 hover:text-gray-900 mb-8">
         <ArrowLeft size={24} />
       </Link>
 
-      <h1 className="text-2xl font-bold text-white mb-2">
+      <h1 className="text-2xl font-bold text-gray-900 mb-2">
         Mot de passe oublié
       </h1>
-      <p className="text-sm text-zinc-400 mb-8">
+      <p className="text-sm text-gray-500 mb-8">
         Entre ton courriel et on t'envoie un lien pour réinitialiser ton mot de
         passe.
       </p>
@@ -93,14 +95,14 @@ export default function ForgotPasswordPage() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <div>
-          <label className="text-sm text-zinc-400 mb-1 block">Courriel</label>
+          <label className="text-sm text-gray-500 mb-1 block">Courriel</label>
           <input
             type="text"
             {...register("email")}
-            className={`w-full bg-zinc-800 border rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:outline-none transition-colors ${
+            className={`w-full bg-white border rounded-xl px-4 py-3 text-gray-900 placeholder-zinc-500 focus:outline-none transition-colors ${
               errors.email
                 ? "border-red-500"
-                : "border-zinc-700 focus:border-orange-500"
+                : "border-gray-200 focus:border-orange-500"
             }`}
             placeholder="ton@courriel.com"
           />
@@ -112,7 +114,7 @@ export default function ForgotPasswordPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white py-3.5 rounded-xl font-semibold transition-all shadow-lg shadow-orange-500/20"
+          className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-gray-900 py-3.5 rounded-xl font-semibold transition-all shadow-lg shadow-orange-500/20"
         >
           {loading ? "Envoi..." : "Envoyer le lien"}
         </button>

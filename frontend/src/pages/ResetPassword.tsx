@@ -78,7 +78,7 @@ export default function ResetPasswordPage() {
 
   if (!token) {
     return (
-      <div className="min-h-screen bg-zinc-900 flex flex-col items-center justify-center px-6">
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-6">
         <p className="text-red-400 mb-4">Lien invalide</p>
         <Link to="/login" className="text-orange-400 font-semibold text-sm">
           Retour à la connexion
@@ -89,19 +89,19 @@ export default function ResetPasswordPage() {
 
   if (done) {
     return (
-      <div className="min-h-screen bg-zinc-900 flex flex-col items-center pt-16 px-6">
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center pt-16 px-6">
         <div className="w-16 h-16 rounded-full bg-green-500/15 flex items-center justify-center mb-4">
           <span className="text-3xl">✅</span>
         </div>
-        <h1 className="text-xl font-bold text-white mb-2">
+        <h1 className="text-xl font-bold text-gray-900 mb-2">
           Mot de passe réinitialisé
         </h1>
-        <p className="text-sm text-zinc-400 mb-8">
+        <p className="text-sm text-gray-500 mb-8">
           Tu peux maintenant te connecter avec ton nouveau mot de passe.
         </p>
         <Link
           to="/login"
-          className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-xl font-semibold"
+          className="bg-orange-500 hover:bg-orange-600 text-gray-900 px-8 py-3 rounded-xl font-semibold"
         >
           Se connecter
         </Link>
@@ -110,11 +110,11 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-900 flex flex-col pt-16 px-6">
-      <h1 className="text-2xl font-bold text-white mb-2">
+    <div className="min-h-screen bg-gray-50 flex flex-col pt-16 px-6">
+      <h1 className="text-2xl font-bold text-gray-900 mb-2">
         Nouveau mot de passe
       </h1>
-      <p className="text-sm text-zinc-400 mb-8">
+      <p className="text-sm text-gray-500 mb-8">
         Choisis un nouveau mot de passe pour ton compte.
       </p>
 
@@ -126,23 +126,23 @@ export default function ResetPasswordPage() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <div className="relative">
-          <label className="text-sm text-zinc-400 mb-1 block">
+          <label className="text-sm text-gray-500 mb-1 block">
             Nouveau mot de passe
           </label>
           <input
             type={showPassword ? "text" : "password"}
             {...register("password")}
-            className={`w-full bg-zinc-800 border rounded-xl px-4 py-3 pr-12 text-white placeholder-zinc-500 focus:outline-none transition-colors ${
+            className={`w-full bg-white border rounded-xl px-4 py-3 pr-12 text-gray-900 placeholder-zinc-500 focus:outline-none transition-colors ${
               errors.password
                 ? "border-red-500"
-                : "border-zinc-700 focus:border-orange-500"
+                : "border-gray-200 focus:border-orange-500"
             }`}
             placeholder="••••••••"
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-4 top-9 text-zinc-500 hover:text-zinc-300 transition-colors"
+            className="absolute right-4 top-9 text-gray-400 hover:text-zinc-300 transition-colors"
           >
             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
@@ -157,12 +157,12 @@ export default function ResetPasswordPage() {
                     className="flex items-center gap-2 text-xs"
                   >
                     <span
-                      className={passes ? "text-green-400" : "text-zinc-500"}
+                      className={passes ? "text-green-400" : "text-gray-400"}
                     >
                       {passes ? "✓" : "✗"}
                     </span>
                     <span
-                      className={passes ? "text-green-400" : "text-zinc-500"}
+                      className={passes ? "text-green-400" : "text-gray-400"}
                     >
                       {rule.label}
                     </span>
@@ -174,21 +174,21 @@ export default function ResetPasswordPage() {
         </div>
 
         <div className="relative">
-          <label className="text-sm text-zinc-400 mb-1 block">Confirmer</label>
+          <label className="text-sm text-gray-500 mb-1 block">Confirmer</label>
           <input
             type={showConfirm ? "text" : "password"}
             {...register("confirm")}
-            className={`w-full bg-zinc-800 border rounded-xl px-4 py-3 pr-12 text-white placeholder-zinc-500 focus:outline-none transition-colors ${
+            className={`w-full bg-white border rounded-xl px-4 py-3 pr-12 text-gray-900 placeholder-zinc-500 focus:outline-none transition-colors ${
               errors.confirm
                 ? "border-red-500"
-                : "border-zinc-700 focus:border-orange-500"
+                : "border-gray-200 focus:border-orange-500"
             }`}
             placeholder="••••••••"
           />
           <button
             type="button"
             onClick={() => setShowConfirm(!showConfirm)}
-            className="absolute right-4 top-9 text-zinc-500 hover:text-zinc-300 transition-colors"
+            className="absolute right-4 top-9 text-gray-400 hover:text-zinc-300 transition-colors"
           >
             {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
@@ -202,7 +202,7 @@ export default function ResetPasswordPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white py-3.5 rounded-xl font-semibold transition-all shadow-lg shadow-orange-500/20"
+          className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-gray-900 py-3.5 rounded-xl font-semibold transition-all shadow-lg shadow-orange-500/20"
         >
           {loading ? "Réinitialisation..." : "Réinitialiser"}
         </button>

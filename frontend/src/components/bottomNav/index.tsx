@@ -18,43 +18,38 @@ export default function BottomNav() {
       <li key={link.to}>
         <Link
           to={link.to}
-          className="flex flex-col items-center gap-1 px-3 py-1"
+          className="flex flex-col items-center gap-1 px-4 py-2"
         >
           <Icon
             size={22}
-            className={isActive ? "text-orange-500" : "text-slate-400"}
+            className={isActive ? "text-orange-500" : "text-gray-400"}
           />
-          <span
-            className={`text-xs ${
-              isActive ? "text-orange-500 font-semibold" : "text-slate-400"
-            }`}
-          >
-            {link.label}
-          </span>
+          {isActive && (
+            <div className="w-1.5 h-1.5 rounded-full bg-orange-500" />
+          )}
         </Link>
       </li>
     );
   };
 
   return (
-    <nav
-      aria-label="Navigation"
-      className="fixed bottom-0 left-0 w-full bg-zinc-800 border-t border-zinc-700 flex justify-around items-center py-2 px-4 z-50"
-    >
-      <ul className="flex w-full justify-around items-center">
-        {links.slice(0, 2).map(renderLink)}
+    <nav aria-label="Navigation" className="fixed bottom-4 left-4 right-4 z-50">
+      <div className="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.1)] px-2 py-1">
+        <ul className="flex w-full justify-around items-center">
+          {links.slice(0, 2).map(renderLink)}
 
-        <li>
-          <Link
-            to="/add-exercise"
-            className="flex items-center justify-center w-10 h-10 rounded-full bg-orange-500"
-          >
-            <Plus size={22} className="text-white" />
-          </Link>
-        </li>
+          <li>
+            <Link
+              to="/add-exercise"
+              className="flex items-center justify-center w-12 h-12 rounded-full bg-orange-500 shadow-md shadow-orange-500/30"
+            >
+              <Plus size={24} className="text-white" />
+            </Link>
+          </li>
 
-        {links.slice(2).map(renderLink)}
-      </ul>
+          {links.slice(2).map(renderLink)}
+        </ul>
+      </div>
     </nav>
   );
 }
