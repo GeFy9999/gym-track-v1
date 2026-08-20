@@ -67,7 +67,7 @@ export default function PersonalRecordCards() {
           className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm"
         >
           <p className="text-xs text-gray-500 mb-1">{name}</p>
-          <p className="text-lg font-bold text-gray-900">
+          <p className="text-lg font-bold text-[#c9552c]">
             {Math.round(weight)} {getWeightUnit()}
           </p>
         </div>

@@ -139,9 +139,8 @@ export default function DashboardPage() {
         <div className="px-5 mt-6">
           <button
             onClick={() => setShowEndConfirm(true)}
-            className="w-full bg-[#3a9e6e] active:scale-[0.98] text-white py-4 rounded-2xl font-semibold transition-all shadow-md flex items-center justify-center gap-2"
+            className="w-full bg-[#3a9e6e] active:scale-[0.98] text-white py-4 rounded-2xl font-semibold transition-all shadow-md flex items-center justify-center"
           >
-            <CheckCircle size={20} />
             Terminer la séance
           </button>
         </div>

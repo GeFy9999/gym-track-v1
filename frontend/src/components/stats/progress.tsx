@@ -83,10 +83,10 @@ export default function ProgressChart() {
           </svg>
         </div>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <p className="text-sm text-gray-500 font-semibold mb-1">
+          <p className="text-mm text-gray-800 font-bold mb-1">
             Pas encore de données
           </p>
-          <p className="text-xs text-gray-400">
+          <p className="text-s text-[#c9552c]">
             Ton poids sera enregistré chaque semaine
           </p>
         </div>
