@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { Play, Check } from "lucide-react";
 import { API_URL } from "../../lib/api";
 
 type Props = {
@@ -6,11 +7,10 @@ type Props = {
   setWeekActive: (week: boolean) => void;
 };
 
-// Retourne le lundi 00:00 de la semaine courante
 function getMonday(): Date {
   const now = new Date();
-  const day = now.getDay(); // 0=dim, 1=lun, ...
-  const diff = day === 0 ? 6 : day - 1; // jours depuis lundi
+  const day = now.getDay();
+  const diff = day === 0 ? 6 : day - 1;
   const monday = new Date(now);
   monday.setDate(now.getDate() - diff);
   monday.setHours(0, 0, 0, 0);
@@ -44,31 +44,20 @@ export default function WeekProgress({ weekActive, setWeekActive }: Props) {
   }, [setWeekActive]);
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-6 mx-4 mb-6">
+    <div className="px-5 mt-4">
       {weekActive ? (
-        <>
-          <p className="text-base font-semibold text-gray-900 text-center mb-1">
-            Semaine en cours
-          </p>
-          <p className="text-xs text-gray-400 text-center">
-            Ta semaine est active — choisis un groupe musculaire ci-dessous
-          </p>
-        </>
+        <div className="w-full bg-gray-200 text-gray-400 py-4 rounded-2xl font-semibold text-base flex items-center justify-center gap-2.5 cursor-default">
+          <Check size={18} />
+          Semaine en cours
+        </div>
       ) : (
-        <>
-          <p className="text-base font-semibold text-gray-900 text-center mb-1">
-            Aucune semaine active
-          </p>
-          <p className="text-xs text-gray-400 text-center mb-4">
-            Démarre ta semaine pour commencer à suivre tes entraînements
-          </p>
-          <button
-            onClick={() => setWeekActive(true)}
-            className="w-full bg-orange-500 hover:bg-orange-600 active:scale-[0.98] text-gray-900 py-3.5 rounded-xl font-semibold transition-all shadow-lg shadow-orange-500/20"
-          >
-            Démarrer une nouvelle semaine
-          </button>
-        </>
+        <button
+          onClick={() => setWeekActive(true)}
+          className="w-full bg-[#c9552c] active:scale-[0.98] text-white py-4 rounded-2xl font-semibold text-base transition-all shadow-md flex items-center justify-center gap-2.5"
+        >
+          <Play size={18} fill="white" />
+          Commencer la semaine
+        </button>
       )}
     </div>
   );

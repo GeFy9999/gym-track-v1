@@ -2,10 +2,10 @@ import { Link, useLocation } from "react-router-dom";
 import { Home, BarChart3, History, User, Plus } from "lucide-react";
 
 const links = [
-  { to: "/dashboard", label: "Acceuil", icon: Home },
+  { to: "/dashboard", label: "Accueil", icon: Home },
   { to: "/stats", label: "Stats", icon: BarChart3 },
   { to: "/history", label: "Historique", icon: History },
-  { to: "/profil", label: "Profile", icon: User },
+  { to: "/profil", label: "Profil", icon: User },
 ];
 
 export default function BottomNav() {
@@ -18,14 +18,15 @@ export default function BottomNav() {
       <li key={link.to}>
         <Link
           to={link.to}
-          className="flex flex-col items-center gap-1 px-4 py-2"
+          className="flex flex-col items-center gap-1 px-2 py-2.5"
         >
           <Icon
             size={22}
-            className={isActive ? "text-orange-500" : "text-gray-400"}
+            strokeWidth={isActive ? 2.2 : 1.5}
+            className={isActive ? "text-[#c9552c]" : "text-gray-400"}
           />
           {isActive && (
-            <div className="w-1.5 h-1.5 rounded-full bg-orange-500" />
+            <div className="w-1.5 h-1.5 rounded-full bg-[#c9552c]" />
           )}
         </Link>
       </li>
@@ -33,17 +34,20 @@ export default function BottomNav() {
   };
 
   return (
-    <nav aria-label="Navigation" className="fixed bottom-4 left-4 right-4 z-50">
-      <div className="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.1)] px-2 py-1">
+    <nav
+      aria-label="Navigation"
+      className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 w-[280px]"
+    >
+      <div className="bg-white rounded-full shadow-[0_2px_20px_rgba(0,0,0,0.12)] border border-gray-100 px-2 py-1.5">
         <ul className="flex w-full justify-around items-center">
           {links.slice(0, 2).map(renderLink)}
 
           <li>
             <Link
               to="/add-exercise"
-              className="flex items-center justify-center w-12 h-12 rounded-full bg-orange-500 shadow-md shadow-orange-500/30"
+              className="flex items-center justify-center w-11 h-11 rounded-full bg-[#c9552c]"
             >
-              <Plus size={24} className="text-white" />
+              <Plus size={22} className="text-white" strokeWidth={2.5} />
             </Link>
           </li>
 

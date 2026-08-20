@@ -45,9 +45,6 @@ export default function DashboardPage() {
       thisMonday.setDate(now.getDate() - diff);
       thisMonday.setHours(0, 0, 0, 0);
 
-      const prevMonday = new Date(thisMonday);
-      prevMonday.setDate(thisMonday.getDate() - 7);
-
       const hasEntryThisWeek = entries.some((e: { date: string }) => {
         const d = new Date(e.date);
         return d >= thisMonday;
@@ -132,18 +129,17 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="pb-24 bg-gray-50 min-h-screen">
+    <div className="pb-28 bg-[#faf6f1] min-h-screen">
       <HeaderDashboard />
       <WeekProgress weekActive={weekActive} setWeekActive={setWeekActive} />
       <MuscleGroupsCards weekActive={weekActive} />
       <RecentActivity />
 
-      {/* End session button */}
       {weekActive && (
-        <div className="px-4 mt-6">
+        <div className="px-5 mt-6">
           <button
             onClick={() => setShowEndConfirm(true)}
-            className="w-full bg-green-600 hover:bg-green-700 text-gray-900 py-3.5 rounded-xl font-semibold transition-all flex items-center justify-center gap-2"
+            className="w-full bg-[#3a9e6e] active:scale-[0.98] text-white py-4 rounded-2xl font-semibold transition-all shadow-md flex items-center justify-center gap-2"
           >
             <CheckCircle size={20} />
             Terminer la séance
@@ -151,9 +147,8 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Success toast */}
       {showSuccess && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 bg-green-600 text-gray-900 px-6 py-3 rounded-xl shadow-lg shadow-green-600/30 flex items-center gap-2 z-50">
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 bg-[#3a9e6e] text-white px-6 py-3 rounded-2xl shadow-lg flex items-center gap-2 z-50">
           <CheckCircle size={18} />
           <span className="text-sm font-medium">
             Séance terminée ! Tes exercices sont sauvegardés.
@@ -161,27 +156,26 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Confirmation modal */}
       {showEndConfirm && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-6">
-          <div className="bg-white border border-gray-200 rounded-2xl p-6 w-full max-w-sm">
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
             <p className="text-base font-semibold text-gray-900 text-center mb-2">
               Terminer la séance ?
             </p>
-            <p className="text-sm text-gray-500 text-center mb-6">
+            <p className="text-sm text-gray-400 text-center mb-6">
               Les sessions d'aujourd'hui seront marquées comme terminées. Tu
               pourras en créer de nouvelles demain.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowEndConfirm(false)}
-                className="flex-1 bg-gray-100 hover:bg-zinc-600 text-gray-900 py-3 rounded-xl font-semibold transition-colors"
+                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-xl font-semibold transition-colors"
               >
                 Annuler
               </button>
               <button
                 onClick={handleEndSession}
-                className="flex-1 bg-green-600 hover:bg-green-700 text-gray-900 py-3 rounded-xl font-semibold transition-colors"
+                className="flex-1 bg-[#3a9e6e] text-white py-3 rounded-xl font-semibold transition-colors"
               >
                 Terminer
               </button>
@@ -191,11 +185,11 @@ export default function DashboardPage() {
       )}
 
       {showWeightPrompt && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-6">
-          <div className="bg-white border border-gray-200 rounded-2xl p-6 w-full max-w-sm">
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
             <div className="flex flex-col items-center mb-4">
-              <div className="w-12 h-12 rounded-full bg-orange-500/15 flex items-center justify-center mb-3">
-                <Scale size={24} className="text-orange-400" />
+              <div className="w-12 h-12 rounded-full bg-orange-50 flex items-center justify-center mb-3">
+                <Scale size={24} className="text-orange-500" />
               </div>
               <p className="text-base font-semibold text-gray-900 text-center">
                 Quel est ton poids ?
@@ -211,7 +205,7 @@ export default function DashboardPage() {
                 value={bodyWeight}
                 onChange={(e) => setBodyWeight(e.target.value)}
                 placeholder="0"
-                className="w-full bg-gray-100 border border-gray-300 rounded-xl px-4 py-3 text-center text-xl font-semibold text-gray-900 placeholder-zinc-600 focus:outline-none focus:border-orange-500"
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-center text-xl font-semibold text-gray-900 placeholder-gray-300 focus:outline-none focus:border-orange-500 transition-colors"
               />
               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-gray-400">
                 {(() => {
@@ -225,14 +219,14 @@ export default function DashboardPage() {
             <div className="flex gap-3">
               <button
                 onClick={handleSnoozeWeight}
-                className="flex-1 bg-gray-100 hover:bg-zinc-600 text-gray-900 py-3 rounded-xl font-semibold transition-colors"
+                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-xl font-semibold transition-colors"
               >
                 Plus tard
               </button>
               <button
                 onClick={handleSaveWeight}
                 disabled={!bodyWeight}
-                className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-gray-900 py-3 rounded-xl font-semibold transition-colors"
+                className="flex-1 bg-[#c9552c] disabled:opacity-50 text-white py-3 rounded-xl font-semibold transition-colors"
               >
                 Sauvegarder
               </button>

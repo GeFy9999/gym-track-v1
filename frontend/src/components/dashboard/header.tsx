@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Flame } from "lucide-react";
 import { API_URL } from "../../lib/api";
 
 export default function HeaderDashboard() {
@@ -36,15 +37,45 @@ export default function HeaderDashboard() {
   }, []);
 
   return (
-    <div className="flex justify-between items-center px-4 pt-5 pb-4">
-      <div>
-        <p className="text-sm text-gray-500 mb-0.5">{capitalizedDate}</p>
-        <p className="text-2xl font-bold text-gray-900">Bonjour, {userName}</p>
+    <div className="px-5 pt-6 pb-2">
+      <div className="flex justify-between items-start">
+        <div>
+          <p className="text-s tracking-wide text-gray-400 mb-1">
+            {capitalizedDate}
+          </p>
+          <h1 className="text-[32px] font-black text-gray-900 leading-tight">
+            Bonjour, {userName}
+          </h1>
+        </div>
+        <div className="relative mt-1">
+          <div className="w-10 h-10 rounded-full bg-[#c9552c]/10 flex items-center justify-center">
+            <Flame size={20} className="text-[#c9552c]" fill="#c9552c" />
+          </div>
+          <div className="absolute -bottom-1 -right-1 min-w-5 h-5 rounded-full bg-[#c9552c] flex items-center justify-center px-1">
+            <span className="text-[10px] font-bold text-white">{streak}</span>
+          </div>
+        </div>
       </div>
-      <div className="flex items-center gap-1.5 bg-orange-500/15 border border-orange-500/30 px-3 py-1.5 rounded-full">
-        <span className="text-base">🔥</span>
-        <span className="text-sm font-semibold text-orange-400">{streak}</span>
-      </div>
+
+      {streak > 0 && (
+        <div className="flex items-center gap-1.5 mt-3">
+          <div className="flex gap-1">
+            {Array.from({ length: Math.min(streak, 10) }).map((_, i) => (
+              <div key={i} className="w-5 h-1.5 rounded-full bg-[#c9552c]" />
+            ))}
+            {streak < 10 &&
+              Array.from({ length: 10 - streak }).map((_, i) => (
+                <div
+                  key={`empty-${i}`}
+                  className="w-5 h-1.5 rounded-full bg-gray-200"
+                />
+              ))}
+          </div>
+          <span className="text-xs text-gray-400 ml-1">
+            {streak} jour{streak > 1 ? "s" : ""} de suite
+          </span>
+        </div>
+      )}
     </div>
   );
 }

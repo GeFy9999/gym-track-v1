@@ -1,19 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { Dumbbell } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Check } from "lucide-react";
 import { API_URL } from "../../lib/api";
-
-const colors = [
-  "bg-blue-500/15 text-blue-400",
-  "bg-red-500/15 text-red-400",
-  "bg-amber-500/15 text-amber-400",
-  "bg-purple-500/15 text-purple-400",
-  "bg-pink-500/15 text-pink-400",
-  "bg-green-500/15 text-green-400",
-  "bg-cyan-500/15 text-cyan-400",
-  "bg-orange-500/15 text-orange-400",
-  "bg-teal-500/15 text-teal-400",
-];
 
 type MuscleGroup = {
   id: string;
@@ -27,6 +15,9 @@ type Props = {
 export default function MuscleGroupsCards({ weekActive }: Props) {
   const navigate = useNavigate();
   const [groups, setGroups] = useState<MuscleGroup[]>([]);
+  const [completedGroups, setCompletedGroups] = useState<Set<string>>(
+    new Set(),
+  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -45,6 +36,40 @@ export default function MuscleGroupsCards({ weekActive }: Props) {
     fetchGroups();
   }, []);
 
+  useEffect(() => {
+    if (!weekActive) return;
+
+    const fetchCompleted = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      const now = new Date();
+      const day = now.getDay();
+      const diff = day === 0 ? 6 : day - 1;
+      const monday = new Date(now);
+      monday.setDate(now.getDate() - diff);
+      monday.setHours(0, 0, 0, 0);
+
+      try {
+        const res = await fetch(
+          `${API_URL}/sessions/me?start=${monday.toISOString()}&end=${now.toISOString()}`,
+          { headers: { Authorization: `Bearer ${token}` } },
+        );
+        if (!res.ok) return;
+        const sessions: { muscleGroup: string; completed: boolean }[] =
+          await res.json();
+
+        const done = new Set(
+          sessions.filter((s) => s.completed).map((s) => s.muscleGroup),
+        );
+        setCompletedGroups(done);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchCompleted();
+  }, [weekActive]);
+
   const handleClick = async (group: MuscleGroup) => {
     if (!weekActive) return;
 
@@ -52,7 +77,6 @@ export default function MuscleGroupsCards({ weekActive }: Props) {
     if (!token) return;
 
     try {
-      // Check if an active session already exists for this muscle group TODAY
       const todayStart = new Date();
       todayStart.setHours(0, 0, 0, 0);
 
@@ -74,7 +98,6 @@ export default function MuscleGroupsCards({ weekActive }: Props) {
         }
       }
 
-      // No active session today — create one
       const stored = localStorage.getItem("user");
       if (!stored) return;
       const user = JSON.parse(stored);
@@ -98,38 +121,43 @@ export default function MuscleGroupsCards({ weekActive }: Props) {
 
   if (loading) {
     return (
-      <div className="px-4">
+      <div className="px-5 mt-6">
         <p className="text-sm text-gray-400 text-center py-8">Chargement...</p>
       </div>
     );
   }
 
   return (
-    <div className="px-4">
-      <p className="text-base font-semibold text-gray-900 mb-4 px-4">
+    <div className="mt-6">
+      <p className="text-[15px] font-bold text-gray-900 mb-3 px-5">
         Groupes musculaires
       </p>
-      <div className="grid grid-cols-2 gap-4">
-        {groups.map((group, index) => {
-          const color = colors[index % colors.length];
+      <div className="flex gap-3 overflow-x-auto hide-scrollbar px-5 pb-2">
+        {groups.map((group) => {
+          const isDone = completedGroups.has(group.name);
 
           return (
             <button
               key={group.id}
               onClick={() => handleClick(group)}
               disabled={!weekActive}
-              className={`rounded-xl p-4 flex items-center gap-3 transition-colors text-left ${
+              className={`relative flex-shrink-0 w-32 rounded-2xl pt-3 pb-3 flex flex-col items-center transition-all ${
                 weekActive
-                  ? "bg-white border border-gray-200 hover:border-orange-500/50 cursor-pointer"
-                  : "bg-white/40 border border-gray-100 opacity-50 cursor-not-allowed"
+                  ? "bg-white border border-gray-200 shadow-sm active:scale-[0.97]"
+                  : "bg-white/60 border border-gray-100 opacity-50"
               }`}
             >
-              <div
-                className={`w-9 h-9 rounded-full flex items-center justify-center ${color}`}
-              >
-                <Dumbbell size={18} />
+              {isDone && (
+                <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[#3a9e6e] flex items-center justify-center">
+                  <Check size={12} className="text-white" strokeWidth={3} />
+                </div>
+              )}
+
+              <div className="w-18 h-22 rounded-lg bg-gray-100 mb-2 flex items-center justify-center">
+                <span className="text-3xl text-gray-300">🏋️</span>
               </div>
-              <span className="font-medium text-sm text-gray-700">
+
+              <span className="text-xs font-medium text-gray-700 text-center px-1">
                 {group.name}
               </span>
             </button>
