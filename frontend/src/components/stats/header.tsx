@@ -26,9 +26,11 @@ export default function HeaderStats() {
     : "Termine ta première semaine pour débloquer tes statistiques";
 
   return (
-    <div className="pt-5">
-      <p className="text-2xl font-bold text-gray-900 mb-1">Stats</p>
-      <p className="text-sm text-gray-500">{message}</p>
+    <div className="pt-6">
+      <h1 className="text-[32px] font-black text-gray-900 leading-tight">
+        Stats
+      </h1>
+      <p className="text-lg text-gray-500 mt-1">{message}</p>
     </div>
   );
 }

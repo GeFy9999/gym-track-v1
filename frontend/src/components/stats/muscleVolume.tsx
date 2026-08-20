@@ -35,17 +35,17 @@ export default function MuscleVolume() {
       { name: "Épaules", pct: 45 },
     ];
     return (
-      <div className="space-y-3 opacity-40">
+      <div className="space-y-3 opacity-50">
         {placeholders.map(({ name, pct }) => (
           <div key={name} className="flex items-center gap-3">
-            <span className="text-sm text-gray-400 w-24 shrink-0">{name}</span>
-            <div className="flex-1 h-3 bg-white rounded-full overflow-hidden">
+            <span className="text-sm text-gray-500 w-24 shrink-0">{name}</span>
+            <div className="flex-1 h-3 bg-gray-200 rounded-full overflow-hidden">
               <div
-                className="h-full bg-zinc-600 rounded-full"
+                className="h-full bg-gray-500 rounded-full"
                 style={{ width: `${pct}%` }}
               />
             </div>
-            <span className="text-xs text-gray-400 w-12 text-right">--</span>
+            <span className="text-xs text-gray-500 w-12 text-right">--</span>
           </div>
         ))}
       </div>
@@ -56,14 +56,14 @@ export default function MuscleVolume() {
     <div className="space-y-3">
       {volumes.map(({ name, sets, percentage }) => (
         <div key={name} className="flex items-center gap-3">
-          <span className="text-sm text-gray-500 w-24 shrink-0">{name}</span>
-          <div className="flex-1 h-3 bg-white rounded-full overflow-hidden">
+          <span className="text-sm text-gray-700 w-24 shrink-0">{name}</span>
+          <div className="flex-1 h-3 bg-gray-200 rounded-full overflow-hidden">
             <div
-              className="h-full bg-orange-500 rounded-full transition-all duration-500"
+              className="h-full bg-gray-800 rounded-full transition-all duration-500"
               style={{ width: `${percentage}%` }}
             />
           </div>
-          <span className="text-xs text-gray-400 w-12 text-right">
+          <span className="text-xs text-gray-500 w-12 text-right">
             {sets} sets
           </span>
         </div>

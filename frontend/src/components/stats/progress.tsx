@@ -59,7 +59,7 @@ export default function ProgressChart() {
       .join(" ");
 
     return (
-      <div className="bg-white border border-gray-200 rounded-xl p-4 relative overflow-hidden">
+      <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm relative overflow-hidden">
         <div className="opacity-20">
           <svg
             viewBox={`0 0 ${cw} ${ch}`}
@@ -68,21 +68,16 @@ export default function ProgressChart() {
           >
             <path
               d={`${fakePath} L ${cw} ${ch} L 0 ${ch} Z`}
-              fill="rgba(249,115,22,0.15)"
+              fill="rgba(201,85,44,0.15)"
             />
-            <path
-              d={fakePath}
-              fill="none"
-              stroke="rgb(249,115,22)"
-              strokeWidth="2"
-            />
+            <path d={fakePath} fill="none" stroke="#c9552c" strokeWidth="2" />
             {fakePoints.map((p, i) => (
               <circle
                 key={i}
                 cx={(i / (fakePoints.length - 1)) * cw}
                 cy={ch - (p / fakeMax) * ch * 0.8 - ch * 0.1}
                 r="4"
-                fill="rgb(249,115,22)"
+                fill="#c9552c"
               />
             ))}
           </svg>
@@ -147,15 +142,6 @@ export default function ProgressChart() {
     setActiveIndex(closest);
   };
 
-  const diff =
-    entries.length >= 2
-      ? Math.round(
-          (entries[entries.length - 1].value -
-            entries[entries.length - 2].value) *
-            10,
-        ) / 10
-      : 0;
-
   const totalDiff =
     entries.length >= 2
       ? Math.round(
@@ -164,34 +150,25 @@ export default function ProgressChart() {
       : 0;
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-4">
-      {/* Header */}
+    <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
       <div className="flex flex-col items-center mb-4">
-        <span className="text-xs text-gray-400 mb-2">
+        <span className="text-xs text-gray-500 mb-2">
           Poids corporel ({getWeightUnit()})
         </span>
 
-        <span className="text-2xl font-bold text-gray-900">
+        <span className="text-3xl font-black text-gray-900">
           {activeIndex !== null
             ? `${Math.round(entries[activeIndex].value)} ${getWeightUnit()}`
             : `${Math.round(entries[entries.length - 1].value)} ${getWeightUnit()}`}
         </span>
 
-        {activeIndex === null && (
-          <div className="flex items-center gap-4 mt-2">
-            {diff !== 0 && (
-              <span className="text-sm text-orange-400 font-semibold">
-                {diff > 0 ? "↑" : "↓"} {Math.abs(diff)} {getWeightUnit()} cette
-                semaine
-              </span>
-            )}
-            {entries.length >= 2 && (
-              <span className="text-xs text-gray-500">
-                {totalDiff > 0 ? "↑" : "↓"} {Math.abs(totalDiff)}{" "}
-                {getWeightUnit()} au total
-              </span>
-            )}
-          </div>
+        {activeIndex === null && entries.length >= 2 && (
+          <span
+            className={`text-sm font-semibold mt-1 ${totalDiff > 0 ? "text-[#c9552c]" : "text-gray-500"}`}
+          >
+            {totalDiff > 0 ? "↑" : "↓"} {Math.abs(totalDiff)} {getWeightUnit()}{" "}
+            au total
+          </span>
         )}
 
         {activeIndex !== null && (
@@ -204,7 +181,6 @@ export default function ProgressChart() {
         )}
       </div>
 
-      {/* Chart */}
       <svg
         viewBox={`0 0 ${chartWidth} ${chartHeight}`}
         className="w-full h-36"
@@ -214,20 +190,7 @@ export default function ProgressChart() {
         onMouseLeave={() => setActiveIndex(null)}
         onTouchEnd={() => setActiveIndex(null)}
       >
-        <defs>
-          <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="rgb(249, 115, 22)" stopOpacity="0.3" />
-            <stop offset="100%" stopColor="rgb(249, 115, 22)" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-
-        <path d={areaPath} fill="url(#areaGradient)" />
-        <path
-          d={linePath}
-          fill="none"
-          stroke="rgb(249, 115, 22)"
-          strokeWidth="2"
-        />
+        <path d={linePath} fill="none" stroke="#c9552c" strokeWidth="2.5" />
 
         {activeIndex !== null && (
           <line
@@ -235,7 +198,7 @@ export default function ProgressChart() {
             y1={0}
             x2={getX(activeIndex)}
             y2={chartHeight}
-            stroke="rgb(161, 161, 170)"
+            stroke="#d1d5db"
             strokeWidth="1"
             strokeDasharray="4 4"
           />
@@ -247,26 +210,25 @@ export default function ProgressChart() {
             cx={getX(i)}
             cy={getY(e.value)}
             r={activeIndex === i ? 6 : 4}
-            fill={activeIndex === i ? "white" : "rgb(249, 115, 22)"}
-            stroke={activeIndex === i ? "rgb(249, 115, 22)" : "rgb(39, 39, 42)"}
+            fill={activeIndex === i ? "white" : "#c9552c"}
+            stroke={activeIndex === i ? "#c9552c" : "#faf6f1"}
             strokeWidth="2"
           />
         ))}
       </svg>
 
-      {/* Date labels */}
-      <div className="flex justify-between mt-2 border-t border-gray-200 pt-2">
+      <div className="flex justify-between mt-2 border-t border-gray-100 pt-2">
         {dates.map((d, i) => {
           const showMonth = i === 0 || d.getMonth() !== dates[i - 1].getMonth();
           return (
             <div key={entries[i].id} className="flex-1 text-center">
               <span
-                className={`text-xs ${activeIndex === i ? "text-orange-400 font-semibold" : "text-gray-400"}`}
+                className={`text-xs ${activeIndex === i ? "text-[#c9552c] font-semibold" : "text-gray-500"}`}
               >
                 {d.getDate()}
               </span>
               {showMonth && (
-                <p className="text-xs text-gray-400 -mt-0.5">
+                <p className="text-xs text-gray-500 -mt-0.5">
                   {MONTHS[d.getMonth()]}
                 </p>
               )}

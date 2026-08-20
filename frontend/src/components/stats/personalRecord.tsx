@@ -43,14 +43,14 @@ export default function PersonalRecordCards() {
   if (records.length === 0) {
     const placeholders = ["Bench Press", "Squat", "Deadlift", "Rowing"];
     return (
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-3">
         {placeholders.map((name) => (
           <div
             key={name}
-            className="bg-white/50 border border-dashed border-gray-200 rounded-xl p-4 flex flex-col justify-between"
+            className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm"
           >
-            <p className="text-xs text-gray-400 mb-1">{name}</p>
-            <p className="text-lg font-semibold text-zinc-700">
+            <p className="text-xs text-gray-500 mb-1">{name}</p>
+            <p className="text-lg font-bold text-gray-800">
               -- {getWeightUnit()}
             </p>
           </div>
@@ -60,14 +60,14 @@ export default function PersonalRecordCards() {
   }
 
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-2 gap-3">
       {records.map(({ name, weight }) => (
         <div
           key={name}
-          className="bg-white border border-gray-200 rounded-xl p-4 flex flex-col justify-between"
+          className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm"
         >
           <p className="text-xs text-gray-500 mb-1">{name}</p>
-          <p className="text-lg font-semibold text-orange-400">
+          <p className="text-lg font-bold text-gray-900">
             {Math.round(weight)} {getWeightUnit()}
           </p>
         </div>
