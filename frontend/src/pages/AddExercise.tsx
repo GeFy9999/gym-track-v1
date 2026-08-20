@@ -123,48 +123,48 @@ export default function AddExercisePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#faf6f1] flex items-center justify-center">
         <p className="text-gray-400">Chargement...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-8">
-      <div className="flex items-center gap-3 px-4 pt-5 pb-4">
+    <div className="min-h-screen bg-[#faf6f1] pb-28">
+      <div className="flex items-center gap-3 px-5 pt-6 pb-4">
         <button
           onClick={() => navigate(-1)}
-          className="text-gray-500 hover:text-gray-900 transition-colors"
+          className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center active:bg-gray-300 transition-colors flex-shrink-0"
         >
-          <ArrowLeft size={24} />
+          <ArrowLeft size={16} className="text-gray-700" />
         </button>
         <div>
-          <h1 className="text-xl font-bold text-gray-900">
+          <h1 className="text-[26px] font-black text-gray-900 leading-tight">
             Records personnels
           </h1>
-          <p className="text-xs text-gray-400 mt-0.5">
+          <p className="text-sm text-gray-500 mt-0.5">
             Choisis les exercices à suivre dans tes stats
           </p>
         </div>
       </div>
 
-      <div className="px-4 mb-4">
+      <div className="px-5 mb-4">
         <div className="relative">
           <Search
             size={16}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
           />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Rechercher un exercice..."
-            className="w-full bg-white border border-gray-200 rounded-xl pl-9 pr-4 py-3 text-sm text-gray-900 placeholder-zinc-500 focus:outline-none focus:border-orange-500 transition-colors shadow-sm"
+            className="w-full bg-white border border-gray-200 rounded-2xl pl-10 pr-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#c9552c] transition-colors shadow-sm"
           />
         </div>
       </div>
 
-      <div className="px-4 space-y-2">
+      <div className="px-5 space-y-2">
         {Object.entries(grouped).map(([group, groupExercises]) => {
           const isOpen = openGroups.includes(group);
           const trackedCount = groupExercises.filter((ex) =>
@@ -177,54 +177,58 @@ export default function AddExercisePage() {
           return (
             <div
               key={group}
-              className="bg-white border border-gray-200 rounded-xl overflow-hidden"
+              className={`bg-white border rounded-2xl overflow-hidden shadow-sm transition-colors ${
+                trackedCount > 0 ? "border-[#c9552c]/30" : "border-gray-200"
+              }`}
             >
               <button
                 onClick={() => toggleGroup(group)}
-                className="w-full flex items-center justify-between px-4 py-3"
+                className="w-full flex items-center justify-between px-4 py-3.5"
               >
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2.5">
+                  {trackedCount > 0 && (
+                    <div className="w-2 h-2 rounded-full bg-[#c9552c]" />
+                  )}
                   <span className="text-sm font-semibold text-gray-900">
                     {group}
                   </span>
-                  {trackedCount > 0 && (
-                    <span className="text-xs bg-orange-500/15 text-orange-400 px-2 py-0.5 rounded-full">
-                      {trackedCount}
-                    </span>
-                  )}
                 </div>
                 <ChevronDown
                   size={18}
-                  className={`text-gray-500 transition-transform duration-200 ${
+                  className={`text-gray-400 transition-transform duration-200 ${
                     isOpen ? "rotate-180" : ""
                   }`}
                 />
               </button>
 
               {isOpen && (
-                <div className="border-t border-gray-200 px-3 py-2 space-y-1">
+                <div className="border-t border-gray-100 px-3 py-2 space-y-1">
                   {visible.map((ex) => {
                     const active = isTracked(ex.id);
                     return (
                       <button
                         key={ex.id}
                         onClick={() => handleToggle(ex.id)}
-                        className="w-full flex items-center gap-3 bg-gray-100/30 hover:bg-gray-100 rounded-lg px-3 py-2.5 transition-colors"
+                        className="w-full flex items-center gap-3 hover:bg-gray-50 rounded-xl px-3 py-2.5 transition-colors"
                       >
                         {ex.image && (
                           <img
                             src={ex.image}
                             alt={ex.name}
-                            className="w-10 h-10 rounded-lg object-cover bg-gray-100 flex-shrink-0"
+                            className="w-10 h-10 rounded-xl object-cover bg-gray-100 flex-shrink-0"
                           />
                         )}
                         <span className="flex-1 text-left text-sm text-gray-700">
                           {ex.name}
                         </span>
                         {active ? (
-                          <Check size={18} className="text-orange-400" />
+                          <div className="w-8 h-8 rounded-full bg-[#c9552c]/10 flex items-center justify-center flex-shrink-0">
+                            <Check size={14} className="text-[#c9552c]" />
+                          </div>
                         ) : (
-                          <Plus size={18} className="text-gray-400" />
+                          <div className="w-8 h-8 rounded-full border-2 border-[#c9552c]/40 flex items-center justify-center flex-shrink-0">
+                            <Plus size={14} className="text-[#c9552c]" />
+                          </div>
                         )}
                       </button>
                     );

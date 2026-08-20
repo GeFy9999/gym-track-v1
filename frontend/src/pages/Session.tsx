@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import { ArrowLeft, Plus, Trash2, ChevronDown, Search } from "lucide-react";
+import {
+  ArrowLeft,
+  Plus,
+  Trash2,
+  ChevronDown,
+  Search,
+  Dumbbell,
+} from "lucide-react";
 import { getWeightUnit } from "../utils/units";
 import { API_URL } from "../lib/api";
 
@@ -32,6 +39,11 @@ type AvailableExercise = {
   muscleGroup: { id: string; name: string };
 };
 
+type LastWeight = {
+  exerciseId: string;
+  weight: number;
+};
+
 export default function SessionPage() {
   const { sessionId } = useParams();
   const navigate = useNavigate();
@@ -44,6 +56,7 @@ export default function SessionPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [lastWeights, setLastWeights] = useState<LastWeight[]>([]);
 
   const fetchSession = async () => {
     try {
@@ -74,8 +87,46 @@ export default function SessionPage() {
     }
   };
 
+  const fetchLastWeights = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const res = await fetch(
+        `${API_URL}/sessions/me?start=2000-01-01T00:00:00.000Z&end=${new Date().toISOString()}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      if (!res.ok) return;
+      const sessions: SessionData[] = await res.json();
+
+      const weightMap = new Map<string, number>();
+      for (const s of sessions) {
+        for (const se of s.sessionExercises) {
+          for (const set of se.sets) {
+            const current = weightMap.get(se.exercise.id) || 0;
+            if (set.weight > current) {
+              weightMap.set(se.exercise.id, set.weight);
+            }
+          }
+        }
+      }
+
+      setLastWeights(
+        Array.from(weightMap.entries()).map(([exerciseId, weight]) => ({
+          exerciseId,
+          weight,
+        })),
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
     fetchSession();
+    fetchLastWeights();
   }, [sessionId]);
 
   useEffect(() => {
@@ -157,7 +208,7 @@ export default function SessionPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#faf6f1] flex items-center justify-center">
         <p className="text-gray-400">Chargement...</p>
       </div>
     );
@@ -165,7 +216,7 @@ export default function SessionPage() {
 
   if (!session) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#faf6f1] flex items-center justify-center">
         <p className="text-red-400">Session introuvable</p>
       </div>
     );
@@ -174,154 +225,116 @@ export default function SessionPage() {
   const addedIds = session.sessionExercises.map((se) => se.exercise.id);
   const availableExercises = exercises.filter((e) => !addedIds.includes(e.id));
 
+  const popularNames: { [key: string]: string[] } = {
+    Chest: [
+      "Bench Press",
+      "Incline Dumbbell Press",
+      "Chest Fly",
+      "Push-Up",
+      "Cable Crossover",
+    ],
+    Dos: [
+      "Lat Pulldown",
+      "Barbell Row",
+      "Seated Cable Row",
+      "Pull-Up",
+      "T-Bar Row",
+    ],
+    Legs: [
+      "Squat",
+      "Leg Press",
+      "Romanian Deadlift",
+      "Leg Extension",
+      "Leg Curl",
+    ],
+    Biceps: [
+      "Barbell Curl",
+      "Dumbbell Curl",
+      "Hammer Curl",
+      "Preacher Curl",
+      "Cable Curl",
+    ],
+    Triceps: [
+      "Tricep Pushdown",
+      "Skull Crusher",
+      "Overhead Extension",
+      "Dips",
+      "Close Grip Bench",
+    ],
+    Épaules: [
+      "Overhead Press",
+      "Lateral Raise",
+      "Front Raise",
+      "Face Pull",
+      "Arnold Press",
+    ],
+    "Avant-bras": ["Wrist Curl", "Reverse Curl", "Farmer Walk", "Dead Hang"],
+    Trapèze: ["Shrug", "Face Pull", "Upright Row", "Rack Pull"],
+    Abdominaux: ["Crunch", "Plank", "Leg Raise", "Ab Wheel", "Cable Crunch"],
+  };
+
+  const groupPopular = popularNames[session.muscleGroup] || [];
+  const popularSuggestions = availableExercises
+    .filter((ex) =>
+      groupPopular.some((p) => ex.name.toLowerCase().includes(p.toLowerCase())),
+    )
+    .slice(0, 5);
+  const suggestions =
+    popularSuggestions.length > 0
+      ? popularSuggestions
+      : availableExercises.slice(0, 5);
+
+  const isEmpty = session.sessionExercises.length === 0;
+
+  const formattedDate = new Date(session.date).toLocaleDateString("fr-FR", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
+  const capitalizedDate =
+    formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
+
   return (
-    <div className="min-h-screen bg-gray-50 pb-8">
-      <div className="flex items-center gap-3 px-4 pt-5 pb-4">
+    <div className="min-h-screen bg-[#faf6f1] pb-8">
+      <div className="flex items-center gap-3 px-5 pt-6 pb-4">
         <button
           onClick={() => navigate(-1)}
-          className="text-gray-500 hover:text-gray-900 transition-colors"
+          className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center active:bg-gray-300 transition-colors flex-shrink-0"
         >
-          <ArrowLeft size={24} />
+          <ArrowLeft size={16} className="text-gray-700" />
         </button>
         <div>
-          <h1 className="text-xl font-bold text-gray-900">
+          <h1 className="text-[26px] font-black text-gray-900 leading-tight">
             {session.muscleGroup}
           </h1>
-          <p className="text-xs text-gray-400">
-            {new Date(session.date).toLocaleDateString("fr-FR", {
-              weekday: "long",
-              day: "numeric",
-              month: "long",
-            })}
-          </p>
+          <p className="text-sm text-gray-500">{capitalizedDate}</p>
         </div>
       </div>
 
-      <div className="px-4 space-y-4">
-        {session.sessionExercises.map((se) => (
-          <div
-            key={se.id}
-            className="bg-white border border-gray-200 rounded-xl overflow-hidden"
-          >
-            <div className="relative">
-              {se.exercise.image ? (
-                <img
-                  src={se.exercise.image}
-                  alt={se.exercise.name}
-                  className="w-full h-40 object-cover"
-                />
-              ) : (
-                <div className="w-full h-40 bg-gray-100" />
-              )}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-              <p className="absolute bottom-3 left-4 text-lg font-bold text-gray-900">
-                {se.exercise.name}
-              </p>
-              {!readOnly && (
-                <button
-                  onClick={() => setConfirmDelete(se.id)}
-                  className="absolute top-3 right-3 bg-gray-50/60 p-2 rounded-lg text-zinc-300 hover:text-red-400 transition-colors"
-                >
-                  <Trash2 size={16} />
-                </button>
-              )}
-            </div>
-
-            <div className="p-4">
-              {se.sets.length > 0 && (
-                <div className="flex items-center gap-3 mb-2 px-1">
-                  <span className="w-6" />
-                  <span className="w-24 text-xs text-gray-400 uppercase tracking-wide text-center">
-                    Poids
-                  </span>
-                  <span className="w-4" />
-                  <span className="w-20 text-xs text-gray-400 uppercase tracking-wide text-center">
-                    Reps
-                  </span>
-                </div>
-              )}
-
-              <div className="space-y-2">
-                {se.sets.map((set, i) => (
-                  <div key={set.id} className="flex items-center gap-3">
-                    <span className="text-sm text-gray-400 w-6 text-center font-medium">
-                      {i + 1}
-                    </span>
-                    <input
-                      type="number"
-                      defaultValue={set.weight}
-                      onBlur={(e) =>
-                        updateSet(set.id, { weight: Number(e.target.value) })
-                      }
-                      disabled={readOnly}
-                      className={`w-24 border rounded-xl px-3 py-2.5 text-base text-gray-900 text-center font-semibold focus:outline-none transition-colors ${
-                        readOnly
-                          ? "bg-white border-gray-200"
-                          : "bg-gray-100 border-gray-300 focus:border-orange-500"
-                      }`}
-                    />
-                    <span className="text-sm text-gray-400">×</span>
-                    <input
-                      type="number"
-                      defaultValue={set.reps}
-                      onBlur={(e) =>
-                        updateSet(set.id, { reps: Number(e.target.value) })
-                      }
-                      disabled={readOnly}
-                      className={`w-20 border rounded-xl px-3 py-2.5 text-base text-gray-900 text-center font-semibold focus:outline-none transition-colors ${
-                        readOnly
-                          ? "bg-white border-gray-200"
-                          : "bg-gray-100 border-gray-300 focus:border-orange-500"
-                      }`}
-                    />
-                    <span className="text-xs text-gray-400">reps</span>
-                    {!readOnly && (
-                      <button
-                        onClick={() => deleteSet(set.id)}
-                        className="ml-auto text-gray-400 hover:text-red-400 transition-colors"
-                      >
-                        <Trash2 size={15} />
-                      </button>
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              {!readOnly && (
-                <button
-                  onClick={() => addSet(se.id, se.sets)}
-                  className="mt-4 text-sm text-orange-400 font-semibold flex items-center gap-1.5 hover:text-orange-300"
-                >
-                  <Plus size={16} /> Ajouter un set
-                </button>
-              )}
-            </div>
-          </div>
-        ))}
-
+      <div className="px-5 space-y-4">
         {!readOnly && (
-          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
             <button
               onClick={() => {
                 setShowExerciseList(!showExerciseList);
                 setSearchQuery("");
               }}
-              className="w-full flex items-center justify-between px-4 py-3.5 hover:bg-zinc-750 transition-colors"
+              className="w-full flex items-center justify-between px-4 py-3.5"
             >
               <span className="text-sm font-semibold text-gray-900 flex items-center gap-2">
-                <Plus size={16} className="text-orange-400" />
+                <Plus size={16} className="text-[#c9552c]" />
                 Ajouter un exercice
               </span>
               <ChevronDown
                 size={18}
-                className={`text-gray-500 transition-transform duration-200 ${
+                className={`text-gray-400 transition-transform duration-200 ${
                   showExerciseList ? "rotate-180" : ""
                 }`}
               />
             </button>
 
             {showExerciseList && (
-              <div className="border-t border-gray-200">
+              <div className="border-t border-gray-100">
                 <div className="px-3 py-2">
                   <div className="relative">
                     <Search
@@ -334,7 +347,7 @@ export default function SessionPage() {
                       onChange={(e) => setSearchQuery(e.target.value)}
                       placeholder="Rechercher un exercice..."
                       autoFocus
-                      className="w-full bg-gray-100 border border-gray-300 rounded-lg pl-9 pr-3 py-2 text-sm text-gray-900 placeholder-zinc-500 focus:outline-none focus:border-orange-500 transition-colors shadow-sm"
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#c9552c] transition-colors"
                     />
                   </div>
                 </div>
@@ -351,14 +364,18 @@ export default function SessionPage() {
                           addExercise(ex.id);
                           setSearchQuery("");
                         }}
-                        className="w-full text-left bg-gray-100/50 hover:bg-gray-100 rounded-lg px-3 py-2.5 text-sm text-gray-700 transition-colors flex items-center gap-3"
+                        className="w-full text-left hover:bg-gray-50 rounded-xl px-3 py-2.5 text-sm text-gray-700 transition-colors flex items-center gap-3"
                       >
-                        {ex.image && (
+                        {ex.image ? (
                           <img
                             src={ex.image}
                             alt={ex.name}
-                            className="w-14 h-14 rounded-lg object-cover bg-zinc-600 flex-shrink-0"
+                            className="w-10 h-10 rounded-xl object-cover bg-gray-100 flex-shrink-0"
                           />
+                        ) : (
+                          <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
+                            <Dumbbell size={16} className="text-gray-400" />
+                          </div>
                         )}
                         <span className="text-sm">{ex.name}</span>
                       </button>
@@ -377,21 +394,176 @@ export default function SessionPage() {
             )}
           </div>
         )}
+
+        {isEmpty && (
+          <div className="bg-white/60 border border-dashed border-gray-300 rounded-2xl p-8 flex flex-col items-center">
+            <div className="w-12 h-12 rounded-full bg-[#c9552c]/10 flex items-center justify-center mb-3">
+              <Dumbbell size={20} className="text-[#c9552c]" />
+            </div>
+            <p className="text-lg font-bold text-gray-900 mb-1">
+              Aucun exercice pour l'instant
+            </p>
+            <p className="text-sm text-gray-400 text-center">
+              Ajoute ton premier exercice pour{"\n"}commencer la séance
+            </p>
+          </div>
+        )}
+
+        {session.sessionExercises.map((se) => (
+          <div
+            key={se.id}
+            className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm"
+          >
+            <div className="relative">
+              {se.exercise.image ? (
+                <img
+                  src={se.exercise.image}
+                  alt={se.exercise.name}
+                  className="w-full h-40 object-cover"
+                />
+              ) : (
+                <div className="w-full h-40 bg-gray-100" />
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+              <p className="absolute bottom-3 left-4 text-lg font-bold text-white">
+                {se.exercise.name}
+              </p>
+              {!readOnly && (
+                <button
+                  onClick={() => setConfirmDelete(se.id)}
+                  className="absolute top-3 right-3 bg-white/60 p-2 rounded-xl text-gray-500 active:text-red-500 transition-colors"
+                >
+                  <Trash2 size={16} />
+                </button>
+              )}
+            </div>
+
+            <div className="p-4">
+              {se.sets.length > 0 && (
+                <div className="grid grid-cols-[28px_1fr_1fr_32px] items-center mb-3">
+                  <span />
+                  <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider text-center">
+                    Poids ({getWeightUnit()})
+                  </span>
+                  <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider text-center">
+                    Reps
+                  </span>
+                  <span />
+                </div>
+              )}
+
+              <div className="space-y-2.5">
+                {se.sets.map((set, i) => (
+                  <div
+                    key={set.id}
+                    className="grid grid-cols-[28px_1fr_1fr_32px] items-center gap-2"
+                  >
+                    <span className="text-sm text-[#c9552c] text-center font-semibold">
+                      {i + 1}
+                    </span>
+                    <input
+                      type="number"
+                      defaultValue={set.weight}
+                      onBlur={(e) =>
+                        updateSet(set.id, { weight: Number(e.target.value) })
+                      }
+                      disabled={readOnly}
+                      className="w-full rounded-xl px-3 py-3 text-base text-gray-900 text-center font-bold bg-gray-100 focus:bg-gray-200 focus:outline-none transition-colors"
+                    />
+                    <input
+                      type="number"
+                      defaultValue={set.reps}
+                      onBlur={(e) =>
+                        updateSet(set.id, { reps: Number(e.target.value) })
+                      }
+                      disabled={readOnly}
+                      className="w-full rounded-xl px-3 py-3 text-base text-gray-900 text-center font-bold bg-gray-100 focus:bg-gray-200 focus:outline-none transition-colors"
+                    />
+                    {!readOnly ? (
+                      <button
+                        onClick={() => deleteSet(set.id)}
+                        className="text-gray-300 active:text-red-500 transition-colors flex items-center justify-center"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    ) : (
+                      <span />
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {!readOnly && (
+                <button
+                  onClick={() => addSet(se.id, se.sets)}
+                  className="mt-4 text-sm text-[#c9552c] font-semibold flex items-center gap-1.5"
+                >
+                  <Plus size={16} /> Ajouter un set
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
       </div>
 
+      {isEmpty && suggestions.length > 0 && !readOnly && (
+        <div className="px-5 mt-6">
+          <p className="text-[15px] font-bold text-gray-900 mb-3">
+            Suggestions pour {session.muscleGroup}
+          </p>
+          <div className="space-y-2">
+            {suggestions.map((ex) => {
+              const lw = lastWeights.find((w) => w.exerciseId === ex.id);
+              return (
+                <button
+                  key={ex.id}
+                  onClick={() => addExercise(ex.id)}
+                  className="w-full bg-white border border-gray-200 rounded-2xl px-4 py-3.5 flex items-center gap-3 shadow-sm active:scale-[0.99] transition-all"
+                >
+                  {ex.image ? (
+                    <img
+                      src={ex.image}
+                      alt={ex.name}
+                      className="w-12 h-12 rounded-xl object-cover bg-gray-100 flex-shrink-0"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
+                      <Dumbbell size={18} className="text-gray-400" />
+                    </div>
+                  )}
+                  <div className="flex-1 text-left">
+                    <p className="text-base font-semibold text-gray-900">
+                      {ex.name}
+                    </p>
+                    <p className="text-sm text-gray-400">
+                      {lw
+                        ? `Dernière fois : ${lw.weight} ${getWeightUnit()}`
+                        : "Poids du corps"}
+                    </p>
+                  </div>
+                  <div className="w-8 h-8 rounded-full border-2 border-[#c9552c]/40 flex items-center justify-center flex-shrink-0">
+                    <Plus size={14} className="text-[#c9552c]" />
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {confirmDelete && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-6">
-          <div className="bg-white border border-gray-200 rounded-2xl p-6 w-full max-w-sm">
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
             <p className="text-base font-semibold text-gray-900 text-center mb-2">
               Supprimer cet exercice ?
             </p>
-            <p className="text-sm text-gray-500 text-center mb-6">
+            <p className="text-sm text-gray-400 text-center mb-6">
               Tous les sets associés seront aussi supprimés.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setConfirmDelete(null)}
-                className="flex-1 bg-gray-100 hover:bg-zinc-600 text-gray-900 py-3 rounded-xl font-semibold transition-colors"
+                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-xl font-semibold transition-colors"
               >
                 Annuler
               </button>
@@ -408,7 +580,7 @@ export default function SessionPage() {
                     console.error(err);
                   }
                 }}
-                className="flex-1 bg-red-600 hover:bg-red-700 text-gray-900 py-3 rounded-xl font-semibold transition-colors"
+                className="flex-1 bg-red-500 text-white py-3 rounded-xl font-semibold transition-colors"
               >
                 Supprimer
               </button>
