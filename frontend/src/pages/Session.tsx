@@ -7,9 +7,12 @@ import {
   ChevronDown,
   Search,
   Dumbbell,
+  TrendingUp,
+  TrendingDown,
 } from "lucide-react";
 import { getWeightUnit } from "../utils/units";
 import { API_URL } from "../lib/api";
+import { useExerciseDeltas } from "../hooks/useExerciseDeltas";
 
 type SetData = {
   id: string;
@@ -57,6 +60,7 @@ export default function SessionPage() {
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [lastWeights, setLastWeights] = useState<LastWeight[]>([]);
+  const deltas = useExerciseDeltas(sessionId);
 
   const fetchSession = async () => {
     try {
@@ -413,6 +417,19 @@ export default function SessionPage() {
               <p className="absolute bottom-3 left-4 text-lg font-bold text-white">
                 {se.exercise.name}
               </p>
+              {(() => {
+                const delta = deltas.get(se.exercise.id);
+                if (!delta) return null;
+                const isUp = delta.value > 0;
+                return (
+                  <div className="absolute bottom-3 right-4 flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#c9552c]/20 text-[#c9552c]">
+                    <span className="text-xs font-semibold">
+                      {isUp ? "↑" : "↓"} {isUp ? "+" : ""}
+                      {delta.value} {delta.unit}
+                    </span>
+                  </div>
+                );
+              })()}
               {!readOnly && (
                 <button
                   onClick={() => setConfirmDelete(se.id)}

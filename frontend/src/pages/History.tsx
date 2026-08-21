@@ -9,7 +9,7 @@ type SessionData = {
   date: string;
   completed: boolean;
   sessionExercises: {
-    exercise: { name: string };
+    exercise: { id: string; name: string };
     sets: { weight: number; reps: number }[];
   }[];
 };

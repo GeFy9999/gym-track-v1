@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { TrendingUp } from "lucide-react";
+import { TrendingUp, TrendingDown } from "lucide-react";
 import { API_URL } from "../../lib/api";
 
 type SessionData = {
@@ -8,7 +8,7 @@ type SessionData = {
   date: string;
   completed: boolean;
   sessionExercises: {
-    exercise: { name: string };
+    exercise: { id: string; name: string };
     sets: { weight: number; reps: number; unit: string }[];
   }[];
 };
@@ -35,6 +35,9 @@ function getPreviousWeekRange(): { start: Date; end: Date } {
 
 export default function RecentActivity() {
   const [lastSession, setLastSession] = useState<SessionData | null>(null);
+  const [delta, setDelta] = useState<{ value: number; unit: string } | null>(
+    null,
+  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -45,21 +48,54 @@ export default function RecentActivity() {
         return;
       }
 
-      const { start, end } = getPreviousWeekRange();
-
       try {
-        const res = await fetch(
-          `${API_URL}/sessions/me?start=${start.toISOString()}&end=${end.toISOString()}`,
+        const allRes = await fetch(
+          `${API_URL}/sessions/me?start=2000-01-01&end=${new Date().toISOString()}`,
           { headers: { Authorization: `Bearer ${token}` } },
         );
-        if (!res.ok) throw new Error("Erreur fetch sessions");
-        const sessions: SessionData[] = await res.json();
+        if (!allRes.ok) throw new Error("Erreur fetch sessions");
+        const allSessions: SessionData[] = await allRes.json();
 
-        if (sessions.length > 0) {
-          const sorted = sessions.sort(
+        const completed = allSessions
+          .filter((s) => s.completed)
+          .sort(
             (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
           );
-          setLastSession(sorted[0]);
+
+        const { start, end } = getPreviousWeekRange();
+        const lastWeekSessions = completed.filter((s) => {
+          const d = new Date(s.date);
+          return d >= start && d <= end;
+        });
+
+        if (lastWeekSessions.length > 0) {
+          const session = lastWeekSessions[0];
+          setLastSession(session);
+
+          const firstEx = session.sessionExercises?.find(
+            (se) => se.sets.length > 0,
+          );
+          if (firstEx) {
+            const currentMax = Math.max(...firstEx.sets.map((s) => s.weight));
+            const stored = localStorage.getItem("user");
+            const unit = stored ? JSON.parse(stored).weightUnit || "lb" : "lb";
+
+            for (const older of completed) {
+              if (older.id === session.id) continue;
+              const match = older.sessionExercises.find(
+                (se) =>
+                  se.exercise.id === firstEx.exercise.id && se.sets.length > 0,
+              );
+              if (match) {
+                const prevMax = Math.max(...match.sets.map((s) => s.weight));
+                const diff = Math.round((currentMax - prevMax) * 10) / 10;
+                if (diff !== 0) {
+                  setDelta({ value: diff, unit });
+                }
+                break;
+              }
+            }
+          }
         }
       } catch (err) {
         console.error(err);
@@ -107,10 +143,14 @@ export default function RecentActivity() {
                 {bestSet.weight} {bestSet.unit} × {bestSet.reps} reps
               </p>
             </div>
-            <div className="flex items-center gap-1 bg-emerald-50 text-[#3a9e6e] border border-emerald-200 px-2 py-0.5 rounded-full">
-              <TrendingUp size={12} />
-              <span className="text-xs font-semibold">+5 {bestSet.unit}</span>
-            </div>
+            {delta && (
+              <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#c9552c]/10 text-[#c9552c] border border-[#c9552c]/20">
+                <span className="text-xs font-semibold">
+                  {delta.value > 0 ? "↑" : "↓"} {delta.value > 0 ? "+" : ""}
+                  {delta.value} {delta.unit}
+                </span>
+              </div>
+            )}
           </div>
 
           <div className="flex items-end gap-1.5 h-10">

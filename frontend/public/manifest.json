@@ -4,8 +4,8 @@
   "description": "Suivi d'entraînement et progression fitness",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#1a1a1c",
-  "theme_color": "#f97316",
+  "background_color": "#faf6f1",
+  "theme_color": "#c9552c",
   "orientation": "portrait",
   "icons": [
     {
@@ -15,7 +15,7 @@
       "purpose": "any maskable"
     },
     {
-      "src": "/LogoMobile512x512_2.png",
+      "src": "/icon512_rounded.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
