@@ -20,6 +20,26 @@ export default function MuscleGroupsCards({ weekActive }: Props) {
   );
   const [loading, setLoading] = useState(true);
 
+  const muscleImages: { [key: string]: string } = {
+    Abdominaux: "/imgAbs-Photoroom.webp",
+    "Avant-bras": "/imgAvantBras-Photoroom.webp",
+    Biceps: "/imgBiceps-Photoroom.webp",
+    Dos: "/imgDos-Photoroom.webp",
+    Épaules: "/imgEpaules-Photoroom.webp",
+    Epaules: "/imgEpaules-Photoroom.webp",
+    Legs: "/imgLegs-Photoroom.webp",
+    Chest: "/imgPec3.png",
+    Pectoraux: "/imgPec3.png",
+    Trapèze: "/imgTrapeze-Photoroom.webp",
+    Trapeze: "/imgTrapeze-Photoroom.webp",
+    Triceps: "/imgTriceps-Photoroom.webp",
+  };
+
+  const imageScale: { [key: string]: string } = {
+    Chest: "scale-[1.15]",
+    Pectoraux: "scale-[1.15]",
+  };
+
   useEffect(() => {
     const fetchGroups = async () => {
       try {
@@ -153,8 +173,18 @@ export default function MuscleGroupsCards({ weekActive }: Props) {
                 </div>
               )}
 
-              <div className="w-18 h-22 rounded-lg bg-gray-100 mb-2 flex items-center justify-center">
-                <span className="text-3xl text-gray-300">🏋️</span>
+              <div className="w-18 h-22 rounded-lg mb-2 flex items-center justify-center overflow-hidden">
+                {muscleImages[group.name] ? (
+                  <img
+                    src={muscleImages[group.name]}
+                    alt={group.name}
+                    className={`w-full h-full object-contain ${imageScale[group.name] || ""}`}
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                    <span className="text-3xl text-gray-300">🏋️</span>
+                  </div>
+                )}
               </div>
 
               <span className="text-xs font-medium text-gray-700 text-center px-1">

@@ -53,8 +53,9 @@ function App() {
   const location = useLocation();
 
   const hideNav =
-    ["/login", "/register"].includes(location.pathname) ||
-    location.pathname.startsWith("/session/");
+    ["/login", "/register", "/forgot-password", "/reset-password"].includes(
+      location.pathname,
+    ) || location.pathname.startsWith("/session/");
 
   const getApiHealth = async (): Promise<void> => {
     try {
