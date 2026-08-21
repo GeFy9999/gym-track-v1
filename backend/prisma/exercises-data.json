@@ -4363,5 +4363,6035 @@
     "name": "Zottman Preacher Curl",
     "muscleGroup": "Biceps",
     "image": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Zottman_Preacher_Curl/0.jpg"
+  },
+  {
+    "name": "45° Side Bend",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "All Fours Squad Stretch",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Alternate Lateral Pulldown",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Archer Pull Up",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Archer Push Up",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Arm Slingers Hanging Bent Knee Legs",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Arm Slingers Hanging Straight Legs",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Arms Apart Circular Toe Touch (Male)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Arms Overhead Full Sit-Up (Male)",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Assisted Chest Dip (Kneeling)",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Assisted Hanging Knee Raise",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Assisted Hanging Knee Raise With Throw Down",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Assisted Lying Calves Stretch",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Assisted Lying Glutes Stretch",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Assisted Lying Gluteus And Piriformis Stretch",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Assisted Lying Leg Raise With Lateral Throw Down",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Assisted Lying Leg Raise With Throw Down",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Assisted Motion Russian Twist",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Assisted Parallel Close Grip Pull-Up",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Assisted Prone Hamstring",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Assisted Prone Lying Quads Stretch",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Assisted Prone Rectus Femoris Stretch",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Assisted Pull-Up",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Assisted Seated Pectoralis Major Stretch With Stability Ball",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Assisted Side Lying Adductor Stretch",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Assisted Sit-Up",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Assisted Standing Chin-Up",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Assisted Standing Pull-Up",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Assisted Standing Triceps Extension (With Towel)",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Assisted Triceps Dip (Kneeling)",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Assisted Wide-Grip Chest Dip (Kneeling)",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Astride Jumps (Male)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Back And Forth Step",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Back Extension On Exercise Ball",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Back Lever",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Back Pec Stretch",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Backward Jump",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Band Alternating Biceps Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Band Alternating V-Up",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Band Assisted Wheel Rollerout",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Band Bench Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Band Bent-Over Hip Extension",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Band Bicycle Crunch",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Band Close-Grip Pulldown",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Band Close-Grip Push-Up",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Band Concentration Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Band Fixed Back Close Grip Pulldown",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Band Fixed Back Underhand Pulldown",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Band Front Lateral Raise",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Band Front Raise",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Band Hip Lift",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Band Horizontal Pallof Press",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Band Jack Knife Sit-Up",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Band Kneeling One Arm Pulldown",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Band Kneeling Twisting Crunch",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Band Lying Hip Internal Rotation",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Band Lying Straight Leg Raise",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Band One Arm Overhead Biceps Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Band One Arm Single Leg Split Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Band One Arm Standing Low Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Band One Arm Twisting Chest Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Band One Arm Twisting Seated Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Band Pull Through",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Band Push Sit-Up",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Band Reverse Fly",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Band Reverse Wrist Curl",
+    "muscleGroup": "Avant-bras",
+    "image": null
+  },
+  {
+    "name": "Band Seated Hip Internal Rotation",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Band Seated Twist",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Band Shoulder Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Band Shrug",
+    "muscleGroup": "Trapèze",
+    "image": null
+  },
+  {
+    "name": "Band Side Triceps Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Band Single Leg Calf Raise",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Band Single Leg Reverse Calf Raise",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Band Single Leg Split Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Band Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Band Squat Row",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Band Standing Crunch",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Band Standing Rear Delt Row",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Band Standing Twisting Crunch",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Band Step-Up",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Band Stiff Leg Deadlift",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Band Straight Back Stiff Leg Deadlift",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Band Straight Leg Deadlift",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Band Twisting Overhead Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Band Two Legs Calf Raise - (Band Under Both Legs) V. 2",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Band Underhand Pulldown",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Band V-Up",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Band Vertical Pallof Press",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Band Wrist Curl",
+    "muscleGroup": "Avant-bras",
+    "image": null
+  },
+  {
+    "name": "Band Y-Raise",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Barbell Alternate Biceps Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Barbell Bench Front Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Bench Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Barbell Bench Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Bent Arm Pullover",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Barbell Bent Over Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Barbell Biceps Curl (With Arm Blaster)",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Barbell Clean And Press",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Clean-Grip Front Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Close-Grip Bench Press",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Barbell Decline Bench Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Barbell Decline Bent Arm Pullover",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Barbell Decline Close Grip To Skull Press",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Barbell Decline Pullover",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Barbell Decline Wide-Grip Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Barbell Decline Wide-Grip Pullover",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Barbell Drag Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Barbell Floor Calf Raise",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Front Chest Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Front Raise",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Barbell Front Raise And Pullover",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Barbell Front Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Full Squat (Back Pov)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Full Squat (Side Pov)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Full Zercher Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Glute Bridge Two Legs On Bench (Male)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Good Morning",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell High Bar Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Incline Bench Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Barbell Incline Close Grip Bench Press",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Barbell Incline Reverse-Grip Press",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Barbell Incline Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Barbell Jefferson Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Jm Bench Press",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Barbell Jump Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Lateral Lunge",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Low Bar Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Lying Back Of The Head Tricep Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Barbell Lying Close-Grip Press",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Barbell Lying Close-Grip Triceps Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Barbell Lying Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Barbell Lying Lifting (On Hip)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Lying Preacher Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Barbell Lying Triceps Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Barbell Lying Triceps Extension Skull Crusher",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Barbell Narrow Stance Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell One Arm Bent Over Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Barbell One Arm Floor Press",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Barbell One Arm Side Deadlift",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell One Arm Snatch",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Barbell One Leg Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Overhead Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Palms Down Wrist Curl Over A Bench",
+    "muscleGroup": "Avant-bras",
+    "image": null
+  },
+  {
+    "name": "Barbell Palms Up Wrist Curl Over A Bench",
+    "muscleGroup": "Avant-bras",
+    "image": null
+  },
+  {
+    "name": "Barbell Pendlay Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Barbell Pin Presses",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Barbell Preacher Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Barbell Press Sit-Up",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Barbell Prone Incline Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Barbell Pullover",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Barbell Pullover To Press",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Barbell Rack Pull",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Rear Delt Raise",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Barbell Rear Lunge",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Rear Lunge V. 2",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Revers Wrist Curl V. 2",
+    "muscleGroup": "Avant-bras",
+    "image": null
+  },
+  {
+    "name": "Barbell Reverse Close-Grip Bench Press",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Barbell Reverse Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Barbell Reverse Grip Bent Over Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Barbell Reverse Grip Decline Bench Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Barbell Reverse Grip Incline Bench Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Barbell Reverse Grip Incline Bench Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Barbell Reverse Grip Skullcrusher",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Barbell Reverse Preacher Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Barbell Reverse Wrist Curl",
+    "muscleGroup": "Avant-bras",
+    "image": null
+  },
+  {
+    "name": "Barbell Rollerout",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Barbell Rollerout From Bench",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Barbell Romanian Deadlift",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Seated Behind Head Military Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Barbell Seated Bradford Rocky Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Barbell Seated Close Grip Behind Neck Triceps Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Barbell Seated Close-Grip Concentration Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Barbell Seated Good Morning",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Seated Overhead Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Barbell Seated Overhead Triceps Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Barbell Seated Twist",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Barbell Side Bent V. 2",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Barbell Side Split Squat V. 2",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Single Leg Deadlift",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Single Leg Split Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Sitted Alternate Leg Raise",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Barbell Sitted Alternate Leg Raise (Female)",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Barbell Skier",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Barbell Speed Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Split Squat V. 2",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Squat (On Knees)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Squat Jump Step Rear Lunge",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Standing Ab Rollerout",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Barbell Standing Back Wrist Curl",
+    "muscleGroup": "Avant-bras",
+    "image": null
+  },
+  {
+    "name": "Barbell Standing Bradford Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Barbell Standing Calf Raise",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Standing Close Grip Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Barbell Standing Close Grip Military Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Barbell Standing Concentration Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Barbell Standing Front Raise Over Head",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Barbell Standing Leg Calf Raise",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Standing Overhead Triceps Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Barbell Standing Reverse Grip Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Barbell Standing Rocking Leg Calf Raise",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Standing Twist",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Barbell Standing Wide Grip Biceps Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Barbell Standing Wide Military Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Barbell Standing Wide-Grip Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Barbell Step-Up",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Stiff Leg Good Morning",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Straight Leg Deadlift",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Sumo Deadlift",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Thruster",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Barbell Upright Row",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Barbell Upright Row V. 2",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Barbell Upright Row V. 3",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Barbell Wide Bench Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Barbell Wide Reverse Grip Bench Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Barbell Wide Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Barbell Wide-Grip Upright Row",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Barbell Wrist Curl",
+    "muscleGroup": "Avant-bras",
+    "image": null
+  },
+  {
+    "name": "Barbell Wrist Curl V. 2",
+    "muscleGroup": "Avant-bras",
+    "image": null
+  },
+  {
+    "name": "Barbell Zercher Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Basic Toe Touch (Male)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Bear Crawl",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Bench Dip (Knees Bent)",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Bench Dip On Floor",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Bench Hip Extension",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Bench Pull-Ups",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Bent Knee Lying Twist (Male)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Biceps Leg Concentration Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Biceps Narrow Pull-Ups",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Biceps Pull-Up",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Bodyweight Drop Jump Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Bodyweight Incline Side Plank",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Bodyweight Kneeling Triceps Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Bodyweight Side Lying Biceps Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Bodyweight Squatting Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Bodyweight Squatting Row (With Towel)",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Bodyweight Standing Calf Raise",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Bodyweight Standing Close-Grip One Arm Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Bodyweight Standing Close-Grip Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Bodyweight Standing One Arm Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Bodyweight Standing One Arm Row (With Towel)",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Bodyweight Standing Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Bodyweight Standing Row (With Towel)",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Bottoms-Up",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Box Jump Down With One Leg Stabilization",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Bridge - Mountain Climber (Cross Body)",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Burpee",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Butterfly Yoga Pose",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Cable Alternate Shoulder Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Cable Alternate Triceps Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Cable Assisted Inverse Leg Curl",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Cable Bar Lateral Pulldown",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable Bench Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Cable Close Grip Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Cable Concentration Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Cable Concentration Extension (On Knee)",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Cable Cross-Over Lateral Pulldown",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable Cross-Over Revers Fly",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Cable Cross-Over Variation",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Cable Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Cable Deadlift",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Cable Decline Fly",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Cable Decline One Arm Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Cable Decline Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Cable Decline Seated Wide-Grip Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable Drag Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Cable Floor Seated Wide-Grip Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable Forward Raise",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Cable Front Raise",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Cable Front Shoulder Raise",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Cable Hammer Curl (With Rope)",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Cable High Pulley Overhead Tricep Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Cable High Row (Kneeling)",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable Incline Bench Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Cable Incline Bench Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable Incline Fly",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Cable Incline Fly (On Stability Ball)",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Cable Kickback",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Cable Kneeling Crunch",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Cable Kneeling Rear Delt Row (With Rope) (Male)",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Cable Kneeling Triceps Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Cable Lat Pulldown Full Range Of Motion",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable Lateral Pulldown (With Rope Attachment)",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable Lateral Pulldown With V-Bar",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable Lateral Raise",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Cable Low Fly",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Cable Low Seated Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable Lying Bicep Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Cable Lying Close-Grip Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Cable Lying Extension Pullover (With Rope Attachment)",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable Lying Fly",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Cable Lying Triceps Extension V. 2",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Cable Middle Fly",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Cable One Arm Bent Over Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable One Arm Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Cable One Arm Decline Chest Fly",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Cable One Arm Fly On Exercise Ball",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Cable One Arm Incline Fly On Exercise Ball",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Cable One Arm Incline Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Cable One Arm Incline Press On Exercise Ball",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Cable One Arm Lateral Bent-Over",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Cable One Arm Lateral Raise",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Cable One Arm Preacher Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Cable One Arm Press On Exercise Ball",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Cable One Arm Pulldown",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable One Arm Reverse Preacher Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Cable One Arm Straight Back High Row (Kneeling)",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable One Arm Tricep Pushdown",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Cable Overhead Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Cable Overhead Curl On Exercise Ball",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Cable Overhead Triceps Extension (Rope Attachment)",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Cable Palm Rotational Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable Press On Exercise Ball",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Cable Pull Through (With Rope)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Cable Pulldown",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable Pulldown (Pro Lat Bar)",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable Pulldown Bicep Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Cable Pushdown",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Cable Pushdown (Straight Arm) V. 2",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable Pushdown (With Rope Attachment)",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Cable Rear Delt Row (Stirrups)",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Cable Rear Delt Row (With Rope)",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Cable Rear Drive",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Cable Rear Pulldown",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable Reverse Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Cable Reverse Grip Triceps Pushdown (Sz-Bar) (With Arm Blaster)",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Cable Reverse One Arm Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Cable Reverse Preacher Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Cable Reverse Wrist Curl",
+    "muscleGroup": "Avant-bras",
+    "image": null
+  },
+  {
+    "name": "Cable Reverse-Grip Pushdown",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Cable Reverse-Grip Straight Back Seated High Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable Rope Crossover Seated Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable Rope Elevated Seated Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable Rope Extension Incline Bench Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable Rope Hammer Preacher Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Cable Rope High Pulley Overhead Tricep Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Cable Rope Incline Tricep Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Cable Rope Lying On Floor Tricep Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Cable Rope One Arm Hammer Preacher Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Cable Rope Seated Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable Russian Twists (On Stability Ball)",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Cable Seated Chest Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Cable Seated Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Cable Seated High Row (V-Bar)",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable Seated One Arm Alternate Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable Seated One Arm Concentration Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Cable Seated Overhead Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Cable Seated Rear Lateral Raise",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Cable Seated Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable Seated Shoulder Internal Rotation",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Cable Seated Twist",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Cable Seated Wide-Grip Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable Shrug",
+    "muscleGroup": "Trapèze",
+    "image": null
+  },
+  {
+    "name": "Cable Side Bend",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Cable Side Bend Crunch (Bosu Ball)",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Cable Side Crunch",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Cable Squat Row (With Rope Attachment)",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable Squatting Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Cable Standing Back Wrist Curl",
+    "muscleGroup": "Avant-bras",
+    "image": null
+  },
+  {
+    "name": "Cable Standing Calf Raise",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Cable Standing Cross-Over High Reverse Fly",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Cable Standing Crunch",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Cable Standing Crunch (With Rope Attachment)",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Cable Standing Fly",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Cable Standing Hip Extension",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Cable Standing Inner Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Cable Standing Lift",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Cable Standing One Arm Triceps Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Cable Standing One Leg Calf Raise",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Cable Standing Pulldown (With Rope)",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Cable Standing Rear Delt Row (With Rope)",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Cable Standing Reverse Grip One Arm Overhead Tricep Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Cable Standing Row (V-Bar)",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable Standing Shoulder External Rotation",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Cable Standing Twist Row (V-Bar)",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable Standing Up Straight Crossovers",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Cable Straight Arm Pulldown",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable Straight Arm Pulldown (With Rope)",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable Straight Back Seated Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable Supine Reverse Fly",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Cable Thibaudeau Kayak Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable Triceps Pushdown (V-Bar)",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Cable Triceps Pushdown (V-Bar) (With Arm Blaster)",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Cable Tuck Reverse Crunch",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Cable Twist",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Cable Twist (Up-Down)",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Cable Twisting Pull",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable Two Arm Curl On Incline Bench",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Cable Two Arm Tricep Kickback",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Cable Underhand Pulldown",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable Upper Chest Crossovers",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Cable Upper Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Cable Upright Row",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Cable Wide Grip Rear Pulldown Behind Neck",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Calf Push Stretch With Hands Against Wall",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Calf Stretch With Hands Against Wall",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Calf Stretch With Rope",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Cambered Bar Lying Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Captains Chair Straight Leg Raise",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Chest Dip",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Chest Dip (On Dip-Pull-Up Cage)",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Chest Dip On Straight Bar",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Chest Stretch With Exercise Ball",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Chest Tap Push-Up (Male)",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Chin-Ups (Narrow Parallel Grip)",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Circles Knee Stretch",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Clap Push Up",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Close Grip Chin-Up",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Close-Grip Push-Up",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Close-Grip Push-Up (On Knees)",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Crab Twist Toe Touch",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Cross Body Crunch",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Crunch (Hands Overhead)",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Crunch (On Stability Ball)",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Crunch (On Stability Ball, Arms Straight)",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Crunch Floor",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Curl-Up",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Curtsey Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Cycle Cross Trainer",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Decline Sit-Up",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Deep Push Up",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Diamond Push-Up",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Donkey Calf Raise",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Drop Push Up",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Alternate Biceps Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Alternate Biceps Curl (With Arm Blaster)",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Alternate Hammer Preacher Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Alternate Preacher Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Alternate Seated Hammer Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Alternate Side Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Alternating Bicep Curl With Leg Raised On Exercise Ball",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Alternating Seated Bicep Curl On Exercise Ball",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Arnold Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Arnold Press V. 2",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Around Pullover",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Bench Seated Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Bench Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Bent Over Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Bicep Curl Lunge With Bowling Motion",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Bicep Curl On Exercise Ball With Leg Raised",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Bicep Curl With Stork Stance",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Biceps Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Biceps Curl (With Arm Blaster)",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Biceps Curl Reverse",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Biceps Curl Squat",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Biceps Curl V Sit On Bosu Ball",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Burpee",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Close Grip Press",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Close-Grip Press",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Concentration Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Contralateral Forward Lunge",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Cross Body Hammer Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Cross Body Hammer Curl V. 2",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Cuban Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Cuban Press V. 2",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Deadlift",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Decline Bench Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Decline Fly",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Decline Hammer Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Decline One Arm Fly",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Decline One Arm Hammer Press",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Decline Shrug",
+    "muscleGroup": "Trapèze",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Decline Shrug V. 2",
+    "muscleGroup": "Trapèze",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Decline Triceps Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Decline Twist Fly",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Finger Curls",
+    "muscleGroup": "Avant-bras",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Fly",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Fly On Exercise Ball",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Forward Lunge Triceps Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Front Raise",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Front Raise V. 2",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Full Can Lateral Raise",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Goblet Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Hammer Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Hammer Curl On Exercise Ball",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Hammer Curl V. 2",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Hammer Curls (With Arm Blaster)",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell High Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Incline Alternate Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Incline Bench Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Incline Biceps Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Incline Breeding",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Incline Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Incline Curl V. 2",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Incline Fly",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Incline Fly On Exercise Ball",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Incline Hammer Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Incline Hammer Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Incline Hammer Press On Exercise Ball",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Incline Inner Biceps Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Incline One Arm Fly",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Incline One Arm Fly On Exercise Ball",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Incline One Arm Hammer Press",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Incline One Arm Hammer Press On Exercise Ball",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Incline One Arm Lateral Raise",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Incline One Arm Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Incline One Arm Press On Exercise Ball",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Incline Palm-In Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Incline Press On Exercise Ball",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Incline Raise",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Incline Rear Lateral Raise",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Incline Shrug",
+    "muscleGroup": "Trapèze",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Incline T-Raise",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Incline Triceps Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Incline Twisted Flyes",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Incline Two Arm Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Incline Y-Raise",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Iron Cross",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Kickback",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Kickbacks On Exercise Ball",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Kneeling Bicep Curl Exercise Ball",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Lateral Raise",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Lateral To Front Raise",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Lunge",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Lunge With Bicep Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Lying Extension (Across Face)",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Lying Alternate Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Lying Elbow Press",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Lying External Shoulder Rotation",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Lying Femoral",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Lying Hammer Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Lying On Floor Rear Delt Raise",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Lying One Arm Deltoid Rear",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Lying One Arm Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Lying One Arm Press V. 2",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Lying One Arm Pronated Triceps Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Lying One Arm Rear Lateral Raise",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Lying One Arm Supinated Triceps Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Lying Pronation On Floor",
+    "muscleGroup": "Avant-bras",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Lying Pullover On Exercise Ball",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Lying Rear Delt Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Lying Single Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Lying Supination On Floor",
+    "muscleGroup": "Avant-bras",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Lying Supine Biceps Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Lying Supine Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Lying Triceps Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Lying Wide Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Neutral Grip Bench Press",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell One Arm Bench Fly",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell One Arm Bent-Over Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Dumbbell One Arm Chest Fly On Exercise Ball",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell One Arm Concentration Curl (On Stability Ball)",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell One Arm Decline Chest Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell One Arm Fly On Exercise Ball",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell One Arm French Press On Exercise Ball",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell One Arm Hammer Preacher Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell One Arm Hammer Press On Exercise Ball",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell One Arm Incline Chest Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell One Arm Kickback",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell One Arm Lateral Raise",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell One Arm Lateral Raise With Support",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell One Arm Press On Exercise Ball",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell One Arm Prone Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell One Arm Prone Hammer Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell One Arm Pullover On Exercise Ball",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell One Arm Reverse Wrist Curl",
+    "muscleGroup": "Avant-bras",
+    "image": null
+  },
+  {
+    "name": "Dumbbell One Arm Reverse Fly (With Support)",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell One Arm Reverse Grip Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell One Arm Reverse Preacher Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell One Arm Reverse Spider Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell One Arm Seated Bicep Curl On Exercise Ball",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell One Arm Seated Hammer Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell One Arm Seated Neutral Wrist Curl",
+    "muscleGroup": "Avant-bras",
+    "image": null
+  },
+  {
+    "name": "Dumbbell One Arm Shoulder Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell One Arm Shoulder Press V. 2",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell One Arm Snatch",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Dumbbell One Arm Standing Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell One Arm Standing Hammer Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell One Arm Triceps Extension (On Bench)",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell One Arm Upright Row",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell One Arm Wrist Curl",
+    "muscleGroup": "Avant-bras",
+    "image": null
+  },
+  {
+    "name": "Dumbbell One Arm Zottman Preacher Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell One Leg Fly On Exercise Ball",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Over Bench Neutral Wrist Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Over Bench One Arm Neutral Wrist Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Over Bench One Arm Reverse Wrist Curl",
+    "muscleGroup": "Avant-bras",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Over Bench One Arm Wrist Curl",
+    "muscleGroup": "Avant-bras",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Over Bench Revers Wrist Curl",
+    "muscleGroup": "Avant-bras",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Over Bench Wrist Curl",
+    "muscleGroup": "Avant-bras",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Palm Rotational Bent Over Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Palms In Incline Bench Press",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Peacher Hammer Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Plyo Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Preacher Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Preacher Curl Over Exercise Ball",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Press On Exercise Ball",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Pronate-Grip Triceps Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Prone Incline Hammer Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Pullover",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Pullover Hip Extension On Exercise Ball",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Pullover On Exercise Ball",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Push Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Rear Delt Raise",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Rear Delt Row_Shoulder",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Rear Fly",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Rear Lateral Raise",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Rear Lateral Raise (Support Head)",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Revers Grip Biceps Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Reverse Bench Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Reverse Fly",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Reverse Grip Incline Bench One Arm Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Reverse Grip Incline Bench Two Arm Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Reverse Grip Row (Female)",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Reverse Preacher Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Reverse Spider Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Reverse Wrist Curl",
+    "muscleGroup": "Avant-bras",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Romanian Deadlift",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Rotation Reverse Fly",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Scott Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Seated Alternate Front Raise",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Seated Alternate Hammer Curl On Exercise Ball",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Seated Alternate Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Seated Alternate Shoulder",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Seated Bench Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Seated Bent Arm Lateral Raise",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Seated Bent Over Alternate Kickback",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Seated Bent Over Triceps Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Seated Bicep Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Seated Biceps Curl (On Stability Ball)",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Seated Biceps Curl To Shoulder Press",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Seated Calf Raise",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Seated Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Seated Front Raise",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Seated Hammer Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Seated Inner Biceps Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Seated Kickback",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Seated Lateral Raise",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Seated Lateral Raise V. 2",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Seated Neutral Wrist Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Seated One Arm Bicep Curl On Exercise Ball With Leg Raised",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Seated One Arm Kickback",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Seated One Arm Rotate",
+    "muscleGroup": "Avant-bras",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Seated One Leg Calf Raise",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Seated One Leg Calf Raise - Hammer Grip",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Seated One Leg Calf Raise - Palm Up",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Seated Palms Up Wrist Curl",
+    "muscleGroup": "Avant-bras",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Seated Preacher Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Seated Revers Grip Concentration Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Seated Reverse Grip One Arm Overhead Tricep Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Seated Shoulder Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Seated Shoulder Press (Parallel Grip)",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Seated Triceps Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Side Lying One Hand Raise",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Side Plank With Rear Fly",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Single Arm Overhead Carry",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Single Leg Calf Raise",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Single Leg Deadlift",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Single Leg Deadlift With Stepbox Support",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Single Leg Split Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Single Leg Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Standing Alternate Hammer Curl And Press",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Standing Alternate Overhead Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Standing Alternate Raise",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Standing Alternating Tricep Kickback",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Standing Around World",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Standing Bent Over One Arm Triceps Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Standing Bent Over Two Arm Triceps Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Standing Biceps Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Standing Calf Raise",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Standing Concentration Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Standing Front Raise Above Head",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Standing Inner Biceps Curl V. 2",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Standing Kickback",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Standing One Arm Concentration Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Standing One Arm Curl (Over Incline Bench)",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Standing One Arm Curl Over Incline Bench",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Standing One Arm Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Standing One Arm Palm In Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Standing One Arm Reverse Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Standing Overhead Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Standing Palms In Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Standing Preacher Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Standing Reverse Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Standing Triceps Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Standing Zottman Preacher Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Step Up Single Leg Balance With Bicep Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Step-Up",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Step-Up Lunge",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Step-Up Split Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Stiff Leg Deadlift",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Straight Arm Pullover",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Straight Leg Deadlift",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Sumo Pull Through",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Supported Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Tate Press",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Tricep Kickback With Stork Stance",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Twisting Bench Press",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Upright Row",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Upright Row (Back Pov)",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Upright Shoulder External Rotation",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Waiter Biceps Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell W-Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Zottman Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbell Zottman Preacher Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Dumbbells Seated Triceps Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Dynamic Chest Stretch (Male)",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Elbow Dips",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Elbow Lift - Reverse Push-Up",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Elbow-To-Knee",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Elevator",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Exercise Ball Alternating Arm Ups",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Exercise Ball Back Extension With Arms Extended",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Exercise Ball Back Extension With Hands Behind Head",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Exercise Ball Back Extension With Knees Off Ground",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Exercise Ball Back Extension With Rotation",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Exercise Ball Dip",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Exercise Ball Hip Flexor Stretch",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Exercise Ball Hug",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Exercise Ball Lat Stretch",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Exercise Ball Lower Back Stretch (Pyramid)",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Exercise Ball Lying Side Lat Stretch",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Exercise Ball On The Wall Calf Raise",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Exercise Ball On The Wall Calf Raise (Tennis Ball Between Ankles)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Exercise Ball On The Wall Calf Raise (Tennis Ball Between Knees)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Exercise Ball One Leg Prone Lower Body Rotation",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Exercise Ball One Legged Diagonal Kick Hamstring Curl",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Exercise Ball Pike Push Up",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Exercise Ball Prone Leg Raise",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Exercise Ball Seated Hamstring Stretch",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Exercise Ball Seated Triceps Stretch",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Exercise Ball Supine Triceps Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Ez Bar French Press On Exercise Ball",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Ez Bar Lying Bent Arms Pullover",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Ez Bar Lying Close Grip Triceps Extension Behind Head",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Ez Bar Reverse Grip Bent Over Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Ez Bar Seated Close Grip Concentration Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Ez Bar Standing French Press",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Ez Barbell Anti Gravity Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Ez Barbell Close Grip Preacher Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Ez Barbell Close-Grip Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Ez Barbell Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Ez Barbell Decline Close Grip Face Press",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Ez Barbell Decline Triceps Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Ez Barbell Incline Triceps Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Ez Barbell Jm Bench Press",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Ez Barbell Reverse Grip Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Ez Barbell Reverse Grip Preacher Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Ez Barbell Seated Curls",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Ez Barbell Seated Triceps Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Ez Barbell Spider Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Ez-Bar Biceps Curl (With Arm Blaster)",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Ez-Bar Close-Grip Bench Press",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Ez-Barbell Standing Wide Grip Biceps Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Farmers Walk",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Flag",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Flexion Leg Sit Up (Bent Knee)",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Flexion Leg Sit Up (Straight Arm)",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Floor Fly (With Barbell)",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Forward Jump",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Forward Lunge (Male)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Frog Crunch",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Frog Planche",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Front Lever",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Front Lever Reps",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Front Plank With Twist",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Full Maltese",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Full Planche",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Full Planche Push-Up",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Gironda Sternum Chin",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Glute Bridge March",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Glute Bridge Two Legs On Bench (Male)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Glute-Ham Raise",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Gorilla Chin",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Groin Crunch",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Hack Calf Raise",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Hack One Leg Calf Raise",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Half Knee Bends (Male)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Half Sit-Up (Male)",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Hands Bike",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Hands Clasped Circular Toe Touch (Male)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Hands Reversed Clasped Circular Toe Touch (Male)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Handstand",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Handstand Push-Up",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Hanging Leg Hip Raise",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Hanging Oblique Knee Raise",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Hanging Straight Leg Hip Raise",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Hanging Straight Leg Raise",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Hanging Straight Twisting Leg Hip Raise",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "High Knee Against Wall",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Hip Raise (Bent Knee)",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Hug Keens To Chest",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Hyght Dumbbell Fly",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Hyperextension",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Hyperextension (On Bench)",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Impossible Dips",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Inchworm V. 2",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Incline Close-Grip Push-Up",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Incline Leg Hip Raise (Leg Straight)",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Incline Push Up Depth Jump",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Incline Push-Up (On Box)",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Incline Reverse Grip Push-Up",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Incline Scapula Push Up",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Incline Twisting Sit-Up",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Inverse Leg Curl (Bench Support)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Inverse Leg Curl (On Pull-Up Cable Machine)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Inverted Row Bent Knees",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Inverted Row On Bench",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Inverted Row V. 2",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Iron Cross Stretch",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Isometric Chest Squeeze",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Jack Burpee",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Jack Jump (Male)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Jump Rope",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Jump Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Jump Squat V. 2",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Kettlebell Advanced Windmill",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Kettlebell Alternating Hang Clean",
+    "muscleGroup": "Avant-bras",
+    "image": null
+  },
+  {
+    "name": "Kettlebell Alternating Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Kettlebell Alternating Press On Floor",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Kettlebell Alternating Renegade Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Kettlebell Alternating Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Kettlebell Bent Press",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Kettlebell Bottoms Up Clean From The Hang Position",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Kettlebell Double Alternating Hang Clean",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Kettlebell Double Jerk",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Kettlebell Double Push Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Kettlebell Double Snatch",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Kettlebell Double Windmill",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Kettlebell Extended Range One Arm Press On Floor",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Kettlebell Front Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Kettlebell Goblet Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Kettlebell Lunge Pass Through",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Kettlebell One Arm Clean And Jerk",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Kettlebell One Arm Floor Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Kettlebell One Arm Jerk",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Kettlebell One Arm Military Press To The Side",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Kettlebell One Arm Push Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Kettlebell One Arm Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Kettlebell One Arm Snatch",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Kettlebell Pirate Supper Legs",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Kettlebell Plyo Push-Up",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Kettlebell Seated Two Arm Military Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Kettlebell Swing",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Kettlebell Turkish Get Up (Squat Style)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Kettlebell Two Arm Clean",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Kettlebell Two Arm Military Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Kettlebell Two Arm Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Kick Out Sit",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Knee Touch Crunch",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Kneeling Lat Stretch",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Kneeling Plank Tap Shoulder (Male)",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Kneeling Push-Up (Male)",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Korean Dips",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "L-Pull-Up",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "L-Sit On Floor",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Landmine 180",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Landmine Lateral Raise",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Lean Planche",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Left Hook. Boxing",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Leg Pull In Flat Bench",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Leg Up Hamstring Stretch",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Lever Alternate Leg Press",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Lever Alternating Narrow Grip Seated Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Lever Assisted Chin-Up",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Lever Back Extension",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Lever Bent Over Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Lever Bent-Over Row With V-Bar",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Lever Bicep Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Lever Calf Press",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Lever Chest Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Lever Deadlift",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Lever Decline Chest Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Lever Donkey Calf Raise",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Lever Front Pulldown",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Lever Gripless Shrug",
+    "muscleGroup": "Trapèze",
+    "image": null
+  },
+  {
+    "name": "Lever Gripless Shrug V. 2",
+    "muscleGroup": "Trapèze",
+    "image": null
+  },
+  {
+    "name": "Lever Gripper Hands",
+    "muscleGroup": "Avant-bras",
+    "image": null
+  },
+  {
+    "name": "Lever Hammer Grip Preacher Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Lever High Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Lever Hip Extension V. 2",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Lever Horizontal One Leg Press",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Lever Incline Chest Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Lever Incline Chest Press V. 2",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Lever Kneeling Leg Curl",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Lever Kneeling Twist",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Lever Lateral Raise",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Lever Leg Extension",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Lever Lying Leg Curl",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Lever Lying Two-One Leg Curl",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Lever Military Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Lever Narrow Grip Seated Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Lever One Arm Bent Over Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Lever One Arm Lateral High Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Lever One Arm Lateral Wide Pulldown",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Lever One Arm Shoulder Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Lever Overhand Triceps Dip",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Lever Preacher Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Lever Preacher Curl V. 2",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Lever Pullover",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Lever Reverse Grip Lateral Pulldown",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Lever Reverse Grip Preacher Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Lever Reverse Grip Vertical Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Lever Reverse Hyperextension",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Lever Reverse T-Bar Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Lever Rotary Calf",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Lever Seated Calf Press",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Lever Seated Calf Raise",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Lever Seated Crunch",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Lever Seated Crunch (Chest Pad)",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Lever Seated Crunch V. 2",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Lever Seated Dip",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Lever Seated Fly",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Lever Seated Good Morning",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Lever Seated Hip Abduction",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Lever Seated Hip Adduction",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Lever Seated Leg Curl",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Lever Seated Leg Raise Crunch",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Lever Seated Reverse Fly",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Lever Seated Reverse Fly (Parallel Grip)",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Lever Seated Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Lever Seated Squat Calf Raise On Leg Press Machine",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Lever Shoulder Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Lever Shoulder Press V. 2",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Lever Shoulder Press V. 3",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Lever Shrug",
+    "muscleGroup": "Trapèze",
+    "image": null
+  },
+  {
+    "name": "Lever Standing Calf Raise",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Lever Standing Chest Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Lever T Bar Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Lever T-Bar Reverse Grip Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Lever Triceps Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Lever Unilateral Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "London Bridge",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Low Glute Bridge On Floor",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Lunge With Jump",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Lunge With Twist",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Lying (Side) Quads Stretch",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Lying Elbow To Knee",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Lying Leg Raise Flat Bench",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Lying Leg-Hip Raise",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Machine Inner Chest Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "March Sit (Wall)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Medicine Ball Catch And Overhead Throw",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Medicine Ball Chest Push From 3 Point Stance",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Medicine Ball Chest Push Multiple Response",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Medicine Ball Chest Push Single Response",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Medicine Ball Chest Push With Run Release",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Medicine Ball Close Grip Push Up",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Medicine Ball Overhead Slam",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Medicine Ball Supine Chest Throw",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Mixed Grip Chin-Up",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Modified Hindu Push-Up (Male)",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Modified Push Up To Lower Arms",
+    "muscleGroup": "Avant-bras",
+    "image": null
+  },
+  {
+    "name": "Mountain Climber",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Muscle-Up (On Vertical Bar)",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Narrow Push-Up On Exercise Ball",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Neck Side Stretch",
+    "muscleGroup": "Trapèze",
+    "image": null
+  },
+  {
+    "name": "Negative Crunch",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Oblique Crunch V. 2",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Oblique Crunches Floor",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Olympic Barbell Hammer Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Olympic Barbell Triceps Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "One Arm Dip",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "One Arm Slam (With Medicine Ball)",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "One Arm Towel Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "One Leg Donkey Calf Raise",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "One Leg Floor Calf Raise",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "One Leg Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Otis Up",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Outside Leg Kick Push-Up",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Overhead Triceps Stretch",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Pelvic Tilt",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Pike-To-Cobra Push-Up",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Plyo Push Up",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Posterior Step To Overhead Reach",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Potty Squat",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Potty Squat With Support",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Power Point Plank",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Prisoner Half Sit-Up (Male)",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Prone Twist On Stability Ball",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Pull Up (Neutral Grip)",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Pull-In (On Stability Ball)",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Pull-Up",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Push And Pull Bodyweight",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Push To Run",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Push Up On Bosu Ball",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Push-Up",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Push-Up (Bosu Ball)",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Push-Up (On Stability Ball)",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Push-Up (Wall)",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Push-Up (Wall) V. 2",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Push-Up Close-Grip Off Dumbbell",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Push-Up Inside Leg Kick",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Push-Up Medicine Ball",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Push-Up On Lower Arms",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Push-Up Plus",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Push-Up To Side Plank",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Quads",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Quarter Sit-Up",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Quick Feet V. 2",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Raise Single Arm Push-Up",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Rear Decline Bridge",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Rear Deltoid Stretch",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Rear Pull-Up",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Reclining Big Toe Pose With Rope",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Resistance Band Hip Thrusts On Knees (Female)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Resistance Band Leg Extension",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Resistance Band Seated Biceps Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Resistance Band Seated Chest Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Resistance Band Seated Hip Abduction",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Resistance Band Seated Shoulder Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Resistance Band Seated Straight Back Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Reverse Dip",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Reverse Grip Machine Lat Pulldown",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Reverse Grip Pull-Up",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Reverse Hyper Extension (On Stability Ball)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Reverse Hyper On Flat Bench",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Reverse Plank With Leg Lift",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Rocking Frog Stretch",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Rocky Pull-Up Pulldown",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Roller Back Stretch",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Roller Body Saw",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Roller Hip Lat Stretch",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Roller Hip Stretch",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Roller Reverse Crunch",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Roller Seated Shoulder Flexor Depresor Retractor",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Roller Seated Single Leg Shoulder Flexor Depresor Retractor",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Roller Side Lat Stretch",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Run",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Run (Equipment)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Runners Stretch",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Scapula Dips",
+    "muscleGroup": "Trapèze",
+    "image": null
+  },
+  {
+    "name": "Scapula Push-Up",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Scissor Jumps (Male)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Seated Calf Stretch (Male)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Seated Glute Stretch",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Seated Leg Raise",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Seated Lower Back Stretch",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Seated Piriformis Stretch",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Seated Side Crunch (Wall)",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Seated Wide Angle Pose Sequence",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Self Assisted Inverse Leg Curl",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Self Assisted Inverse Leg Curl (On Floor)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Semi Squat Jump (Male)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Short Stride Run",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Shoulder Grip Pull-Up",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Shoulder Tap",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Shoulder Tap Push-Up",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Side Bridge Hip Abduction",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Side Bridge V. 2",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Side Hip (On Parallel Bars)",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Side Hip Abduction",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Side Lying Floor Stretch",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Side Lying Hip Adduction (Male)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Side Plank Hip Adduction",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Side Push Neck Stretch",
+    "muscleGroup": "Trapèze",
+    "image": null
+  },
+  {
+    "name": "Side Push-Up",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Side Wrist Pull Stretch",
+    "muscleGroup": "Avant-bras",
+    "image": null
+  },
+  {
+    "name": "Side-To-Side Chin",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Side-To-Side Toe Touch (Male)",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Single Arm Push-Up",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Single Leg Bridge With Outstretched Leg",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Single Leg Calf Raise (On A Dumbbell)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Single Leg Platform Slide",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Single Leg Squat (Pistol) Male",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Sissy Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Sit-Up V. 2",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Sit-Up With Arms On Chest",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Skater Hops",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Ski Ergometer",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Ski Step",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Skin The Cat",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Sled 45 Degrees One Leg Press",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Sled 45В° Calf Press",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Sled 45В° Leg Press",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Sled 45В° Leg Press (Back Pov)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Sled 45° Leg Press (Side Pov)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Sled 45В° Leg Wide Press",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Sled Calf Press On Leg Press",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Sled Closer Hack Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Sled Forward Angled Calf Raise",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Sled Hack Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Sled Lying Calf Press",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Sled Lying Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Sled One Leg Calf Press On Leg Press",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Sledge Hammer",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Smith Back Shrug",
+    "muscleGroup": "Trapèze",
+    "image": null
+  },
+  {
+    "name": "Smith Behind Neck Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Smith Bench Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Smith Bent Knee Good Morning",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Smith Bent Over Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Smith Chair Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Smith Close-Grip Bench Press",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Smith Deadlift",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Smith Decline Bench Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Smith Decline Reverse-Grip Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Smith Front Squat (Clean Grip)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Smith Full Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Smith Hack Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Smith Hip Raise",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Smith Incline Bench Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Smith Incline Reverse-Grip Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Smith Incline Shoulder Raises",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Smith Leg Press",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Smith Low Bar Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Smith Machine Bicep Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Smith Machine Decline Close Grip Bench Press",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Smith Machine Incline Tricep Extension",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Smith Machine Reverse Decline Close Grip Bench Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Smith Narrow Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Smith One Arm Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Smith One Leg Floor Calf Raise",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Smith Rear Delt Row",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Smith Reverse Calf Raises",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Smith Reverse Grip Bent Over Row",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Smith Reverse-Grip Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Smith Seated One Leg Calf Raise",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Smith Seated Shoulder Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Smith Seated Wrist Curl",
+    "muscleGroup": "Avant-bras",
+    "image": null
+  },
+  {
+    "name": "Smith Shoulder Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Smith Shrug",
+    "muscleGroup": "Trapèze",
+    "image": null
+  },
+  {
+    "name": "Smith Single Leg Split Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Smith Sprint Lunge",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Smith Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Smith Standing Back Wrist Curl",
+    "muscleGroup": "Avant-bras",
+    "image": null
+  },
+  {
+    "name": "Smith Standing Behind Head Military Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Smith Standing Leg Calf Raise",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Smith Standing Military Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Smith Sumo Squat",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Smith Toe Raise",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Smith Upright Row",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Smith Wide Grip Bench Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Smith Wide Grip Decline Bench Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Sphinx",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Spider Crawl Push Up",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Spine Stretch",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Spine Twist",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Squat On Bosu Ball",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Squat To Overhead Reach",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Squat To Overhead Reach With Twist",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Stability Ball Crunch (Full Range Hands Behind Head)",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Stalder Press",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Standing Archer",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Standing Behind Neck Press",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Standing Calf Raise (On A Staircase)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Standing Calves",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Standing Calves Calf Stretch",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Standing Hamstring And Calf Stretch With Strap",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Standing Single Leg Curl",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Standing Wheel Rollerout",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Star Jump (Male)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Stationary Bike Run V. 3",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Stationary Bike Walk",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Straddle Maltese",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Straddle Planche",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Straight Leg Outer Hip Abductor",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Superman Push-Up",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Suspended Abdominal Fallout",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Swimmer Kicks V. 2 (Male)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Swing 360",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Three Bench Dip",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Triceps Dip",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Triceps Dip (Bench Leg)",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Triceps Dip (Between Benches)",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Triceps Dips Floor",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Triceps Press",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Twin Handle Parallel Grip Lat Pulldown",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Twist Hip Lift",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Twisted Leg Raise",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Twisted Leg Raise (Female)",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Two Toe Touch (Male)",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Upward Facing Dog",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "V-Sit On Floor",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Vertical Leg Raise (On Parallel Bars)",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Walk Elliptical Cross Trainer",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Walking High Knees Lunge",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Walking Lunge",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Walking On Incline Treadmill",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Walking On Stepmill",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Weighted Close Grip Chin-Up On Dip Cage",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Weighted Cossack Squats (Male)",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Weighted Crunch",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Weighted Decline Sit-Up",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Weighted Donkey Calf Raise",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Weighted Drop Push Up",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Weighted Front Plank",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Weighted Front Raise",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Weighted Hanging Leg-Hip Raise",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Weighted Hyperextension (On Stability Ball)",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Weighted Kneeling Step With Swing",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Weighted Lunge With Swing",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Weighted Muscle Up",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Weighted Muscle Up (On Bar)",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Weighted One Hand Pull Up",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Weighted Overhead Crunch (On Stability Ball)",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Weighted Pull-Up",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Weighted Round Arm",
+    "muscleGroup": "Épaules",
+    "image": null
+  },
+  {
+    "name": "Weighted Russian Twist",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Weighted Russian Twist (Legs Up)",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Weighted Russian Twist V. 2",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Weighted Seated Bicep Curl (On Stability Ball)",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Weighted Seated Twist (On Stability Ball)",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Weighted Side Bend (On Stability Ball)",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Weighted Standing Curl",
+    "muscleGroup": "Biceps",
+    "image": null
+  },
+  {
+    "name": "Weighted Standing Hand Squeeze",
+    "muscleGroup": "Avant-bras",
+    "image": null
+  },
+  {
+    "name": "Weighted Straight Bar Dip",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Weighted Stretch Lunge",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Weighted Svend Press",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Weighted Three Bench Dips",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Weighted Tricep Dips",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Weighted Triceps Dip On High Parallel Bars",
+    "muscleGroup": "Triceps",
+    "image": null
+  },
+  {
+    "name": "Wheel Rollerout",
+    "muscleGroup": "Abdominaux",
+    "image": null
+  },
+  {
+    "name": "Wheel Run",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Wide Grip Pull-Up",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Wide Grip Rear Pull-Up",
+    "muscleGroup": "Dos",
+    "image": null
+  },
+  {
+    "name": "Wide Hand Push Up",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "Wide-Grip Chest Dip On High Parallel Bars",
+    "muscleGroup": "Chest",
+    "image": null
+  },
+  {
+    "name": "World Greatest Stretch",
+    "muscleGroup": "Legs",
+    "image": null
+  },
+  {
+    "name": "Wrist Rollerer",
+    "muscleGroup": "Avant-bras",
+    "image": null
   }
 ]

@@ -211,13 +211,6 @@ export default function AddExercisePage() {
                         onClick={() => handleToggle(ex.id)}
                         className="w-full flex items-center gap-3 hover:bg-gray-50 rounded-xl px-3 py-2.5 transition-colors"
                       >
-                        {ex.image && (
-                          <img
-                            src={ex.image}
-                            alt={ex.name}
-                            className="w-10 h-10 rounded-xl object-cover bg-gray-100 flex-shrink-0"
-                          />
-                        )}
                         <span className="flex-1 text-left text-sm text-gray-700">
                           {ex.name}
                         </span>

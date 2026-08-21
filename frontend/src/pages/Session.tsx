@@ -364,20 +364,9 @@ export default function SessionPage() {
                           addExercise(ex.id);
                           setSearchQuery("");
                         }}
-                        className="w-full text-left hover:bg-gray-50 rounded-xl px-3 py-2.5 text-sm text-gray-700 transition-colors flex items-center gap-3"
+                        className="w-full text-left hover:bg-gray-50 rounded-xl px-3 py-2.5 text-sm text-gray-700 transition-colors"
                       >
-                        {ex.image ? (
-                          <img
-                            src={ex.image}
-                            alt={ex.name}
-                            className="w-10 h-10 rounded-xl object-cover bg-gray-100 flex-shrink-0"
-                          />
-                        ) : (
-                          <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
-                            <Dumbbell size={16} className="text-gray-400" />
-                          </div>
-                        )}
-                        <span className="text-sm">{ex.name}</span>
+                        {ex.name}
                       </button>
                     ))}
                   {availableExercises.filter((ex) =>
@@ -400,10 +389,10 @@ export default function SessionPage() {
             <div className="w-12 h-12 rounded-full bg-[#c9552c]/10 flex items-center justify-center mb-3">
               <Dumbbell size={20} className="text-[#c9552c]" />
             </div>
-            <p className="text-lg font-bold text-gray-900 mb-1">
+            <p className="text-sm font-bold text-gray-900 mb-1">
               Aucun exercice pour l'instant
             </p>
-            <p className="text-sm text-gray-400 text-center">
+            <p className="text-xs text-gray-400 text-center">
               Ajoute ton premier exercice pour{"\n"}commencer la séance
             </p>
           </div>
@@ -414,24 +403,20 @@ export default function SessionPage() {
             key={se.id}
             className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm"
           >
-            <div className="relative">
-              {se.exercise.image ? (
-                <img
-                  src={se.exercise.image}
-                  alt={se.exercise.name}
-                  className="w-full h-40 object-cover"
-                />
-              ) : (
-                <div className="w-full h-40 bg-gray-100" />
-              )}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+            <div
+              className="relative h-24 rounded-t-2xl flex items-end"
+              style={{
+                background:
+                  "linear-gradient(135deg, #3d2a1e 0%, #2a1c14 50%, #1a1210 100%)",
+              }}
+            >
               <p className="absolute bottom-3 left-4 text-lg font-bold text-white">
                 {se.exercise.name}
               </p>
               {!readOnly && (
                 <button
                   onClick={() => setConfirmDelete(se.id)}
-                  className="absolute top-3 right-3 bg-white/60 p-2 rounded-xl text-gray-500 active:text-red-500 transition-colors"
+                  className="absolute top-3 right-3 bg-white/20 p-2 rounded-xl text-white active:text-red-200 transition-colors"
                 >
                   <Trash2 size={16} />
                 </button>
@@ -520,17 +505,6 @@ export default function SessionPage() {
                   onClick={() => addExercise(ex.id)}
                   className="w-full bg-white border border-gray-200 rounded-2xl px-4 py-3.5 flex items-center gap-3 shadow-sm active:scale-[0.99] transition-all"
                 >
-                  {ex.image ? (
-                    <img
-                      src={ex.image}
-                      alt={ex.name}
-                      className="w-12 h-12 rounded-xl object-cover bg-gray-100 flex-shrink-0"
-                    />
-                  ) : (
-                    <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
-                      <Dumbbell size={18} className="text-gray-400" />
-                    </div>
-                  )}
                   <div className="flex-1 text-left">
                     <p className="text-base font-semibold text-gray-900">
                       {ex.name}
