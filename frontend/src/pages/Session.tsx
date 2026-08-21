@@ -7,8 +7,6 @@ import {
   ChevronDown,
   Search,
   Dumbbell,
-  TrendingUp,
-  TrendingDown,
 } from "lucide-react";
 import { getWeightUnit } from "../utils/units";
 import { API_URL } from "../lib/api";

@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { TrendingUp, TrendingDown } from "lucide-react";
 import { API_URL } from "../../lib/api";
 
 type SessionData = {

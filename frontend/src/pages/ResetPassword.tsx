@@ -3,7 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Lock } from "lucide-react";
 import { API_URL } from "../lib/api";
 
 const passwordRules = [
@@ -78,9 +78,9 @@ export default function ResetPasswordPage() {
 
   if (!token) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-6">
-        <p className="text-red-400 mb-4">Lien invalide</p>
-        <Link to="/login" className="text-orange-400 font-semibold text-sm">
+      <div className="min-h-screen bg-[#faf6f1] flex flex-col items-center justify-center px-6">
+        <p className="text-red-500 mb-4">Lien invalide</p>
+        <Link to="/login" className="text-[#c9552c] font-semibold text-sm">
           Retour à la connexion
         </Link>
       </div>
@@ -89,9 +89,14 @@ export default function ResetPasswordPage() {
 
   if (done) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center pt-16 px-6">
-        <div className="w-16 h-16 rounded-full bg-green-500/15 flex items-center justify-center mb-4">
-          <span className="text-3xl">✅</span>
+      <div className="min-h-screen bg-[#faf6f1] flex flex-col items-center pt-16 px-6">
+        <img
+          src="/LogoGymsTrack5.webp"
+          alt="GymsTrack"
+          className="h-14 mx-auto mb-6"
+        />
+        <div className="w-14 h-14 rounded-full bg-[#3a9e6e]/10 flex items-center justify-center mb-4">
+          <Lock size={24} className="text-[#3a9e6e]" />
         </div>
         <h1 className="text-xl font-bold text-gray-900 mb-2">
           Mot de passe réinitialisé
@@ -101,7 +106,7 @@ export default function ResetPasswordPage() {
         </p>
         <Link
           to="/login"
-          className="bg-orange-500 hover:bg-orange-600 text-gray-900 px-8 py-3 rounded-xl font-semibold"
+          className="bg-[#c9552c] text-white px-8 py-3 rounded-2xl font-semibold shadow-md"
         >
           Se connecter
         </Link>
@@ -110,39 +115,51 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col pt-16 px-6">
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">
+    <div className="min-h-screen bg-[#faf6f1] flex flex-col pt-16 px-6">
+      <div className="text-center mb-8">
+        <img
+          src="/LogoGymsTrack5.webp"
+          alt="GymsTrack"
+          className="h-14 mx-auto mb-6"
+        />
+      </div>
+
+      <div className="w-11 h-11 rounded-xl bg-[#c9552c]/10 flex items-center justify-center mb-3">
+        <Lock size={20} className="text-[#c9552c]" />
+      </div>
+
+      <h1 className="text-[24px] font-black text-gray-900 leading-tight mb-1">
         Nouveau mot de passe
       </h1>
-      <p className="text-sm text-gray-500 mb-8">
+      <p className="text-sm text-gray-500 mb-6">
         Choisis un nouveau mot de passe pour ton compte.
       </p>
 
       {serverError && (
-        <div className="bg-red-500/15 border border-red-500/30 text-red-400 text-sm rounded-xl px-4 py-3 mb-4">
+        <div className="bg-red-50 border border-red-200 text-red-500 text-sm rounded-xl px-4 py-3 mb-4">
           {serverError}
         </div>
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <div className="relative">
-          <label className="text-sm text-gray-500 mb-1 block">
+          <label className="text-sm font-semibold text-gray-900 mb-1 block">
             Nouveau mot de passe
           </label>
           <input
             type={showPassword ? "text" : "password"}
             {...register("password")}
-            className={`w-full bg-white border rounded-xl px-4 py-3 pr-12 text-gray-900 placeholder-zinc-500 focus:outline-none transition-colors ${
+            className={`w-full bg-white border rounded-2xl px-4 py-3.5 pr-12 text-gray-900 placeholder-gray-400 focus:outline-none transition-colors ${
               errors.password
                 ? "border-red-500"
-                : "border-gray-200 focus:border-orange-500"
+                : "border-gray-200 focus:border-[#c9552c]"
             }`}
             placeholder="••••••••"
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-4 top-9 text-gray-400 hover:text-zinc-300 transition-colors"
+            className="absolute right-4 top-10 text-gray-400 transition-colors"
           >
             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
@@ -157,12 +174,12 @@ export default function ResetPasswordPage() {
                     className="flex items-center gap-2 text-xs"
                   >
                     <span
-                      className={passes ? "text-green-400" : "text-gray-400"}
+                      className={passes ? "text-[#3a9e6e]" : "text-gray-400"}
                     >
                       {passes ? "✓" : "✗"}
                     </span>
                     <span
-                      className={passes ? "text-green-400" : "text-gray-400"}
+                      className={passes ? "text-[#3a9e6e]" : "text-gray-400"}
                     >
                       {rule.label}
                     </span>
@@ -174,26 +191,28 @@ export default function ResetPasswordPage() {
         </div>
 
         <div className="relative">
-          <label className="text-sm text-gray-500 mb-1 block">Confirmer</label>
+          <label className="text-sm font-semibold text-gray-900 mb-1 block">
+            Confirmer
+          </label>
           <input
             type={showConfirm ? "text" : "password"}
             {...register("confirm")}
-            className={`w-full bg-white border rounded-xl px-4 py-3 pr-12 text-gray-900 placeholder-zinc-500 focus:outline-none transition-colors ${
+            className={`w-full bg-white border rounded-2xl px-4 py-3.5 pr-12 text-gray-900 placeholder-gray-400 focus:outline-none transition-colors ${
               errors.confirm
                 ? "border-red-500"
-                : "border-gray-200 focus:border-orange-500"
+                : "border-gray-200 focus:border-[#c9552c]"
             }`}
             placeholder="••••••••"
           />
           <button
             type="button"
             onClick={() => setShowConfirm(!showConfirm)}
-            className="absolute right-4 top-9 text-gray-400 hover:text-zinc-300 transition-colors"
+            className="absolute right-4 top-10 text-gray-400 transition-colors"
           >
             {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
           {errors.confirm && (
-            <p className="text-red-400 text-xs mt-1">
+            <p className="text-red-500 text-xs mt-1">
               {errors.confirm.message}
             </p>
           )}
@@ -202,7 +221,7 @@ export default function ResetPasswordPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-gray-900 py-3.5 rounded-xl font-semibold transition-all shadow-lg shadow-orange-500/20"
+          className="w-full bg-[#e8622b] disabled:opacity-50 text-white py-3.5 rounded-2xl font-semibold transition-all shadow-md mt-2"
         >
           {loading ? "Réinitialisation..." : "Réinitialiser"}
         </button>
