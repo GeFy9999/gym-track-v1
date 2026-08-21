@@ -9,13 +9,13 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/logoMobileGymsTrack192x192.png",
+      "src": "/LogoMobile192x192_2.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/logoMobileGymsTrack512x512.png",
+      "src": "/LogoMobile512x512_2.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

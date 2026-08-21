@@ -92,70 +92,73 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col pt-16 px-6">
+    <div className="min-h-screen bg-[#faf6f1] flex flex-col pt-16 px-6">
       <div className="mb-10 text-center">
         <img
-          src="/logoGymsTrack.webp"
-          alt="GymTrack"
+          src="/LogoGymsTrack5.webp"
+          alt="GymsTrack"
           className="h-16 mx-auto mb-2"
         />
         <p className="text-gray-500 text-sm mt-2">Crée ton compte</p>
       </div>
 
       {serverError && (
-        <div className="bg-red-500/15 border border-red-500/30 text-red-400 text-sm rounded-xl px-4 py-3 mb-6">
+        <div className="bg-red-50 border border-red-200 text-red-500 text-sm rounded-xl px-4 py-3 mb-6">
           {serverError}
         </div>
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-        {/* Nom */}
         <div>
-          <label htmlFor="name" className="text-sm text-gray-500 mb-1 block">
+          <label
+            htmlFor="name"
+            className="text-m font-semibold text-gray-900 mb-1 block"
+          >
             Nom
           </label>
           <input
             id="name"
             type="text"
             {...register("name")}
-            className={`w-full bg-white border rounded-xl px-4 py-3 text-gray-900 placeholder-zinc-500 focus:outline-none transition-colors ${
+            className={`w-full bg-white border rounded-2xl px-4 py-3.5 text-gray-900 placeholder-gray-400 focus:outline-none transition-colors ${
               errors.name
                 ? "border-red-500"
-                : "border-gray-200 focus:border-orange-500"
+                : "border-gray-200 focus:border-[#e8622b]"
             }`}
             placeholder="Ton nom"
           />
           {errors.name && (
-            <p className="text-red-400 text-xs mt-1">{errors.name.message}</p>
+            <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>
           )}
         </div>
 
-        {/* Email */}
         <div>
-          <label htmlFor="email" className="text-sm text-gray-500 mb-1 block">
+          <label
+            htmlFor="email"
+            className="text-m font-semibold text-gray-900 mb-1 block"
+          >
             Courriel
           </label>
           <input
             id="email"
             type="text"
             {...register("email")}
-            className={`w-full bg-white border rounded-xl px-4 py-3 text-gray-900 placeholder-zinc-500 focus:outline-none transition-colors ${
+            className={`w-full bg-white border rounded-2xl px-4 py-3.5 text-gray-900 placeholder-gray-400 focus:outline-none transition-colors ${
               errors.email
                 ? "border-red-500"
-                : "border-gray-200 focus:border-orange-500"
+                : "border-gray-200 focus:border-[#e8622b]"
             }`}
             placeholder="ton@courriel.com"
           />
           {errors.email && (
-            <p className="text-red-400 text-xs mt-1">{errors.email.message}</p>
+            <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
           )}
         </div>
 
-        {/* Password */}
         <div className="relative">
           <label
             htmlFor="password"
-            className="text-sm text-gray-500 mb-1 block"
+            className="text-m font-semibold text-gray-900 mb-1 block"
           >
             Mot de passe
           </label>
@@ -163,22 +166,21 @@ export default function RegisterPage() {
             id="password"
             type={showPassword ? "text" : "password"}
             {...register("password")}
-            className={`w-full bg-white border rounded-xl px-4 py-3 pr-12 text-gray-900 placeholder-zinc-500 focus:outline-none transition-colors ${
+            className={`w-full bg-white border rounded-2xl px-4 py-3.5 pr-12 text-gray-900 placeholder-gray-400 focus:outline-none transition-colors ${
               errors.password
                 ? "border-red-500"
-                : "border-gray-200 focus:border-orange-500"
+                : "border-gray-200 focus:border-[#e8622b]"
             }`}
             placeholder="••••••••"
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-4 top-9 text-gray-400 hover:text-zinc-300 transition-colors"
+            className="absolute right-4 top-10 text-gray-400 transition-colors"
           >
             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
 
-          {/* Password strength indicators */}
           {watchPassword.length > 0 && (
             <div className="mt-2 space-y-1">
               {passwordRules.map((rule) => {
@@ -189,12 +191,12 @@ export default function RegisterPage() {
                     className="flex items-center gap-2 text-xs"
                   >
                     <span
-                      className={passes ? "text-green-400" : "text-gray-400"}
+                      className={passes ? "text-[#3a9e6e]" : "text-gray-400"}
                     >
                       {passes ? "✓" : "✗"}
                     </span>
                     <span
-                      className={passes ? "text-green-400" : "text-gray-400"}
+                      className={passes ? "text-[#3a9e6e]" : "text-gray-400"}
                     >
                       {rule.label}
                     </span>
@@ -205,11 +207,10 @@ export default function RegisterPage() {
           )}
         </div>
 
-        {/* Confirm password */}
         <div className="relative">
           <label
             htmlFor="confirmPassword"
-            className="text-sm text-gray-500 mb-1 block"
+            className="text-m font-semibold text-gray-900 mb-1 block"
           >
             Confirmer le mot de passe
           </label>
@@ -217,22 +218,22 @@ export default function RegisterPage() {
             id="confirmPassword"
             type={showConfirm ? "text" : "password"}
             {...register("confirmPassword")}
-            className={`w-full bg-white border rounded-xl px-4 py-3 pr-12 text-gray-900 placeholder-zinc-500 focus:outline-none transition-colors ${
+            className={`w-full bg-white border rounded-2xl px-4 py-3.5 pr-12 text-gray-900 placeholder-gray-400 focus:outline-none transition-colors ${
               errors.confirmPassword
                 ? "border-red-500"
-                : "border-gray-200 focus:border-orange-500"
+                : "border-gray-200 focus:border-[#e8622b]"
             }`}
             placeholder="••••••••"
           />
           <button
             type="button"
             onClick={() => setShowConfirm(!showConfirm)}
-            className="absolute right-4 top-9 text-gray-400 hover:text-zinc-300 transition-colors"
+            className="absolute right-4 top-10 text-gray-400 transition-colors"
           >
             {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
           {errors.confirmPassword && (
-            <p className="text-red-400 text-xs mt-1">
+            <p className="text-red-500 text-xs mt-1">
               {errors.confirmPassword.message}
             </p>
           )}
@@ -241,23 +242,23 @@ export default function RegisterPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-gray-900 py-3.5 rounded-xl font-semibold transition-all shadow-lg shadow-orange-500/20 mt-2"
+          className="w-full bg-[#e8622b] disabled:opacity-50 text-white py-3.5 rounded-2xl font-semibold transition-all shadow-md mt-2"
         >
           {loading ? "Création..." : "Créer mon compte"}
         </button>
       </form>
 
       <div className="flex items-center gap-3 my-6">
-        <div className="flex-1 h-px bg-gray-100" />
+        <div className="flex-1 h-px bg-gray-200" />
         <span className="text-xs text-gray-400">ou</span>
-        <div className="flex-1 h-px bg-gray-100" />
+        <div className="flex-1 h-px bg-gray-200" />
       </div>
 
       <GoogleLoginButton />
 
-      <p className="text-center text-sm text-gray-500 mt-8">
+      <p className="text-center text-m text-gray-500 mt-8 pb-8">
         Déjà un compte ?{" "}
-        <Link to="/login" className="text-orange-400 font-semibold">
+        <Link to="/login" className="text-[#e8622b] font-semibold">
           Se connecter
         </Link>
       </p>

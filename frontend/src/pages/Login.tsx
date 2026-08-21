@@ -57,47 +57,50 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col pt-16 px-6">
+    <div className="min-h-screen bg-[#faf6f1] flex flex-col pt-16 px-6">
       <div className="mb-10 text-center">
         <img
-          src="/logoGymsTrack.webp"
-          alt="GymTrack"
+          src="/LogoGymsTrack5.webp"
+          alt="GymsTrack"
           className="h-16 mx-auto mb-2"
         />
         <p className="text-gray-500 text-sm mt-2">Connecte-toi à ton compte</p>
       </div>
 
       {serverError && (
-        <div className="bg-red-500/15 border border-red-500/30 text-red-400 text-sm rounded-xl px-4 py-3 mb-6">
+        <div className="bg-red-50 border border-red-200 text-red-500 text-sm rounded-xl px-4 py-3 mb-6">
           {serverError}
         </div>
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <div>
-          <label htmlFor="email" className="text-sm text-gray-500 mb-1 block">
+          <label
+            htmlFor="email"
+            className="text-m font-semibold text-gray-900 mb-1 block"
+          >
             Courriel
           </label>
           <input
             id="email"
             type="text"
             {...register("email")}
-            className={`w-full bg-white border rounded-xl px-4 py-3 text-gray-900 placeholder-zinc-500 focus:outline-none transition-colors ${
+            className={`w-full bg-white border rounded-2xl px-4 py-3.5 text-gray-900 placeholder-gray-400 focus:outline-none transition-colors ${
               errors.email
                 ? "border-red-500"
-                : "border-gray-200 focus:border-orange-500"
+                : "border-gray-200 focus:border-[#c9552c]"
             }`}
             placeholder="ton@courriel.com"
           />
           {errors.email && (
-            <p className="text-red-400 text-xs mt-1">{errors.email.message}</p>
+            <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
           )}
         </div>
 
         <div className="relative">
           <label
             htmlFor="password"
-            className="text-sm text-gray-500 mb-1 block"
+            className="text-m font-semibold text-gray-900 mb-1 block"
           >
             Mot de passe
           </label>
@@ -105,22 +108,22 @@ export default function LoginPage() {
             id="password"
             type={showPassword ? "text" : "password"}
             {...register("password")}
-            className={`w-full bg-white border rounded-xl px-4 py-3 pr-12 text-gray-900 placeholder-zinc-500 focus:outline-none transition-colors ${
+            className={`w-full bg-white border rounded-2xl px-4 py-3.5 pr-12 text-gray-900 placeholder-gray-400 focus:outline-none transition-colors ${
               errors.password
                 ? "border-red-500"
-                : "border-gray-200 focus:border-orange-500"
+                : "border-gray-200 focus:border-[#c9552c]"
             }`}
             placeholder="••••••••"
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-4 top-9 text-gray-400 hover:text-zinc-300 transition-colors"
+            className="absolute right-4 top-10 text-gray-400 transition-colors"
           >
             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
           {errors.password && (
-            <p className="text-red-400 text-xs mt-1">
+            <p className="text-red-500 text-xs mt-1">
               {errors.password.message}
             </p>
           )}
@@ -129,29 +132,29 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-gray-900 py-3.5 rounded-xl font-semibold transition-all shadow-lg shadow-orange-500/20 mt-2"
+          className="w-full bg-[#e8622b] disabled:opacity-50 text-white py-3.5 rounded-2xl font-semibold transition-all shadow-md mt-2"
         >
           {loading ? "Connexion..." : "Se connecter"}
         </button>
         <Link
           to="/forgot-password"
-          className="text-xs text-gray-400 text-center mt-2"
+          className="text-m text-[#e8622b] text-center mt-1"
         >
           Mot de passe oublié ?
         </Link>
       </form>
 
       <div className="flex items-center gap-3 my-6">
-        <div className="flex-1 h-px bg-gray-100" />
+        <div className="flex-1 h-px bg-gray-200" />
         <span className="text-xs text-gray-400">ou</span>
-        <div className="flex-1 h-px bg-gray-100" />
+        <div className="flex-1 h-px bg-gray-200" />
       </div>
 
       <GoogleLoginButton />
 
-      <p className="text-center text-sm text-gray-500 mt-8">
+      <p className="text-center text-m text-gray-500 mt-8">
         Pas encore de compte ?{" "}
-        <Link to="/register" className="text-orange-400 font-semibold">
+        <Link to="/register" className="text-[#e8622b] font-semibold">
           Créer un compte
         </Link>
       </p>
