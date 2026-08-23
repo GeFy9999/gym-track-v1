@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Check } from "lucide-react";
 import { API_URL } from "../../lib/api";
 
@@ -139,6 +139,29 @@ export default function MuscleGroupsCards({ weekActive }: Props) {
     }
   };
 
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const isDragging = useRef(false);
+  const startX = useRef(0);
+  const scrollLeft = useRef(0);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    isDragging.current = true;
+    startX.current = e.pageX - (scrollRef.current?.offsetLeft || 0);
+    scrollLeft.current = scrollRef.current?.scrollLeft || 0;
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging.current || !scrollRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - scrollRef.current.offsetLeft;
+    const walk = (x - startX.current) * 1.5;
+    scrollRef.current.scrollLeft = scrollLeft.current - walk;
+  };
+
+  const handleMouseUp = () => {
+    isDragging.current = false;
+  };
+
   if (loading) {
     return (
       <div className="px-5 mt-6">
@@ -152,7 +175,14 @@ export default function MuscleGroupsCards({ weekActive }: Props) {
       <p className="text-[15px] font-bold text-gray-900 mb-3 px-5">
         Groupes musculaires
       </p>
-      <div className="flex gap-3 overflow-x-auto hide-scrollbar px-5 pb-2">
+      <div
+        ref={scrollRef}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+        className="flex gap-3 overflow-x-auto hide-scrollbar px-5 pb-2 cursor-grab active:cursor-grabbing select-none"
+      >
         {groups.map((group) => {
           const isDone = completedGroups.has(group.name);
 
