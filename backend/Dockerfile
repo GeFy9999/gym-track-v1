@@ -15,9 +15,13 @@ RUN npx prisma generate
 ENV DATABASE_URL="file:/app/data/dev.db"
 VOLUME ["/app/data"]
 
-RUN chmod +x docker-entrypoint.sh
+# Kept outside /app and referenced absolutely: a relative "./docker-entrypoint.sh"
+# is resolved against whatever cwd the runtime hands us, and a volume mounted over
+# /app would hide it entirely — either one fails as "no such file or directory".
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # ENTRYPOINT rather than CMD: a `command:` in compose then becomes arguments to
 # the entrypoint instead of replacing it, so migrations always run first.
-ENTRYPOINT ["./docker-entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD ["npm", "start"]

@@ -1,6 +1,9 @@
 #!/bin/sh
 set -e
 
+# Don't inherit the runtime's cwd: prisma needs to find prisma/schema.prisma.
+cd /app
+
 : "${DATABASE_URL:?DATABASE_URL is not set}"
 
 # The SQLite file lives on a mounted volume, so the schema has to be applied at
