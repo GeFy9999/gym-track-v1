@@ -177,25 +177,28 @@ export default function SessionPage() {
     setId: string,
     data: { weight?: number; reps?: number },
   ) => {
+    // Optimistic update first for instant UI feedback
+    setSession((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        sessionExercises: prev.sessionExercises.map((se) => ({
+          ...se,
+          sets: se.sets.map((s) => (s.id === setId ? { ...s, ...data } : s)),
+        })),
+      };
+    });
+
     try {
       await fetch(`${API_URL}/sets/${setId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-
-      setSession((prev) => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          sessionExercises: prev.sessionExercises.map((se) => ({
-            ...se,
-            sets: se.sets.map((s) => (s.id === setId ? { ...s, ...data } : s)),
-          })),
-        };
-      });
     } catch (err) {
       console.error(err);
+      // Revert on error
+      fetchSession();
     }
   };
 
@@ -462,20 +465,70 @@ export default function SessionPage() {
                       {i + 1}
                     </span>
                     <input
-                      type="number"
-                      defaultValue={set.weight}
-                      onBlur={(e) =>
-                        updateSet(set.id, { weight: Number(e.target.value) })
-                      }
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={set.weight === 0 ? "" : set.weight}
+                      placeholder="—"
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/[^0-9.]/g, "");
+                        const num = val === "" ? 0 : Number(val);
+                        setSession((prev) => {
+                          if (!prev) return prev;
+                          return {
+                            ...prev,
+                            sessionExercises: prev.sessionExercises.map(
+                              (s) => ({
+                                ...s,
+                                sets: s.sets.map((st) =>
+                                  st.id === set.id
+                                    ? { ...st, weight: num }
+                                    : st,
+                                ),
+                              }),
+                            ),
+                          };
+                        });
+                      }}
+                      onFocus={(e) => e.target.select()}
+                      onBlur={(e) => {
+                        const num =
+                          e.target.value === "" ? 0 : Number(e.target.value);
+                        updateSet(set.id, { weight: num });
+                      }}
                       disabled={readOnly}
                       className="w-full rounded-xl px-3 py-3 text-base text-gray-900 text-center font-bold bg-gray-100 focus:bg-gray-200 focus:outline-none transition-colors"
                     />
                     <input
-                      type="number"
-                      defaultValue={set.reps}
-                      onBlur={(e) =>
-                        updateSet(set.id, { reps: Number(e.target.value) })
-                      }
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={set.reps === 0 ? "" : set.reps}
+                      placeholder="—"
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/[^0-9]/g, "");
+                        const num = val === "" ? 0 : Number(val);
+                        setSession((prev) => {
+                          if (!prev) return prev;
+                          return {
+                            ...prev,
+                            sessionExercises: prev.sessionExercises.map(
+                              (s) => ({
+                                ...s,
+                                sets: s.sets.map((st) =>
+                                  st.id === set.id ? { ...st, reps: num } : st,
+                                ),
+                              }),
+                            ),
+                          };
+                        });
+                      }}
+                      onFocus={(e) => e.target.select()}
+                      onBlur={(e) => {
+                        const num =
+                          e.target.value === "" ? 0 : Number(e.target.value);
+                        updateSet(set.id, { reps: num });
+                      }}
                       disabled={readOnly}
                       className="w-full rounded-xl px-3 py-3 text-base text-gray-900 text-center font-bold bg-gray-100 focus:bg-gray-200 focus:outline-none transition-colors"
                     />
@@ -496,9 +549,9 @@ export default function SessionPage() {
               {!readOnly && (
                 <button
                   onClick={() => addSet(se.id, se.sets)}
-                  className="mt-4 text-sm text-[#c9552c] font-semibold flex items-center gap-1.5"
+                  className="mt-4 w-full bg-gray-100 active:bg-gray-200 text-sm text-gray-700 font-semibold py-2.5 rounded-xl flex items-center justify-center gap-1.5 transition-colors"
                 >
-                  <Plus size={16} /> Ajouter un set
+                  <Plus size={14} className="text-[#c9552c]" /> Ajouter un set
                 </button>
               )}
             </div>
