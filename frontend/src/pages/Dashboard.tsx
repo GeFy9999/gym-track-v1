@@ -6,55 +6,104 @@ import { useState, useEffect } from "react";
 import { CheckCircle, Scale } from "lucide-react";
 import { API_URL } from "../lib/api";
 
+function DashboardSkeleton() {
+  return (
+    <div className="pb-28 bg-[#faf6f1] min-h-screen animate-pulse">
+      <div className="px-5 pt-6 pb-2">
+        <div className="h-4 w-40 bg-gray-200 rounded mb-2" />
+        <div className="h-9 w-56 bg-gray-200 rounded" />
+      </div>
+      <div className="px-5 mt-4">
+        <div className="h-14 bg-gray-200 rounded-2xl" />
+      </div>
+      <div className="mt-6 px-5">
+        <div className="h-4 w-36 bg-gray-200 rounded mb-3" />
+        <div className="flex gap-3">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="w-32 h-32 bg-gray-200 rounded-2xl flex-shrink-0"
+            />
+          ))}
+        </div>
+      </div>
+      <div className="px-5 mt-6">
+        <div className="h-4 w-32 bg-gray-200 rounded mb-3" />
+        <div className="h-24 bg-gray-200 rounded-2xl" />
+      </div>
+    </div>
+  );
+}
+
 export default function DashboardPage() {
   const [weekActive, setWeekActive] = useState<boolean>(false);
   const [showEndConfirm, setShowEndConfirm] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showWeightPrompt, setShowWeightPrompt] = useState(false);
   const [bodyWeight, setBodyWeight] = useState("");
+  const [dashboardReady, setDashboardReady] = useState(false);
 
   useEffect(() => {
-    const checkBodyWeight = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) return;
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setDashboardReady(true);
+      return;
+    }
 
-      const snoozed = localStorage.getItem("weightSnooze");
-      if (snoozed) {
-        const snoozeDate = new Date(snoozed);
-        const now = new Date();
-        if (
-          snoozeDate.getDate() === now.getDate() &&
-          snoozeDate.getMonth() === now.getMonth() &&
-          snoozeDate.getFullYear() === now.getFullYear()
-        ) {
-          return;
-        }
-      }
-
-      const res = await fetch(`${API_URL}/body-weight`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (!res.ok) return;
-      const entries = await res.json();
-
+    const monday = (() => {
       const now = new Date();
       const day = now.getDay();
       const diff = day === 0 ? 6 : day - 1;
-      const thisMonday = new Date(now);
-      thisMonday.setDate(now.getDate() - diff);
-      thisMonday.setHours(0, 0, 0, 0);
+      const m = new Date(now);
+      m.setDate(now.getDate() - diff);
+      m.setHours(0, 0, 0, 0);
+      return m;
+    })();
+    const now = new Date();
 
-      const hasEntryThisWeek = entries.some((e: { date: string }) => {
-        const d = new Date(e.date);
-        return d >= thisMonday;
-      });
+    // Fetch all critical data in parallel before rendering
+    Promise.all([
+      // 1. Check week active
+      fetch(
+        `${API_URL}/sessions/me?start=${monday.toISOString()}&end=${now.toISOString()}`,
+        { headers: { Authorization: `Bearer ${token}` } },
+      )
+        .then((res) => (res.ok ? res.json() : []))
+        .then((sessions: { length: number }[]) => {
+          if (sessions.length > 0) setWeekActive(true);
+        })
+        .catch(() => {}),
 
-      if (!hasEntryThisWeek) {
-        setShowWeightPrompt(true);
-      }
-    };
-    checkBodyWeight();
+      // 2. Check body weight prompt
+      (() => {
+        const snoozed = localStorage.getItem("weightSnooze");
+        if (snoozed) {
+          const snoozeDate = new Date(snoozed);
+          if (
+            snoozeDate.getDate() === now.getDate() &&
+            snoozeDate.getMonth() === now.getMonth() &&
+            snoozeDate.getFullYear() === now.getFullYear()
+          ) {
+            return Promise.resolve();
+          }
+        }
+
+        return fetch(`${API_URL}/body-weight`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+          .then((res) => (res.ok ? res.json() : []))
+          .then((entries: { date: string }[]) => {
+            const hasEntryThisWeek = entries.some((e) => {
+              const d = new Date(e.date);
+              return d >= monday;
+            });
+            if (!hasEntryThisWeek) setShowWeightPrompt(true);
+          })
+          .catch(() => {});
+      })(),
+    ]).finally(() => {
+      setDashboardReady(true);
+    });
   }, []);
 
   const handleEndSession = async () => {
@@ -127,6 +176,8 @@ export default function DashboardPage() {
     localStorage.setItem("weightSnooze", new Date().toISOString());
     setShowWeightPrompt(false);
   };
+
+  if (!dashboardReady) return <DashboardSkeleton />;
 
   return (
     <div className="pb-28 bg-[#faf6f1] min-h-screen">

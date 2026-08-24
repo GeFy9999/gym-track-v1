@@ -1,48 +1,11 @@
-import { useEffect } from "react";
 import { Play, Check } from "lucide-react";
-import { API_URL } from "../../lib/api";
 
 type Props = {
   weekActive: boolean;
   setWeekActive: (week: boolean) => void;
 };
 
-function getMonday(): Date {
-  const now = new Date();
-  const day = now.getDay();
-  const diff = day === 0 ? 6 : day - 1;
-  const monday = new Date(now);
-  monday.setDate(now.getDate() - diff);
-  monday.setHours(0, 0, 0, 0);
-  return monday;
-}
-
 export default function WeekProgress({ weekActive, setWeekActive }: Props) {
-  useEffect(() => {
-    const checkWeek = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) return;
-
-      const monday = getMonday();
-      const now = new Date();
-
-      try {
-        const res = await fetch(
-          `${API_URL}/sessions/me?start=${monday.toISOString()}&end=${now.toISOString()}`,
-          { headers: { Authorization: `Bearer ${token}` } },
-        );
-        if (!res.ok) return;
-        const sessions = await res.json();
-        if (sessions.length > 0) {
-          setWeekActive(true);
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    checkWeek();
-  }, [setWeekActive]);
-
   return (
     <div className="px-5 mt-4">
       {weekActive ? (
