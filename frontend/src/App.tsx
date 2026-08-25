@@ -14,6 +14,7 @@ import { API_URL } from "./lib/api";
 import AddExercisePage from "./pages/AddExercise.tsx";
 import ForgotPasswordPage from "./pages/ForgotPassword.tsx";
 import ResetPasswordPage from "./pages/ResetPassword.tsx";
+import ProgressPhotosPage from "./pages/ProgressPhotos.tsx";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const [checking, setChecking] = useState(true);
@@ -53,9 +54,13 @@ function App() {
   const location = useLocation();
 
   const hideNav =
-    ["/login", "/register", "/forgot-password", "/reset-password"].includes(
-      location.pathname,
-    ) || location.pathname.startsWith("/session/");
+    [
+      "/login",
+      "/register",
+      "/forgot-password",
+      "/reset-password",
+      "/progression",
+    ].includes(location.pathname) || location.pathname.startsWith("/session/");
 
   const getApiHealth = async (): Promise<void> => {
     try {
@@ -133,6 +138,14 @@ function App() {
             />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
+            <Route
+              path="/progression"
+              element={
+                <ProtectedRoute>
+                  <ProgressPhotosPage />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
           {!hideNav && <BottomNav />}
         </div>
