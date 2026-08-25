@@ -48,6 +48,7 @@ export default function LoginPage() {
 
       localStorage.setItem("token", result.token);
       localStorage.setItem("user", JSON.stringify(result.user));
+      localStorage.setItem(`onboardingDone_${result.user.id}`, "true");
       navigate("/dashboard");
     } catch (err) {
       setServerError(err instanceof Error ? err.message : "Erreur inconnue");

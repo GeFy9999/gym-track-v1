@@ -8,7 +8,14 @@ import { API_URL } from "../lib/api";
 import TourOverlay from "../components/TourOverlay";
 
 export default function DashboardPage() {
-  const [weekActive, setWeekActive] = useState<boolean>(false);
+  const stored = localStorage.getItem("user");
+  const user = stored ? JSON.parse(stored) : null;
+  const userName = user?.name || "";
+  const userId = user?.id || "";
+
+  const [weekActive, setWeekActive] = useState<boolean>(() => {
+    return localStorage.getItem(`weekActive_${userId}`) === "true";
+  });
   const [showEndConfirm, setShowEndConfirm] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showWeightPrompt, setShowWeightPrompt] = useState(false);
@@ -19,8 +26,10 @@ export default function DashboardPage() {
   const [showOnboardingWeight, setShowOnboardingWeight] = useState(false);
   const [showTour, setShowTour] = useState(false);
 
-  const stored = localStorage.getItem("user");
-  const userName = stored ? JSON.parse(stored).name : "";
+  const handleSetWeekActive = (val: boolean) => {
+    setWeekActive(val);
+    localStorage.setItem(`weekActive_${userId}`, String(val));
+  };
 
   // Always check weekActive on mount/return
   useEffect(() => {
@@ -42,7 +51,7 @@ export default function DashboardPage() {
         );
         if (!res.ok) return;
         const sessions = await res.json();
-        if (sessions.length > 0) setWeekActive(true);
+        if (sessions.length > 0) handleSetWeekActive(true);
       } catch (err) {
         console.error(err);
       }
@@ -52,7 +61,7 @@ export default function DashboardPage() {
 
   // Onboarding + body weight check
   useEffect(() => {
-    const onboardingDone = localStorage.getItem("onboardingDone");
+    const onboardingDone = localStorage.getItem(`onboardingDone_${userId}`);
     if (!onboardingDone) {
       setShowWelcome(true);
       return;
@@ -104,7 +113,7 @@ export default function DashboardPage() {
   const handleWelcomeNext = () => {
     setShowWelcome(false);
     setShowOnboardingWeight(true);
-    localStorage.setItem("onboardingDone", "true");
+    localStorage.setItem(`onboardingDone_${userId}`, "true");
   };
 
   const handleOnboardingWeightSave = async () => {
@@ -270,7 +279,10 @@ export default function DashboardPage() {
     <div className="pb-28 bg-[#faf6f1] min-h-screen">
       <HeaderDashboard />
       <div ref={tourRef0}>
-        <WeekProgress weekActive={weekActive} setWeekActive={setWeekActive} />
+        <WeekProgress
+          weekActive={weekActive}
+          setWeekActive={handleSetWeekActive}
+        />
       </div>
       <div ref={tourRef1}>
         <MuscleGroupsCards weekActive={weekActive} />
@@ -458,7 +470,7 @@ export default function DashboardPage() {
       {/* Tour guidé */}
       {showTour && (
         <TourOverlay
-          tourKey="dashboard"
+          tourKey={`dashboard_${userId}`}
           steps={dashboardTourSteps}
           refs={[tourRef0, tourRef1, tourRef2]}
         />

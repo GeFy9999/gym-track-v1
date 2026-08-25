@@ -52,6 +52,7 @@ export default function GoogleLoginButton() {
 
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem(`onboardingDone_${data.user.id}`, "true");
         navigate("/dashboard");
       } catch (err) {
         console.error("Google login error:", err);
