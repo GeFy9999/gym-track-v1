@@ -38,7 +38,9 @@ export default function ProfilePage() {
   const [weightUnit, setWeightUnit] = useState(user?.weightUnit || "lb");
 
   const handleLogout = () => {
-    localStorage.clear();
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("weightSnooze");
     navigate("/login");
   };
 
