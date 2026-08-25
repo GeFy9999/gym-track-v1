@@ -56,6 +56,7 @@ export default function SessionPage() {
   const [showExerciseList, setShowExerciseList] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [removingId, setRemovingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [lastWeights, setLastWeights] = useState<LastWeight[]>([]);
   const deltas = useExerciseDeltas(sessionId);
@@ -403,10 +404,19 @@ export default function SessionPage() {
           </div>
         )}
 
-        {session.sessionExercises.map((se) => (
+        {session.sessionExercises.map((se, seIndex) => (
           <div
             key={se.id}
-            className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm"
+            className={`bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm ${
+              removingId === se.id
+                ? "animate-slide-out-right"
+                : "animate-slide-up"
+            }`}
+            style={
+              removingId === se.id
+                ? undefined
+                : { animationDelay: `${seIndex * 80}ms` }
+            }
           >
             <div
               className="relative h-24 rounded-t-2xl flex items-end"
@@ -594,8 +604,8 @@ export default function SessionPage() {
       )}
 
       {confirmDelete && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6 animate-fade-in">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
             <p className="text-base font-semibold text-gray-900 text-center mb-2">
               Supprimer cet exercice ?
             </p>
@@ -617,7 +627,11 @@ export default function SessionPage() {
                       { method: "DELETE" },
                     );
                     setConfirmDelete(null);
-                    fetchSession();
+                    setRemovingId(confirmDelete);
+                    setTimeout(() => {
+                      setRemovingId(null);
+                      fetchSession();
+                    }, 300);
                   } catch (err) {
                     console.error(err);
                   }
