@@ -104,6 +104,7 @@ export default function DashboardPage() {
   const handleWelcomeNext = () => {
     setShowWelcome(false);
     setShowOnboardingWeight(true);
+    localStorage.setItem("onboardingDone", "true");
   };
 
   const handleOnboardingWeightSave = async () => {
