@@ -1,0 +1,6 @@
+# Shell scripts must keep LF endings on every checkout, including Windows ones
+# with core.autocrlf=true. A CRLF shebang makes the kernel look for an
+# interpreter named "/bin/sh\r", which fails at container start as
+# "exec /usr/local/bin/docker-entrypoint.sh: no such file or directory".
+*.sh        text eol=lf
+Dockerfile  text eol=lf
