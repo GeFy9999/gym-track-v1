@@ -138,7 +138,6 @@ export default function ProgressPhotosPage() {
           ref={fileRef}
           type="file"
           accept="image/*"
-          capture="environment"
           onChange={handleUpload}
           className="hidden"
         />
