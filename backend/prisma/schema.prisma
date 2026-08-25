@@ -22,6 +22,7 @@ datasource db {
   sessions Session[]
   bodyWeights BodyWeight[]
   trackedExercises TrackedExercise[]
+  progressPhotos   ProgressPhoto[]
   recoveryEmail String?
   weightUnit    String   @default("lb")
   authProvider  String   @default("email")
@@ -107,4 +108,14 @@ model TrackedExercise {
   exercise   Exercise @relation(fields: [exerciseId], references: [id])
 
   @@unique([userId, exerciseId])
+}
+
+model ProgressPhoto {
+  id        String   @id @default(uuid())
+  userId    String
+  data      String
+  note      String?
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
 }

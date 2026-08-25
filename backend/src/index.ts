@@ -12,6 +12,7 @@ import { sessionExercisesRouter } from "./controllers/sessionExerciseController.
 import { authRouter } from "./controllers/authController.js";
 import { bodyWeightRouter } from "./controllers/bodyWeightController.js";
 import { trackedExerciseRouter } from "./controllers/trackedExerciseController.js";
+import { progressPhotoRouter } from "./controllers/progressPhotoController.js";
 
 dotenv.config();
 
@@ -27,7 +28,7 @@ app.use(
     origin: allowedOrigins,
   }),
 );
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
 
 app.use("/api/calendar", calendarRouter);
 app.use("/api", metaRouter);
@@ -40,6 +41,7 @@ app.use("/api/session-exercises", sessionExercisesRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/body-weight", bodyWeightRouter);
 app.use("/api/tracked-exercises", trackedExerciseRouter);
+app.use("/api/progress-photos", progressPhotoRouter);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
