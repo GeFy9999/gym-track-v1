@@ -155,9 +155,11 @@ export default function ProgressPhotosPage() {
       {/* Photo grid */}
       {loading ? (
         <div className="px-5">
-          <p className="text-sm text-gray-400 text-center py-8">
-            Chargement...
-          </p>
+          <div className="grid grid-cols-3 gap-2 animate-pulse">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="aspect-square bg-gray-200 rounded-xl" />
+            ))}
+          </div>
         </div>
       ) : photos.length === 0 ? (
         <div className="px-5 text-center py-12">
