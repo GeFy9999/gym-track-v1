@@ -49,7 +49,11 @@ export default function HeaderDashboard() {
         </div>
         <div className="relative mt-1">
           <div className="w-10 h-10 rounded-full bg-[#c9552c]/10 flex items-center justify-center">
-            <Flame size={20} className="text-[#c9552c]" fill="#c9552c" />
+            <Flame
+              size={20}
+              className="text-[#c9552c] animate-flame"
+              fill="#c9552c"
+            />
           </div>
           <div className="absolute -bottom-1 -right-1 min-w-5 h-5 rounded-full bg-[#c9552c] flex items-center justify-center px-1">
             <span className="text-[10px] font-bold text-white">{streak}</span>
@@ -61,7 +65,11 @@ export default function HeaderDashboard() {
         <div className="flex items-center gap-1.5 mt-3">
           <div className="flex gap-1">
             {Array.from({ length: Math.min(streak, 10) }).map((_, i) => (
-              <div key={i} className="w-5 h-1.5 rounded-full bg-[#c9552c]" />
+              <div
+                key={i}
+                className="w-5 h-1.5 rounded-full bg-[#c9552c] animate-streak-fill"
+                style={{ animationDelay: `${i * 80}ms` }}
+              />
             ))}
             {streak < 10 &&
               Array.from({ length: 10 - streak }).map((_, i) => (

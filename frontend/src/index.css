@@ -22,3 +22,118 @@ body {
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* Animations */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes grow-bar {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes flame-flicker {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    transform: scale(1.1) rotate(-3deg);
+  }
+  50% {
+    transform: scale(1.05) rotate(2deg);
+  }
+  75% {
+    transform: scale(1.12) rotate(-2deg);
+  }
+}
+
+@keyframes streak-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.25s ease-out both;
+}
+.animate-slide-down {
+  animation: slide-down 0.35s ease-out both;
+}
+.animate-slide-up {
+  animation: slide-up 0.35s ease-out both;
+}
+.animate-scale-in {
+  animation: scale-in 0.25s ease-out both;
+}
+.animate-grow-bar {
+  animation: grow-bar 0.6s ease-out both;
+  transform-origin: bottom;
+}
+.animate-flame {
+  animation: flame-flicker 1.5s ease-in-out infinite;
+}
+.animate-streak-fill {
+  animation: streak-fill 0.5s ease-out both;
+  transform-origin: left;
+}
+
+@keyframes slide-out-right {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+.animate-slide-out-right {
+  animation: slide-out-right 0.3s ease-in both;
+}

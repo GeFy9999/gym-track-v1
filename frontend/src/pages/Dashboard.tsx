@@ -290,7 +290,7 @@ export default function DashboardPage() {
       )}
 
       {showSuccess && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 bg-[#3a9e6e] text-white px-6 py-3 rounded-2xl shadow-lg flex items-center gap-2 z-50">
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 bg-[#3a9e6e] text-white px-6 py-3 rounded-2xl shadow-lg flex items-center gap-2 z-50 animate-slide-down">
           <CheckCircle size={18} />
           <span className="text-sm font-medium">
             Séance terminée ! Tes exercices sont sauvegardés.
@@ -299,8 +299,8 @@ export default function DashboardPage() {
       )}
 
       {showEndConfirm && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6 animate-fade-in">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
             <p className="text-base font-semibold text-gray-900 text-center mb-2">
               Terminer la séance ?
             </p>
@@ -327,8 +327,8 @@ export default function DashboardPage() {
       )}
 
       {showWeightPrompt && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6 animate-fade-in">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
             <div className="flex flex-col items-center mb-4">
               <div className="w-12 h-12 rounded-full bg-orange-50 flex items-center justify-center mb-3">
                 <Scale size={24} className="text-orange-500" />
@@ -379,7 +379,7 @@ export default function DashboardPage() {
 
       {/* Welcome overlay */}
       {showWelcome && (
-        <div className="fixed inset-0 bg-[#faf6f1] z-50 flex flex-col items-center justify-center px-8">
+        <div className="fixed inset-0 bg-[#faf6f1] z-50 flex flex-col items-center justify-center px-8 animate-fade-in">
           <img
             src="/LogoGymsTrack5.webp"
             alt="GymsTrack"
@@ -404,8 +404,8 @@ export default function DashboardPage() {
 
       {/* Onboarding weight prompt */}
       {showOnboardingWeight && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6 animate-fade-in">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
             <div className="flex flex-col items-center mb-4">
               <div className="w-12 h-12 rounded-full bg-orange-50 flex items-center justify-center mb-3">
                 <Scale size={24} className="text-orange-500" />

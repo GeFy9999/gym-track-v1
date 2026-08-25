@@ -159,9 +159,10 @@ export default function RecentActivity() {
               return (
                 <div
                   key={i}
-                  className="flex-1 rounded-sm bg-gray-300"
+                  className="flex-1 rounded-sm bg-gray-300 animate-grow-bar"
                   style={{
                     height: `${Math.max(height, 15)}%`,
+                    animationDelay: `${i * 80}ms`,
                   }}
                 />
               );
