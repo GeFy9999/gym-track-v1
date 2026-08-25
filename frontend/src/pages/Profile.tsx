@@ -9,6 +9,7 @@ import {
   Scale,
   MailPlus,
   X,
+  Camera,
 } from "lucide-react";
 import { API_URL } from "../lib/api";
 
@@ -167,6 +168,26 @@ export default function ProfilePage() {
           {success}
         </div>
       )}
+
+      {/* Progression */}
+      <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-2 px-1">
+        Progression
+      </p>
+      <div className="bg-white border border-gray-200 rounded-2xl mb-6 shadow-sm">
+        <button
+          onClick={() => navigate("/progression")}
+          className="w-full flex items-center gap-3 px-4 py-4"
+        >
+          <div className="w-9 h-9 rounded-xl bg-[#c9552c]/10 flex items-center justify-center flex-shrink-0">
+            <Camera size={16} className="text-[#c9552c]" />
+          </div>
+          <p className="flex-1 text-left text-sm font-medium text-gray-900">
+            Photos de progression
+          </p>
+          <p className="text-sm text-gray-400">Voir</p>
+          <ChevronRight size={16} className="text-gray-300 flex-shrink-0" />
+        </button>
+      </div>
 
       {/* Compte */}
       <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-2 px-1">
