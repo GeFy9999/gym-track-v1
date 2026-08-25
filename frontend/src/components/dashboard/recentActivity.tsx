@@ -108,7 +108,20 @@ export default function RecentActivity() {
   if (loading) {
     return (
       <div className="px-5 mt-6">
-        <p className="text-sm text-gray-400 text-center py-4">Chargement...</p>
+        <div className="h-4 w-32 bg-gray-200 rounded mb-3 animate-pulse" />
+        <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm animate-pulse">
+          <div className="h-4 w-40 bg-gray-200 rounded mb-2" />
+          <div className="h-3 w-24 bg-gray-200 rounded mb-4" />
+          <div className="flex items-end gap-1.5 h-10">
+            {[40, 60, 35, 80, 55, 70, 45].map((h, i) => (
+              <div
+                key={i}
+                className="flex-1 bg-gray-200 rounded-sm"
+                style={{ height: `${h}%` }}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
@@ -159,9 +172,10 @@ export default function RecentActivity() {
               return (
                 <div
                   key={i}
-                  className="flex-1 rounded-sm bg-gray-300"
+                  className="flex-1 rounded-sm bg-gray-300 animate-grow-bar"
                   style={{
                     height: `${Math.max(height, 15)}%`,
+                    animationDelay: `${i * 80}ms`,
                   }}
                 />
               );

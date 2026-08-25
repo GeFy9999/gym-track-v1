@@ -183,8 +183,16 @@ export default function MuscleGroupsCards({ weekActive }: Props) {
 
   if (loading) {
     return (
-      <div className="px-5 mt-6">
-        <p className="text-sm text-gray-400 text-center py-8">Chargement...</p>
+      <div className="mt-6">
+        <div className="h-4 w-36 bg-gray-200 rounded mb-3 mx-5 animate-pulse" />
+        <div className="flex gap-3 px-5 overflow-hidden">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="flex-shrink-0 w-36 h-40 bg-gray-200 rounded-2xl animate-pulse"
+            />
+          ))}
+        </div>
       </div>
     );
   }

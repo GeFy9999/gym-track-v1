@@ -18,6 +18,7 @@ export default function BottomNav() {
       <li key={link.to}>
         <Link
           to={link.to}
+          data-tour={`nav-${link.label.toLowerCase()}`}
           className="flex flex-col items-center gap-1 px-2 py-2.5"
         >
           <Icon
@@ -45,6 +46,7 @@ export default function BottomNav() {
           <li>
             <Link
               to="/add-exercise"
+              data-tour="nav-records"
               className="flex items-center justify-center w-11 h-11 rounded-full bg-[#c9552c]"
             >
               <Trophy size={22} className="text-white" strokeWidth={2.5} />

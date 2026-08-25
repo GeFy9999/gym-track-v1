@@ -2,9 +2,10 @@ import HeaderDashboard from "../components/dashboard/header";
 import WeekProgress from "../components/dashboard/weekProgressCard";
 import MuscleGroupsCards from "../components/dashboard/muscleGroupGrid";
 import RecentActivity from "../components/dashboard/recentActivity";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { CheckCircle, Scale, ChevronRight } from "lucide-react";
 import { API_URL } from "../lib/api";
+import TourOverlay from "../components/TourOverlay";
 
 export default function DashboardPage() {
   const [weekActive, setWeekActive] = useState<boolean>(false);
@@ -16,11 +17,40 @@ export default function DashboardPage() {
   // Onboarding
   const [showWelcome, setShowWelcome] = useState(false);
   const [showOnboardingWeight, setShowOnboardingWeight] = useState(false);
-  const [tourStep, setTourStep] = useState<number | null>(null);
+  const [showTour, setShowTour] = useState(false);
 
   const stored = localStorage.getItem("user");
   const userName = stored ? JSON.parse(stored).name : "";
 
+  // Always check weekActive on mount/return
+  useEffect(() => {
+    const checkWeek = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      const now = new Date();
+      const day = now.getDay();
+      const diff = day === 0 ? 6 : day - 1;
+      const monday = new Date(now);
+      monday.setDate(now.getDate() - diff);
+      monday.setHours(0, 0, 0, 0);
+
+      try {
+        const res = await fetch(
+          `${API_URL}/sessions/me?start=${monday.toISOString()}&end=${now.toISOString()}`,
+          { headers: { Authorization: `Bearer ${token}` } },
+        );
+        if (!res.ok) return;
+        const sessions = await res.json();
+        if (sessions.length > 0) setWeekActive(true);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    checkWeek();
+  }, []);
+
+  // Onboarding + body weight check
   useEffect(() => {
     const onboardingDone = localStorage.getItem("onboardingDone");
     if (!onboardingDone) {
@@ -74,6 +104,7 @@ export default function DashboardPage() {
   const handleWelcomeNext = () => {
     setShowWelcome(false);
     setShowOnboardingWeight(true);
+    localStorage.setItem("onboardingDone", "true");
   };
 
   const handleOnboardingWeightSave = async () => {
@@ -95,90 +126,74 @@ export default function DashboardPage() {
 
     setShowOnboardingWeight(false);
     setBodyWeight("");
-    setTourStep(0);
+    setShowTour(true);
   };
 
   const handleOnboardingWeightSkip = () => {
     setShowOnboardingWeight(false);
-    setTourStep(0);
+    setShowTour(true);
   };
 
-  const tourSteps = [
+  // Tour refs
+  const tourRef0 = useRef<HTMLDivElement>(null);
+  const tourRef1 = useRef<HTMLDivElement>(null);
+  const tourRef2 = useRef<HTMLDivElement>(null);
+
+  const dashboardTourSteps = [
     {
       title: "Commencer ta semaine",
       description:
         "Appuie ici pour démarrer ta semaine d'entraînement. Une fois active, tu pourras ajouter des sessions.",
+      refIndex: 0,
     },
     {
       title: "Groupes musculaires",
       description:
         "Clique sur un groupe musculaire pour créer une session et ajouter des exercices. Un badge orange apparaîtra quand une session est en cours.",
+      refIndex: 1,
     },
     {
       title: "Activité récente",
       description:
         "Ici tu retrouves tes dernières sessions avec les exercices et sets que tu as faits.",
+      refIndex: 2,
     },
     {
-      title: "Navigation",
+      title: "Accueil",
       description:
-        "Stats pour voir ta progression, Historique pour revoir tes sessions passées, le trophée pour gérer tes records personnels, et Profil pour tes réglages.",
+        "C'est ici, ton tableau de bord principal. Tu y verras ta semaine, tes groupes musculaires et ton activité récente.",
+      selector: "[data-tour='nav-accueil']",
+      tooltipPosition: "above" as const,
+    },
+    {
+      title: "Statistiques",
+      description:
+        "Consulte tes records personnels, ta progression et le volume de travail par groupe musculaire.",
+      selector: "[data-tour='nav-stats']",
+      tooltipPosition: "above" as const,
+    },
+    {
+      title: "Records personnels",
+      description:
+        "Appuie sur le trophée pour choisir quels exercices suivre en record personnel. Une fois l'exercice fait au moins une fois, ton meilleur poids apparaîtra dans Stats.",
+      selector: "[data-tour='nav-records']",
+      tooltipPosition: "above" as const,
+    },
+    {
+      title: "Historique",
+      description:
+        "Retrouve toutes tes séances passées organisées par semaine. Clique sur une séance pour revoir les détails.",
+      selector: "[data-tour='nav-historique']",
+      tooltipPosition: "above" as const,
+    },
+    {
+      title: "Profil",
+      description:
+        "Gère ton compte, change ton mot de passe, suis ton poids corporel et consulte tes photos de progression.",
+      selector: "[data-tour='nav-profil']",
+      tooltipPosition: "above" as const,
     },
   ];
-
-  const tourRefs = [
-    useRef<HTMLDivElement>(null),
-    useRef<HTMLDivElement>(null),
-    useRef<HTMLDivElement>(null),
-    useRef<HTMLDivElement>(null),
-  ];
-
-  const [spotlightRect, setSpotlightRect] = useState<{
-    top: number;
-    left: number;
-    width: number;
-    height: number;
-  } | null>(null);
-
-  const updateSpotlight = useCallback(() => {
-    if (tourStep === null) return;
-    let el: HTMLElement | null = null;
-    if (tourStep === 3) {
-      el = document.querySelector("nav[aria-label='Navigation']");
-    } else {
-      el = tourRefs[tourStep]?.current;
-    }
-    if (el) {
-      const rect = el.getBoundingClientRect();
-      setSpotlightRect({
-        top: rect.top,
-        left: rect.left,
-        width: rect.width,
-        height: rect.height,
-      });
-    }
-  }, [tourStep]);
-
-  useEffect(() => {
-    updateSpotlight();
-    window.addEventListener("resize", updateSpotlight);
-    return () => window.removeEventListener("resize", updateSpotlight);
-  }, [tourStep, updateSpotlight]);
-
-  const handleTourNext = () => {
-    if (tourStep === null) return;
-    if (tourStep < tourSteps.length - 1) {
-      setTourStep(tourStep + 1);
-    } else {
-      setTourStep(null);
-      localStorage.setItem("onboardingDone", "true");
-    }
-  };
-
-  const handleTourSkip = () => {
-    setTourStep(null);
-    localStorage.setItem("onboardingDone", "true");
-  };
 
   const handleEndSession = async () => {
     const token = localStorage.getItem("token");
@@ -254,13 +269,13 @@ export default function DashboardPage() {
   return (
     <div className="pb-28 bg-[#faf6f1] min-h-screen">
       <HeaderDashboard />
-      <div ref={tourRefs[0]}>
+      <div ref={tourRef0}>
         <WeekProgress weekActive={weekActive} setWeekActive={setWeekActive} />
       </div>
-      <div ref={tourRefs[1]}>
+      <div ref={tourRef1}>
         <MuscleGroupsCards weekActive={weekActive} />
       </div>
-      <div ref={tourRefs[2]}>
+      <div ref={tourRef2}>
         <RecentActivity />
       </div>
 
@@ -276,7 +291,7 @@ export default function DashboardPage() {
       )}
 
       {showSuccess && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 bg-[#3a9e6e] text-white px-6 py-3 rounded-2xl shadow-lg flex items-center gap-2 z-50">
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 bg-[#3a9e6e] text-white px-6 py-3 rounded-2xl shadow-lg flex items-center gap-2 z-50 animate-slide-down">
           <CheckCircle size={18} />
           <span className="text-sm font-medium">
             Séance terminée ! Tes exercices sont sauvegardés.
@@ -285,8 +300,8 @@ export default function DashboardPage() {
       )}
 
       {showEndConfirm && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6 animate-fade-in">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
             <p className="text-base font-semibold text-gray-900 text-center mb-2">
               Terminer la séance ?
             </p>
@@ -313,8 +328,8 @@ export default function DashboardPage() {
       )}
 
       {showWeightPrompt && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6 animate-fade-in">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
             <div className="flex flex-col items-center mb-4">
               <div className="w-12 h-12 rounded-full bg-orange-50 flex items-center justify-center mb-3">
                 <Scale size={24} className="text-orange-500" />
@@ -365,7 +380,7 @@ export default function DashboardPage() {
 
       {/* Welcome overlay */}
       {showWelcome && (
-        <div className="fixed inset-0 bg-[#faf6f1] z-50 flex flex-col items-center justify-center px-8">
+        <div className="fixed inset-0 bg-[#faf6f1] z-50 flex flex-col items-center justify-center px-8 animate-fade-in">
           <img
             src="/LogoGymsTrack5.webp"
             alt="GymsTrack"
@@ -390,8 +405,8 @@ export default function DashboardPage() {
 
       {/* Onboarding weight prompt */}
       {showOnboardingWeight && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6 animate-fade-in">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
             <div className="flex flex-col items-center mb-4">
               <div className="w-12 h-12 rounded-full bg-orange-50 flex items-center justify-center mb-3">
                 <Scale size={24} className="text-orange-500" />
@@ -441,68 +456,12 @@ export default function DashboardPage() {
       )}
 
       {/* Tour guidé */}
-      {tourStep !== null && spotlightRect && (
-        <div className="fixed inset-0 z-50">
-          {/* Dark overlay with spotlight hole using box-shadow */}
-          <div
-            className="absolute rounded-2xl"
-            style={{
-              top: spotlightRect.top - 6,
-              left: spotlightRect.left - 6,
-              width: spotlightRect.width + 12,
-              height: spotlightRect.height + 12,
-              boxShadow: "0 0 0 9999px rgba(0,0,0,0.6)",
-            }}
-          />
-
-          {/* Tooltip positioned relative to spotlight */}
-          <div
-            className="absolute px-5 w-full"
-            style={{
-              top:
-                tourStep === 3
-                  ? spotlightRect.top - 220
-                  : spotlightRect.top + spotlightRect.height + 16,
-              left: 0,
-            }}
-          >
-            <div className="bg-white rounded-2xl p-5 max-w-sm mx-auto shadow-xl">
-              <div className="flex items-center gap-2 mb-1">
-                {tourSteps.map((_, i) => (
-                  <div
-                    key={i}
-                    className={`h-1 flex-1 rounded-full ${
-                      i <= tourStep ? "bg-[#c9552c]" : "bg-gray-200"
-                    }`}
-                  />
-                ))}
-              </div>
-              <p className="text-xs text-gray-400 mt-2 mb-1">
-                {tourStep + 1}/{tourSteps.length}
-              </p>
-              <p className="text-base font-bold text-gray-900 mb-1">
-                {tourSteps[tourStep].title}
-              </p>
-              <p className="text-sm text-gray-500 mb-4">
-                {tourSteps[tourStep].description}
-              </p>
-              <div className="flex gap-3">
-                <button
-                  onClick={handleTourSkip}
-                  className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-semibold transition-colors"
-                >
-                  Passer
-                </button>
-                <button
-                  onClick={handleTourNext}
-                  className="flex-1 bg-[#c9552c] text-white py-3 rounded-xl font-semibold transition-colors"
-                >
-                  {tourStep < tourSteps.length - 1 ? "Suivant" : "Terminé"}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+      {showTour && (
+        <TourOverlay
+          tourKey="dashboard"
+          steps={dashboardTourSteps}
+          refs={[tourRef0, tourRef1, tourRef2]}
+        />
       )}
     </div>
   );

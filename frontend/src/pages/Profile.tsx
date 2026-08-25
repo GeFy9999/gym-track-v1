@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Mail,
@@ -12,6 +12,7 @@ import {
   Camera,
 } from "lucide-react";
 import { API_URL } from "../lib/api";
+import TourOverlay from "../components/TourOverlay";
 
 export default function ProfilePage() {
   const navigate = useNavigate();
@@ -37,7 +38,9 @@ export default function ProfilePage() {
   const [weightUnit, setWeightUnit] = useState(user?.weightUnit || "lb");
 
   const handleLogout = () => {
-    localStorage.clear();
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("weightSnooze");
     navigate("/login");
   };
 
@@ -305,8 +308,8 @@ export default function ProfilePage() {
 
       {/* Modal déconnexion */}
       {activeModal === "logout" && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6 animate-fade-in">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
             <p className="text-base font-bold text-gray-900 text-center mb-2">
               Se déconnecter ?
             </p>
@@ -333,8 +336,8 @@ export default function ProfilePage() {
 
       {/* Modal mot de passe */}
       {activeModal === "password" && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6 animate-fade-in">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
             <div className="flex justify-between items-center mb-4">
               <p className="text-base font-bold text-gray-900">
                 {user?.authProvider === "google"
@@ -392,8 +395,8 @@ export default function ProfilePage() {
 
       {/* Modal supprimer */}
       {activeModal === "delete" && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6 animate-fade-in">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
             <p className="text-base font-bold text-gray-900 text-center mb-2">
               Supprimer le compte ?
             </p>
@@ -436,8 +439,8 @@ export default function ProfilePage() {
 
       {/* Modal recovery */}
       {activeModal === "recovery" && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6 animate-fade-in">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
             <div className="flex justify-between items-center mb-4">
               <p className="text-base font-bold text-gray-900">
                 Courriel de récupération
@@ -474,8 +477,8 @@ export default function ProfilePage() {
 
       {/* Modal unité */}
       {activeModal === "unit" && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6 animate-fade-in">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
             <div className="flex justify-between items-center mb-4">
               <p className="text-base font-bold text-gray-900">
                 Unité de poids

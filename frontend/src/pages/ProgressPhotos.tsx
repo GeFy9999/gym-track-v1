@@ -155,9 +155,11 @@ export default function ProgressPhotosPage() {
       {/* Photo grid */}
       {loading ? (
         <div className="px-5">
-          <p className="text-sm text-gray-400 text-center py-8">
-            Chargement...
-          </p>
+          <div className="grid grid-cols-3 gap-2 animate-pulse">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="aspect-square bg-gray-200 rounded-xl" />
+            ))}
+          </div>
         </div>
       ) : photos.length === 0 ? (
         <div className="px-5 text-center py-12">
@@ -196,7 +198,7 @@ export default function ProgressPhotosPage() {
 
       {/* View photo modal */}
       {viewPhoto && (
-        <div className="fixed inset-0 bg-black/90 z-50 flex flex-col">
+        <div className="fixed inset-0 bg-black/90 z-50 flex flex-col animate-fade-in">
           <div className="flex items-center justify-between px-5 pt-6 pb-4">
             <button
               onClick={() => {
@@ -228,8 +230,8 @@ export default function ProgressPhotosPage() {
 
           {/* Delete confirmation */}
           {deleteConfirm && (
-            <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-60 px-6">
-              <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
+            <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-60 px-6 animate-fade-in">
+              <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
                 <p className="text-base font-bold text-gray-900 text-center mb-2">
                   Supprimer cette photo ?
                 </p>

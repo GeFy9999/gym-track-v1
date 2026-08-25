@@ -26,6 +26,7 @@ const MONTHS = [
 export default function ProgressChart() {
   const [entries, setEntries] = useState<BodyWeightEntry[]>([]);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchWeights = async () => {
@@ -40,9 +41,18 @@ export default function ProgressChart() {
         const data = await res.json();
         setEntries(data);
       }
+      setLoading(false);
     };
     fetchWeights();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm animate-pulse">
+        <div className="h-32 bg-gray-100 rounded-lg" />
+      </div>
+    );
+  }
 
   if (entries.length === 0) {
     const fakePoints = [40, 55, 45, 60, 50, 65];

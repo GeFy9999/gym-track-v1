@@ -9,11 +9,15 @@ type MuscleGroupVolume = {
 
 export default function MuscleVolume() {
   const [volumes, setVolumes] = useState<MuscleGroupVolume[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchVolume = async () => {
       const token = localStorage.getItem("token");
-      if (!token) return;
+      if (!token) {
+        setLoading(false);
+        return;
+      }
 
       const res = await fetch(`${API_URL}/sessions/me/volume`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -23,9 +27,25 @@ export default function MuscleVolume() {
         const data = await res.json();
         setVolumes(data);
       }
+      setLoading(false);
     };
     fetchVolume();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm animate-pulse">
+        <div className="space-y-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i}>
+              <div className="h-3 w-20 bg-gray-200 rounded mb-2" />
+              <div className="h-3 bg-gray-100 rounded-full" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   if (volumes.length === 0) {
     const placeholders = [

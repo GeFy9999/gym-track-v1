@@ -123,8 +123,29 @@ export default function AddExercisePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#faf6f1] flex items-center justify-center">
-        <p className="text-gray-400">Chargement...</p>
+      <div className="min-h-screen bg-[#faf6f1] pb-28 px-5">
+        <div className="pt-6 pb-4 animate-pulse">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-9 h-9 rounded-full bg-gray-200" />
+            <div className="h-7 w-48 bg-gray-200 rounded" />
+          </div>
+          <div className="h-10 w-full bg-gray-200 rounded-2xl mb-4" />
+        </div>
+        <div className="space-y-3 animate-pulse">
+          {[1, 2, 3, 4].map((i) => (
+            <div
+              key={i}
+              className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm"
+            >
+              <div className="h-4 w-32 bg-gray-200 rounded mb-2" />
+              <div className="space-y-2">
+                {[1, 2].map((j) => (
+                  <div key={j} className="h-10 bg-gray-100 rounded-xl" />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
