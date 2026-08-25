@@ -18,6 +18,7 @@ export default function MuscleGroupsCards({ weekActive }: Props) {
   const [completedGroups, setCompletedGroups] = useState<Set<string>>(
     new Set(),
   );
+  const [activeGroups, setActiveGroups] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
 
   const muscleImages: { [key: string]: string } = {
@@ -76,13 +77,31 @@ export default function MuscleGroupsCards({ weekActive }: Props) {
           { headers: { Authorization: `Bearer ${token}` } },
         );
         if (!res.ok) return;
-        const sessions: { muscleGroup: string; completed: boolean }[] =
-          await res.json();
+        const sessions: {
+          muscleGroup: string;
+          completed: boolean;
+          sessionExercises: {
+            sets: { weight: number; reps: number }[];
+          }[];
+        }[] = await res.json();
 
         const done = new Set(
           sessions.filter((s) => s.completed).map((s) => s.muscleGroup),
         );
         setCompletedGroups(done);
+
+        const inProgress = new Set(
+          sessions
+            .filter(
+              (s) =>
+                !s.completed &&
+                s.sessionExercises.some((se) =>
+                  se.sets.some((set) => set.weight > 0 || set.reps > 0),
+                ),
+            )
+            .map((s) => s.muscleGroup),
+        );
+        setActiveGroups(inProgress);
       } catch (err) {
         console.error(err);
       }
@@ -181,29 +200,38 @@ export default function MuscleGroupsCards({ weekActive }: Props) {
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
-        className="flex gap-3 overflow-x-auto hide-scrollbar px-5 pb-2 cursor-grab active:cursor-grabbing select-none"
+        className="flex gap-3 overflow-x-auto hide-scrollbar px-5 pt-4 pb-2 cursor-grab active:cursor-grabbing select-none"
       >
         {groups.map((group) => {
           const isDone = completedGroups.has(group.name);
+          const isActive = activeGroups.has(group.name) && !isDone;
 
           return (
             <button
               key={group.id}
               onClick={() => handleClick(group)}
               disabled={!weekActive}
-              className={`relative flex-shrink-0 w-32 rounded-2xl pt-3 pb-3 flex flex-col items-center transition-all ${
+              className={`relative flex-shrink-0 w-36 rounded-2xl pt-6 pb-3 flex flex-col items-center transition-all ${
                 weekActive
-                  ? "bg-white border border-gray-200 shadow-sm active:scale-[0.97]"
+                  ? isActive
+                    ? "bg-white border-2 border-[#c9552c] shadow-sm active:scale-[0.97]"
+                    : "bg-white border border-gray-200 shadow-sm active:scale-[0.97]"
                   : "bg-white/60 border border-gray-100 opacity-50"
               }`}
             >
               {isDone && (
-                <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[#3a9e6e] flex items-center justify-center">
-                  <Check size={12} className="text-white" strokeWidth={3} />
+                <div className="absolute top-2.5 right-2.5 w-6 h-6 rounded-full bg-[#3a9e6e] flex items-center justify-center">
+                  <Check size={14} className="text-white" strokeWidth={3} />
+                </div>
+              )}
+              {isActive && (
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10 bg-[#c9552c] text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full flex items-center gap-1.5 whitespace-nowrap">
+                  <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                  En cours
                 </div>
               )}
 
-              <div className="w-18 h-22 rounded-lg mb-2 flex items-center justify-center overflow-hidden">
+              <div className="w-20 h-24 rounded-lg mb-2 flex items-center justify-center overflow-hidden">
                 {muscleImages[group.name] ? (
                   <img
                     src={muscleImages[group.name]}
@@ -217,7 +245,7 @@ export default function MuscleGroupsCards({ weekActive }: Props) {
                 )}
               </div>
 
-              <span className="text-xs font-medium text-gray-700 text-center px-1">
+              <span className="text-sm font-semibold text-gray-700 text-center px-2">
                 {group.name}
               </span>
             </button>

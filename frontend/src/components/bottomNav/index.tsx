@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, BarChart3, History, User, Plus } from "lucide-react";
+import { Home, BarChart3, History, User, Trophy } from "lucide-react";
 
 const links = [
   { to: "/dashboard", label: "Accueil", icon: Home },
@@ -47,7 +47,7 @@ export default function BottomNav() {
               to="/add-exercise"
               className="flex items-center justify-center w-11 h-11 rounded-full bg-[#c9552c]"
             >
-              <Plus size={22} className="text-white" strokeWidth={2.5} />
+              <Trophy size={22} className="text-white" strokeWidth={2.5} />
             </Link>
           </li>
 

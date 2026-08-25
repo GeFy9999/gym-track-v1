@@ -2,8 +2,8 @@ import HeaderDashboard from "../components/dashboard/header";
 import WeekProgress from "../components/dashboard/weekProgressCard";
 import MuscleGroupsCards from "../components/dashboard/muscleGroupGrid";
 import RecentActivity from "../components/dashboard/recentActivity";
-import { useState, useEffect } from "react";
-import { CheckCircle, Scale } from "lucide-react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { CheckCircle, Scale, ChevronRight } from "lucide-react";
 import { API_URL } from "../lib/api";
 
 export default function DashboardPage() {
@@ -13,7 +13,21 @@ export default function DashboardPage() {
   const [showWeightPrompt, setShowWeightPrompt] = useState(false);
   const [bodyWeight, setBodyWeight] = useState("");
 
+  // Onboarding
+  const [showWelcome, setShowWelcome] = useState(false);
+  const [showOnboardingWeight, setShowOnboardingWeight] = useState(false);
+  const [tourStep, setTourStep] = useState<number | null>(null);
+
+  const stored = localStorage.getItem("user");
+  const userName = stored ? JSON.parse(stored).name : "";
+
   useEffect(() => {
+    const onboardingDone = localStorage.getItem("onboardingDone");
+    if (!onboardingDone) {
+      setShowWelcome(true);
+      return;
+    }
+
     const checkBodyWeight = async () => {
       const token = localStorage.getItem("token");
       if (!token) return;
@@ -56,6 +70,115 @@ export default function DashboardPage() {
     };
     checkBodyWeight();
   }, []);
+
+  const handleWelcomeNext = () => {
+    setShowWelcome(false);
+    setShowOnboardingWeight(true);
+  };
+
+  const handleOnboardingWeightSave = async () => {
+    const token = localStorage.getItem("token");
+    if (!token || !bodyWeight) return;
+
+    try {
+      await fetch(`${API_URL}/body-weight`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ value: Number(bodyWeight) }),
+      });
+    } catch (err) {
+      console.error(err);
+    }
+
+    setShowOnboardingWeight(false);
+    setBodyWeight("");
+    setTourStep(0);
+  };
+
+  const handleOnboardingWeightSkip = () => {
+    setShowOnboardingWeight(false);
+    setTourStep(0);
+  };
+
+  const tourSteps = [
+    {
+      title: "Commencer ta semaine",
+      description:
+        "Appuie ici pour démarrer ta semaine d'entraînement. Une fois active, tu pourras ajouter des sessions.",
+    },
+    {
+      title: "Groupes musculaires",
+      description:
+        "Clique sur un groupe musculaire pour créer une session et ajouter des exercices. Un badge orange apparaîtra quand une session est en cours.",
+    },
+    {
+      title: "Activité récente",
+      description:
+        "Ici tu retrouves tes dernières sessions avec les exercices et sets que tu as faits.",
+    },
+    {
+      title: "Navigation",
+      description:
+        "Stats pour voir ta progression, Historique pour revoir tes sessions passées, le trophée pour gérer tes records personnels, et Profil pour tes réglages.",
+    },
+  ];
+
+  const tourRefs = [
+    useRef<HTMLDivElement>(null),
+    useRef<HTMLDivElement>(null),
+    useRef<HTMLDivElement>(null),
+    useRef<HTMLDivElement>(null),
+  ];
+
+  const [spotlightRect, setSpotlightRect] = useState<{
+    top: number;
+    left: number;
+    width: number;
+    height: number;
+  } | null>(null);
+
+  const updateSpotlight = useCallback(() => {
+    if (tourStep === null) return;
+    let el: HTMLElement | null = null;
+    if (tourStep === 3) {
+      el = document.querySelector("nav[aria-label='Navigation']");
+    } else {
+      el = tourRefs[tourStep]?.current;
+    }
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      setSpotlightRect({
+        top: rect.top,
+        left: rect.left,
+        width: rect.width,
+        height: rect.height,
+      });
+    }
+  }, [tourStep]);
+
+  useEffect(() => {
+    updateSpotlight();
+    window.addEventListener("resize", updateSpotlight);
+    return () => window.removeEventListener("resize", updateSpotlight);
+  }, [tourStep, updateSpotlight]);
+
+  const handleTourNext = () => {
+    if (tourStep === null) return;
+    if (tourStep < tourSteps.length - 1) {
+      setTourStep(tourStep + 1);
+    } else {
+      setTourStep(null);
+      localStorage.setItem("onboardingDone", "true");
+    }
+  };
+
+  const handleTourSkip = () => {
+    setTourStep(null);
+    localStorage.setItem("onboardingDone", "true");
+  };
 
   const handleEndSession = async () => {
     const token = localStorage.getItem("token");
@@ -131,9 +254,15 @@ export default function DashboardPage() {
   return (
     <div className="pb-28 bg-[#faf6f1] min-h-screen">
       <HeaderDashboard />
-      <WeekProgress weekActive={weekActive} setWeekActive={setWeekActive} />
-      <MuscleGroupsCards weekActive={weekActive} />
-      <RecentActivity />
+      <div ref={tourRefs[0]}>
+        <WeekProgress weekActive={weekActive} setWeekActive={setWeekActive} />
+      </div>
+      <div ref={tourRefs[1]}>
+        <MuscleGroupsCards weekActive={weekActive} />
+      </div>
+      <div ref={tourRefs[2]}>
+        <RecentActivity />
+      </div>
 
       {weekActive && (
         <div className="px-5 mt-6">
@@ -229,6 +358,148 @@ export default function DashboardPage() {
               >
                 Sauvegarder
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Welcome overlay */}
+      {showWelcome && (
+        <div className="fixed inset-0 bg-[#faf6f1] z-50 flex flex-col items-center justify-center px-8">
+          <img
+            src="/LogoGymsTrack5.webp"
+            alt="GymsTrack"
+            className="h-20 mb-6"
+          />
+          <h1 className="text-2xl font-black text-gray-900 text-center mb-2">
+            Bienvenue{userName ? `, ${userName}` : ""} !
+          </h1>
+          <p className="text-sm text-gray-500 text-center mb-8 max-w-xs">
+            Ton espace pour suivre tes entraînements, ta progression et
+            atteindre tes objectifs.
+          </p>
+          <button
+            onClick={handleWelcomeNext}
+            className="w-full max-w-xs bg-[#c9552c] text-white py-4 rounded-2xl font-semibold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+          >
+            Commencer
+            <ChevronRight size={18} />
+          </button>
+        </div>
+      )}
+
+      {/* Onboarding weight prompt */}
+      {showOnboardingWeight && (
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
+            <div className="flex flex-col items-center mb-4">
+              <div className="w-12 h-12 rounded-full bg-orange-50 flex items-center justify-center mb-3">
+                <Scale size={24} className="text-orange-500" />
+              </div>
+              <p className="text-base font-semibold text-gray-900 text-center">
+                Quel est ton poids actuel ?
+              </p>
+              <p className="text-xs text-gray-400 text-center mt-1">
+                On va utiliser ça pour suivre ton évolution
+              </p>
+            </div>
+
+            <div className="relative mb-4">
+              <input
+                type="number"
+                value={bodyWeight}
+                onChange={(e) => setBodyWeight(e.target.value)}
+                placeholder="0"
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-center text-xl font-semibold text-gray-900 placeholder-gray-300 focus:outline-none focus:border-orange-500 transition-colors"
+              />
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-gray-400">
+                {(() => {
+                  const stored = localStorage.getItem("user");
+                  if (!stored) return "lb";
+                  return JSON.parse(stored).weightUnit || "lb";
+                })()}
+              </span>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={handleOnboardingWeightSkip}
+                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-xl font-semibold transition-colors"
+              >
+                Passer
+              </button>
+              <button
+                onClick={handleOnboardingWeightSave}
+                disabled={!bodyWeight}
+                className="flex-1 bg-[#c9552c] disabled:opacity-50 text-white py-3 rounded-xl font-semibold transition-colors"
+              >
+                Continuer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tour guidé */}
+      {tourStep !== null && spotlightRect && (
+        <div className="fixed inset-0 z-50">
+          {/* Dark overlay with spotlight hole using box-shadow */}
+          <div
+            className="absolute rounded-2xl"
+            style={{
+              top: spotlightRect.top - 6,
+              left: spotlightRect.left - 6,
+              width: spotlightRect.width + 12,
+              height: spotlightRect.height + 12,
+              boxShadow: "0 0 0 9999px rgba(0,0,0,0.6)",
+            }}
+          />
+
+          {/* Tooltip positioned relative to spotlight */}
+          <div
+            className="absolute px-5 w-full"
+            style={{
+              top:
+                tourStep === 3
+                  ? spotlightRect.top - 220
+                  : spotlightRect.top + spotlightRect.height + 16,
+              left: 0,
+            }}
+          >
+            <div className="bg-white rounded-2xl p-5 max-w-sm mx-auto shadow-xl">
+              <div className="flex items-center gap-2 mb-1">
+                {tourSteps.map((_, i) => (
+                  <div
+                    key={i}
+                    className={`h-1 flex-1 rounded-full ${
+                      i <= tourStep ? "bg-[#c9552c]" : "bg-gray-200"
+                    }`}
+                  />
+                ))}
+              </div>
+              <p className="text-xs text-gray-400 mt-2 mb-1">
+                {tourStep + 1}/{tourSteps.length}
+              </p>
+              <p className="text-base font-bold text-gray-900 mb-1">
+                {tourSteps[tourStep].title}
+              </p>
+              <p className="text-sm text-gray-500 mb-4">
+                {tourSteps[tourStep].description}
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleTourSkip}
+                  className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-semibold transition-colors"
+                >
+                  Passer
+                </button>
+                <button
+                  onClick={handleTourNext}
+                  className="flex-1 bg-[#c9552c] text-white py-3 rounded-xl font-semibold transition-colors"
+                >
+                  {tourStep < tourSteps.length - 1 ? "Suivant" : "Terminé"}
+                </button>
+              </div>
             </div>
           </div>
         </div>
