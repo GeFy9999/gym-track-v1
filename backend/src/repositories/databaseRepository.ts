@@ -135,7 +135,7 @@ export async function insertSet(set: {
 
 export async function updateSet(
   setId: string,
-  data: { weight?: number; reps?: number; unit?: string },
+  data: { weight?: number; reps?: number; unit?: string; completed?: boolean },
 ) {
   return await prisma.set.update({
     where: { id: setId },

@@ -38,6 +38,9 @@ export const register = async (payload: {
       name: user.name,
       recoveryEmail: user.recoveryEmail,
       weightUnit: user.weightUnit,
+      restTimerSeconds: user.restTimerSeconds,
+      restTimerEnabled: user.restTimerEnabled,
+      barbellModeEnabled: user.barbellModeEnabled,
       authProvider: user.authProvider,
     },
   };
@@ -62,6 +65,9 @@ export const login = async (payload: { email: string; password: string }) => {
       name: user.name,
       recoveryEmail: user.recoveryEmail,
       weightUnit: user.weightUnit,
+      restTimerSeconds: user.restTimerSeconds,
+      restTimerEnabled: user.restTimerEnabled,
+      barbellModeEnabled: user.barbellModeEnabled,
       authProvider: user.authProvider,
     },
   };
@@ -110,6 +116,9 @@ export const googleLogin = async (credential: string) => {
       name: user.name,
       recoveryEmail: user.recoveryEmail,
       weightUnit: user.weightUnit,
+      restTimerSeconds: user.restTimerSeconds,
+      restTimerEnabled: user.restTimerEnabled,
+      barbellModeEnabled: user.barbellModeEnabled,
       authProvider: user.authProvider,
     },
   };
@@ -195,6 +204,36 @@ export const updateWeightUnit = async (userId: string, weightUnit: string) => {
   await prisma.user.update({
     where: { id: userId },
     data: { weightUnit },
+  });
+};
+
+export const updateRestTimer = async (
+  userId: string,
+  restTimerSeconds: number,
+) => {
+  await prisma.user.update({
+    where: { id: userId },
+    data: { restTimerSeconds },
+  });
+};
+
+export const updateRestTimerEnabled = async (
+  userId: string,
+  restTimerEnabled: boolean,
+) => {
+  await prisma.user.update({
+    where: { id: userId },
+    data: { restTimerEnabled },
+  });
+};
+
+export const updateBarbellModeEnabled = async (
+  userId: string,
+  barbellModeEnabled: boolean,
+) => {
+  await prisma.user.update({
+    where: { id: userId },
+    data: { barbellModeEnabled },
   });
 };
 

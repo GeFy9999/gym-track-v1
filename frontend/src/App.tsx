@@ -15,6 +15,14 @@ import AddExercisePage from "./pages/AddExercise.tsx";
 import ForgotPasswordPage from "./pages/ForgotPassword.tsx";
 import ResetPasswordPage from "./pages/ResetPassword.tsx";
 import ProgressPhotosPage from "./pages/ProgressPhotos.tsx";
+import { RestTimerProvider, useRestTimerContext } from "./contexts/RestTimerContext";
+import RestTimer from "./components/session/RestTimer";
+
+function GlobalRestTimer() {
+  const { isActive, secondsLeft, skip } = useRestTimerContext();
+  if (!isActive) return null;
+  return <RestTimer secondsLeft={secondsLeft} onSkip={skip} />;
+}
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const [checking, setChecking] = useState(true);
@@ -80,8 +88,9 @@ function App() {
   }, []);
 
   return (
-    <>
+    <RestTimerProvider>
       {error && <Alert message={error} />}
+      <GlobalRestTimer />
       <div className="min-h-screen bg-[#e8e0d8] flex justify-center">
         <div className="w-full max-w-[430px] min-h-screen bg-[#faf6f1] relative shadow-2xl">
           <Routes>
@@ -150,7 +159,7 @@ function App() {
           {!hideNav && <BottomNav />}
         </div>
       </div>
-    </>
+    </RestTimerProvider>
   );
 }
 

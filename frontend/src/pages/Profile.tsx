@@ -10,6 +10,8 @@ import {
   MailPlus,
   X,
   Camera,
+  Timer,
+  Dumbbell,
 } from "lucide-react";
 import { API_URL } from "../lib/api";
 import TourOverlay from "../components/TourOverlay";
@@ -36,6 +38,19 @@ export default function ProfilePage() {
   const [success, setSuccess] = useState<string | null>(null);
   const [recoveryEmail, setRecoveryEmail] = useState(user?.recoveryEmail || "");
   const [weightUnit, setWeightUnit] = useState(user?.weightUnit || "lb");
+  const [restTimerSeconds, setRestTimerSeconds] = useState(
+    user?.restTimerSeconds || 120,
+  );
+  const [restTimerEnabled, setRestTimerEnabled] = useState<boolean>(
+    user?.restTimerEnabled ?? true,
+  );
+  const [barbellModeEnabled, setBarbellModeEnabled] = useState<boolean>(
+    user?.barbellModeEnabled ?? false,
+  );
+  const [customMinutes, setCustomMinutes] = useState("");
+  const [customSeconds, setCustomSeconds] = useState("");
+  const customTotalSeconds =
+    (Number(customMinutes) || 0) * 60 + (Number(customSeconds) || 0);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -137,11 +152,96 @@ export default function ProfilePage() {
     }
   };
 
+  const handleRestTimer = async (seconds: number) => {
+    if (!seconds || seconds < 5 || seconds > 600) return;
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_URL}/auth/rest-timer`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ restTimerSeconds: seconds }),
+      });
+      if (!res.ok) return;
+      setRestTimerSeconds(seconds);
+      const s = localStorage.getItem("user");
+      if (s) {
+        const u = JSON.parse(s);
+        u.restTimerSeconds = seconds;
+        localStorage.setItem("user", JSON.stringify(u));
+      }
+      setActiveModal(null);
+      setCustomMinutes("");
+      setCustomSeconds("");
+      setSuccess("Timer de repos mis à jour");
+      setTimeout(() => setSuccess(null), 3000);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleRestTimerEnabled = async (enabled: boolean) => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_URL}/auth/rest-timer-enabled`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ restTimerEnabled: enabled }),
+      });
+      if (!res.ok) return;
+      setRestTimerEnabled(enabled);
+      const s = localStorage.getItem("user");
+      if (s) {
+        const u = JSON.parse(s);
+        u.restTimerEnabled = enabled;
+        localStorage.setItem("user", JSON.stringify(u));
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleBarbellModeEnabled = async (enabled: boolean) => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_URL}/auth/barbell-mode-enabled`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ barbellModeEnabled: enabled }),
+      });
+      if (!res.ok) return;
+      setBarbellModeEnabled(enabled);
+      const s = localStorage.getItem("user");
+      if (s) {
+        const u = JSON.parse(s);
+        u.barbellModeEnabled = enabled;
+        localStorage.setItem("user", JSON.stringify(u));
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const truncateEmail = (email: string) => {
     if (!email) return "";
     const [local, domain] = email.split("@");
     if (local.length <= 10) return email;
     return `${local.slice(0, 10)}...@${domain}`;
+  };
+
+  const formatRestTimer = (seconds: number) => {
+    if (seconds < 60) return `${seconds}s`;
+    const minutes = Math.floor(seconds / 60);
+    const rest = seconds % 60;
+    return rest === 0 ? `${minutes} min` : `${minutes} min ${rest}`;
   };
 
   return (
@@ -269,6 +369,81 @@ export default function ProfilePage() {
           </p>
           <ChevronRight size={16} className="text-gray-300" />
         </button>
+      </div>
+
+      {/* Entraînement */}
+      <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-2 px-1">
+        Entraînement
+      </p>
+      <div className="bg-white border border-gray-200 rounded-2xl mb-6 shadow-sm">
+        <div className="w-full flex items-center gap-3 px-4 py-4 border-b border-gray-100">
+          <div className="w-9 h-9 rounded-xl bg-[#c9552c]/10 flex items-center justify-center flex-shrink-0">
+            <Timer size={16} className="text-[#c9552c]" />
+          </div>
+          <div className="flex-1 text-left">
+            <p className="text-sm font-medium text-gray-900">
+              Rest timer automatique
+            </p>
+            <p className="text-xs text-gray-400">
+              Démarre dès qu'un set est marqué complété
+            </p>
+          </div>
+          <button
+            onClick={() => handleRestTimerEnabled(!restTimerEnabled)}
+            className={`w-11 h-6 rounded-full relative flex-shrink-0 transition-colors ${
+              restTimerEnabled ? "bg-[#3a9e6e]" : "bg-gray-300"
+            }`}
+            aria-label="Activer le rest timer automatique"
+          >
+            <span
+              className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${
+                restTimerEnabled ? "translate-x-5" : "translate-x-0"
+              }`}
+            />
+          </button>
+        </div>
+
+        <button
+          onClick={() => restTimerEnabled && setActiveModal("restTimer")}
+          disabled={!restTimerEnabled}
+          className="w-full flex items-center gap-3 px-4 py-4 border-b border-gray-100 disabled:opacity-50"
+        >
+          <div className="w-9 h-9 rounded-xl bg-[#c9552c]/10 flex items-center justify-center flex-shrink-0">
+            <Timer size={16} className="text-[#c9552c]" />
+          </div>
+          <p className="flex-1 text-left text-sm font-medium text-gray-900">
+            Durée par défaut
+          </p>
+          <p className="text-sm text-gray-400">
+            {formatRestTimer(restTimerSeconds)}
+          </p>
+          <ChevronRight size={16} className="text-gray-300" />
+        </button>
+
+        <div className="w-full flex items-center gap-3 px-4 py-4">
+          <div className="w-9 h-9 rounded-xl bg-[#c9552c]/10 flex items-center justify-center flex-shrink-0">
+            <Dumbbell size={16} className="text-[#c9552c]" />
+          </div>
+          <div className="flex-1 text-left">
+            <p className="text-sm font-medium text-gray-900">Mode barbell</p>
+            <p className="text-xs text-gray-400">
+              Saisis le poids de chaque côté de la barre
+            </p>
+          </div>
+          <button
+            onClick={() => handleBarbellModeEnabled(!barbellModeEnabled)}
+            className={`w-11 h-6 rounded-full relative flex-shrink-0 transition-colors ${
+              barbellModeEnabled ? "bg-[#3a9e6e]" : "bg-gray-300"
+            }`}
+            aria-label="Activer le mode barbell"
+          >
+            <span
+              className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${
+                barbellModeEnabled ? "translate-x-5" : "translate-x-0"
+              }`}
+            />
+          </button>
+        </div>
       </div>
 
       {/* Zone de danger */}
@@ -511,6 +686,88 @@ export default function ProfilePage() {
                 <p className="text-xs text-gray-400 mt-0.5">Système métrique</p>
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal timer de repos */}
+      {activeModal === "restTimer" && (
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6 animate-fade-in">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
+            <div className="flex justify-between items-center mb-4">
+              <p className="text-base font-bold text-gray-900">
+                Timer de repos
+              </p>
+              <button
+                onClick={() => {
+                  setActiveModal(null);
+                  setCustomMinutes("");
+                  setCustomSeconds("");
+                }}
+              >
+                <X size={20} className="text-gray-400" />
+              </button>
+            </div>
+            <div className="space-y-2 mb-4">
+              {[30, 60, 90, 120].map((seconds) => (
+                <button
+                  key={seconds}
+                  onClick={() => handleRestTimer(seconds)}
+                  className={`w-full text-left px-4 py-3.5 rounded-xl border transition-colors ${
+                    restTimerSeconds === seconds
+                      ? "border-[#c9552c] bg-[#c9552c]/5 text-[#c9552c]"
+                      : "border-gray-200 bg-gray-50 text-gray-700"
+                  }`}
+                >
+                  <p className="text-sm font-semibold">
+                    {formatRestTimer(seconds)}
+                  </p>
+                </button>
+              ))}
+            </div>
+            <label className="text-xs text-gray-500 mb-1 block">
+              Durée personnalisée
+            </label>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex-1">
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  min={0}
+                  max={10}
+                  value={customMinutes}
+                  onChange={(e) => setCustomMinutes(e.target.value)}
+                  placeholder="0"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-center text-gray-900 placeholder-gray-300 focus:outline-none focus:border-[#c9552c]"
+                />
+                <p className="text-[11px] text-gray-400 text-center mt-1">
+                  minutes
+                </p>
+              </div>
+              <span className="text-gray-300 font-semibold pb-5">:</span>
+              <div className="flex-1">
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  min={0}
+                  max={59}
+                  value={customSeconds}
+                  onChange={(e) => setCustomSeconds(e.target.value)}
+                  placeholder="0"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-center text-gray-900 placeholder-gray-300 focus:outline-none focus:border-[#c9552c]"
+                />
+                <p className="text-[11px] text-gray-400 text-center mt-1">
+                  secondes
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => handleRestTimer(customTotalSeconds)}
+              disabled={customTotalSeconds < 5 || customTotalSeconds > 600}
+              className="w-full bg-[#c9552c] disabled:opacity-50 text-white py-3 rounded-xl font-semibold"
+            >
+              Confirmer
+            </button>
           </div>
         </div>
       )}

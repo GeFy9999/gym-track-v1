@@ -7,6 +7,9 @@ import {
   deleteAccount,
   updateRecoveryEmail,
   updateWeightUnit,
+  updateRestTimer,
+  updateRestTimerEnabled,
+  updateBarbellModeEnabled,
   forgotPassword,
   resetPassword,
 } from "../services/authService.js";
@@ -150,6 +153,78 @@ authRouter.patch(
 
       await updateWeightUnit(userId, weightUnit);
       return res.status(200).json({ message: "Unité mise à jour" });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      return res.status(400).json({ error: message });
+    }
+  },
+);
+
+// PATCH /api/auth/rest-timer
+authRouter.patch(
+  "/rest-timer",
+  authMiddleware,
+  async (req: AuthRequest, res) => {
+    try {
+      const userId = req.userId!;
+      const { restTimerSeconds } = req.body;
+
+      if (
+        typeof restTimerSeconds !== "number" ||
+        restTimerSeconds < 5 ||
+        restTimerSeconds > 600
+      ) {
+        return res
+          .status(400)
+          .json({ error: "Durée invalide (entre 5 et 600 secondes)" });
+      }
+
+      await updateRestTimer(userId, restTimerSeconds);
+      return res.status(200).json({ message: "Timer de repos mis à jour" });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      return res.status(400).json({ error: message });
+    }
+  },
+);
+
+// PATCH /api/auth/rest-timer-enabled
+authRouter.patch(
+  "/rest-timer-enabled",
+  authMiddleware,
+  async (req: AuthRequest, res) => {
+    try {
+      const userId = req.userId!;
+      const { restTimerEnabled } = req.body;
+
+      if (typeof restTimerEnabled !== "boolean") {
+        return res.status(400).json({ error: "Valeur booléenne requise" });
+      }
+
+      await updateRestTimerEnabled(userId, restTimerEnabled);
+      return res.status(200).json({ message: "Préférence mise à jour" });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      return res.status(400).json({ error: message });
+    }
+  },
+);
+
+// PATCH /api/auth/barbell-mode-enabled
+authRouter.patch(
+  "/barbell-mode-enabled",
+  authMiddleware,
+  async (req: AuthRequest, res) => {
+    try {
+      const userId = req.userId!;
+      const { barbellModeEnabled } = req.body;
+
+      if (typeof barbellModeEnabled !== "boolean") {
+        return res.status(400).json({ error: "Valeur booléenne requise" });
+      }
+
+      await updateBarbellModeEnabled(userId, barbellModeEnabled);
+      return res.status(200).json({ message: "Préférence mise à jour" });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       return res.status(400).json({ error: message });

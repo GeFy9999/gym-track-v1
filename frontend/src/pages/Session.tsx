@@ -7,16 +7,37 @@ import {
   ChevronDown,
   Search,
   Dumbbell,
+  Check,
+  Timer,
+  History,
+  X,
 } from "lucide-react";
-import { getWeightUnit } from "../utils/units";
+import {
+  getWeightUnit,
+  getRestTimerSeconds,
+  getRestTimerEnabled,
+  getBarbellModeEnabled,
+  formatDuration,
+} from "../utils/units";
 import { API_URL } from "../lib/api";
-import { useExerciseDeltas } from "../hooks/useExerciseDeltas";
+import { useExerciseHistory, formatLastTime } from "../hooks/useExerciseDeltas";
+import { useRestTimerContext } from "../contexts/RestTimerContext";
+import {
+  isLikelyBarbellExercise,
+  getDefaultBarWeight,
+  calculatePlates,
+  BAR_WEIGHTS,
+} from "../utils/plates";
+import PlateRow from "../components/session/PlateRow";
+
+const REST_DURATION_OPTIONS = [30, 60, 90, 120, 180];
 
 type SetData = {
   id: string;
   weight: number;
   reps: number;
   unit: string;
+  completed: boolean;
 };
 
 type SessionExercise = {
@@ -59,7 +80,31 @@ export default function SessionPage() {
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [lastWeights, setLastWeights] = useState<LastWeight[]>([]);
-  const deltas = useExerciseDeltas(sessionId);
+  const [exerciseDurations, setExerciseDurations] = useState<
+    Record<string, number>
+  >({});
+  const [openDurationPicker, setOpenDurationPicker] = useState<string | null>(
+    null,
+  );
+  const [customDuration, setCustomDuration] = useState("");
+  const [barbellOverrides, setBarbellOverrides] = useState<
+    Record<string, boolean>
+  >({});
+  const [barWeights, setBarWeights] = useState<Record<string, number>>({});
+  const { deltas, lastTimes } = useExerciseHistory(sessionId);
+  const restTimer = useRestTimerContext();
+  const restTimerEnabled = getRestTimerEnabled();
+  const barbellModeEnabled = getBarbellModeEnabled();
+
+  const getExerciseDuration = (sessionExerciseId: string) =>
+    exerciseDurations[sessionExerciseId] ?? getRestTimerSeconds();
+
+  const isBarbellMode = (se: SessionExercise) =>
+    barbellModeEnabled &&
+    (barbellOverrides[se.id] ?? isLikelyBarbellExercise(se.exercise.name));
+
+  const getBarWeight = (sessionExerciseId: string) =>
+    barWeights[sessionExerciseId] ?? getDefaultBarWeight(getWeightUnit());
 
   const fetchSession = async () => {
     try {
@@ -172,6 +217,42 @@ export default function SessionPage() {
     } catch (err) {
       console.error(err);
     }
+  };
+
+  const toggleSetCompleted = (
+    setId: string,
+    sessionExerciseId: string,
+    currentlyCompleted: boolean,
+  ) => {
+    const nextCompleted = !currentlyCompleted;
+
+    setSession((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        sessionExercises: prev.sessionExercises.map((se) => ({
+          ...se,
+          sets: se.sets.map((s) =>
+            s.id === setId ? { ...s, completed: nextCompleted } : s,
+          ),
+        })),
+      };
+    });
+
+    // Start the timer synchronously (same click) so browsers still treat
+    // sound/vibration triggered later as originating from a user gesture.
+    if (nextCompleted && restTimerEnabled) {
+      restTimer.start(getExerciseDuration(sessionExerciseId));
+    }
+
+    fetch(`${API_URL}/sets/${setId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ completed: nextCompleted }),
+    }).catch((err) => {
+      console.error(err);
+      fetchSession();
+    });
   };
 
   const updateSet = async (
@@ -404,169 +485,407 @@ export default function SessionPage() {
           </div>
         )}
 
-        {session.sessionExercises.map((se, seIndex) => (
-          <div
-            key={se.id}
-            className={`bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm ${
-              removingId === se.id
-                ? "animate-slide-out-right"
-                : "animate-slide-up"
-            }`}
-            style={
-              removingId === se.id
-                ? undefined
-                : { animationDelay: `${seIndex * 80}ms` }
-            }
-          >
+        {session.sessionExercises.map((se, seIndex) => {
+          const barbell = isBarbellMode(se);
+          const barWeight = getBarWeight(se.id);
+          const delta = deltas.get(se.exercise.id);
+          const lastTime = lastTimes.get(se.exercise.id);
+
+          return (
             <div
-              className="relative h-24 rounded-t-2xl flex items-end"
-              style={{
-                background:
-                  "linear-gradient(135deg, #3d2a1e 0%, #2a1c14 50%, #1a1210 100%)",
-              }}
+              key={se.id}
+              className={`bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm ${
+                removingId === se.id
+                  ? "animate-slide-out-right"
+                  : "animate-slide-up"
+              }`}
+              style={
+                removingId === se.id
+                  ? undefined
+                  : { animationDelay: `${seIndex * 80}ms` }
+              }
             >
-              <p className="absolute bottom-3 left-4 text-lg font-bold text-white">
-                {se.exercise.name}
-              </p>
-              {(() => {
-                const delta = deltas.get(se.exercise.id);
-                if (!delta) return null;
-                const isUp = delta.value > 0;
-                return (
-                  <div className="absolute bottom-3 right-4 flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#c9552c]/20 text-[#c9552c]">
-                    <span className="text-xs font-semibold">
-                      {isUp ? "↑" : "↓"} {isUp ? "+" : ""}
-                      {delta.value} {delta.unit}
-                    </span>
-                  </div>
-                );
-              })()}
-              {!readOnly && (
-                <button
-                  onClick={() => setConfirmDelete(se.id)}
-                  className="absolute top-3 right-3 bg-white/20 p-2 rounded-xl text-white active:text-red-200 transition-colors"
-                >
-                  <Trash2 size={16} />
-                </button>
-              )}
-            </div>
-
-            <div className="p-4">
-              {se.sets.length > 0 && (
-                <div className="grid grid-cols-[28px_1fr_1fr_32px] items-center mb-3">
-                  <span />
-                  <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider text-center">
-                    Poids ({getWeightUnit()})
-                  </span>
-                  <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider text-center">
-                    Reps
-                  </span>
-                  <span />
-                </div>
-              )}
-
-              <div className="space-y-2.5">
-                {se.sets.map((set, i) => (
-                  <div
-                    key={set.id}
-                    className="grid grid-cols-[28px_1fr_1fr_32px] items-center gap-2"
-                  >
-                    <span className="text-sm text-[#c9552c] text-center font-semibold">
-                      {i + 1}
-                    </span>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      pattern="[0-9]*"
-                      value={set.weight === 0 ? "" : set.weight}
-                      placeholder="—"
-                      onChange={(e) => {
-                        const val = e.target.value.replace(/[^0-9.]/g, "");
-                        const num = val === "" ? 0 : Number(val);
-                        setSession((prev) => {
-                          if (!prev) return prev;
-                          return {
-                            ...prev,
-                            sessionExercises: prev.sessionExercises.map(
-                              (s) => ({
-                                ...s,
-                                sets: s.sets.map((st) =>
-                                  st.id === set.id
-                                    ? { ...st, weight: num }
-                                    : st,
-                                ),
-                              }),
-                            ),
-                          };
-                        });
-                      }}
-                      onFocus={(e) => e.target.select()}
-                      onBlur={(e) => {
-                        const num =
-                          e.target.value === "" ? 0 : Number(e.target.value);
-                        updateSet(set.id, { weight: num });
-                      }}
-                      disabled={readOnly}
-                      className="w-full rounded-xl px-3 py-3 text-base text-gray-900 text-center font-bold bg-gray-100 focus:bg-gray-200 focus:outline-none transition-colors"
-                    />
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      pattern="[0-9]*"
-                      value={set.reps === 0 ? "" : set.reps}
-                      placeholder="—"
-                      onChange={(e) => {
-                        const val = e.target.value.replace(/[^0-9]/g, "");
-                        const num = val === "" ? 0 : Number(val);
-                        setSession((prev) => {
-                          if (!prev) return prev;
-                          return {
-                            ...prev,
-                            sessionExercises: prev.sessionExercises.map(
-                              (s) => ({
-                                ...s,
-                                sets: s.sets.map((st) =>
-                                  st.id === set.id ? { ...st, reps: num } : st,
-                                ),
-                              }),
-                            ),
-                          };
-                        });
-                      }}
-                      onFocus={(e) => e.target.select()}
-                      onBlur={(e) => {
-                        const num =
-                          e.target.value === "" ? 0 : Number(e.target.value);
-                        updateSet(set.id, { reps: num });
-                      }}
-                      disabled={readOnly}
-                      className="w-full rounded-xl px-3 py-3 text-base text-gray-900 text-center font-bold bg-gray-100 focus:bg-gray-200 focus:outline-none transition-colors"
-                    />
-                    {!readOnly ? (
+              <div
+                className="relative p-5 pb-6"
+                style={{
+                  background:
+                    "linear-gradient(135deg, #3d2a1e 0%, #2a1c14 50%, #1a1210 100%)",
+                }}
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400">
+                    Exercice {seIndex + 1} / {session.sessionExercises.length}
+                  </p>
+                  <div className="flex flex-col items-end gap-2">
+                    {!readOnly && (
                       <button
-                        onClick={() => deleteSet(set.id)}
-                        className="text-gray-300 active:text-red-500 transition-colors flex items-center justify-center"
+                        onClick={() => setConfirmDelete(se.id)}
+                        className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center text-white/60 active:text-red-300 transition-colors"
                       >
-                        <Trash2 size={16} />
+                        <Trash2 size={13} />
                       </button>
-                    ) : (
-                      <span />
+                    )}
+                    {delta && (
+                      <div
+                        className={`flex items-center gap-1 px-2.5 py-1 rounded-full ${
+                          delta.value > 0 ? "bg-[#c9552c]" : "bg-white/15"
+                        }`}
+                      >
+                        <span className="text-[11px] font-bold uppercase text-white">
+                          {delta.value > 0 ? "↑" : "↓"}{" "}
+                          {delta.value > 0 ? "+" : ""}
+                          {delta.value} {delta.unit}
+                        </span>
+                      </div>
                     )}
                   </div>
-                ))}
+                </div>
+
+                <h2 className="text-2xl font-black uppercase text-white leading-tight mb-3">
+                  {se.exercise.name}
+                </h2>
+
+                {!readOnly && (
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {barbellModeEnabled && (
+                      <button
+                        onClick={() =>
+                          setBarbellOverrides((prev) => ({
+                            ...prev,
+                            [se.id]: !isBarbellMode(se),
+                          }))
+                        }
+                        className={`text-[11px] font-bold uppercase tracking-wide px-3 py-1.5 rounded-full transition-colors ${
+                          barbell
+                            ? "bg-[#c9552c] text-white"
+                            : "bg-white/10 text-white/60"
+                        }`}
+                      >
+                        Mode barbell
+                      </button>
+                    )}
+
+                    {restTimerEnabled && (
+                      <div className="relative inline-block">
+                        <button
+                          onClick={() =>
+                            setOpenDurationPicker(
+                              openDurationPicker === se.id ? null : se.id,
+                            )
+                          }
+                          className="text-[11px] font-bold uppercase tracking-wide px-3 py-1.5 rounded-full bg-white/10 text-white/80"
+                        >
+                          Repos {formatDuration(getExerciseDuration(se.id))}
+                        </button>
+
+                        {openDurationPicker === se.id && (
+                          <div className="absolute z-10 top-full left-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg p-2 flex flex-col gap-1 min-w-[160px]">
+                            {REST_DURATION_OPTIONS.map((s) => (
+                              <button
+                                key={s}
+                                onClick={() => {
+                                  setExerciseDurations((prev) => ({
+                                    ...prev,
+                                    [se.id]: s,
+                                  }));
+                                  setOpenDurationPicker(null);
+                                }}
+                                className={`text-left text-sm px-3 py-2 rounded-lg transition-colors ${
+                                  getExerciseDuration(se.id) === s
+                                    ? "bg-[#c9552c]/10 text-[#c9552c] font-semibold"
+                                    : "text-gray-700 hover:bg-gray-50"
+                                }`}
+                              >
+                                {formatDuration(s)}
+                              </button>
+                            ))}
+                            <div className="flex gap-2 px-1 pt-1 mt-1 border-t border-gray-100">
+                              <input
+                                type="number"
+                                value={customDuration}
+                                onChange={(e) =>
+                                  setCustomDuration(e.target.value)
+                                }
+                                placeholder="Custom (s)"
+                                className="flex-1 min-w-0 bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:border-[#c9552c]"
+                              />
+                              <button
+                                onClick={() => {
+                                  const val = Number(customDuration);
+                                  if (val > 0) {
+                                    setExerciseDurations((prev) => ({
+                                      ...prev,
+                                      [se.id]: val,
+                                    }));
+                                    setOpenDurationPicker(null);
+                                    setCustomDuration("");
+                                  }
+                                }}
+                                disabled={
+                                  !customDuration ||
+                                  Number(customDuration) <= 0
+                                }
+                                className="bg-[#c9552c] disabled:opacity-50 text-white text-sm font-semibold px-3 rounded-lg"
+                              >
+                                OK
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
-              {!readOnly && (
-                <button
-                  onClick={() => addSet(se.id, se.sets)}
-                  className="mt-4 w-full bg-gray-100 active:bg-gray-200 text-sm text-gray-700 font-semibold py-2.5 rounded-xl flex items-center justify-center gap-1.5 transition-colors"
-                >
-                  <Plus size={14} className="text-[#c9552c]" /> Ajouter un set
-                </button>
-              )}
+              <div className="p-4">
+                {lastTime && (
+                  <div className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-gray-100 mb-3">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                      Dernière fois
+                    </span>
+                    <span className="text-sm font-bold text-gray-900">
+                      {formatLastTime(lastTime)}
+                    </span>
+                  </div>
+                )}
+
+                {!readOnly && barbell && (
+                  <div className="mb-3">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1.5">
+                      Barre
+                    </p>
+                    <div className="flex gap-2">
+                      {(BAR_WEIGHTS[getWeightUnit()] || BAR_WEIGHTS.lb).map(
+                        (bw) => (
+                          <button
+                            key={bw}
+                            onClick={() =>
+                              setBarWeights((prev) => ({
+                                ...prev,
+                                [se.id]: bw,
+                              }))
+                            }
+                            className={`flex-1 py-2.5 rounded-full text-sm font-bold transition-colors ${
+                              getBarWeight(se.id) === bw
+                                ? "bg-[#c9552c] text-white"
+                                : "bg-gray-100 text-gray-500"
+                            }`}
+                          >
+                            {bw} {getWeightUnit()}
+                          </button>
+                        ),
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                <div className="space-y-3">
+                  {se.sets.map((set, i) => {
+                    const perSide = barbell
+                      ? Math.max(0, (set.weight - barWeight) / 2)
+                      : 0;
+                    const { plates, remainder } = barbell
+                      ? calculatePlates(perSide, getWeightUnit())
+                      : { plates: [], remainder: 0 };
+
+                    return (
+                      <div key={set.id}>
+                        <div className="grid grid-cols-2 gap-3 mb-2">
+                          <div className="bg-gray-100 rounded-2xl p-3">
+                            <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">
+                              {barbell ? "Poids / côté" : "Poids"}
+                            </p>
+                            <div className="flex items-baseline gap-1">
+                              <input
+                                type="text"
+                                inputMode="numeric"
+                                pattern="[0-9]*"
+                                value={
+                                  barbell
+                                    ? perSide === 0
+                                      ? ""
+                                      : perSide
+                                    : set.weight === 0
+                                      ? ""
+                                      : set.weight
+                                }
+                                placeholder="0"
+                                onChange={(e) => {
+                                  const val = e.target.value.replace(
+                                    /[^0-9.]/g,
+                                    "",
+                                  );
+                                  const num = val === "" ? 0 : Number(val);
+                                  const total = barbell
+                                    ? barWeight + num * 2
+                                    : num;
+                                  setSession((prev) => {
+                                    if (!prev) return prev;
+                                    return {
+                                      ...prev,
+                                      sessionExercises:
+                                        prev.sessionExercises.map((s) => ({
+                                          ...s,
+                                          sets: s.sets.map((st) =>
+                                            st.id === set.id
+                                              ? { ...st, weight: total }
+                                              : st,
+                                          ),
+                                        })),
+                                    };
+                                  });
+                                }}
+                                onFocus={(e) => e.target.select()}
+                                onBlur={(e) => {
+                                  const raw =
+                                    e.target.value === ""
+                                      ? 0
+                                      : Number(e.target.value);
+                                  const total = barbell
+                                    ? barWeight + raw * 2
+                                    : raw;
+                                  updateSet(set.id, { weight: total });
+                                }}
+                                disabled={readOnly}
+                                className="w-full min-w-0 bg-transparent text-3xl font-black text-gray-900 focus:outline-none"
+                              />
+                              <span className="text-sm font-bold text-gray-400 flex-shrink-0">
+                                {getWeightUnit()}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="bg-gray-100 rounded-2xl p-3">
+                            <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">
+                              Reps
+                            </p>
+                            <input
+                              type="text"
+                              inputMode="numeric"
+                              pattern="[0-9]*"
+                              value={set.reps === 0 ? "" : set.reps}
+                              placeholder="0"
+                              onChange={(e) => {
+                                const val = e.target.value.replace(
+                                  /[^0-9]/g,
+                                  "",
+                                );
+                                const num = val === "" ? 0 : Number(val);
+                                setSession((prev) => {
+                                  if (!prev) return prev;
+                                  return {
+                                    ...prev,
+                                    sessionExercises:
+                                      prev.sessionExercises.map((s) => ({
+                                        ...s,
+                                        sets: s.sets.map((st) =>
+                                          st.id === set.id
+                                            ? { ...st, reps: num }
+                                            : st,
+                                        ),
+                                      })),
+                                  };
+                                });
+                              }}
+                              onFocus={(e) => e.target.select()}
+                              onBlur={(e) => {
+                                const num =
+                                  e.target.value === ""
+                                    ? 0
+                                    : Number(e.target.value);
+                                updateSet(set.id, { reps: num });
+                              }}
+                              disabled={readOnly}
+                              className="w-full min-w-0 bg-transparent text-3xl font-black text-gray-900 focus:outline-none"
+                            />
+                          </div>
+                        </div>
+
+                        {barbell && perSide > 0 && (
+                          <div className="flex items-center justify-between mb-2 px-1">
+                            <span className="text-xs text-gray-400">
+                              {barWeight} {getWeightUnit()} barre + 2 ×{" "}
+                              {perSide} {getWeightUnit()}
+                            </span>
+                            <span className="text-xs font-bold text-[#c9552c]">
+                              {set.weight} {getWeightUnit()} total
+                            </span>
+                          </div>
+                        )}
+
+                        {barbell && (plates.length > 0 || remainder > 0) && (
+                          <div className="mb-2">
+                            <PlateRow
+                              plates={plates}
+                              remainder={remainder}
+                              totalWeight={set.weight}
+                              unit={getWeightUnit()}
+                            />
+                          </div>
+                        )}
+
+                        <div className="flex items-center gap-2">
+                          {!readOnly ? (
+                            <button
+                              onClick={() =>
+                                toggleSetCompleted(
+                                  set.id,
+                                  se.id,
+                                  set.completed,
+                                )
+                              }
+                              className={`flex-1 py-3.5 rounded-full font-bold uppercase text-sm flex items-center justify-center gap-2 transition-colors ${
+                                set.completed
+                                  ? "bg-[#3a9e6e] text-white"
+                                  : "bg-gray-900 text-white active:bg-gray-800"
+                              }`}
+                            >
+                              <Check size={16} strokeWidth={3} />
+                              {set.completed
+                                ? `Set ${i + 1} validé`
+                                : `Valider le set ${i + 1}`}
+                            </button>
+                          ) : (
+                            <div
+                              className={`flex-1 py-3.5 rounded-full font-bold uppercase text-sm flex items-center justify-center gap-2 ${
+                                set.completed
+                                  ? "bg-[#3a9e6e] text-white"
+                                  : "bg-gray-200 text-gray-400"
+                              }`}
+                            >
+                              {set.completed && (
+                                <Check size={16} strokeWidth={3} />
+                              )}
+                              Set {i + 1} {set.completed ? "validé" : ""}
+                            </div>
+                          )}
+                          {!readOnly && (
+                            <button
+                              onClick={() => deleteSet(set.id)}
+                              className="w-11 h-11 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 active:text-red-500 transition-colors flex-shrink-0"
+                            >
+                              <X size={16} />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {!readOnly && (
+                  <button
+                    onClick={() => addSet(se.id, se.sets)}
+                    className="mt-3 w-full border border-dashed border-[#c9552c]/40 active:bg-[#c9552c]/5 text-[#c9552c] font-bold uppercase text-sm py-3 rounded-full flex items-center justify-center gap-1.5 transition-colors"
+                  >
+                    <Plus size={14} /> Ajouter un set
+                  </button>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {isEmpty && suggestions.length > 0 && !readOnly && (

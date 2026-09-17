@@ -25,6 +25,9 @@ datasource db {
   progressPhotos   ProgressPhoto[]
   recoveryEmail String?
   weightUnit    String   @default("lb")
+  restTimerSeconds Int   @default(120)
+  restTimerEnabled Boolean @default(true)
+  barbellModeEnabled Boolean @default(false)
   authProvider  String   @default("email")
   resetToken    String?
   resetTokenExpiry DateTime?  
@@ -76,6 +79,7 @@ model Set {
   weight     Float
   reps       Int
   unit       String  @default("lb")
+  completed  Boolean @default(false)
 
   sessionExercise   SessionExercise @relation(fields: [sessionExerciseId], references: [id])
 }
