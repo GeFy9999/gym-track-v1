@@ -10,9 +10,10 @@ type MuscleGroup = {
 
 type Props = {
   weekActive: boolean;
+  refreshKey?: number;
 };
 
-export default function MuscleGroupsCards({ weekActive }: Props) {
+export default function MuscleGroupsCards({ weekActive, refreshKey }: Props) {
   const navigate = useNavigate();
   const [groups, setGroups] = useState<MuscleGroup[]>([]);
   const [completedGroups, setCompletedGroups] = useState<Set<string>>(
@@ -107,7 +108,7 @@ export default function MuscleGroupsCards({ weekActive }: Props) {
       }
     };
     fetchCompleted();
-  }, [weekActive]);
+  }, [weekActive, refreshKey]);
 
   const handleClick = async (group: MuscleGroup) => {
     if (!weekActive) return;
@@ -116,13 +117,9 @@ export default function MuscleGroupsCards({ weekActive }: Props) {
     if (!token) return;
 
     try {
-      const todayStart = new Date();
-      todayStart.setHours(0, 0, 0, 0);
-
-      const res = await fetch(
-        `${API_URL}/sessions/me?start=${todayStart.toISOString()}&end=${new Date().toISOString()}`,
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
+      const res = await fetch(`${API_URL}/sessions/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       if (res.ok) {
         const sessions = await res.json();
