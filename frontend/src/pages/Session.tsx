@@ -11,6 +11,7 @@ import {
   Timer,
   History,
   X,
+  Trophy,
 } from "lucide-react";
 import {
   getWeightUnit,
@@ -27,10 +28,18 @@ import {
   getDefaultBarWeight,
   calculatePlates,
   BAR_WEIGHTS,
+  MIN_WEIGHT,
+  MAX_WEIGHT,
+  MIN_REPS,
+  MAX_REPS,
 } from "../utils/plates";
 import PlateRow from "../components/session/PlateRow";
+import PRCelebration from "../components/session/PRCelebration";
 
 const REST_DURATION_OPTIONS = [30, 60, 90, 120, 180];
+
+const clamp = (n: number, min: number, max: number) =>
+  Math.min(Math.max(n, min), max);
 
 type SetData = {
   id: string;
@@ -66,6 +75,11 @@ type LastWeight = {
   weight: number;
 };
 
+type TrackedExercise = {
+  id: string;
+  exerciseId: string;
+};
+
 export default function SessionPage() {
   const { sessionId } = useParams();
   const navigate = useNavigate();
@@ -91,6 +105,15 @@ export default function SessionPage() {
     Record<string, boolean>
   >({});
   const [barWeights, setBarWeights] = useState<Record<string, number>>({});
+  const [tracked, setTracked] = useState<TrackedExercise[]>([]);
+  const [personalRecords, setPersonalRecords] = useState<
+    Record<string, number>
+  >({});
+  const [prCelebration, setPrCelebration] = useState<{
+    exerciseName: string;
+    weight: number;
+    unit: string;
+  } | null>(null);
   const { deltas, lastTimes } = useExerciseHistory(sessionId);
   const restTimer = useRestTimerContext();
   const restTimerEnabled = getRestTimerEnabled();
@@ -105,6 +128,76 @@ export default function SessionPage() {
 
   const getBarWeight = (sessionExerciseId: string) =>
     barWeights[sessionExerciseId] ?? getDefaultBarWeight(getWeightUnit());
+
+  const isTracked = (exerciseId: string) =>
+    tracked.some((t) => t.exerciseId === exerciseId);
+
+  const fetchTracked = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const res = await fetch(`${API_URL}/tracked-exercises`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) return;
+      setTracked(await res.json());
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const toggleTracked = async (exerciseId: string) => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    const existing = tracked.find((t) => t.exerciseId === exerciseId);
+
+    try {
+      if (existing) {
+        setTracked((prev) => prev.filter((t) => t.id !== existing.id));
+        await fetch(`${API_URL}/tracked-exercises/${existing.id}`, {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } else {
+        const res = await fetch(`${API_URL}/tracked-exercises`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ exerciseId }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setTracked((prev) => [...prev, data]);
+        }
+      }
+    } catch (err) {
+      console.error(err);
+      fetchTracked();
+    }
+  };
+
+  const fetchPersonalRecords = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const res = await fetch(`${API_URL}/sessions/me/records`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) return;
+      const records: { exerciseId: string; weight: number }[] =
+        await res.json();
+      const map: Record<string, number> = {};
+      for (const r of records) map[r.exerciseId] = r.weight;
+      setPersonalRecords(map);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const fetchSession = async () => {
     try {
@@ -175,7 +268,15 @@ export default function SessionPage() {
   useEffect(() => {
     fetchSession();
     fetchLastWeights();
+    fetchTracked();
+    fetchPersonalRecords();
   }, [sessionId]);
+
+  useEffect(() => {
+    if (!prCelebration) return;
+    const timeout = setTimeout(() => setPrCelebration(null), 4000);
+    return () => clearTimeout(timeout);
+  }, [prCelebration]);
 
   useEffect(() => {
     if (session) {
@@ -219,21 +320,17 @@ export default function SessionPage() {
     }
   };
 
-  const toggleSetCompleted = (
-    setId: string,
-    sessionExerciseId: string,
-    currentlyCompleted: boolean,
-  ) => {
-    const nextCompleted = !currentlyCompleted;
+  const toggleSetCompleted = (set: SetData, se: SessionExercise) => {
+    const nextCompleted = !set.completed;
 
     setSession((prev) => {
       if (!prev) return prev;
       return {
         ...prev,
-        sessionExercises: prev.sessionExercises.map((se) => ({
-          ...se,
-          sets: se.sets.map((s) =>
-            s.id === setId ? { ...s, completed: nextCompleted } : s,
+        sessionExercises: prev.sessionExercises.map((s) => ({
+          ...s,
+          sets: s.sets.map((st) =>
+            st.id === set.id ? { ...st, completed: nextCompleted } : st,
           ),
         })),
       };
@@ -242,10 +339,25 @@ export default function SessionPage() {
     // Start the timer synchronously (same click) so browsers still treat
     // sound/vibration triggered later as originating from a user gesture.
     if (nextCompleted && restTimerEnabled) {
-      restTimer.start(getExerciseDuration(sessionExerciseId));
+      restTimer.start(getExerciseDuration(se.id));
     }
 
-    fetch(`${API_URL}/sets/${setId}`, {
+    if (nextCompleted && set.weight > 0) {
+      const previousBest = personalRecords[se.exercise.id] ?? 0;
+      if (set.weight > previousBest) {
+        setPersonalRecords((prev) => ({
+          ...prev,
+          [se.exercise.id]: set.weight,
+        }));
+        setPrCelebration({
+          exerciseName: se.exercise.name,
+          weight: set.weight,
+          unit: getWeightUnit(),
+        });
+      }
+    }
+
+    fetch(`${API_URL}/sets/${set.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ completed: nextCompleted }),
@@ -513,16 +625,30 @@ export default function SessionPage() {
                 }}
               >
                 <div className="flex items-start justify-between mb-3">
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400">
-                    Exercice {seIndex + 1} / {session.sessionExercises.length}
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400">
+                      Exercice {seIndex + 1} /{" "}
+                      {session.sessionExercises.length}
+                    </p>
+                    <button
+                      onClick={() => toggleTracked(se.exercise.id)}
+                      aria-label="Suivre en record personnel"
+                      className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
+                        isTracked(se.exercise.id)
+                          ? "bg-[#c9552c] text-white"
+                          : "bg-white/10 text-white/40"
+                      }`}
+                    >
+                      <Trophy size={17} />
+                    </button>
+                  </div>
                   <div className="flex flex-col items-end gap-2">
                     {!readOnly && (
                       <button
                         onClick={() => setConfirmDelete(se.id)}
-                        className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center text-white/60 active:text-red-300 transition-colors"
+                        className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center text-white/60 active:text-red-300 transition-colors"
                       >
-                        <Trash2 size={13} />
+                        <Trash2 size={17} />
                       </button>
                     )}
                     {delta && (
@@ -716,7 +842,14 @@ export default function SessionPage() {
                                     /[^0-9.]/g,
                                     "",
                                   );
-                                  const num = val === "" ? 0 : Number(val);
+                                  const num =
+                                    val === ""
+                                      ? 0
+                                      : clamp(
+                                          Number(val),
+                                          MIN_WEIGHT,
+                                          MAX_WEIGHT,
+                                        );
                                   const total = barbell
                                     ? barWeight + num * 2
                                     : num;
@@ -741,7 +874,11 @@ export default function SessionPage() {
                                   const raw =
                                     e.target.value === ""
                                       ? 0
-                                      : Number(e.target.value);
+                                      : clamp(
+                                          Number(e.target.value),
+                                          MIN_WEIGHT,
+                                          MAX_WEIGHT,
+                                        );
                                   const total = barbell
                                     ? barWeight + raw * 2
                                     : raw;
@@ -771,7 +908,10 @@ export default function SessionPage() {
                                   /[^0-9]/g,
                                   "",
                                 );
-                                const num = val === "" ? 0 : Number(val);
+                                const num =
+                                  val === ""
+                                    ? 0
+                                    : clamp(Number(val), MIN_REPS, MAX_REPS);
                                 setSession((prev) => {
                                   if (!prev) return prev;
                                   return {
@@ -793,7 +933,11 @@ export default function SessionPage() {
                                 const num =
                                   e.target.value === ""
                                     ? 0
-                                    : Number(e.target.value);
+                                    : clamp(
+                                        Number(e.target.value),
+                                        MIN_REPS,
+                                        MAX_REPS,
+                                      );
                                 updateSet(set.id, { reps: num });
                               }}
                               disabled={readOnly}
@@ -828,13 +972,7 @@ export default function SessionPage() {
                         <div className="flex items-center gap-2">
                           {!readOnly ? (
                             <button
-                              onClick={() =>
-                                toggleSetCompleted(
-                                  set.id,
-                                  se.id,
-                                  set.completed,
-                                )
-                              }
+                              onClick={() => toggleSetCompleted(set, se)}
                               className={`flex-1 py-3.5 rounded-full font-bold uppercase text-sm flex items-center justify-center gap-2 transition-colors ${
                                 set.completed
                                   ? "bg-[#3a9e6e] text-white"
@@ -962,6 +1100,15 @@ export default function SessionPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {prCelebration && (
+        <PRCelebration
+          exerciseName={prCelebration.exerciseName}
+          weight={prCelebration.weight}
+          unit={prCelebration.unit}
+          onClose={() => setPrCelebration(null)}
+        />
       )}
     </div>
   );

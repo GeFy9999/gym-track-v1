@@ -7,11 +7,19 @@ import { useNavigate } from "react-router-dom";
 import { CheckCircle, Scale, ChevronRight } from "lucide-react";
 import { API_URL } from "../lib/api";
 import TourOverlay from "../components/TourOverlay";
+import PRCelebration from "../components/session/PRCelebration";
+import { getWeightUnit } from "../utils/units";
 
 type AbandonedSession = {
   id: string;
   muscleGroup: string;
   date: string;
+};
+
+type PRCelebrationData = {
+  exerciseName: string;
+  weight: number;
+  unit: string;
 };
 
 const formatAbandonedDate = (dateStr: string) =>
@@ -36,6 +44,7 @@ export default function DashboardPage() {
   const [bodyWeight, setBodyWeight] = useState("");
   const [refreshKey, setRefreshKey] = useState(0);
   const [abandonedQueue, setAbandonedQueue] = useState<AbandonedSession[]>([]);
+  const [prQueue, setPrQueue] = useState<PRCelebrationData[]>([]);
 
   // Onboarding
   const [showWelcome, setShowWelcome] = useState(false);
@@ -127,6 +136,15 @@ export default function DashboardPage() {
     };
     checkAbandoned();
   }, []);
+
+  useEffect(() => {
+    if (prQueue.length === 0) return;
+    const timeout = setTimeout(
+      () => setPrQueue((prev) => prev.slice(1)),
+      4000,
+    );
+    return () => clearTimeout(timeout);
+  }, [prQueue]);
 
   // Onboarding + body weight check
   useEffect(() => {
@@ -295,12 +313,36 @@ export default function DashboardPage() {
     if (!token) return;
 
     try {
-      const res = await fetch(`${API_URL}/sessions/me`, {
+      const sessionsRes = await fetch(`${API_URL}/sessions/me`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (res.ok) {
-        const sessions = await res.json();
+      const newPRs: PRCelebrationData[] = [];
+
+      if (sessionsRes.ok) {
+        const sessions = await sessionsRes.json();
+        const unit = getWeightUnit();
+
+        // Baseline: best weight ever logged on an already-validated set.
+        // A set's own weight is saved to the DB as soon as it's typed
+        // (independent of "completed"), so building the baseline from any
+        // set — validated or not — would compare a candidate against
+        // itself and never register as a PR.
+        const bestByExercise: Record<string, number> = {};
+        for (const session of sessions) {
+          for (const se of session.sessionExercises as {
+            exercise: { id: string; name: string };
+            sets: { weight: number; completed: boolean }[];
+          }[]) {
+            for (const set of se.sets) {
+              if (!set.completed) continue;
+              const current = bestByExercise[se.exercise.id] ?? 0;
+              if (set.weight > current) {
+                bestByExercise[se.exercise.id] = set.weight;
+              }
+            }
+          }
+        }
 
         for (const session of sessions) {
           if (session.completed) continue;
@@ -311,6 +353,27 @@ export default function DashboardPage() {
           );
 
           if (hasSets) {
+            // Catch PRs on sets the user typed but never tapped "Valider"
+            // for — those never went through the checkmark flow that
+            // already celebrates them on the Session page.
+            for (const se of session.sessionExercises as {
+              exercise: { id: string; name: string };
+              sets: { weight: number; completed: boolean }[];
+            }[]) {
+              for (const set of se.sets) {
+                if (set.completed || set.weight <= 0) continue;
+                const previousBest = bestByExercise[se.exercise.id] ?? 0;
+                if (set.weight > previousBest) {
+                  bestByExercise[se.exercise.id] = set.weight;
+                  newPRs.push({
+                    exerciseName: se.exercise.name,
+                    weight: set.weight,
+                    unit,
+                  });
+                }
+              }
+            }
+
             await fetch(`${API_URL}/sessions/${session.id}/complete`, {
               method: "PATCH",
             });
@@ -326,6 +389,7 @@ export default function DashboardPage() {
       setShowSuccess(true);
       setRefreshKey((prev) => prev + 1);
       setTimeout(() => setShowSuccess(false), 3000);
+      if (newPRs.length > 0) setPrQueue(newPRs);
     } catch (err) {
       console.error(err);
     }
@@ -586,6 +650,15 @@ export default function DashboardPage() {
           tourKey={`dashboard_${userId}`}
           steps={dashboardTourSteps}
           refs={[tourRef0, tourRef1, tourRef2]}
+        />
+      )}
+
+      {prQueue.length > 0 && (
+        <PRCelebration
+          exerciseName={prQueue[0].exerciseName}
+          weight={prQueue[0].weight}
+          unit={prQueue[0].unit}
+          onClose={() => setPrQueue((prev) => prev.slice(1))}
         />
       )}
     </div>
