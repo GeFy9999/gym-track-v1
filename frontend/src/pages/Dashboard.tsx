@@ -3,11 +3,25 @@ import WeekProgress from "../components/dashboard/weekProgressCard";
 import MuscleGroupsCards from "../components/dashboard/muscleGroupGrid";
 import RecentActivity from "../components/dashboard/recentActivity";
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { CheckCircle, Scale, ChevronRight } from "lucide-react";
 import { API_URL } from "../lib/api";
 import TourOverlay from "../components/TourOverlay";
 
+type AbandonedSession = {
+  id: string;
+  muscleGroup: string;
+  date: string;
+};
+
+const formatAbandonedDate = (dateStr: string) =>
+  new Date(dateStr).toLocaleDateString("fr-FR", {
+    weekday: "long",
+    day: "numeric",
+  });
+
 export default function DashboardPage() {
+  const navigate = useNavigate();
   const stored = localStorage.getItem("user");
   const user = stored ? JSON.parse(stored) : null;
   const userName = user?.name || "";
@@ -20,6 +34,8 @@ export default function DashboardPage() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [showWeightPrompt, setShowWeightPrompt] = useState(false);
   const [bodyWeight, setBodyWeight] = useState("");
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [abandonedQueue, setAbandonedQueue] = useState<AbandonedSession[]>([]);
 
   // Onboarding
   const [showWelcome, setShowWelcome] = useState(false);
@@ -57,6 +73,59 @@ export default function DashboardPage() {
       }
     };
     checkWeek();
+  }, []);
+
+  // Detect sessions left unfinished on a previous day
+  useEffect(() => {
+    const checkAbandoned = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      try {
+        const res = await fetch(`${API_URL}/sessions/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) return;
+        const sessions = await res.json();
+
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
+
+        const toPrompt: AbandonedSession[] = [];
+        const toDelete: string[] = [];
+
+        for (const session of sessions) {
+          if (session.completed) continue;
+          if (new Date(session.date) >= todayStart) continue;
+
+          const hasSets = session.sessionExercises.some(
+            (se: { sets: { weight: number; reps: number }[] }) =>
+              se.sets.length > 0,
+          );
+
+          if (hasSets) {
+            toPrompt.push({
+              id: session.id,
+              muscleGroup: session.muscleGroup,
+              date: session.date,
+            });
+          } else {
+            toDelete.push(session.id);
+          }
+        }
+
+        await Promise.all(
+          toDelete.map((id) =>
+            fetch(`${API_URL}/sessions/${id}`, { method: "DELETE" }),
+          ),
+        );
+
+        if (toPrompt.length > 0) setAbandonedQueue(toPrompt);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    checkAbandoned();
   }, []);
 
   // Onboarding + body weight check
@@ -204,18 +273,31 @@ export default function DashboardPage() {
     },
   ];
 
+  const handleResumeAbandoned = (session: AbandonedSession) => {
+    setAbandonedQueue((prev) => prev.filter((s) => s.id !== session.id));
+    navigate(`/session/${session.id}`);
+  };
+
+  const handleFinishAbandoned = async (session: AbandonedSession) => {
+    try {
+      await fetch(`${API_URL}/sessions/${session.id}/complete`, {
+        method: "PATCH",
+      });
+    } catch (err) {
+      console.error(err);
+    }
+    setAbandonedQueue((prev) => prev.filter((s) => s.id !== session.id));
+    setRefreshKey((prev) => prev + 1);
+  };
+
   const handleEndSession = async () => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
     try {
-      const todayStart = new Date();
-      todayStart.setHours(0, 0, 0, 0);
-
-      const res = await fetch(
-        `${API_URL}/sessions/me?start=${todayStart.toISOString()}&end=${new Date().toISOString()}`,
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
+      const res = await fetch(`${API_URL}/sessions/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       if (res.ok) {
         const sessions = await res.json();
@@ -242,6 +324,7 @@ export default function DashboardPage() {
 
       setShowEndConfirm(false);
       setShowSuccess(true);
+      setRefreshKey((prev) => prev + 1);
       setTimeout(() => setShowSuccess(false), 3000);
     } catch (err) {
       console.error(err);
@@ -285,7 +368,7 @@ export default function DashboardPage() {
         />
       </div>
       <div ref={tourRef1}>
-        <MuscleGroupsCards weekActive={weekActive} />
+        <MuscleGroupsCards weekActive={weekActive} refreshKey={refreshKey} />
       </div>
       <div ref={tourRef2}>
         <RecentActivity />
@@ -306,7 +389,7 @@ export default function DashboardPage() {
         <div className="fixed top-6 left-1/2 -translate-x-1/2 bg-[#3a9e6e] text-white px-6 py-3 rounded-2xl shadow-lg flex items-center gap-2 z-50 animate-slide-down">
           <CheckCircle size={18} />
           <span className="text-sm font-medium">
-            Séance terminée ! Tes exercices sont sauvegardés.
+            Séance terminée et ajoutée à ton historique.
           </span>
         </div>
       )}
@@ -318,8 +401,9 @@ export default function DashboardPage() {
               Terminer la séance ?
             </p>
             <p className="text-sm text-gray-400 text-center mb-6">
-              Les sessions d'aujourd'hui seront marquées comme terminées. Tu
-              pourras en créer de nouvelles demain.
+              Tes séances en cours seront marquées comme terminées et rangées
+              dans ton historique. Tu pourras en recommencer de nouvelles pour
+              ces groupes musculaires.
             </p>
             <div className="flex gap-3">
               <button
@@ -333,6 +417,35 @@ export default function DashboardPage() {
                 className="flex-1 bg-[#3a9e6e] text-white py-3 rounded-xl font-semibold transition-colors"
               >
                 Terminer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {abandonedQueue.length > 0 && (
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6 animate-fade-in">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
+            <p className="text-base font-semibold text-gray-900 text-center mb-2">
+              Séance {abandonedQueue[0].muscleGroup} en cours
+            </p>
+            <p className="text-sm text-gray-400 text-center mb-6">
+              Tu as un workout {abandonedQueue[0].muscleGroup} en cours du{" "}
+              {formatAbandonedDate(abandonedQueue[0].date)}. Reprendre ou
+              terminer ?
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => handleFinishAbandoned(abandonedQueue[0])}
+                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-xl font-semibold transition-colors"
+              >
+                Terminer
+              </button>
+              <button
+                onClick={() => handleResumeAbandoned(abandonedQueue[0])}
+                className="flex-1 bg-[#c9552c] text-white py-3 rounded-xl font-semibold transition-colors"
+              >
+                Reprendre
               </button>
             </div>
           </div>
