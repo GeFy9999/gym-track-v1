@@ -82,6 +82,7 @@ export const googleLogin = async (credential: string) => {
   const name = String(payload.name || email.split("@")[0]);
 
   let user = await getUserByEmail(email);
+  const isNewUser = !user;
 
   if (!user) {
     const randomPassword = await bcrypt.hash(
@@ -102,6 +103,7 @@ export const googleLogin = async (credential: string) => {
 
   return {
     token,
+    isNewUser,
     user: {
       id: user.id,
       email: user.email,
@@ -144,6 +146,8 @@ export const deleteAccount = async (userId: string) => {
   await prisma.session.deleteMany({ where: { userId } });
   await prisma.bodyWeight.deleteMany({ where: { userId } });
   await prisma.schedule.deleteMany({ where: { userId } });
+  await prisma.trackedExercise.deleteMany({ where: { userId } });
+  await prisma.progressPhoto.deleteMany({ where: { userId } });
   await prisma.user.delete({ where: { id: userId } });
 };
 
