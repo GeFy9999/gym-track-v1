@@ -52,28 +52,34 @@ export default function GoogleLoginButton() {
 
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
-        localStorage.setItem(`onboardingDone_${data.user.id}`, "true");
+        if (!data.isNewUser) {
+          localStorage.setItem(`onboardingDone_${data.user.id}`, "true");
+        }
         navigate("/dashboard");
       } catch (err) {
         console.error("Google login error:", err);
       }
     };
 
-    const initGoogle = () => {
-      if (window.google && buttonRef.current) {
-        window.google.accounts.id.initialize({
-          client_id: GOOGLE_CLIENT_ID,
-          callback: handleGoogle,
-        });
+    let cancelled = false;
 
-        window.google.accounts.id.renderButton(buttonRef.current, {
-          theme: "filled_black",
-          size: "large",
-          text: "continue_with",
-          shape: "pill",
-          locale: "fr",
-        });
-      }
+    const initGoogle = () => {
+      if (cancelled || !window.google || !buttonRef.current) return;
+
+      // Avoid duplicate init/render (e.g. React StrictMode double-invoking effects in dev)
+      buttonRef.current.innerHTML = "";
+      window.google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: handleGoogle,
+      });
+
+      window.google.accounts.id.renderButton(buttonRef.current, {
+        theme: "filled_black",
+        size: "large",
+        text: "continue_with",
+        shape: "pill",
+        locale: "fr",
+      });
     };
 
     // Google script might not be loaded yet
@@ -86,8 +92,15 @@ export default function GoogleLoginButton() {
           initGoogle();
         }
       }, 100);
-      return () => clearInterval(interval);
+      return () => {
+        cancelled = true;
+        clearInterval(interval);
+      };
     }
+
+    return () => {
+      cancelled = true;
+    };
   }, [navigate]);
 
   return (
