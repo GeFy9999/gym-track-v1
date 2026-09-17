@@ -53,7 +53,10 @@ sessionsRouter.get(
 
       // Check current week first
       const currentWeekSessions = await getUserSessions(userId, monday, now);
-      if (currentWeekSessions.length > 0) {
+      const currentWithSets = currentWeekSessions.filter((s) =>
+        s.sessionExercises.some((se) => se.sets.length > 0),
+      );
+      if (currentWithSets.length > 0) {
         streak++;
       }
 
@@ -66,7 +69,10 @@ sessionsRouter.get(
         prevSunday.setMilliseconds(-1);
 
         const sessions = await getUserSessions(userId, prevMonday, prevSunday);
-        if (sessions.length === 0) break;
+        const withSets = sessions.filter((s) =>
+          s.sessionExercises.some((se) => se.sets.length > 0),
+        );
+        if (withSets.length === 0) break;
 
         streak++;
         checkMonday = prevMonday;
