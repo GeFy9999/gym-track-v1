@@ -23,10 +23,11 @@ datasource db {
   bodyWeights BodyWeight[]
   trackedExercises TrackedExercise[]
   progressPhotos   ProgressPhoto[]
+  exerciseNotes    ExerciseNote[]
   recoveryEmail String?
   weightUnit    String   @default("lb")
   restTimerSeconds Int   @default(120)
-  restTimerEnabled Boolean @default(true)
+  restTimerEnabled Boolean @default(false)
   barbellModeEnabled Boolean @default(false)
   authProvider  String   @default("email")
   resetToken    String?
@@ -62,6 +63,7 @@ model Exercise {
   muscleGroup   MuscleGroup  @relation(fields: [muscleGroupId], references: [id])  
   sessionExercises SessionExercise[]
   trackedBy TrackedExercise[]
+  notes     ExerciseNote[]
 }
 
 model SessionExercise {
@@ -110,6 +112,19 @@ model TrackedExercise {
   userId     String
   exerciseId String
   createdAt  DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id])
+  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+
+  @@unique([userId, exerciseId])
+}
+
+model ExerciseNote {
+  id         String   @id @default(uuid())
+  userId     String
+  exerciseId String
+  note       String
+  updatedAt  DateTime @updatedAt
 
   user       User     @relation(fields: [userId], references: [id])
   exercise   Exercise @relation(fields: [exerciseId], references: [id])

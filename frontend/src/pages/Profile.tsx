@@ -42,7 +42,7 @@ export default function ProfilePage() {
     user?.restTimerSeconds || 120,
   );
   const [restTimerEnabled, setRestTimerEnabled] = useState<boolean>(
-    user?.restTimerEnabled ?? true,
+    user?.restTimerEnabled ?? false,
   );
   const [barbellModeEnabled, setBarbellModeEnabled] = useState<boolean>(
     user?.barbellModeEnabled ?? false,
@@ -738,9 +738,9 @@ export default function ProfilePage() {
                   value={customMinutes}
                   onChange={(e) => setCustomMinutes(e.target.value)}
                   placeholder="0"
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-center text-gray-900 placeholder-gray-300 focus:outline-none focus:border-[#c9552c]"
+                  className="w-full bg-gray-100 border border-gray-300 rounded-xl px-4 py-3 text-center text-gray-900 font-semibold placeholder-gray-400 focus:outline-none focus:border-[#c9552c]"
                 />
-                <p className="text-[11px] text-gray-400 text-center mt-1">
+                <p className="text-[11px] text-gray-500 text-center mt-1">
                   minutes
                 </p>
               </div>
@@ -754,9 +754,9 @@ export default function ProfilePage() {
                   value={customSeconds}
                   onChange={(e) => setCustomSeconds(e.target.value)}
                   placeholder="0"
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-center text-gray-900 placeholder-gray-300 focus:outline-none focus:border-[#c9552c]"
+                  className="w-full bg-gray-100 border border-gray-300 rounded-xl px-4 py-3 text-center text-gray-900 font-semibold placeholder-gray-400 focus:outline-none focus:border-[#c9552c]"
                 />
-                <p className="text-[11px] text-gray-400 text-center mt-1">
+                <p className="text-[11px] text-gray-500 text-center mt-1">
                   secondes
                 </p>
               </div>

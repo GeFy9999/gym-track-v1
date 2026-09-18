@@ -338,3 +338,27 @@ export async function removeTrackedExercise(id: string) {
     where: { id },
   });
 }
+
+export async function getExerciseNotes(userId: string) {
+  return await prisma.exerciseNote.findMany({
+    where: { userId },
+  });
+}
+
+export async function upsertExerciseNote(
+  userId: string,
+  exerciseId: string,
+  note: string,
+) {
+  return await prisma.exerciseNote.upsert({
+    where: { userId_exerciseId: { userId, exerciseId } },
+    update: { note },
+    create: { userId, exerciseId, note },
+  });
+}
+
+export async function deleteExerciseNote(userId: string, exerciseId: string) {
+  await prisma.exerciseNote.deleteMany({
+    where: { userId, exerciseId },
+  });
+}

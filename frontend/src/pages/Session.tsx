@@ -15,6 +15,7 @@ import {
   GripVertical,
   Link2,
   Unlink,
+  StickyNote,
 } from "lucide-react";
 import {
   getWeightUnit,
@@ -100,6 +101,12 @@ type TrackedExercise = {
   exerciseId: string;
 };
 
+type ExerciseNote = {
+  id: string;
+  exerciseId: string;
+  note: string;
+};
+
 export default function SessionPage() {
   const { sessionId } = useParams();
   const navigate = useNavigate();
@@ -129,6 +136,9 @@ export default function SessionPage() {
   >({});
   const [barWeights, setBarWeights] = useState<Record<string, number>>({});
   const [tracked, setTracked] = useState<TrackedExercise[]>([]);
+  const [exerciseNotes, setExerciseNotes] = useState<ExerciseNote[]>([]);
+  const [noteModalFor, setNoteModalFor] = useState<string | null>(null);
+  const [noteDraft, setNoteDraft] = useState("");
   const [personalRecords, setPersonalRecords] = useState<
     Record<string, number>
   >({});
@@ -243,6 +253,61 @@ export default function SessionPage() {
     }
   };
 
+  const getNote = (exerciseId: string) =>
+    exerciseNotes.find((n) => n.exerciseId === exerciseId)?.note ?? "";
+
+  const fetchExerciseNotes = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const res = await fetch(`${API_URL}/exercise-notes`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) return;
+      setExerciseNotes(await res.json());
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const openNoteModal = (exerciseId: string) => {
+    setNoteDraft(getNote(exerciseId));
+    setNoteModalFor(exerciseId);
+  };
+
+  const saveNote = async () => {
+    if (!noteModalFor) return;
+    const exerciseId = noteModalFor;
+    const note = noteDraft.trim();
+
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      await fetch(`${API_URL}/exercise-notes`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ exerciseId, note }),
+      });
+      setExerciseNotes((prev) => {
+        const withoutCurrent = prev.filter(
+          (n) => n.exerciseId !== exerciseId,
+        );
+        return note
+          ? [...withoutCurrent, { id: exerciseId, exerciseId, note }]
+          : withoutCurrent;
+      });
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setNoteModalFor(null);
+    }
+  };
+
   const fetchPersonalRecords = async () => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -333,6 +398,7 @@ export default function SessionPage() {
     fetchLastWeights();
     fetchTracked();
     fetchPersonalRecords();
+    fetchExerciseNotes();
   }, [sessionId]);
 
   useEffect(() => {
@@ -1004,6 +1070,17 @@ export default function SessionPage() {
                     >
                       <Trophy size={17} />
                     </button>
+                    <button
+                      onClick={() => openNoteModal(se.exercise.id)}
+                      aria-label="Note personnelle"
+                      className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
+                        getNote(se.exercise.id)
+                          ? "bg-[#c9552c] text-white"
+                          : "bg-white/10 text-white/40"
+                      }`}
+                    >
+                      <StickyNote size={17} />
+                    </button>
                     {!readOnly && (
                       <button
                         onClick={() => openSupersetModal(se)}
@@ -1342,8 +1419,8 @@ export default function SessionPage() {
                           </div>
                           </div>
 
-                          <div className="flex flex-col gap-1.5 w-11 flex-shrink-0">
-                            {!readOnly ? (
+                          {!readOnly && (
+                            <div className="flex flex-col gap-1.5 w-11 flex-shrink-0">
                               <button
                                 onClick={() => toggleSetCompleted(set, se)}
                                 className={`flex-1 rounded-lg flex items-center justify-center transition-colors ${
@@ -1354,28 +1431,14 @@ export default function SessionPage() {
                               >
                                 <Check size={16} strokeWidth={3} />
                               </button>
-                            ) : (
-                              <div
-                                className={`flex-1 rounded-lg flex items-center justify-center ${
-                                  set.completed
-                                    ? "bg-[#3a9e6e] text-white"
-                                    : "bg-gray-200 text-gray-400"
-                                }`}
-                              >
-                                {set.completed && (
-                                  <Check size={16} strokeWidth={3} />
-                                )}
-                              </div>
-                            )}
-                            {!readOnly && (
                               <button
                                 onClick={() => deleteSet(set.id)}
                                 className="flex-1 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 active:text-red-500 transition-colors"
                               >
                                 <X size={14} />
                               </button>
-                            )}
-                          </div>
+                            </div>
+                          )}
                         </div>
 
                         {(openSetTypeMenu === set.id ||
@@ -1623,6 +1686,47 @@ export default function SessionPage() {
                 className="flex-1 bg-[#c9552c] text-white py-3 rounded-xl font-semibold transition-colors"
               >
                 Confirmer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {noteModalFor && session && (
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6 animate-fade-in">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
+            <p className="text-base font-bold text-gray-900 text-center mb-1">
+              Note personnelle
+            </p>
+            <p className="text-sm text-gray-400 text-center mb-4">
+              {
+                session.sessionExercises.find(
+                  (s) => s.exercise.id === noteModalFor,
+                )?.exercise.name
+              }
+            </p>
+
+            <textarea
+              value={noteDraft}
+              onChange={(e) => setNoteDraft(e.target.value)}
+              placeholder="Ex : grip plus large, épaule sensible, viser 5×5..."
+              rows={4}
+              autoFocus
+              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#c9552c] resize-none mb-4"
+            />
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setNoteModalFor(null)}
+                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-xl font-semibold transition-colors"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={saveNote}
+                className="flex-1 bg-[#c9552c] text-white py-3 rounded-xl font-semibold transition-colors"
+              >
+                Sauvegarder
               </button>
             </div>
           </div>

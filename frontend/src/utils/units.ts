@@ -14,9 +14,9 @@ export function getRestTimerSeconds(): number {
 
 export function getRestTimerEnabled(): boolean {
   const stored = localStorage.getItem("user");
-  if (!stored) return true;
+  if (!stored) return false;
   const user = JSON.parse(stored);
-  return user.restTimerEnabled ?? true;
+  return user.restTimerEnabled ?? false;
 }
 
 export function getBarbellModeEnabled(): boolean {
