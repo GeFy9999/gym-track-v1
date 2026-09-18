@@ -1,0 +1,35 @@
+export const POPULAR_EXERCISES_BY_MUSCLE_GROUP: { [key: string]: string[] } = {
+  Chest: [
+    "Bench Press",
+    "Incline Dumbbell Press",
+    "Chest Fly",
+    "Push-Up",
+    "Cable Crossover",
+  ],
+  Dos: ["Lat Pulldown", "Barbell Row", "Seated Cable Row", "Pull-Up", "T-Bar Row"],
+  Legs: ["Squat", "Leg Press", "Romanian Deadlift", "Leg Extension", "Leg Curl"],
+  Biceps: [
+    "Barbell Curl",
+    "Dumbbell Curl",
+    "Hammer Curl",
+    "Preacher Curl",
+    "Cable Curl",
+  ],
+  Triceps: [
+    "Tricep Pushdown",
+    "Skull Crusher",
+    "Overhead Extension",
+    "Dips",
+    "Close Grip Bench",
+  ],
+  Épaules: [
+    "Overhead Press",
+    "Lateral Raise",
+    "Front Raise",
+    "Face Pull",
+    "Arnold Press",
+  ],
+  "Avant-bras": ["Wrist Curl", "Reverse Curl", "Farmer Walk", "Dead Hang"],
+  Trapèze: ["Shrug", "Face Pull", "Upright Row", "Rack Pull"],
+  Abdominaux: ["Crunch", "Plank", "Leg Raise", "Ab Wheel", "Cable Crunch"],
+};

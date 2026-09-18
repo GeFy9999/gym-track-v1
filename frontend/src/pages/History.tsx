@@ -74,6 +74,9 @@ const dateKey = (d: Date) =>
 
 const startOfMonth = (d: Date) => new Date(d.getFullYear(), d.getMonth(), 1);
 
+const hasSetData = (s: { weight: number; reps: number }) =>
+  s.weight > 0 || s.reps > 0;
+
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 export default function HistoryPage() {
@@ -132,7 +135,15 @@ export default function HistoryPage() {
       }
 
       const sessions: SessionData[] = await res.json();
-      setAllSessions(sessions.filter((s) => s.completed));
+      // Skip sessions that only ever got empty, never-filled-in set rows —
+      // nothing real was performed, so there's nothing to show in history.
+      setAllSessions(
+        sessions.filter(
+          (s) =>
+            s.completed &&
+            s.sessionExercises.some((se) => se.sets.some(hasSetData)),
+        ),
+      );
       setLoading(false);
     };
     fetchHistory();
@@ -233,7 +244,7 @@ export default function HistoryPage() {
     for (const session of sorted) {
       const dateStr = new Date(session.date).toISOString().slice(0, 10);
       for (const se of session.sessionExercises) {
-        se.sets.forEach((set, i) => {
+        se.sets.filter(hasSetData).forEach((set, i) => {
           rows.push(
             [
               dateStr,
@@ -386,7 +397,8 @@ export default function HistoryPage() {
                     (acc, s) =>
                       acc +
                       s.sessionExercises.reduce(
-                        (a, se) => a + se.sets.length,
+                        (a, se) =>
+                          a + se.sets.filter(hasSetData).length,
                         0,
                       ),
                     0,
@@ -422,7 +434,9 @@ export default function HistoryPage() {
                         <div className="border-t border-gray-100 px-4 py-3 space-y-2">
                           {week.sessions.map((session, si) => {
                             const exerciseCount =
-                              session.sessionExercises.length;
+                              session.sessionExercises.filter((se) =>
+                                se.sets.some(hasSetData),
+                              ).length;
                             const dateStr = new Date(
                               session.date,
                             ).toLocaleDateString("fr-FR", {
@@ -571,7 +585,9 @@ export default function HistoryPage() {
             </p>
             <div className="space-y-2">
               {selectedDay.sessions.map((session) => {
-                const exerciseCount = session.sessionExercises.length;
+                const exerciseCount = session.sessionExercises.filter((se) =>
+                  se.sets.some(hasSetData),
+                ).length;
                 return (
                   <button
                     key={session.id}

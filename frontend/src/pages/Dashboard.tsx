@@ -4,10 +4,11 @@ import MuscleGroupsCards from "../components/dashboard/muscleGroupGrid";
 import RecentActivity from "../components/dashboard/recentActivity";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle, Scale, ChevronRight } from "lucide-react";
+import { Scale, ChevronRight } from "lucide-react";
 import { API_URL } from "../lib/api";
 import TourOverlay from "../components/TourOverlay";
 import PRCelebration from "../components/session/PRCelebration";
+import WorkoutSummary from "../components/session/WorkoutSummary";
 import { getWeightUnit } from "../utils/units";
 
 type AbandonedSession = {
@@ -20,6 +21,16 @@ type PRCelebrationData = {
   exerciseName: string;
   weight: number;
   unit: string;
+};
+
+type WorkoutSummaryData = {
+  muscleGroups: string[];
+  durationMinutes: number;
+  totalSets: number;
+  totalVolume: number;
+  totalExercises: number;
+  unit: string;
+  prs: PRCelebrationData[];
 };
 
 const formatAbandonedDate = (dateStr: string) =>
@@ -39,12 +50,15 @@ export default function DashboardPage() {
     return localStorage.getItem(`weekActive_${userId}`) === "true";
   });
   const [showEndConfirm, setShowEndConfirm] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
   const [showWeightPrompt, setShowWeightPrompt] = useState(false);
   const [bodyWeight, setBodyWeight] = useState("");
   const [refreshKey, setRefreshKey] = useState(0);
   const [abandonedQueue, setAbandonedQueue] = useState<AbandonedSession[]>([]);
   const [prQueue, setPrQueue] = useState<PRCelebrationData[]>([]);
+  const [pendingSummary, setPendingSummary] =
+    useState<WorkoutSummaryData | null>(null);
+  const [workoutSummary, setWorkoutSummary] =
+    useState<WorkoutSummaryData | null>(null);
 
   // Onboarding
   const [showWelcome, setShowWelcome] = useState(false);
@@ -145,6 +159,14 @@ export default function DashboardPage() {
     );
     return () => clearTimeout(timeout);
   }, [prQueue]);
+
+  // Show the workout summary once any PR celebrations have finished playing.
+  useEffect(() => {
+    if (prQueue.length === 0 && pendingSummary) {
+      setWorkoutSummary(pendingSummary);
+      setPendingSummary(null);
+    }
+  }, [prQueue, pendingSummary]);
 
   // Onboarding + body weight check
   useEffect(() => {
@@ -318,6 +340,7 @@ export default function DashboardPage() {
       });
 
       const newPRs: PRCelebrationData[] = [];
+      let summary: WorkoutSummaryData | null = null;
 
       if (sessionsRes.ok) {
         const sessions = await sessionsRes.json();
@@ -344,6 +367,12 @@ export default function DashboardPage() {
           }
         }
 
+        let totalSets = 0;
+        let totalVolume = 0;
+        let totalExercises = 0;
+        const muscleGroups: string[] = [];
+        let earliestDate: Date | null = null;
+
         for (const session of sessions) {
           if (session.completed) continue;
 
@@ -353,14 +382,35 @@ export default function DashboardPage() {
           );
 
           if (hasSets) {
-            // Catch PRs on sets the user typed but never tapped "Valider"
-            // for — those never went through the checkmark flow that
-            // already celebrates them on the Session page.
+            const sessionDate = new Date(session.date);
+            if (!earliestDate || sessionDate < earliestDate) {
+              earliestDate = sessionDate;
+            }
+            muscleGroups.push(session.muscleGroup);
+
             for (const se of session.sessionExercises as {
               exercise: { id: string; name: string };
-              sets: { weight: number; completed: boolean; type: string }[];
+              sets: {
+                weight: number;
+                reps: number;
+                completed: boolean;
+                type: string;
+              }[];
             }[]) {
-              for (const set of se.sets) {
+              const performedSets = se.sets.filter(
+                (s) => s.weight > 0 || s.reps > 0,
+              );
+              if (performedSets.length > 0) totalExercises += 1;
+
+              for (const set of performedSets) {
+                totalSets += 1;
+                if (set.type !== "warmup") {
+                  totalVolume += set.weight * set.reps;
+                }
+
+                // Catch PRs on sets the user typed but never tapped
+                // "Valider" for — those never went through the checkmark
+                // flow that already celebrates them on the Session page.
                 if (set.completed || set.weight <= 0) continue;
                 if (set.type === "warmup") continue;
                 const previousBest = bestByExercise[se.exercise.id] ?? 0;
@@ -384,13 +434,42 @@ export default function DashboardPage() {
             });
           }
         }
+
+        // Only worth showing a recap if at least one set has real weight/reps
+        // data — a session with only empty, never-filled-in set rows still
+        // gets marked complete above, but there's nothing to summarize.
+        summary =
+          muscleGroups.length === 0 || totalSets === 0
+            ? null
+            : {
+                muscleGroups: [...new Set(muscleGroups)],
+                durationMinutes: earliestDate
+                  ? Math.max(
+                      1,
+                      Math.round(
+                        (Date.now() - earliestDate.getTime()) / 60000,
+                      ),
+                    )
+                  : 0,
+                totalSets,
+                totalVolume: Math.round(totalVolume),
+                totalExercises,
+                unit,
+                prs: newPRs,
+              };
       }
 
       setShowEndConfirm(false);
-      setShowSuccess(true);
       setRefreshKey((prev) => prev + 1);
-      setTimeout(() => setShowSuccess(false), 3000);
-      if (newPRs.length > 0) setPrQueue(newPRs);
+
+      if (summary) {
+        if (newPRs.length > 0) {
+          setPrQueue(newPRs);
+          setPendingSummary(summary);
+        } else {
+          setWorkoutSummary(summary);
+        }
+      }
     } catch (err) {
       console.error(err);
     }
@@ -447,15 +526,6 @@ export default function DashboardPage() {
           >
             Terminer la séance
           </button>
-        </div>
-      )}
-
-      {showSuccess && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 bg-[#3a9e6e] text-white px-6 py-3 rounded-2xl shadow-lg flex items-center gap-2 z-50 animate-slide-down">
-          <CheckCircle size={18} />
-          <span className="text-sm font-medium">
-            Séance terminée et ajoutée à ton historique.
-          </span>
         </div>
       )}
 
@@ -660,6 +730,19 @@ export default function DashboardPage() {
           weight={prQueue[0].weight}
           unit={prQueue[0].unit}
           onClose={() => setPrQueue((prev) => prev.slice(1))}
+        />
+      )}
+
+      {workoutSummary && (
+        <WorkoutSummary
+          muscleGroups={workoutSummary.muscleGroups}
+          durationMinutes={workoutSummary.durationMinutes}
+          totalSets={workoutSummary.totalSets}
+          totalVolume={workoutSummary.totalVolume}
+          totalExercises={workoutSummary.totalExercises}
+          unit={workoutSummary.unit}
+          prs={workoutSummary.prs}
+          onClose={() => setWorkoutSummary(null)}
         />
       )}
     </div>

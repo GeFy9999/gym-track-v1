@@ -1,5 +1,6 @@
 import HeaderStats from "../components/stats/header";
 import PersonalRecordCards from "../components/stats/personalRecord";
+import EstimatedOneRepMax from "../components/stats/estimatedOneRepMax";
 import ProgressChart from "../components/stats/progress";
 import MuscleVolume from "../components/stats/muscleVolume";
 
@@ -13,6 +14,13 @@ export default function StatsPage() {
           Records personnels
         </h2>
         <PersonalRecordCards />
+      </section>
+
+      <section className="mt-8">
+        <h2 className="text-[15px] font-bold text-gray-900 mb-3">
+          Force maximale estimée par 1 répétition
+        </h2>
+        <EstimatedOneRepMax />
       </section>
 
       <section className="mt-8">

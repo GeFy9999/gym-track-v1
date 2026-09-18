@@ -107,6 +107,10 @@ export async function getUserMuscleVolume(userId: string) {
     .sort((a, b) => b.sets - a.sets);
 }
 
+// Epley formula: estimates the 1-rep max from any set's weight/reps.
+const estimateOneRepMax = (weight: number, reps: number) =>
+  weight * (1 + reps / 30);
+
 export async function getUserExerciseProgress(
   userId: string,
   exerciseId: string,
@@ -128,14 +132,19 @@ export async function getUserExerciseProgress(
 
       for (const set of se.sets) {
         if (set.type === "warmup") continue;
-        if (!weeklyMax[label] || set.weight > weeklyMax[label]) {
-          weeklyMax[label] = set.weight;
+        if (set.weight <= 0 || set.reps <= 0) continue;
+        const oneRepMax = estimateOneRepMax(set.weight, set.reps);
+        if (!weeklyMax[label] || oneRepMax > weeklyMax[label]) {
+          weeklyMax[label] = oneRepMax;
         }
       }
     }
   }
 
   return Object.entries(weeklyMax)
-    .map(([week, weight]) => ({ week, weight }))
+    .map(([week, oneRepMax]) => ({
+      week,
+      oneRepMax: Math.round(oneRepMax * 10) / 10,
+    }))
     .sort((a, b) => a.week.localeCompare(b.week));
 }

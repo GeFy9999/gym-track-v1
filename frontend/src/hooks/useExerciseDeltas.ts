@@ -7,7 +7,8 @@ type SetData = {
   type?: string;
 };
 
-const isWorkingSet = (s: SetData) => s.type !== "warmup";
+const isWorkingSet = (s: SetData) =>
+  s.type !== "warmup" && (s.weight > 0 || s.reps > 0);
 
 type SessionExercise = {
   exercise: { id: string; name: string };
