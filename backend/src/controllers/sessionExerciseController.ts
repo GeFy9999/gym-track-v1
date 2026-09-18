@@ -2,9 +2,26 @@ import express from "express";
 import {
   addExerciseToSession,
   removeExerciseFromSession,
+  reorderSessionExercisesForSession,
 } from "../services/sessionExerciseService.js";
 
 export const sessionExercisesRouter = express.Router();
+
+// PATCH /api/session-exercises/reorder - réordonner les exercices d'une session
+sessionExercisesRouter.patch("/reorder", async (req, res) => {
+  try {
+    const { order } = req.body;
+    if (!Array.isArray(order) || order.some((id) => typeof id !== "string")) {
+      return res.status(400).json({ error: "order (string[]) requis" });
+    }
+    await reorderSessionExercisesForSession(order);
+    return res.status(200).json({ message: "Ordre mis à jour" });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(message, error);
+    return res.status(500).json({ error: message });
+  }
+});
 
 // POST /api/session-exercises - ajouter un exercice à une session
 sessionExercisesRouter.post("", async (req, res) => {

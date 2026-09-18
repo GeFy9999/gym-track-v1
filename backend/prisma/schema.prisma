@@ -68,6 +68,7 @@ model SessionExercise {
   id            String  @id @default(uuid())
   sessionId     String
   exerciseId    String
+  order         Int     @default(0)
   sets          Set[]
   exercise      Exercise @relation(fields: [exerciseId], references: [id])
   session       Session  @relation(fields: [sessionId], references: [id])

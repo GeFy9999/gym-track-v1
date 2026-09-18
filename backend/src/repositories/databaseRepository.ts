@@ -94,6 +94,7 @@ export async function getSessionById(sessionId: string) {
     where: { id: sessionId },
     include: {
       sessionExercises: {
+        orderBy: { order: "asc" },
         include: {
           exercise: true,
           sets: true,
@@ -159,8 +160,11 @@ export async function insertSessionExercise(sessionExercise: {
   sessionId: string;
   exerciseId: string;
 }) {
+  const order = await prisma.sessionExercise.count({
+    where: { sessionId: sessionExercise.sessionId },
+  });
   return await prisma.sessionExercise.create({
-    data: sessionExercise,
+    data: { ...sessionExercise, order },
     include: {
       exercise: true,
       sets: true,
@@ -176,6 +180,17 @@ export async function deleteSessionExercise(sessionExerciseId: string) {
   return await prisma.sessionExercise.delete({
     where: { id: sessionExerciseId },
   });
+}
+
+export async function reorderSessionExercises(order: string[]) {
+  await Promise.all(
+    order.map((id, index) =>
+      prisma.sessionExercise.update({
+        where: { id },
+        data: { order: index },
+      }),
+    ),
+  );
 }
 
 export async function getUserByEmail(email: string) {

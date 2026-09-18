@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import {
   ArrowLeft,
@@ -12,6 +12,7 @@ import {
   History,
   X,
   Trophy,
+  GripVertical,
 } from "lucide-react";
 import {
   getWeightUnit,
@@ -114,6 +115,17 @@ export default function SessionPage() {
     weight: number;
     unit: string;
   } | null>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [dragRect, setDragRect] = useState<{
+    left: number;
+    width: number;
+  } | null>(null);
+  const [dragOffsetY, setDragOffsetY] = useState(0);
+  const [dragCurrentY, setDragCurrentY] = useState(0);
+  const sessionRef = useRef<SessionData | null>(null);
+  const rowRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const prevRowTops = useRef<Record<string, number>>({});
   const { deltas, lastTimes } = useExerciseHistory(sessionId);
   const restTimer = useRestTimerContext();
   const restTimerEnabled = getRestTimerEnabled();
@@ -283,6 +295,113 @@ export default function SessionPage() {
       fetchExercises(session.muscleGroup);
     }
   }, [session?.muscleGroup]);
+
+  useEffect(() => {
+    sessionRef.current = session;
+  }, [session]);
+
+  const saveExerciseOrder = async (order: string[]) => {
+    try {
+      await fetch(`${API_URL}/session-exercises/reorder`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ order }),
+      });
+    } catch (err) {
+      console.error(err);
+      fetchSession();
+    }
+  };
+
+  // iOS-style reorder animation: capture each row's position before the
+  // list re-renders, then invert + animate to the new position so the
+  // other rows visibly slide out of the way instead of snapping instantly.
+  const captureRowPositions = (skipId: string) => {
+    const positions: Record<string, number> = {};
+    for (const [id, el] of Object.entries(rowRefs.current)) {
+      if (el && id !== skipId) positions[id] = el.getBoundingClientRect().top;
+    }
+    prevRowTops.current = positions;
+  };
+
+  const playReorderAnimation = (skipId: string) => {
+    for (const [id, el] of Object.entries(rowRefs.current)) {
+      if (!el || id === skipId) continue;
+      const prevTop = prevRowTops.current[id];
+      if (prevTop === undefined) continue;
+      const newTop = el.getBoundingClientRect().top;
+      const delta = prevTop - newTop;
+      if (delta === 0) continue;
+
+      el.style.transition = "none";
+      el.style.transform = `translateY(${delta}px)`;
+      el.getBoundingClientRect(); // force reflow before animating
+      requestAnimationFrame(() => {
+        el.style.transition = "transform 220ms cubic-bezier(0.22, 1, 0.36, 1)";
+        el.style.transform = "";
+        const cleanup = () => {
+          el.style.transition = "";
+          el.removeEventListener("transitionend", cleanup);
+        };
+        el.addEventListener("transitionend", cleanup);
+      });
+    }
+  };
+
+  const handleDragStart = (
+    e: React.PointerEvent<HTMLButtonElement>,
+    draggedId: string,
+  ) => {
+    const cardEl = rowRefs.current[draggedId];
+    if (!cardEl) return;
+    const rect = cardEl.getBoundingClientRect();
+
+    setDraggingId(draggedId);
+    setDragRect({ left: rect.left, width: rect.width });
+    setDragOffsetY(e.clientY - rect.top);
+    setDragCurrentY(e.clientY);
+
+    const handleMove = (e: PointerEvent) => {
+      setDragCurrentY(e.clientY);
+
+      const el = document.elementFromPoint(e.clientX, e.clientY);
+      const cardEl = el?.closest<HTMLElement>("[data-se-id]");
+      const overId = cardEl?.dataset.seId;
+      if (!overId || overId === draggedId) return;
+
+      let didReorder = false;
+      setSession((prev) => {
+        if (!prev) return prev;
+        const list = [...prev.sessionExercises];
+        const fromIndex = list.findIndex((s) => s.id === draggedId);
+        const toIndex = list.findIndex((s) => s.id === overId);
+        if (fromIndex === -1 || toIndex === -1 || fromIndex === toIndex) {
+          return prev;
+        }
+        captureRowPositions(draggedId);
+        didReorder = true;
+        const [moved] = list.splice(fromIndex, 1);
+        list.splice(toIndex, 0, moved);
+        return { ...prev, sessionExercises: list };
+      });
+
+      if (didReorder) {
+        requestAnimationFrame(() => playReorderAnimation(draggedId));
+      }
+    };
+
+    const handleUp = () => {
+      window.removeEventListener("pointermove", handleMove);
+      window.removeEventListener("pointerup", handleUp);
+      setDraggingId(null);
+      setDragRect(null);
+      const order = sessionRef.current?.sessionExercises.map((s) => s.id);
+      if (order && order.length > 0) saveExerciseOrder(order);
+    };
+
+    window.addEventListener("pointermove", handleMove);
+    window.addEventListener("pointerup", handleUp);
+  };
 
   const addExercise = async (exerciseId: string) => {
     try {
@@ -495,23 +614,42 @@ export default function SessionPage() {
 
   return (
     <div className="min-h-screen bg-[#faf6f1] pb-8">
-      <div className="flex items-center gap-3 px-5 pt-6 pb-4">
-        <button
-          onClick={() => navigate(-1)}
-          className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center active:bg-gray-300 transition-colors flex-shrink-0"
-        >
-          <ArrowLeft size={16} className="text-gray-700" />
-        </button>
-        <div>
-          <h1 className="text-[26px] font-black text-gray-900 leading-tight">
-            {session.muscleGroup}
-          </h1>
-          <p className="text-sm text-gray-500">{capitalizedDate}</p>
+      <div className="flex items-center justify-between gap-3 px-5 pt-6 pb-4">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => navigate(-1)}
+            className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center active:bg-gray-300 transition-colors flex-shrink-0"
+          >
+            <ArrowLeft size={16} className="text-gray-700" />
+          </button>
+          <div>
+            <h1 className="text-[26px] font-black text-gray-900 leading-tight">
+              {session.muscleGroup}
+            </h1>
+            <p className="text-sm text-gray-500">{capitalizedDate}</p>
+          </div>
         </div>
+
+        {!readOnly && !isEmpty && (
+          <button
+            onClick={() => setIsEditMode((v) => !v)}
+            className={`flex items-center gap-1.5 text-sm font-semibold px-3.5 py-2 rounded-xl transition-colors flex-shrink-0 ${
+              isEditMode
+                ? "bg-[#c9552c] text-white"
+                : "bg-white border border-gray-200 text-gray-700"
+            }`}
+          >
+            {isEditMode ? (
+              "Terminé"
+            ) : (
+              "Modifier"
+            )}
+          </button>
+        )}
       </div>
 
       <div className="px-5 space-y-4">
-        {!readOnly && (
+        {!readOnly && !isEditMode && (
           <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
             <button
               onClick={() => {
@@ -597,7 +735,73 @@ export default function SessionPage() {
           </div>
         )}
 
-        {session.sessionExercises.map((se, seIndex) => {
+        {isEditMode && (
+          <div className="space-y-2">
+            {session.sessionExercises.map((se) => {
+              const isDragging = draggingId === se.id;
+              return (
+                <div
+                  key={se.id}
+                  data-se-id={se.id}
+                  ref={(el) => {
+                    rowRefs.current[se.id] = el;
+                  }}
+                  className={`flex items-center gap-3 rounded-2xl px-4 py-3.5 transition-all duration-200 ${
+                    isDragging
+                      ? "border-2 border-dashed border-gray-300 bg-gray-100/70"
+                      : "bg-white border border-gray-200 shadow-sm"
+                  }`}
+                >
+                  <button
+                    onPointerDown={(e) => {
+                      e.preventDefault();
+                      e.currentTarget.setPointerCapture(e.pointerId);
+                      handleDragStart(e, se.id);
+                    }}
+                    style={{ touchAction: "none" }}
+                    className={`w-9 h-9 rounded-lg flex items-center justify-center text-gray-400 cursor-grab active:cursor-grabbing flex-shrink-0 touch-none ${
+                      isDragging ? "invisible" : "bg-gray-100"
+                    }`}
+                    aria-label="Réordonner l'exercice"
+                  >
+                    <GripVertical size={18} />
+                  </button>
+                  <span
+                    className={`flex-1 text-sm font-semibold ${
+                      isDragging ? "text-transparent" : "text-gray-900"
+                    }`}
+                  >
+                    {se.exercise.name}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {draggingId && dragRect && (
+          <div
+            className="fixed z-50 flex items-center gap-3 bg-white border border-[#c9552c]/40 rounded-2xl px-4 py-3.5 shadow-2xl scale-[1.04] pointer-events-none"
+            style={{
+              top: dragCurrentY - dragOffsetY,
+              left: dragRect.left,
+              width: dragRect.width,
+            }}
+          >
+            <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 flex-shrink-0">
+              <GripVertical size={18} />
+            </div>
+            <span className="flex-1 text-sm font-semibold text-gray-900">
+              {
+                session.sessionExercises.find((s) => s.id === draggingId)
+                  ?.exercise.name
+              }
+            </span>
+          </div>
+        )}
+
+        {!isEditMode &&
+          session.sessionExercises.map((se, seIndex) => {
           const barbell = isBarbellMode(se);
           const barWeight = getBarWeight(se.id);
           const delta = deltas.get(se.exercise.id);

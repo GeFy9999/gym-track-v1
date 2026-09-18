@@ -1,6 +1,7 @@
 import {
   insertSessionExercise,
   deleteSessionExercise,
+  reorderSessionExercises,
 } from "../repositories/databaseRepository.js";
 
 export async function addExerciseToSession(sessionExercise: { sessionId: string; exerciseId: string }) {
@@ -9,4 +10,8 @@ export async function addExerciseToSession(sessionExercise: { sessionId: string;
 
 export async function removeExerciseFromSession(sessionExerciseId: string) {
   return await deleteSessionExercise(sessionExerciseId);
+}
+
+export async function reorderSessionExercisesForSession(order: string[]) {
+  return await reorderSessionExercises(order);
 }
