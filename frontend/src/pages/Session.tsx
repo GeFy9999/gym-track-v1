@@ -928,7 +928,7 @@ export default function SessionPage() {
               ref={(el) => {
                 exerciseRefs.current[se.id] = el;
               }}
-              className={`bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm ${
+              className={`bg-white border border-gray-200 rounded-2xl shadow-sm ${
                 removingId === se.id
                   ? "animate-slide-out-right"
                   : "animate-slide-up"
@@ -941,7 +941,7 @@ export default function SessionPage() {
               }}
             >
               <div
-                className="relative p-5 pb-6"
+                className="relative p-5 pb-6 rounded-t-2xl"
                 style={{
                   background:
                     "linear-gradient(135deg, #3d2a1e 0%, #2a1c14 50%, #1a1210 100%)",
