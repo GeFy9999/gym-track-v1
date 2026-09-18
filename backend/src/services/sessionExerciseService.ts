@@ -2,6 +2,8 @@ import {
   insertSessionExercise,
   deleteSessionExercise,
   reorderSessionExercises,
+  linkSuperset,
+  unlinkSuperset,
 } from "../repositories/databaseRepository.js";
 
 export async function addExerciseToSession(sessionExercise: { sessionId: string; exerciseId: string }) {
@@ -14,4 +16,12 @@ export async function removeExerciseFromSession(sessionExerciseId: string) {
 
 export async function reorderSessionExercisesForSession(order: string[]) {
   return await reorderSessionExercises(order);
+}
+
+export async function linkExercisesToSuperset(exerciseIds: string[]) {
+  return await linkSuperset(exerciseIds);
+}
+
+export async function unlinkExerciseFromSuperset(sessionExerciseId: string) {
+  return await unlinkSuperset(sessionExerciseId);
 }

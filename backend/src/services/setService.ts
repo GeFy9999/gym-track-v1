@@ -9,7 +9,7 @@ export async function createSet(set: { sessionExerciseId: string; weight: number
   return await insertSet(set);
 }
 
-export async function editSet(setId: string, data: { weight?: number; reps?: number; unit?: string; completed?: boolean }) {
+export async function editSet(setId: string, data: { weight?: number; reps?: number; unit?: string; completed?: boolean; type?: string }) {
   return await updateSet(setId, data);
 }
 

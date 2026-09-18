@@ -4,7 +4,10 @@ import { API_URL } from "../lib/api";
 type SetData = {
   weight: number;
   reps: number;
+  type?: string;
 };
+
+const isWorkingSet = (s: SetData) => s.type !== "warmup";
 
 type SessionExercise = {
   exercise: { id: string; name: string };
@@ -67,30 +70,34 @@ export function useExerciseHistory(sessionId?: string) {
         const unit = stored ? JSON.parse(stored).weightUnit || "lb" : "lb";
 
         for (const se of current.sessionExercises) {
-          let previousMatch: SessionExercise | undefined;
+          let previousWorkingSets: SetData[] | undefined;
           for (const session of completed) {
             const match = session.sessionExercises.find(
               (prev) => prev.exercise.id === se.exercise.id,
             );
-            if (match && match.sets.length > 0) {
-              previousMatch = match;
+            const workingSets = match?.sets.filter(isWorkingSet) ?? [];
+            if (workingSets.length > 0) {
+              previousWorkingSets = workingSets;
               break;
             }
           }
 
-          if (!previousMatch) continue;
+          if (!previousWorkingSets) continue;
 
           lastTimeResult.set(se.exercise.id, {
-            sets: previousMatch.sets,
+            sets: previousWorkingSets,
             unit,
           });
 
+          const currentWorkingSets = se.sets.filter(isWorkingSet);
           const currentMax =
-            se.sets.length > 0 ? Math.max(...se.sets.map((s) => s.weight)) : 0;
+            currentWorkingSets.length > 0
+              ? Math.max(...currentWorkingSets.map((s) => s.weight))
+              : 0;
           if (currentMax === 0) continue;
 
           const previousMax = Math.max(
-            ...previousMatch.sets.map((s) => s.weight),
+            ...previousWorkingSets.map((s) => s.weight),
           );
           const diff = Math.round((currentMax - previousMax) * 10) / 10;
           if (diff !== 0) {

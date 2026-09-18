@@ -67,6 +67,7 @@ export async function getUserPersonalRecords(userId: string) {
   for (const session of sessions) {
     for (const se of session.sessionExercises) {
       for (const set of se.sets) {
+        if (set.type === "warmup") continue;
         const name = se.exercise.name;
         if (!records[name] || set.weight > records[name].weight) {
           records[name] = { weight: set.weight, exerciseId: se.exercise.id };
@@ -90,7 +91,8 @@ export async function getUserMuscleVolume(userId: string) {
   for (const session of sessions) {
     const group = session.muscleGroup;
     for (const se of session.sessionExercises) {
-      volume[group] = (volume[group] || 0) + se.sets.length;
+      const workingSets = se.sets.filter((s) => s.type !== "warmup").length;
+      volume[group] = (volume[group] || 0) + workingSets;
     }
   }
 
@@ -125,6 +127,7 @@ export async function getUserExerciseProgress(
       const label = monday.toISOString().slice(0, 10);
 
       for (const set of se.sets) {
+        if (set.type === "warmup") continue;
         if (!weeklyMax[label] || set.weight > weeklyMax[label]) {
           weeklyMax[label] = set.weight;
         }

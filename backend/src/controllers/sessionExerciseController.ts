@@ -3,6 +3,8 @@ import {
   addExerciseToSession,
   removeExerciseFromSession,
   reorderSessionExercisesForSession,
+  linkExercisesToSuperset,
+  unlinkExerciseFromSuperset,
 } from "../services/sessionExerciseService.js";
 
 export const sessionExercisesRouter = express.Router();
@@ -16,6 +18,41 @@ sessionExercisesRouter.patch("/reorder", async (req, res) => {
     }
     await reorderSessionExercisesForSession(order);
     return res.status(200).json({ message: "Ordre mis à jour" });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(message, error);
+    return res.status(500).json({ error: message });
+  }
+});
+
+// PATCH /api/session-exercises/superset - lier 2+ exercices en superset
+sessionExercisesRouter.patch("/superset", async (req, res) => {
+  try {
+    const { exerciseIds } = req.body;
+    if (
+      !Array.isArray(exerciseIds) ||
+      exerciseIds.length < 2 ||
+      exerciseIds.some((id) => typeof id !== "string")
+    ) {
+      return res
+        .status(400)
+        .json({ error: "exerciseIds (string[], min 2) requis" });
+    }
+    const supersetId = await linkExercisesToSuperset(exerciseIds);
+    return res.status(200).json({ supersetId });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(message, error);
+    return res.status(500).json({ error: message });
+  }
+});
+
+// DELETE /api/session-exercises/:id/superset - retirer un exercice de son superset
+sessionExercisesRouter.delete("/:id/superset", async (req, res) => {
+  try {
+    const { id } = req.params;
+    await unlinkExerciseFromSuperset(id);
+    return res.status(200).json({ message: "Retiré du superset" });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.error(message, error);

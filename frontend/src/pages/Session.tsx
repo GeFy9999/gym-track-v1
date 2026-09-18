@@ -13,6 +13,8 @@ import {
   X,
   Trophy,
   GripVertical,
+  Link2,
+  Unlink,
 } from "lucide-react";
 import {
   getWeightUnit,
@@ -36,11 +38,26 @@ import {
 } from "../utils/plates";
 import PlateRow from "../components/session/PlateRow";
 import PRCelebration from "../components/session/PRCelebration";
+import {
+  SET_TYPE_OPTIONS,
+  SET_TYPE_LETTERS,
+  getSetTypeColor,
+  getSetTypeAccent,
+  getSetBadgeLabel,
+} from "../utils/setTypes";
 
 const REST_DURATION_OPTIONS = [30, 60, 90, 120, 180];
 
 const clamp = (n: number, min: number, max: number) =>
   Math.min(Math.max(n, min), max);
+
+const SUPERSET_COLORS = ["#c9552c", "#2b6cb0", "#3a9e6e", "#9333ea", "#c026d3"];
+
+const getSupersetColor = (supersetId: string) => {
+  let hash = 0;
+  for (const char of supersetId) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
+  return SUPERSET_COLORS[hash % SUPERSET_COLORS.length];
+};
 
 type SetData = {
   id: string;
@@ -48,12 +65,14 @@ type SetData = {
   reps: number;
   unit: string;
   completed: boolean;
+  type: string;
 };
 
 type SessionExercise = {
   id: string;
   exercise: { id: string; name: string; image: string | null };
   sets: SetData[];
+  supersetId: string | null;
 };
 
 type SessionData = {
@@ -116,6 +135,7 @@ export default function SessionPage() {
     unit: string;
   } | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [openSetTypeMenu, setOpenSetTypeMenu] = useState<string | null>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [dragRect, setDragRect] = useState<{
     left: number;
@@ -123,9 +143,16 @@ export default function SessionPage() {
   } | null>(null);
   const [dragOffsetY, setDragOffsetY] = useState(0);
   const [dragCurrentY, setDragCurrentY] = useState(0);
+  const [supersetModalFor, setSupersetModalFor] = useState<string | null>(
+    null,
+  );
+  const [supersetSelection, setSupersetSelection] = useState<Set<string>>(
+    new Set(),
+  );
   const sessionRef = useRef<SessionData | null>(null);
   const rowRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const prevRowTops = useRef<Record<string, number>>({});
+  const exerciseRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const { deltas, lastTimes } = useExerciseHistory(sessionId);
   const restTimer = useRestTimerContext();
   const restTimerEnabled = getRestTimerEnabled();
@@ -313,6 +340,43 @@ export default function SessionPage() {
     }
   };
 
+  const openSupersetModal = (se: SessionExercise) => {
+    const group = session?.sessionExercises
+      .filter((s) => s.supersetId && s.supersetId === se.supersetId)
+      .map((s) => s.id);
+    setSupersetSelection(new Set(group ?? []));
+    setSupersetModalFor(se.id);
+  };
+
+  const confirmSuperset = async () => {
+    if (!supersetModalFor) return;
+    const selected = Array.from(supersetSelection).filter(
+      (id) => id !== supersetModalFor,
+    );
+
+    try {
+      if (selected.length === 0) {
+        await fetch(
+          `${API_URL}/session-exercises/${supersetModalFor}/superset`,
+          { method: "DELETE" },
+        );
+      } else {
+        await fetch(`${API_URL}/session-exercises/superset`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            exerciseIds: [supersetModalFor, ...selected],
+          }),
+        });
+      }
+      await fetchSession();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSupersetModalFor(null);
+    }
+  };
+
   // iOS-style reorder animation: capture each row's position before the
   // list re-renders, then invert + animate to the new position so the
   // other rows visibly slide out of the way instead of snapping instantly.
@@ -457,11 +521,51 @@ export default function SessionPage() {
 
     // Start the timer synchronously (same click) so browsers still treat
     // sound/vibration triggered later as originating from a user gesture.
-    if (nextCompleted && restTimerEnabled) {
-      restTimer.start(getExerciseDuration(se.id));
+    // A drop set chains immediately into the next weight with no rest, so
+    // it never starts the timer. In a superset, the timer only starts once
+    // every exercise in the group has a completed set for this "round".
+    if (nextCompleted && restTimerEnabled && set.type !== "dropset") {
+      const group = se.supersetId
+        ? (session?.sessionExercises.filter(
+            (s) => s.supersetId === se.supersetId,
+          ) ?? [])
+        : [];
+
+      if (group.length < 2) {
+        restTimer.start(getExerciseDuration(se.id));
+      } else {
+        const myCount =
+          se.sets.filter((s) => s.completed).length + 1; // this toggle isn't reflected in `session` yet
+        const roundComplete = group.every(
+          (g) =>
+            g.id === se.id ||
+            g.sets.filter((s) => s.completed).length >= myCount,
+        );
+        if (roundComplete) {
+          restTimer.start(getExerciseDuration(se.id));
+        }
+      }
     }
 
-    if (nextCompleted && set.weight > 0) {
+    // Superset: auto-advance to the next exercise in the rotation.
+    if (nextCompleted && se.supersetId && session) {
+      const group = session.sessionExercises.filter(
+        (s) => s.supersetId === se.supersetId,
+      );
+      if (group.length > 1) {
+        const idx = group.findIndex((g) => g.id === se.id);
+        const next = group[(idx + 1) % group.length];
+        requestAnimationFrame(() => {
+          exerciseRefs.current[next.id]?.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+        });
+      }
+    }
+
+    // Warm-up sets don't count toward personal records.
+    if (nextCompleted && set.type !== "warmup" && set.weight > 0) {
       const previousBest = personalRecords[se.exercise.id] ?? 0;
       if (set.weight > previousBest) {
         setPersonalRecords((prev) => ({
@@ -488,7 +592,7 @@ export default function SessionPage() {
 
   const updateSet = async (
     setId: string,
-    data: { weight?: number; reps?: number },
+    data: { weight?: number; reps?: number; type?: string },
   ) => {
     // Optimistic update first for instant UI feedback
     setSession((prev) => {
@@ -806,20 +910,35 @@ export default function SessionPage() {
           const barWeight = getBarWeight(se.id);
           const delta = deltas.get(se.exercise.id);
           const lastTime = lastTimes.get(se.exercise.id);
+          const supersetGroup = se.supersetId
+            ? session.sessionExercises.filter(
+                (s) => s.supersetId === se.supersetId,
+              )
+            : [];
+          const supersetColor = se.supersetId
+            ? getSupersetColor(se.supersetId)
+            : null;
+          const supersetPosition = supersetGroup.findIndex(
+            (g) => g.id === se.id,
+          );
 
           return (
             <div
               key={se.id}
+              ref={(el) => {
+                exerciseRefs.current[se.id] = el;
+              }}
               className={`bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm ${
                 removingId === se.id
                   ? "animate-slide-out-right"
                   : "animate-slide-up"
-              }`}
-              style={
-                removingId === se.id
+              } ${supersetColor ? "border-l-4" : ""}`}
+              style={{
+                ...(removingId === se.id
                   ? undefined
-                  : { animationDelay: `${seIndex * 80}ms` }
-              }
+                  : { animationDelay: `${seIndex * 80}ms` }),
+                ...(supersetColor ? { borderLeftColor: supersetColor } : {}),
+              }}
             >
               <div
                 className="relative p-5 pb-6"
@@ -829,11 +948,27 @@ export default function SessionPage() {
                 }}
               >
                 <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400">
-                      Exercice {seIndex + 1} /{" "}
-                      {session.sessionExercises.length}
-                    </p>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {supersetColor ? (
+                      <div className="flex items-center gap-2 h-9 px-3.5 rounded-lg bg-white/10">
+                        <Link2
+                          size={15}
+                          style={{ color: supersetColor }}
+                          className="flex-shrink-0"
+                        />
+                        <span
+                          className="text-xs font-extrabold uppercase tracking-wider"
+                          style={{ color: supersetColor }}
+                        >
+                          Superset {supersetPosition + 1}/{supersetGroup.length}
+                        </span>
+                      </div>
+                    ) : (
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400">
+                        Exercice {seIndex + 1} /{" "}
+                        {session.sessionExercises.length}
+                      </p>
+                    )}
                     <button
                       onClick={() => toggleTracked(se.exercise.id)}
                       aria-label="Suivre en record personnel"
@@ -845,6 +980,23 @@ export default function SessionPage() {
                     >
                       <Trophy size={17} />
                     </button>
+                    {!readOnly && (
+                      <button
+                        onClick={() => openSupersetModal(se)}
+                        aria-label="Lier en superset"
+                        className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
+                          supersetColor
+                            ? "bg-white/10 text-white"
+                            : "bg-white/10 text-white/40"
+                        }`}
+                      >
+                        {supersetColor ? (
+                          <Unlink size={16} />
+                        ) : (
+                          <Link2 size={16} />
+                        )}
+                      </button>
+                    )}
                   </div>
                   <div className="flex flex-col items-end gap-2">
                     {!readOnly && (
@@ -1021,7 +1173,76 @@ export default function SessionPage() {
 
                     return (
                       <div key={set.id}>
-                        <div className="grid grid-cols-2 gap-3 mb-2">
+                        <div className="flex items-start gap-2 mb-2">
+                          <div className="relative flex-shrink-0 mt-1">
+                            <button
+                              onClick={() =>
+                                setOpenSetTypeMenu(
+                                  openSetTypeMenu === set.id ? null : set.id,
+                                )
+                              }
+                              className={`w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold transition-colors ${getSetTypeColor(
+                                set.type,
+                              )}`}
+                            >
+                              {getSetBadgeLabel(set.type, i)}
+                            </button>
+
+                            {openSetTypeMenu === set.id && (
+                              <div className="absolute z-20 top-full left-0 mt-2 bg-white border border-gray-200 rounded-2xl shadow-xl p-2 flex flex-col gap-1.5 min-w-[210px]">
+                                {SET_TYPE_OPTIONS.map((opt) => {
+                                  const selected = set.type === opt.value;
+                                  const accent = getSetTypeAccent(opt.value);
+                                  return (
+                                    <button
+                                      key={opt.value}
+                                      onClick={() => {
+                                        updateSet(set.id, { type: opt.value });
+                                        setOpenSetTypeMenu(null);
+                                      }}
+                                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border transition-colors"
+                                      style={{
+                                        borderColor: selected
+                                          ? accent
+                                          : "#e5e7eb",
+                                        backgroundColor: selected
+                                          ? `${accent}14`
+                                          : "#f9fafb",
+                                      }}
+                                    >
+                                      <span
+                                        className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0 ${getSetTypeColor(
+                                          opt.value,
+                                        )}`}
+                                      >
+                                        {SET_TYPE_LETTERS[opt.value]}
+                                      </span>
+                                      <span
+                                        className="flex-1 text-left text-sm font-semibold"
+                                        style={{
+                                          color: selected
+                                            ? accent
+                                            : "#374151",
+                                        }}
+                                      >
+                                        {opt.label}
+                                      </span>
+                                      {selected && (
+                                        <Check
+                                          size={16}
+                                          strokeWidth={3}
+                                          style={{ color: accent }}
+                                          className="flex-shrink-0"
+                                        />
+                                      )}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-3 flex-1">
                           <div className="bg-gray-100 rounded-2xl p-3">
                             <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">
                               {barbell ? "Poids / côté" : "Poids"}
@@ -1147,6 +1368,7 @@ export default function SessionPage() {
                               disabled={readOnly}
                               className="w-full min-w-0 bg-transparent text-3xl font-black text-gray-900 focus:outline-none"
                             />
+                          </div>
                           </div>
                         </div>
 
@@ -1313,6 +1535,84 @@ export default function SessionPage() {
           unit={prCelebration.unit}
           onClose={() => setPrCelebration(null)}
         />
+      )}
+
+      {supersetModalFor && session && (
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6 animate-fade-in">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
+            <p className="text-base font-bold text-gray-900 text-center mb-1">
+              Lier en superset
+            </p>
+            <p className="text-sm text-gray-400 text-center mb-4">
+              Choisis les exercices à enchaîner sans repos avec{" "}
+              {
+                session.sessionExercises.find(
+                  (s) => s.id === supersetModalFor,
+                )?.exercise.name
+              }
+              .
+            </p>
+
+            <div className="space-y-1.5 max-h-64 overflow-y-auto mb-4">
+              {session.sessionExercises
+                .filter((s) => s.id !== supersetModalFor)
+                .map((s) => {
+                  const checked = supersetSelection.has(s.id);
+                  return (
+                    <button
+                      key={s.id}
+                      onClick={() =>
+                        setSupersetSelection((prev) => {
+                          const next = new Set(prev);
+                          if (next.has(s.id)) next.delete(s.id);
+                          else next.add(s.id);
+                          return next;
+                        })
+                      }
+                      className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl border transition-colors ${
+                        checked
+                          ? "border-[#c9552c] bg-[#c9552c]/5"
+                          : "border-gray-200 bg-gray-50"
+                      }`}
+                    >
+                      <span className="text-sm font-semibold text-gray-800">
+                        {s.exercise.name}
+                      </span>
+                      <div
+                        className={`w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 ${
+                          checked
+                            ? "bg-[#c9552c] text-white"
+                            : "border border-gray-300"
+                        }`}
+                      >
+                        {checked && <Check size={12} strokeWidth={3} />}
+                      </div>
+                    </button>
+                  );
+                })}
+              {session.sessionExercises.length < 2 && (
+                <p className="text-xs text-gray-400 text-center py-3">
+                  Ajoute un autre exercice à la séance pour créer un superset.
+                </p>
+              )}
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setSupersetModalFor(null)}
+                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-xl font-semibold transition-colors"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={confirmSuperset}
+                className="flex-1 bg-[#c9552c] text-white py-3 rounded-xl font-semibold transition-colors"
+              >
+                Confirmer
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

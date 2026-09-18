@@ -332,10 +332,10 @@ export default function DashboardPage() {
         for (const session of sessions) {
           for (const se of session.sessionExercises as {
             exercise: { id: string; name: string };
-            sets: { weight: number; completed: boolean }[];
+            sets: { weight: number; completed: boolean; type: string }[];
           }[]) {
             for (const set of se.sets) {
-              if (!set.completed) continue;
+              if (!set.completed || set.type === "warmup") continue;
               const current = bestByExercise[se.exercise.id] ?? 0;
               if (set.weight > current) {
                 bestByExercise[se.exercise.id] = set.weight;
@@ -358,10 +358,11 @@ export default function DashboardPage() {
             // already celebrates them on the Session page.
             for (const se of session.sessionExercises as {
               exercise: { id: string; name: string };
-              sets: { weight: number; completed: boolean }[];
+              sets: { weight: number; completed: boolean; type: string }[];
             }[]) {
               for (const set of se.sets) {
                 if (set.completed || set.weight <= 0) continue;
+                if (set.type === "warmup") continue;
                 const previousBest = bestByExercise[se.exercise.id] ?? 0;
                 if (set.weight > previousBest) {
                   bestByExercise[se.exercise.id] = set.weight;

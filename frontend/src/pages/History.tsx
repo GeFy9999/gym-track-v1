@@ -1,6 +1,12 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronDown, ChevronRight, History, Plus } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronRight,
+  History,
+  Plus,
+  Download,
+} from "lucide-react";
 import { API_URL } from "../lib/api";
 import TourOverlay from "../components/TourOverlay";
 
@@ -11,8 +17,29 @@ type SessionData = {
   completed: boolean;
   sessionExercises: {
     exercise: { id: string; name: string };
-    sets: { weight: number; reps: number }[];
+    sets: {
+      weight: number;
+      reps: number;
+      unit: string;
+      completed: boolean;
+      type: string;
+    }[];
   }[];
+};
+
+const SET_TYPE_CSV_LABELS: Record<string, string> = {
+  normal: "Normal",
+  warmup: "Échauffement",
+  dropset: "Drop set",
+  failure: "Échec",
+};
+
+const escapeCsvField = (value: string | number): string => {
+  const str = String(value);
+  if (/[",\n]/.test(str)) {
+    return `"${str.replace(/"/g, '""')}"`;
+  }
+  return str;
 };
 
 type WeekGroup = {
@@ -98,6 +125,63 @@ export default function HistoryPage() {
     fetchHistory();
   }, []);
 
+  const exportToCsv = () => {
+    const rows: string[] = [];
+    rows.push(
+      [
+        "Date",
+        "Groupe musculaire",
+        "Exercice",
+        "Set",
+        "Type",
+        "Poids",
+        "Unité",
+        "Reps",
+        "Validé",
+      ]
+        .map(escapeCsvField)
+        .join(","),
+    );
+
+    const allSessions = weeks
+      .flatMap((w) => w.sessions)
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+    for (const session of allSessions) {
+      const dateStr = new Date(session.date).toISOString().slice(0, 10);
+      for (const se of session.sessionExercises) {
+        se.sets.forEach((set, i) => {
+          rows.push(
+            [
+              dateStr,
+              session.muscleGroup,
+              se.exercise.name,
+              i + 1,
+              SET_TYPE_CSV_LABELS[set.type] ?? "Normal",
+              set.weight,
+              set.unit,
+              set.reps,
+              set.completed ? "Oui" : "Non",
+            ]
+              .map(escapeCsvField)
+              .join(","),
+          );
+        });
+      }
+    }
+
+    const csvContent = rows.join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `gymstrack-historique-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   if (loading) {
     return (
       <div className="pb-28 bg-[#faf6f1] min-h-screen px-5">
@@ -122,15 +206,27 @@ export default function HistoryPage() {
 
   return (
     <div className="pb-28 bg-[#faf6f1] min-h-screen px-5">
-      <div className="pt-6 mb-6">
-        <h1 className="text-[32px] font-black text-gray-900 leading-tight">
-          Historique
-        </h1>
-        <p className="text-sm text-gray-500 mt-1">
-          {weeks.length > 0
-            ? `${weeks.length} semaine${weeks.length > 1 ? "s" : ""} d'entraînement`
-            : "Aucun historique encore"}
-        </p>
+      <div className="pt-6 mb-6 flex items-start justify-between gap-3">
+        <div>
+          <h1 className="text-[32px] font-black text-gray-900 leading-tight">
+            Historique
+          </h1>
+          <p className="text-sm text-gray-500 mt-1">
+            {weeks.length > 0
+              ? `${weeks.length} semaine${weeks.length > 1 ? "s" : ""} d'entraînement`
+              : "Aucun historique encore"}
+          </p>
+        </div>
+
+        {weeks.length > 0 && (
+          <button
+            onClick={exportToCsv}
+            className="flex items-center gap-1.5 text-sm font-semibold text-gray-700 bg-white border border-gray-200 px-3.5 py-2.5 rounded-xl shadow-sm active:scale-[0.98] transition-all flex-shrink-0 mt-1"
+          >
+            <Download size={15} className="text-[#c9552c]" />
+            Exporter
+          </button>
+        )}
       </div>
 
       {weeks.length === 0 ? (

@@ -136,7 +136,13 @@ export async function insertSet(set: {
 
 export async function updateSet(
   setId: string,
-  data: { weight?: number; reps?: number; unit?: string; completed?: boolean },
+  data: {
+    weight?: number;
+    reps?: number;
+    unit?: string;
+    completed?: boolean;
+    type?: string;
+  },
 ) {
   return await prisma.set.update({
     where: { id: setId },
@@ -173,13 +179,33 @@ export async function insertSessionExercise(sessionExercise: {
 }
 
 export async function deleteSessionExercise(sessionExerciseId: string) {
+  const existing = await prisma.sessionExercise.findUnique({
+    where: { id: sessionExerciseId },
+    select: { supersetId: true },
+  });
+
   // Delete sets first (FK constraint)
   await prisma.set.deleteMany({
     where: { sessionExerciseId },
   });
-  return await prisma.sessionExercise.delete({
+  const deleted = await prisma.sessionExercise.delete({
     where: { id: sessionExerciseId },
   });
+
+  // A superset needs 2+ members — dissolve the group if this leaves only 1.
+  if (existing?.supersetId) {
+    const remaining = await prisma.sessionExercise.count({
+      where: { supersetId: existing.supersetId },
+    });
+    if (remaining < 2) {
+      await prisma.sessionExercise.updateMany({
+        where: { supersetId: existing.supersetId },
+        data: { supersetId: null },
+      });
+    }
+  }
+
+  return deleted;
 }
 
 export async function reorderSessionExercises(order: string[]) {
@@ -191,6 +217,62 @@ export async function reorderSessionExercises(order: string[]) {
       }),
     ),
   );
+}
+
+export async function linkSuperset(exerciseIds: string[]) {
+  const existing = await prisma.sessionExercise.findMany({
+    where: { id: { in: exerciseIds } },
+    select: { supersetId: true },
+  });
+  const oldGroupIds = [
+    ...new Set(
+      existing.map((e) => e.supersetId).filter((id): id is string => !!id),
+    ),
+  ];
+
+  const newSupersetId = crypto.randomUUID();
+  await prisma.sessionExercise.updateMany({
+    where: { id: { in: exerciseIds } },
+    data: { supersetId: newSupersetId },
+  });
+
+  // A superset needs 2+ members — dissolve any old group left with fewer.
+  for (const oldId of oldGroupIds) {
+    const remaining = await prisma.sessionExercise.count({
+      where: { supersetId: oldId },
+    });
+    if (remaining < 2) {
+      await prisma.sessionExercise.updateMany({
+        where: { supersetId: oldId },
+        data: { supersetId: null },
+      });
+    }
+  }
+
+  return newSupersetId;
+}
+
+export async function unlinkSuperset(sessionExerciseId: string) {
+  const se = await prisma.sessionExercise.findUnique({
+    where: { id: sessionExerciseId },
+    select: { supersetId: true },
+  });
+  if (!se?.supersetId) return;
+
+  await prisma.sessionExercise.update({
+    where: { id: sessionExerciseId },
+    data: { supersetId: null },
+  });
+
+  const remaining = await prisma.sessionExercise.count({
+    where: { supersetId: se.supersetId },
+  });
+  if (remaining < 2) {
+    await prisma.sessionExercise.updateMany({
+      where: { supersetId: se.supersetId },
+      data: { supersetId: null },
+    });
+  }
 }
 
 export async function getUserByEmail(email: string) {
