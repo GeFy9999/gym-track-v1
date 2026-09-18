@@ -124,6 +124,20 @@ body {
   transform-origin: left;
 }
 
+@keyframes menu-close {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+.animate-menu-close {
+  animation: menu-close 0.15s ease-in both;
+}
+
 @keyframes slide-out-right {
   from {
     opacity: 1;

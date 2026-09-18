@@ -120,6 +120,9 @@ export default function SessionPage() {
   const [openDurationPicker, setOpenDurationPicker] = useState<string | null>(
     null,
   );
+  const [closingDurationPicker, setClosingDurationPicker] = useState<
+    string | null
+  >(null);
   const [customDuration, setCustomDuration] = useState("");
   const [barbellOverrides, setBarbellOverrides] = useState<
     Record<string, boolean>
@@ -136,6 +139,9 @@ export default function SessionPage() {
   } | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [openSetTypeMenu, setOpenSetTypeMenu] = useState<string | null>(null);
+  const [closingSetTypeMenu, setClosingSetTypeMenu] = useState<string | null>(
+    null,
+  );
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [dragRect, setDragRect] = useState<{
     left: number;
@@ -160,6 +166,24 @@ export default function SessionPage() {
 
   const getExerciseDuration = (sessionExerciseId: string) =>
     exerciseDurations[sessionExerciseId] ?? getRestTimerSeconds();
+
+  const closeDurationPicker = () => {
+    setOpenDurationPicker((current) => {
+      if (!current) return current;
+      setClosingDurationPicker(current);
+      setTimeout(() => setClosingDurationPicker(null), 150);
+      return null;
+    });
+  };
+
+  const closeSetTypeMenu = () => {
+    setOpenSetTypeMenu((current) => {
+      if (!current) return current;
+      setClosingSetTypeMenu(current);
+      setTimeout(() => setClosingSetTypeMenu(null), 150);
+      return null;
+    });
+  };
 
   const isBarbellMode = (se: SessionExercise) =>
     barbellModeEnabled &&
@@ -928,7 +952,7 @@ export default function SessionPage() {
               ref={(el) => {
                 exerciseRefs.current[se.id] = el;
               }}
-              className={`bg-white border border-gray-200 rounded-2xl shadow-sm ${
+              className={`bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm ${
                 removingId === se.id
                   ? "animate-slide-out-right"
                   : "animate-slide-up"
@@ -1048,76 +1072,78 @@ export default function SessionPage() {
                     )}
 
                     {restTimerEnabled && (
-                      <div className="relative inline-block">
-                        <button
-                          onClick={() =>
-                            setOpenDurationPicker(
-                              openDurationPicker === se.id ? null : se.id,
-                            )
-                          }
-                          className="text-[11px] font-bold uppercase tracking-wide px-3 py-1.5 rounded-full bg-white/10 text-white/80"
-                        >
-                          Repos {formatDuration(getExerciseDuration(se.id))}
-                        </button>
-
-                        {openDurationPicker === se.id && (
-                          <div className="absolute z-10 top-full left-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg p-2 flex flex-col gap-1 min-w-[160px]">
-                            {REST_DURATION_OPTIONS.map((s) => (
-                              <button
-                                key={s}
-                                onClick={() => {
-                                  setExerciseDurations((prev) => ({
-                                    ...prev,
-                                    [se.id]: s,
-                                  }));
-                                  setOpenDurationPicker(null);
-                                }}
-                                className={`text-left text-sm px-3 py-2 rounded-lg transition-colors ${
-                                  getExerciseDuration(se.id) === s
-                                    ? "bg-[#c9552c]/10 text-[#c9552c] font-semibold"
-                                    : "text-gray-700 hover:bg-gray-50"
-                                }`}
-                              >
-                                {formatDuration(s)}
-                              </button>
-                            ))}
-                            <div className="flex gap-2 px-1 pt-1 mt-1 border-t border-gray-100">
-                              <input
-                                type="number"
-                                value={customDuration}
-                                onChange={(e) =>
-                                  setCustomDuration(e.target.value)
-                                }
-                                placeholder="Custom (s)"
-                                className="flex-1 min-w-0 bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:border-[#c9552c]"
-                              />
-                              <button
-                                onClick={() => {
-                                  const val = Number(customDuration);
-                                  if (val > 0) {
-                                    setExerciseDurations((prev) => ({
-                                      ...prev,
-                                      [se.id]: val,
-                                    }));
-                                    setOpenDurationPicker(null);
-                                    setCustomDuration("");
-                                  }
-                                }}
-                                disabled={
-                                  !customDuration ||
-                                  Number(customDuration) <= 0
-                                }
-                                className="bg-[#c9552c] disabled:opacity-50 text-white text-sm font-semibold px-3 rounded-lg"
-                              >
-                                OK
-                              </button>
-                            </div>
-                          </div>
-                        )}
-                      </div>
+                      <button
+                        onClick={() =>
+                          openDurationPicker === se.id
+                            ? closeDurationPicker()
+                            : setOpenDurationPicker(se.id)
+                        }
+                        className="text-[11px] font-bold uppercase tracking-wide px-3 py-1.5 rounded-full bg-white/10 text-white/80"
+                      >
+                        Repos {formatDuration(getExerciseDuration(se.id))}
+                      </button>
                     )}
                   </div>
                 )}
+
+                {!readOnly &&
+                  restTimerEnabled &&
+                  (openDurationPicker === se.id ||
+                    closingDurationPicker === se.id) && (
+                    <div
+                      className={`mt-2 bg-white border border-gray-200 rounded-xl shadow-lg p-2 flex flex-col gap-1 origin-top ${
+                        closingDurationPicker === se.id
+                          ? "animate-menu-close"
+                          : "animate-slide-down"
+                      }`}
+                    >
+                      {REST_DURATION_OPTIONS.map((s) => (
+                        <button
+                          key={s}
+                          onClick={() => {
+                            setExerciseDurations((prev) => ({
+                              ...prev,
+                              [se.id]: s,
+                            }));
+                            closeDurationPicker();
+                          }}
+                          className={`text-left text-sm px-3 py-2 rounded-lg transition-colors ${
+                            getExerciseDuration(se.id) === s
+                              ? "bg-[#c9552c]/10 text-[#c9552c] font-semibold"
+                              : "text-gray-700 hover:bg-gray-50"
+                          }`}
+                        >
+                          {formatDuration(s)}
+                        </button>
+                      ))}
+                      <div className="flex gap-2 px-1 pt-1 mt-1 border-t border-gray-100">
+                        <input
+                          type="number"
+                          value={customDuration}
+                          onChange={(e) => setCustomDuration(e.target.value)}
+                          placeholder="Custom (s)"
+                          className="flex-1 min-w-0 bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:border-[#c9552c]"
+                        />
+                        <button
+                          onClick={() => {
+                            const val = Number(customDuration);
+                            if (val > 0) {
+                              setExerciseDurations((prev) => ({
+                                ...prev,
+                                [se.id]: val,
+                              }));
+                              closeDurationPicker();
+                              setCustomDuration("");
+                            }
+                          }}
+                          disabled={!customDuration || Number(customDuration) <= 0}
+                          className="bg-[#c9552c] disabled:opacity-50 text-white text-sm font-semibold px-3 rounded-lg"
+                        >
+                          OK
+                        </button>
+                      </div>
+                    </div>
+                  )}
               </div>
 
               <div className="p-4">
@@ -1174,73 +1200,18 @@ export default function SessionPage() {
                     return (
                       <div key={set.id}>
                         <div className="flex items-start gap-2 mb-2">
-                          <div className="relative flex-shrink-0 mt-1">
-                            <button
-                              onClick={() =>
-                                setOpenSetTypeMenu(
-                                  openSetTypeMenu === set.id ? null : set.id,
-                                )
-                              }
-                              className={`w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold transition-colors ${getSetTypeColor(
-                                set.type,
-                              )}`}
-                            >
-                              {getSetBadgeLabel(set.type, i)}
-                            </button>
-
-                            {openSetTypeMenu === set.id && (
-                              <div className="absolute z-20 top-full left-0 mt-2 bg-white border border-gray-200 rounded-2xl shadow-xl p-2 flex flex-col gap-1.5 min-w-[210px]">
-                                {SET_TYPE_OPTIONS.map((opt) => {
-                                  const selected = set.type === opt.value;
-                                  const accent = getSetTypeAccent(opt.value);
-                                  return (
-                                    <button
-                                      key={opt.value}
-                                      onClick={() => {
-                                        updateSet(set.id, { type: opt.value });
-                                        setOpenSetTypeMenu(null);
-                                      }}
-                                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border transition-colors"
-                                      style={{
-                                        borderColor: selected
-                                          ? accent
-                                          : "#e5e7eb",
-                                        backgroundColor: selected
-                                          ? `${accent}14`
-                                          : "#f9fafb",
-                                      }}
-                                    >
-                                      <span
-                                        className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0 ${getSetTypeColor(
-                                          opt.value,
-                                        )}`}
-                                      >
-                                        {SET_TYPE_LETTERS[opt.value]}
-                                      </span>
-                                      <span
-                                        className="flex-1 text-left text-sm font-semibold"
-                                        style={{
-                                          color: selected
-                                            ? accent
-                                            : "#374151",
-                                        }}
-                                      >
-                                        {opt.label}
-                                      </span>
-                                      {selected && (
-                                        <Check
-                                          size={16}
-                                          strokeWidth={3}
-                                          style={{ color: accent }}
-                                          className="flex-shrink-0"
-                                        />
-                                      )}
-                                    </button>
-                                  );
-                                })}
-                              </div>
-                            )}
-                          </div>
+                          <button
+                            onClick={() =>
+                              openSetTypeMenu === set.id
+                                ? closeSetTypeMenu()
+                                : setOpenSetTypeMenu(set.id)
+                            }
+                            className={`w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold transition-colors flex-shrink-0 mt-1 ${getSetTypeColor(
+                              set.type,
+                            )}`}
+                          >
+                            {getSetBadgeLabel(set.type, i)}
+                          </button>
 
                           <div className="grid grid-cols-2 gap-3 flex-1">
                           <div className="bg-gray-100 rounded-2xl p-3">
@@ -1371,6 +1342,64 @@ export default function SessionPage() {
                           </div>
                           </div>
                         </div>
+
+                        {(openSetTypeMenu === set.id ||
+                          closingSetTypeMenu === set.id) && (
+                          <div
+                            className={`mb-2 bg-white border border-gray-200 rounded-2xl shadow-lg p-2 grid grid-cols-2 gap-1.5 origin-top ${
+                              closingSetTypeMenu === set.id
+                                ? "animate-menu-close"
+                                : "animate-slide-down"
+                            }`}
+                          >
+                            {SET_TYPE_OPTIONS.map((opt) => {
+                              const selected = set.type === opt.value;
+                              const accent = getSetTypeAccent(opt.value);
+                              return (
+                                <button
+                                  key={opt.value}
+                                  onClick={() => {
+                                    updateSet(set.id, { type: opt.value });
+                                    closeSetTypeMenu();
+                                  }}
+                                  className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl border transition-colors"
+                                  style={{
+                                    borderColor: selected
+                                      ? accent
+                                      : "#e5e7eb",
+                                    backgroundColor: selected
+                                      ? `${accent}14`
+                                      : "#f9fafb",
+                                  }}
+                                >
+                                  <span
+                                    className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0 ${getSetTypeColor(
+                                      opt.value,
+                                    )}`}
+                                  >
+                                    {SET_TYPE_LETTERS[opt.value]}
+                                  </span>
+                                  <span
+                                    className="flex-1 text-left text-xs font-semibold truncate"
+                                    style={{
+                                      color: selected ? accent : "#374151",
+                                    }}
+                                  >
+                                    {opt.label}
+                                  </span>
+                                  {selected && (
+                                    <Check
+                                      size={14}
+                                      strokeWidth={3}
+                                      style={{ color: accent }}
+                                      className="flex-shrink-0"
+                                    />
+                                  )}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
 
                         {barbell && perSide > 0 && (
                           <div className="flex items-center justify-between mb-2 px-1">
