@@ -42,7 +42,7 @@ export default function PlateRow({
           </span>
         )}
       </div>
-      <span className="text-[11px] text-gray-400 ml-auto flex-shrink-0">
+      <span className="text-xs font-bold text-[#c9552c] ml-auto flex-shrink-0">
         {totalWeight} {unit} total
       </span>
     </div>

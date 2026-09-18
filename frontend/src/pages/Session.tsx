@@ -1199,14 +1199,14 @@ export default function SessionPage() {
 
                     return (
                       <div key={set.id}>
-                        <div className="flex items-start gap-2 mb-2">
+                        <div className="flex gap-2 mb-2">
                           <button
                             onClick={() =>
                               openSetTypeMenu === set.id
                                 ? closeSetTypeMenu()
                                 : setOpenSetTypeMenu(set.id)
                             }
-                            className={`w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold transition-colors flex-shrink-0 mt-1 ${getSetTypeColor(
+                            className={`w-11 h-11 self-center rounded-lg flex items-center justify-center text-xs font-bold transition-colors flex-shrink-0 ${getSetTypeColor(
                               set.type,
                             )}`}
                           >
@@ -1341,6 +1341,41 @@ export default function SessionPage() {
                             />
                           </div>
                           </div>
+
+                          <div className="flex flex-col gap-1.5 w-11 flex-shrink-0">
+                            {!readOnly ? (
+                              <button
+                                onClick={() => toggleSetCompleted(set, se)}
+                                className={`flex-1 rounded-lg flex items-center justify-center transition-colors ${
+                                  set.completed
+                                    ? "bg-[#3a9e6e] text-white"
+                                    : "bg-gray-900 text-white active:bg-gray-800"
+                                }`}
+                              >
+                                <Check size={16} strokeWidth={3} />
+                              </button>
+                            ) : (
+                              <div
+                                className={`flex-1 rounded-lg flex items-center justify-center ${
+                                  set.completed
+                                    ? "bg-[#3a9e6e] text-white"
+                                    : "bg-gray-200 text-gray-400"
+                                }`}
+                              >
+                                {set.completed && (
+                                  <Check size={16} strokeWidth={3} />
+                                )}
+                              </div>
+                            )}
+                            {!readOnly && (
+                              <button
+                                onClick={() => deleteSet(set.id)}
+                                className="flex-1 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 active:text-red-500 transition-colors"
+                              >
+                                <X size={14} />
+                              </button>
+                            )}
+                          </div>
                         </div>
 
                         {(openSetTypeMenu === set.id ||
@@ -1401,18 +1436,6 @@ export default function SessionPage() {
                           </div>
                         )}
 
-                        {barbell && perSide > 0 && (
-                          <div className="flex items-center justify-between mb-2 px-1">
-                            <span className="text-xs text-gray-400">
-                              {barWeight} {getWeightUnit()} barre + 2 ×{" "}
-                              {perSide} {getWeightUnit()}
-                            </span>
-                            <span className="text-xs font-bold text-[#c9552c]">
-                              {set.weight} {getWeightUnit()} total
-                            </span>
-                          </div>
-                        )}
-
                         {barbell && (plates.length > 0 || remainder > 0) && (
                           <div className="mb-2">
                             <PlateRow
@@ -1424,44 +1447,6 @@ export default function SessionPage() {
                           </div>
                         )}
 
-                        <div className="flex items-center gap-2">
-                          {!readOnly ? (
-                            <button
-                              onClick={() => toggleSetCompleted(set, se)}
-                              className={`flex-1 py-3.5 rounded-full font-bold uppercase text-sm flex items-center justify-center gap-2 transition-colors ${
-                                set.completed
-                                  ? "bg-[#3a9e6e] text-white"
-                                  : "bg-gray-900 text-white active:bg-gray-800"
-                              }`}
-                            >
-                              <Check size={16} strokeWidth={3} />
-                              {set.completed
-                                ? `Set ${i + 1} validé`
-                                : `Valider le set ${i + 1}`}
-                            </button>
-                          ) : (
-                            <div
-                              className={`flex-1 py-3.5 rounded-full font-bold uppercase text-sm flex items-center justify-center gap-2 ${
-                                set.completed
-                                  ? "bg-[#3a9e6e] text-white"
-                                  : "bg-gray-200 text-gray-400"
-                              }`}
-                            >
-                              {set.completed && (
-                                <Check size={16} strokeWidth={3} />
-                              )}
-                              Set {i + 1} {set.completed ? "validé" : ""}
-                            </div>
-                          )}
-                          {!readOnly && (
-                            <button
-                              onClick={() => deleteSet(set.id)}
-                              className="w-11 h-11 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 active:text-red-500 transition-colors flex-shrink-0"
-                            >
-                              <X size={16} />
-                            </button>
-                          )}
-                        </div>
                       </div>
                     );
                   })}
