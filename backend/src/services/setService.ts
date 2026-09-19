@@ -5,7 +5,7 @@ import {
   getSetsBySessionExerciseId,
 } from "../repositories/databaseRepository.js";
 
-export async function createSet(set: { sessionExerciseId: string; weight: number; reps: number; unit?: string }) {
+export async function createSet(set: { sessionExerciseId: string; weight: number; reps: number; unit?: string; type?: string }) {
   return await insertSet(set);
 }
 

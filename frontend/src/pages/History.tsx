@@ -6,7 +6,7 @@ import {
   ChevronLeft,
   History,
   Plus,
-  Download,
+  Upload,
   Calendar as CalendarIcon,
   List,
 } from "lucide-react";
@@ -319,7 +319,7 @@ export default function HistoryPage() {
             onClick={exportToCsv}
             className="flex items-center gap-1.5 text-sm font-semibold text-gray-700 bg-white border border-gray-200 px-3.5 py-2.5 rounded-xl shadow-sm active:scale-[0.98] transition-all flex-shrink-0 mt-1"
           >
-            <Download size={15} className="text-[#c9552c]" />
+            <Upload size={15} className="text-[#c9552c]" />
             Exporter
           </button>
         )}
@@ -541,14 +541,14 @@ export default function HistoryPage() {
                       className={`aspect-square rounded-xl flex flex-col items-center justify-center gap-0.5 transition-colors ${
                         daySessions.length > 0
                           ? "bg-[#c9552c]/10 active:bg-[#c9552c]/20"
-                          : ""
+                          : "cursor-not-allowed"
                       } ${isToday ? "ring-2 ring-[#c9552c]" : ""}`}
                     >
                       <span
                         className={`text-xs font-semibold ${
                           daySessions.length > 0
                             ? "text-[#c9552c]"
-                            : "text-gray-600"
+                            : "text-gray-300"
                         }`}
                       >
                         {cell.getDate()}

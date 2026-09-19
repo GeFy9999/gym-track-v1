@@ -60,6 +60,7 @@ export default function SetRow({
     <div>
       <div className="flex gap-2 mb-2">
         <button
+          data-tour="session-set-type"
           onClick={onToggleTypeMenu}
           className={`w-11 h-11 self-center rounded-lg flex items-center justify-center text-xs font-bold transition-colors flex-shrink-0 ${getSetTypeColor(
             set.type,
@@ -69,7 +70,7 @@ export default function SetRow({
         </button>
 
         <div className="grid grid-cols-2 gap-3 flex-1">
-          <div className="bg-gray-100 rounded-2xl p-3">
+          <div data-tour="session-set-weight" className="bg-gray-100 rounded-2xl p-3">
             <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">
               {barbell ? "Poids / côté" : "Poids"}
             </p>
@@ -113,7 +114,7 @@ export default function SetRow({
             </div>
           </div>
 
-          <div className="bg-gray-100 rounded-2xl p-3">
+          <div data-tour="session-set-reps" className="bg-gray-100 rounded-2xl p-3">
             <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">
               Reps
             </p>
@@ -146,6 +147,7 @@ export default function SetRow({
         {!readOnly && (
           <div className="flex flex-col gap-1.5 w-11 flex-shrink-0">
             <button
+              data-tour="session-set-check"
               onClick={onToggleCompleted}
               className={`flex-1 rounded-lg flex items-center justify-center transition-colors ${
                 set.completed
@@ -156,6 +158,7 @@ export default function SetRow({
               <Check size={16} strokeWidth={3} />
             </button>
             <button
+              data-tour="session-set-delete"
               onClick={onDelete}
               className="flex-1 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 active:text-red-500 transition-colors"
             >

@@ -12,6 +12,7 @@ import {
   Camera,
   Timer,
   Dumbbell,
+  Download,
 } from "lucide-react";
 import { API_URL } from "../lib/api";
 import TourOverlay from "../components/TourOverlay";
@@ -51,6 +52,47 @@ export default function ProfilePage() {
   const [customSeconds, setCustomSeconds] = useState("");
   const customTotalSeconds =
     (Number(customMinutes) || 0) * 60 + (Number(customSeconds) || 0);
+
+  const tourRef0 = useRef<HTMLDivElement>(null);
+  const tourRef1 = useRef<HTMLDivElement>(null);
+  const tourRef2 = useRef<HTMLDivElement>(null);
+  const tourRef3 = useRef<HTMLDivElement>(null);
+  const tourRef4 = useRef<HTMLDivElement>(null);
+
+  const profileTourSteps = [
+    {
+      title: "Photos de progression",
+      description:
+        "Prends des photos régulièrement pour visualiser ta progression physique dans le temps.",
+      refIndex: 0,
+    },
+    {
+      title: "Compte",
+      description:
+        "Gère ton courriel, ton mot de passe et un courriel de récupération en cas de perte d'accès.",
+      refIndex: 1,
+    },
+    {
+      title: "Unité de poids",
+      description:
+        "Choisis lb ou kg — tout l'app (séances, stats, historique) s'adapte à ton choix.",
+      refIndex: 2,
+    },
+    {
+      title: "Entraînement",
+      description:
+        "Active le minuteur de repos automatique et sa durée par défaut, ainsi que le mode barbell pour calculer les plaques à charger.",
+      refIndex: 3,
+      tooltipPosition: "above" as const,
+    },
+    {
+      title: "Zone de danger",
+      description:
+        "Supprime ton compte et toutes tes données. Cette action est irréversible.",
+      refIndex: 4,
+      tooltipPosition: "above" as const,
+    },
+  ];
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -276,7 +318,7 @@ export default function ProfilePage() {
       <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-2 px-1">
         Progression
       </p>
-      <div className="bg-white border border-gray-200 rounded-2xl mb-6 shadow-sm">
+      <div ref={tourRef0} className="bg-white border border-gray-200 rounded-2xl mb-6 shadow-sm">
         <button
           onClick={() => navigate("/progression")}
           className="w-full flex items-center gap-3 px-4 py-4"
@@ -292,11 +334,31 @@ export default function ProfilePage() {
         </button>
       </div>
 
+      {/* Données */}
+      <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-2 px-1">
+        Données
+      </p>
+      <div className="bg-white border border-gray-200 rounded-2xl mb-6 shadow-sm">
+        <button
+          onClick={() => navigate("/import")}
+          className="w-full flex items-center gap-3 px-4 py-4"
+        >
+          <div className="w-9 h-9 rounded-xl bg-[#c9552c]/10 flex items-center justify-center flex-shrink-0">
+            <Download size={16} className="text-[#c9552c]" />
+          </div>
+          <p className="flex-1 text-left text-sm font-medium text-gray-900">
+            Importer des données
+          </p>
+          <p className="text-sm text-gray-400">CSV</p>
+          <ChevronRight size={16} className="text-gray-300 flex-shrink-0" />
+        </button>
+      </div>
+
       {/* Compte */}
       <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-2 px-1">
         Compte
       </p>
-      <div className="bg-white border border-gray-200 rounded-2xl mb-6 shadow-sm">
+      <div ref={tourRef1} className="bg-white border border-gray-200 rounded-2xl mb-6 shadow-sm">
         <div className="w-full flex items-center gap-3 px-4 py-4 border-b border-gray-100">
           <div className="w-9 h-9 rounded-xl bg-[#c9552c]/10 flex items-center justify-center flex-shrink-0">
             <Mail size={16} className="text-[#c9552c]" />
@@ -353,7 +415,7 @@ export default function ProfilePage() {
       <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-2 px-1">
         Préférences
       </p>
-      <div className="bg-white border border-gray-200 rounded-2xl mb-6 shadow-sm">
+      <div ref={tourRef2} className="bg-white border border-gray-200 rounded-2xl mb-6 shadow-sm">
         <button
           onClick={() => setActiveModal("unit")}
           className="w-full flex items-center gap-3 px-4 py-4"
@@ -375,7 +437,7 @@ export default function ProfilePage() {
       <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-2 px-1">
         Entraînement
       </p>
-      <div className="bg-white border border-gray-200 rounded-2xl mb-6 shadow-sm">
+      <div ref={tourRef3} className="bg-white border border-gray-200 rounded-2xl mb-6 shadow-sm">
         <div className="w-full flex items-center gap-3 px-4 py-4 border-b border-gray-100">
           <div className="w-9 h-9 rounded-xl bg-[#c9552c]/10 flex items-center justify-center flex-shrink-0">
             <Timer size={16} className="text-[#c9552c]" />
@@ -450,7 +512,7 @@ export default function ProfilePage() {
       <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-2 px-1">
         Zone de danger
       </p>
-      <div className="bg-white border border-gray-200 rounded-2xl mb-6 shadow-sm">
+      <div ref={tourRef4} className="bg-white border border-gray-200 rounded-2xl mb-6 shadow-sm">
         <button
           onClick={() => {
             setActiveModal("delete");
@@ -771,6 +833,12 @@ export default function ProfilePage() {
           </div>
         </div>
       )}
+
+      <TourOverlay
+        tourKey="profile"
+        steps={profileTourSteps}
+        refs={[tourRef0, tourRef1, tourRef2, tourRef3, tourRef4]}
+      />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { Check, Clock, Layers, TrendingUp, Dumbbell, Trophy } from "lucide-react";
+import { Check, Clock, Layers, Dumbbell, Trophy, TrendingUp } from "lucide-react";
 
 type PR = {
   exerciseName: string;
@@ -6,14 +6,19 @@ type PR = {
   unit: string;
 };
 
+type ExerciseDelta = {
+  exerciseName: string;
+  delta: number;
+  unit: string;
+};
+
 type Props = {
   muscleGroups: string[];
   durationMinutes: number;
   totalSets: number;
-  totalVolume: number;
   totalExercises: number;
-  unit: string;
   prs: PR[];
+  exerciseDeltas: ExerciseDelta[];
   onClose: () => void;
 };
 
@@ -28,10 +33,9 @@ export default function WorkoutSummary({
   muscleGroups,
   durationMinutes,
   totalSets,
-  totalVolume,
   totalExercises,
-  unit,
   prs,
+  exerciseDeltas,
   onClose,
 }: Props) {
   return (
@@ -76,13 +80,18 @@ export default function WorkoutSummary({
               </p>
             </div>
             <div className="bg-gray-50 rounded-2xl p-3.5">
-              <TrendingUp size={16} className="text-[#c9552c] mb-1.5" />
-              <p className="text-xl font-black text-gray-900">
-                {totalVolume.toLocaleString("fr-FR")}{" "}
-                <span className="text-sm font-bold">{unit}</span>
+              <Trophy
+                size={16}
+                className={`mb-1.5 ${prs.length > 0 ? "text-[#c9552c]" : "text-gray-300"}`}
+              />
+              <p
+                className={`text-xl font-black ${prs.length > 0 ? "text-gray-900" : "text-gray-300"}`}
+              >
+                {prs.length}
               </p>
               <p className="text-[11px] text-gray-400 font-semibold uppercase tracking-wide">
-                Volume total
+                Record{prs.length === 1 ? "" : "s"} battu
+                {prs.length === 1 ? "" : "s"}
               </p>
             </div>
             <div className="bg-gray-50 rounded-2xl p-3.5">
@@ -116,6 +125,36 @@ export default function WorkoutSummary({
                     </span>
                     <span className="font-bold text-[#c9552c]">
                       {pr.weight} {pr.unit}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {exerciseDeltas.length > 0 && (
+            <div className="bg-gray-50 border border-gray-100 rounded-2xl p-3.5 mb-4">
+              <div className="flex items-center gap-1.5 mb-2">
+                <TrendingUp size={14} className="text-gray-500" />
+                <p className="text-xs font-bold uppercase tracking-wide text-gray-500">
+                  Progression vs dernière fois
+                </p>
+              </div>
+              <div className="space-y-1">
+                {exerciseDeltas.map((d, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center justify-between text-sm"
+                  >
+                    <span className="text-gray-700 font-medium">
+                      {d.exerciseName}
+                    </span>
+                    <span
+                      className={`font-bold ${
+                        d.delta > 0 ? "text-[#c9552c]" : "text-gray-400"
+                      }`}
+                    >
+                      {d.delta > 0 ? "↑" : "↓"} {Math.abs(d.delta)} {d.unit}
                     </span>
                   </div>
                 ))}

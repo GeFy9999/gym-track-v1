@@ -13,8 +13,12 @@ import { useRestTimerContext } from "../contexts/RestTimerContext";
 import { useTrackedExercises } from "../hooks/useTrackedExercises";
 import { useExerciseNotes } from "../hooks/useExerciseNotes";
 import { useSupersetManager } from "../hooks/useSupersetManager";
+import { useToast } from "../hooks/useToast";
 import { isLikelyBarbellExercise, getDefaultBarWeight } from "../utils/plates";
+import { computeWarmupSets } from "../utils/warmup";
 import PRCelebration from "../components/session/PRCelebration";
+import Toast from "../components/Toast";
+import TourOverlay from "../components/TourOverlay";
 import ExerciseReorderList from "../components/session/ExerciseReorderList";
 import ExerciseCard from "../components/session/ExerciseCard";
 import AddExercisePanel from "../components/session/AddExercisePanel";
@@ -22,6 +26,7 @@ import ExerciseSuggestions from "../components/session/ExerciseSuggestions";
 import SupersetModal from "../components/session/SupersetModal";
 import NoteModal from "../components/session/NoteModal";
 import DeleteExerciseModal from "../components/session/DeleteExerciseModal";
+import WarmupModal from "../components/session/WarmupModal";
 import { POPULAR_EXERCISES_BY_MUSCLE_GROUP } from "../utils/popularExercises";
 import type {
   SetData,
@@ -77,6 +82,8 @@ export default function SessionPage() {
   const [closingSetTypeMenu, setClosingSetTypeMenu] = useState<string | null>(
     null,
   );
+  const [warmupModalFor, setWarmupModalFor] = useState<string | null>(null);
+  const [showSetRowTour, setShowSetRowTour] = useState(false);
   const sessionRef = useRef<SessionData | null>(null);
   const exerciseRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const { deltas, lastTimes } = useExerciseHistory(sessionId);
@@ -118,6 +125,8 @@ export default function SessionPage() {
     confirmSuperset,
   } = useSupersetManager(session, fetchSession);
 
+  const { toast, closingToast, showToast } = useToast();
+
   const getExerciseDuration = (sessionExerciseId: string) =>
     exerciseDurations[sessionExerciseId] ?? getRestTimerSeconds();
 
@@ -139,9 +148,17 @@ export default function SessionPage() {
     });
   };
 
+  // Barbell mode only makes sense for actual barbell lifts — bodyweight
+  // and machine exercises have no bar/plates to load. The override can
+  // still turn it OFF for a wrongly-detected exercise, but never turn it
+  // ON for one that isn't a barbell exercise in the first place.
+  const isBarbellExercise = (se: SessionExercise) =>
+    isLikelyBarbellExercise(se.exercise.name);
+
   const isBarbellMode = (se: SessionExercise) =>
     barbellModeEnabled &&
-    (barbellOverrides[se.id] ?? isLikelyBarbellExercise(se.exercise.name));
+    isBarbellExercise(se) &&
+    (barbellOverrides[se.id] ?? true);
 
   const getBarWeight = (sessionExerciseId: string) =>
     barWeights[sessionExerciseId] ?? getDefaultBarWeight(getWeightUnit());
@@ -285,6 +302,48 @@ export default function SessionPage() {
       });
       if (!res.ok) throw new Error("Erreur ajout set");
       fetchSession();
+      setShowSetRowTour(true);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const generateWarmup = async (
+    sessionExerciseId: string,
+    workingWeight: number,
+    workingReps: number,
+    count: number,
+  ) => {
+    setWarmupModalFor(null);
+    const unit = getWeightUnit();
+    const plan = computeWarmupSets(workingWeight, unit, count);
+
+    try {
+      for (const step of plan) {
+        await fetch(`${API_URL}/sets`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            sessionExerciseId,
+            weight: step.weight,
+            reps: step.reps,
+            unit,
+            type: "warmup",
+          }),
+        });
+      }
+      await fetch(`${API_URL}/sets`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sessionExerciseId,
+          weight: workingWeight,
+          reps: workingReps,
+          unit,
+        }),
+      });
+      showToast("Échauffement généré");
+      fetchSession();
     } catch (err) {
       console.error(err);
     }
@@ -351,19 +410,24 @@ export default function SessionPage() {
       }
     }
 
-    // Warm-up sets don't count toward personal records.
+    // Warm-up sets don't count toward personal records. And the very first
+    // time an exercise is ever logged, there's no prior record to beat, so
+    // it shouldn't trigger a celebration — only genuine improvements should.
     if (nextCompleted && set.type !== "warmup" && set.weight > 0) {
+      const hadPreviousRecord = se.exercise.id in personalRecords;
       const previousBest = personalRecords[se.exercise.id] ?? 0;
       if (set.weight > previousBest) {
         setPersonalRecords((prev) => ({
           ...prev,
           [se.exercise.id]: set.weight,
         }));
-        setPrCelebration({
-          exerciseName: se.exercise.name,
-          weight: set.weight,
-          unit: getWeightUnit(),
-        });
+        if (hadPreviousRecord) {
+          setPrCelebration({
+            exerciseName: se.exercise.name,
+            weight: set.weight,
+            unit: getWeightUnit(),
+          });
+        }
       }
     }
 
@@ -485,11 +549,120 @@ export default function SessionPage() {
 
   const unit = getWeightUnit();
 
+  const sessionTourSteps = [
+    {
+      title: "Retour",
+      description: "Retourne à l'écran précédent.",
+      selector: "[data-tour='session-back']",
+    },
+    {
+      title: "Ajouter un exercice",
+      description: "Cherche et ajoute un exercice à ta séance.",
+      selector: "[data-tour='session-add-exercise']",
+    },
+    {
+      title: "Réorganiser les exercices",
+      description:
+        "Appuie ici pour glisser-déposer tes exercices dans l'ordre que tu veux.",
+      selector: "[data-tour='session-edit-toggle']",
+    },
+    {
+      title: "Suivre ce record",
+      description:
+        "Active le trophée pour suivre le record personnel de cet exercice dans Stats.",
+      selector: "[data-tour='session-trophy']",
+    },
+    {
+      title: "Note personnelle",
+      description:
+        "Écris une note sur cet exercice (technique, sensation, objectif). Elle reste liée à l'exercice, pas juste à cette séance.",
+      selector: "[data-tour='session-note']",
+    },
+    {
+      title: "Superset",
+      description:
+        "Lie plusieurs exercices ensemble pour les enchaîner sans repos entre eux.",
+      selector: "[data-tour='session-superset']",
+    },
+    {
+      title: "Supprimer l'exercice",
+      description:
+        "Retire cet exercice de la séance. Tous ses sets seront aussi supprimés.",
+      selector: "[data-tour='session-delete']",
+    },
+    ...(barbellModeEnabled
+      ? [
+          {
+            title: "Mode barbell",
+            description:
+              "Active-le pour saisir le poids ajouté de chaque côté de la barre — l'app calcule le poids total et les plaques à charger.",
+            selector: "[data-tour='session-barbell-chip']",
+          },
+        ]
+      : []),
+    ...(restTimerEnabled
+      ? [
+          {
+            title: "Repos",
+            description:
+              "Change la durée du minuteur de repos pour cet exercice précis.",
+            selector: "[data-tour='session-rest-chip']",
+          },
+        ]
+      : []),
+    {
+      title: "Échauffement auto",
+      description:
+        "Entre ton poids de travail : l'app génère automatiquement une montée en charge progressive avant ton set de travail.",
+      selector: "[data-tour='session-warmup']",
+    },
+    {
+      title: "Ajouter un set",
+      description: "Ajoute une nouvelle série à cet exercice.",
+      selector: "[data-tour='session-add-set']",
+    },
+  ];
+
+  // Contextual mini-tour that explains a set row's own controls, triggered
+  // right after the user adds their first set rather than on page load —
+  // there's nothing to point at until a set actually exists.
+  const setRowTourSteps = [
+    {
+      title: "Poids",
+      description:
+        "Saisis le poids soulevé. En mode barbell, c'est le poids ajouté d'un seul côté de la barre.",
+      selector: "[data-tour='session-set-weight']",
+    },
+    {
+      title: "Reps",
+      description: "Le nombre de répétitions effectuées pour ce set.",
+      selector: "[data-tour='session-set-reps']",
+    },
+    {
+      title: "Type de set",
+      description:
+        "Change le type du set : normal, échauffement, dégressif ou jusqu'à l'échec.",
+      selector: "[data-tour='session-set-type']",
+    },
+    {
+      title: "Valider le set",
+      description:
+        "Marque le set comme complété. Le minuteur de repos démarre automatiquement si activé.",
+      selector: "[data-tour='session-set-check']",
+    },
+    {
+      title: "Supprimer le set",
+      description: "Retire cette série.",
+      selector: "[data-tour='session-set-delete']",
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-[#faf6f1] pb-8">
       <div className="flex items-center justify-between gap-3 px-5 pt-6 pb-4">
         <div className="flex items-center gap-3">
           <button
+            data-tour="session-back"
             onClick={() => navigate(-1)}
             className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center active:bg-gray-300 transition-colors flex-shrink-0"
           >
@@ -505,6 +678,7 @@ export default function SessionPage() {
 
         {!readOnly && !isEmpty && (
           <button
+            data-tour="session-edit-toggle"
             onClick={() => setIsEditMode((v) => !v)}
             className={`flex items-center gap-1.5 text-sm font-semibold px-3.5 py-2 rounded-xl transition-colors flex-shrink-0 ${
               isEditMode
@@ -579,6 +753,7 @@ export default function SessionPage() {
                 unit={unit}
                 readOnly={readOnly}
                 barbellModeEnabled={barbellModeEnabled}
+                isBarbellExercise={isBarbellExercise(se)}
                 restTimerEnabled={restTimerEnabled}
                 exerciseDuration={getExerciseDuration(se.id)}
                 delta={delta}
@@ -597,7 +772,15 @@ export default function SessionPage() {
                 cardRef={(el) => {
                   exerciseRefs.current[se.id] = el;
                 }}
-                onToggleTracked={() => toggleTracked(se.exercise.id)}
+                onToggleTracked={() => {
+                  const wasTracked = isTracked(se.exercise.id);
+                  toggleTracked(se.exercise.id);
+                  showToast(
+                    wasTracked
+                      ? "Exercice retiré du suivi"
+                      : "Exercice ajouté au suivi",
+                  );
+                }}
                 onOpenNoteModal={() => openNoteModal(se.exercise.id)}
                 onOpenSupersetModal={() => openSupersetModal(se)}
                 onRequestDelete={() => setConfirmDelete(se.id)}
@@ -640,6 +823,7 @@ export default function SessionPage() {
                 onToggleSetCompleted={(set) => toggleSetCompleted(set, se)}
                 onDeleteSet={deleteSet}
                 onAddSet={() => addSet(se.id, se.sets)}
+                onOpenWarmupModal={() => setWarmupModalFor(se.id)}
               />
             );
           })}
@@ -665,6 +849,7 @@ export default function SessionPage() {
               });
               setConfirmDelete(null);
               setRemovingId(confirmDelete);
+              showToast("Exercice supprimé");
               setTimeout(() => {
                 setRemovingId(null);
                 fetchSession();
@@ -707,6 +892,27 @@ export default function SessionPage() {
           onClose={closeNoteModal}
           onSave={saveNote}
         />
+      )}
+
+      {warmupModalFor && (
+        <WarmupModal
+          unit={unit}
+          onClose={() => setWarmupModalFor(null)}
+          onConfirm={(workingWeight, workingReps, count) =>
+            generateWarmup(warmupModalFor, workingWeight, workingReps, count)
+          }
+        />
+      )}
+
+      {toast && <Toast message={toast} closing={closingToast} />}
+
+      {!readOnly && !isEmpty && (
+        <TourOverlay tourKey="session" steps={sessionTourSteps} />
+      )}
+
+      {/* Only once the main page tour is done, so the two never overlap. */}
+      {!readOnly && showSetRowTour && localStorage.getItem("tour_session") && (
+        <TourOverlay tourKey="session-set-row" steps={setRowTourSteps} />
       )}
     </div>
   );

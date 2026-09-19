@@ -48,7 +48,8 @@ model Session {
   userId        String
   muscleGroup   String
   completed     Boolean  @default(false)
-  date          DateTime @default(now())   
+  date          DateTime @default(now())
+  importBatchId String?
   sessionExercises SessionExercise[]
   user        User      @relation(fields: [userId], references: [id])
 }

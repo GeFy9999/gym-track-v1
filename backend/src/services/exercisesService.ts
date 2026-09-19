@@ -17,5 +17,5 @@ export async function createExercise(exercise: {
   muscleGroupId: string;
   isCustom?: boolean;
 }) {
-  await insertExercise(exercise);
+  return await insertExercise(exercise);
 }

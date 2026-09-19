@@ -43,15 +43,18 @@ export default function BottomNav() {
         <ul className="flex w-full justify-around items-center">
           {links.slice(0, 2).map(renderLink)}
 
-          <li>
-            <Link
-              to="/add-exercise"
-              data-tour="nav-records"
-              className="flex items-center justify-center w-11 h-11 rounded-full bg-[#c9552c]"
-            >
-              <Trophy size={22} className="text-white" strokeWidth={2.5} />
-            </Link>
-          </li>
+          {/* Temporarily hidden — kept in code to re-enable later. */}
+          {false && (
+            <li>
+              <Link
+                to="/add-exercise"
+                data-tour="nav-records"
+                className="flex items-center justify-center w-11 h-11 rounded-full bg-[#c9552c]"
+              >
+                <Trophy size={22} className="text-white" strokeWidth={2.5} />
+              </Link>
+            </li>
+          )}
 
           {links.slice(2).map(renderLink)}
         </ul>

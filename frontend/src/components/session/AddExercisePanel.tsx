@@ -23,6 +23,7 @@ export default function AddExercisePanel({
   return (
     <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
       <button
+        data-tour="session-add-exercise"
         onClick={() => {
           setShowExerciseList(!showExerciseList);
           setSearchQuery("");

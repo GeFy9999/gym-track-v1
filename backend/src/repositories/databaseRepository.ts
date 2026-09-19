@@ -37,8 +37,9 @@ export async function insertExercise(exercise: {
   muscleGroupId: string;
   isCustom?: boolean;
 }) {
-  await prisma.exercise.create({
+  return await prisma.exercise.create({
     data: exercise,
+    include: { muscleGroup: true },
   });
 }
 
@@ -128,6 +129,7 @@ export async function insertSet(set: {
   weight: number;
   reps: number;
   unit?: string;
+  type?: string;
 }) {
   return await prisma.set.create({
     data: set,
@@ -304,6 +306,67 @@ export async function getAllUserSessions(userId: string) {
       },
     },
   });
+}
+
+export async function insertImportBatch(
+  userId: string,
+  importBatchId: string,
+  workouts: {
+    date: string;
+    muscleGroup: string;
+    exercises: {
+      exerciseId: string;
+      sets: { weight: number; reps: number; unit: string }[];
+    }[];
+  }[],
+) {
+  return await prisma.$transaction(
+    workouts.map((workout) =>
+      prisma.session.create({
+        data: {
+          userId,
+          muscleGroup: workout.muscleGroup,
+          date: new Date(workout.date),
+          completed: true,
+          importBatchId,
+          sessionExercises: {
+            create: workout.exercises.map((exercise, order) => ({
+              exerciseId: exercise.exerciseId,
+              order,
+              sets: {
+                create: exercise.sets.map((set) => ({
+                  weight: set.weight,
+                  reps: set.reps,
+                  unit: set.unit,
+                  completed: true,
+                })),
+              },
+            })),
+          },
+        },
+      }),
+    ),
+  );
+}
+
+export async function deleteImportBatch(userId: string, importBatchId: string) {
+  const sessions = await prisma.session.findMany({
+    where: { userId, importBatchId },
+    select: { id: true },
+  });
+  const sessionIds = sessions.map((s) => s.id);
+
+  await prisma.set.deleteMany({
+    where: { sessionExercise: { sessionId: { in: sessionIds } } },
+  });
+  await prisma.sessionExercise.deleteMany({
+    where: { sessionId: { in: sessionIds } },
+  });
+  const { count } = await prisma.session.deleteMany({
+    where: { id: { in: sessionIds } },
+  });
+
+  return count;
 }
 
 export async function insertBodyWeight(data: {

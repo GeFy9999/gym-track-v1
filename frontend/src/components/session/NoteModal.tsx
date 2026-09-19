@@ -28,7 +28,6 @@ export default function NoteModal({
           onChange={(e) => onDraftChange(e.target.value)}
           placeholder="Ex : grip plus large, épaule sensible, viser 5×5..."
           rows={4}
-          autoFocus
           className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#c9552c] resize-none mb-4"
         />
 

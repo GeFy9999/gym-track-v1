@@ -7,6 +7,7 @@ type RestTimerContextValue = {
   isActive: boolean;
   start: (seconds?: number) => void;
   skip: () => void;
+  adjustSeconds: (delta: number) => void;
 };
 
 const RestTimerContext = createContext<RestTimerContextValue | null>(null);

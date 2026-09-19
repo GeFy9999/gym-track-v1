@@ -81,11 +81,14 @@ export default function EstimatedOneRepMax() {
     );
   }
 
-  if (data.length === 0) {
+  const withData = data.filter((ex) => ex.points.length > 0);
+
+  if (withData.length === 0) {
     return (
       <div className="bg-white/60 border border-dashed border-gray-300 rounded-2xl p-5 text-center">
         <p className="text-xs text-gray-400">
-          Active le trophée sur un exercice pour voir son 1RM estimé ici.
+          Active le trophée sur un exercice et enregistre un set pour voir son
+          1RM estimé ici.
         </p>
       </div>
     );
@@ -93,7 +96,7 @@ export default function EstimatedOneRepMax() {
 
   return (
     <div className="grid grid-cols-2 gap-3">
-      {data.map((ex) => (
+      {withData.map((ex) => (
         <OneRepMaxCard key={ex.exerciseId} name={ex.name} points={ex.points} />
       ))}
     </div>
@@ -108,16 +111,6 @@ function OneRepMaxCard({
   points: ProgressPoint[];
 }) {
   const unit = getWeightUnit();
-
-  if (points.length === 0) {
-    return (
-      <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
-        <p className="text-xs text-gray-500 mb-1 truncate">{name}</p>
-        <p className="text-lg font-bold text-gray-800">-- {unit}</p>
-      </div>
-    );
-  }
-
   const current = points[points.length - 1].oneRepMax;
   const diff = Math.round((current - points[0].oneRepMax) * 10) / 10;
 

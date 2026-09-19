@@ -1,4 +1,4 @@
-import { Plus, Trash2, Trophy, Link2, Unlink, StickyNote } from "lucide-react";
+import { Plus, Trash2, Trophy, Link2, Unlink, StickyNote, Flame } from "lucide-react";
 import type { SessionExercise, SetData } from "../../types/session";
 import { formatDuration } from "../../utils/units";
 import { formatLastTime, type Delta as DeltaType, type LastTime as LastTimeType } from "../../hooks/useExerciseDeltas";
@@ -18,6 +18,7 @@ type Props = {
   unit: string;
   readOnly: boolean;
   barbellModeEnabled: boolean;
+  isBarbellExercise: boolean;
   restTimerEnabled: boolean;
   exerciseDuration: number;
   delta: Delta;
@@ -51,6 +52,7 @@ type Props = {
   onToggleSetCompleted: (set: SetData) => void;
   onDeleteSet: (setId: string) => void;
   onAddSet: () => void;
+  onOpenWarmupModal: () => void;
 };
 
 export default function ExerciseCard({
@@ -62,6 +64,7 @@ export default function ExerciseCard({
   unit,
   readOnly,
   barbellModeEnabled,
+  isBarbellExercise,
   restTimerEnabled,
   exerciseDuration,
   delta,
@@ -95,6 +98,7 @@ export default function ExerciseCard({
   onToggleSetCompleted,
   onDeleteSet,
   onAddSet,
+  onOpenWarmupModal,
 }: Props) {
   return (
     <div
@@ -136,6 +140,7 @@ export default function ExerciseCard({
               </p>
             )}
             <button
+              data-tour="session-trophy"
               onClick={onToggleTracked}
               aria-label="Suivre en record personnel"
               className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
@@ -147,6 +152,7 @@ export default function ExerciseCard({
               <Trophy size={17} />
             </button>
             <button
+              data-tour="session-note"
               onClick={onOpenNoteModal}
               aria-label="Note personnelle"
               className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
@@ -157,6 +163,7 @@ export default function ExerciseCard({
             </button>
             {!readOnly && (
               <button
+                data-tour="session-superset"
                 onClick={onOpenSupersetModal}
                 aria-label="Lier en superset"
                 className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
@@ -172,6 +179,7 @@ export default function ExerciseCard({
           <div className="flex flex-col items-end gap-2">
             {!readOnly && (
               <button
+                data-tour="session-delete"
                 onClick={onRequestDelete}
                 className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center text-white/60 active:text-red-300 transition-colors"
               >
@@ -199,8 +207,9 @@ export default function ExerciseCard({
 
         {!readOnly && (
           <div className="flex items-center gap-2 flex-wrap">
-            {barbellModeEnabled && (
+            {barbellModeEnabled && isBarbellExercise && (
               <button
+                data-tour="session-barbell-chip"
                 onClick={onToggleBarbellOverride}
                 className={`text-[11px] font-bold uppercase tracking-wide px-3 py-1.5 rounded-full transition-colors ${
                   barbell
@@ -214,6 +223,7 @@ export default function ExerciseCard({
 
             {restTimerEnabled && (
               <button
+                data-tour="session-rest-chip"
                 onClick={onToggleDurationPicker}
                 className="text-[11px] font-bold uppercase tracking-wide px-3 py-1.5 rounded-full bg-white/10 text-white/80"
               >
@@ -254,6 +264,16 @@ export default function ExerciseCard({
           />
         )}
 
+        {!readOnly && se.sets.length === 0 && (
+          <button
+            data-tour="session-warmup"
+            onClick={onOpenWarmupModal}
+            className="mb-3 w-full border border-dashed border-gray-300 active:bg-gray-50 text-gray-500 font-bold uppercase text-sm py-3 rounded-full flex items-center justify-center gap-1.5 transition-colors"
+          >
+            <Flame size={14} /> Échauffement auto
+          </button>
+        )}
+
         <div className="space-y-3">
           {se.sets.map((set, i) => (
             <SetRow
@@ -282,6 +302,7 @@ export default function ExerciseCard({
 
         {!readOnly && (
           <button
+            data-tour="session-add-set"
             onClick={onAddSet}
             className="mt-3 w-full border border-dashed border-[#c9552c]/40 active:bg-[#c9552c]/5 text-[#c9552c] font-bold uppercase text-sm py-3 rounded-full flex items-center justify-center gap-1.5 transition-colors"
           >

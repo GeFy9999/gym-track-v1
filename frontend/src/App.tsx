@@ -15,13 +15,16 @@ import AddExercisePage from "./pages/AddExercise.tsx";
 import ForgotPasswordPage from "./pages/ForgotPassword.tsx";
 import ResetPasswordPage from "./pages/ResetPassword.tsx";
 import ProgressPhotosPage from "./pages/ProgressPhotos.tsx";
+import ImportPage from "./pages/Import.tsx";
 import { RestTimerProvider, useRestTimerContext } from "./contexts/RestTimerContext";
 import RestTimer from "./components/session/RestTimer";
 
 function GlobalRestTimer() {
-  const { isActive, secondsLeft, skip } = useRestTimerContext();
+  const { isActive, secondsLeft, skip, adjustSeconds } = useRestTimerContext();
   if (!isActive) return null;
-  return <RestTimer secondsLeft={secondsLeft} onSkip={skip} />;
+  return (
+    <RestTimer secondsLeft={secondsLeft} onSkip={skip} onAdjust={adjustSeconds} />
+  );
 }
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -68,6 +71,7 @@ function App() {
       "/forgot-password",
       "/reset-password",
       "/progression",
+      "/import",
     ].includes(location.pathname) || location.pathname.startsWith("/session/");
 
   const getApiHealth = async (): Promise<void> => {
@@ -152,6 +156,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ProgressPhotosPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/import"
+              element={
+                <ProtectedRoute>
+                  <ImportPage />
                 </ProtectedRoute>
               }
             />

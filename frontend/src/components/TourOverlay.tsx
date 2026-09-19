@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useRef, useLayoutEffect } from "react";
 
 type TourStep = {
   title: string;
@@ -14,16 +14,19 @@ type Props = {
   refs?: React.RefObject<HTMLDivElement | null>[];
 };
 
+type Rect = { top: number; left: number; width: number; height: number };
+
+const POLL_INTERVAL_MS = 100;
+const MAX_POLL_ATTEMPTS = 30; // ~3s — covers a normal data fetch/render cycle
+const EDGE_MARGIN = 16;
+
 export default function TourOverlay({ tourKey, steps, refs }: Props) {
   const storageKey = `tour_${tourKey}`;
   const [step, setStep] = useState<number | null>(null);
-  const [rect, setRect] = useState<{
-    top: number;
-    left: number;
-    width: number;
-    height: number;
-  } | null>(null);
+  const [rect, setRect] = useState<Rect | null>(null);
+  const [tooltipHeight, setTooltipHeight] = useState(220);
   const initialized = useRef(false);
+  const tooltipRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (initialized.current) return;
@@ -34,50 +37,121 @@ export default function TourOverlay({ tourKey, steps, refs }: Props) {
     }
   }, [storageKey]);
 
-  const updateRect = useCallback(() => {
-    if (step === null) return;
-    const s = steps[step];
-    let el: HTMLElement | null = null;
-
-    if (s.selector) {
-      el = document.querySelector(s.selector);
-    } else if (s.refIndex !== undefined && refs) {
-      el = refs[s.refIndex]?.current;
-    }
-
-    if (el) {
-      const r = el.getBoundingClientRect();
-      setRect({ top: r.top, left: r.left, width: r.width, height: r.height });
-    }
-  }, [step, steps, refs]);
-
-  useEffect(() => {
-    updateRect();
-    window.addEventListener("resize", updateRect);
-    return () => window.removeEventListener("resize", updateRect);
-  }, [step, updateRect]);
-
-  const next = () => {
-    if (step === null) return;
-    if (step < steps.length - 1) {
-      setStep(step + 1);
-    } else {
-      setStep(null);
-      localStorage.setItem(storageKey, "true");
-    }
+  const findTarget = (s: TourStep): HTMLElement | null => {
+    if (s.selector) return document.querySelector<HTMLElement>(s.selector);
+    if (s.refIndex !== undefined && refs) return refs[s.refIndex]?.current ?? null;
+    return null;
   };
 
-  const skip = () => {
+  const finish = () => {
     setStep(null);
     localStorage.setItem(storageKey, "true");
   };
 
+  // Resolve the current step's target and highlight it. A target may not be
+  // in the DOM yet the instant a step becomes active — data can still be
+  // loading (History's week list, a just-added set row) — so this polls for
+  // a few seconds before giving up. Only once it's truly never going to
+  // appear (a feature toggle is off, etc.) does it skip to the next step,
+  // instead of leaving the user stuck looking at a blank overlay.
+  useEffect(() => {
+    if (step === null) return;
+    let cancelled = false;
+    let pollTimeout: ReturnType<typeof setTimeout> | undefined;
+
+    // Scroll instantly rather than "smooth" — an animated scroll has no
+    // reliable end event, so measuring the target either races the
+    // animation (wrong rect) or requires guessing when it's done (still
+    // sometimes wrong on short/oddly-timed scrolls). An instant scroll
+    // completes synchronously, so the rect measured right after is always
+    // correct; the highlight box still glides smoothly to it via its own
+    // CSS transition.
+    const highlight = (el: HTMLElement) => {
+      const before = el.getBoundingClientRect();
+      const alreadyVisible =
+        before.top >= EDGE_MARGIN &&
+        before.bottom <= window.innerHeight - EDGE_MARGIN;
+
+      if (!alreadyVisible) {
+        el.scrollIntoView({ behavior: "auto", block: "center" });
+      }
+      const r = el.getBoundingClientRect();
+      setRect({ top: r.top, left: r.left, width: r.width, height: r.height });
+    };
+
+    let attempts = 0;
+    const poll = () => {
+      if (cancelled) return;
+      const el = findTarget(steps[step]);
+      if (el) {
+        highlight(el);
+        return;
+      }
+      attempts++;
+      if (attempts >= MAX_POLL_ATTEMPTS) {
+        if (step < steps.length - 1) setStep(step + 1);
+        else finish();
+        return;
+      }
+      pollTimeout = setTimeout(poll, POLL_INTERVAL_MS);
+    };
+    poll();
+
+    return () => {
+      cancelled = true;
+      clearTimeout(pollTimeout);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (step === null) return;
+      const el = findTarget(steps[step]);
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      setRect({ top: r.top, left: r.left, width: r.width, height: r.height });
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, steps, refs]);
+
+  // Measure the tooltip's real height (it varies with text length and
+  // screen width) before paint, so the position calculation below never has
+  // to guess — a guess is what let the tooltip cover the highlighted zone
+  // on narrower/shorter phone screens.
+  useLayoutEffect(() => {
+    if (tooltipRef.current) {
+      setTooltipHeight(tooltipRef.current.offsetHeight);
+    }
+  }, [step, rect]);
+
+  const next = () => {
+    if (step === null) return;
+    if (step < steps.length - 1) setStep(step + 1);
+    else finish();
+  };
+
+  const skip = () => finish();
+
   if (step === null || !rect) return null;
 
   const forceAbove = steps[step].tooltipPosition === "above";
-  const tooltipTop = forceAbove
-    ? Math.max(16, rect.top - 230)
-    : Math.min(rect.top + rect.height + 16, window.innerHeight - 260);
+  const spaceBelow = window.innerHeight - (rect.top + rect.height) - EDGE_MARGIN;
+  const spaceAbove = rect.top - EDGE_MARGIN;
+  const placeAbove =
+    forceAbove || (spaceBelow < tooltipHeight && spaceAbove > spaceBelow);
+
+  let tooltipTop = placeAbove
+    ? rect.top - tooltipHeight - EDGE_MARGIN
+    : rect.top + rect.height + EDGE_MARGIN;
+  // Final clamp so the tooltip always stays fully on-screen, even if it's
+  // taller than the space on either side (a short/narrow phone viewport).
+  tooltipTop = Math.max(
+    EDGE_MARGIN,
+    Math.min(tooltipTop, window.innerHeight - tooltipHeight - EDGE_MARGIN),
+  );
 
   return (
     <div className="fixed inset-0 z-[100]">
@@ -96,7 +170,10 @@ export default function TourOverlay({ tourKey, steps, refs }: Props) {
         className="absolute px-5 w-full transition-all duration-300"
         style={{ top: tooltipTop, left: 0 }}
       >
-        <div className="bg-white rounded-2xl p-5 max-w-sm mx-auto shadow-xl">
+        <div
+          ref={tooltipRef}
+          className="bg-white rounded-2xl p-5 max-w-sm mx-auto shadow-xl"
+        >
           <div className="flex items-center gap-2 mb-1">
             {steps.map((_, i) => (
               <div

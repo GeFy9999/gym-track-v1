@@ -119,7 +119,23 @@ export function useRestTimer(defaultSeconds: number) {
     [defaultSeconds, clearTimer, handleTimerEnd],
   );
 
+  const adjustSeconds = useCallback(
+    (delta: number) => {
+      if (!isActive) return;
+      setSecondsLeft((prev) => {
+        const next = Math.max(0, Math.min(600, prev + delta));
+        if (next <= 0) {
+          clearTimer();
+          setIsActive(false);
+          handleTimerEnd();
+        }
+        return next;
+      });
+    },
+    [isActive, clearTimer, handleTimerEnd],
+  );
+
   useEffect(() => clearTimer, [clearTimer]);
 
-  return { secondsLeft, isActive, start, skip };
+  return { secondsLeft, isActive, start, skip, adjustSeconds };
 }

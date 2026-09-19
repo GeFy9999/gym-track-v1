@@ -14,6 +14,7 @@ import { bodyWeightRouter } from "./controllers/bodyWeightController.js";
 import { trackedExerciseRouter } from "./controllers/trackedExerciseController.js";
 import { progressPhotoRouter } from "./controllers/progressPhotoController.js";
 import { exerciseNoteRouter } from "./controllers/exerciseNoteController.js";
+import { importRouter } from "./controllers/importController.js";
 
 dotenv.config();
 
@@ -44,6 +45,7 @@ app.use("/api/body-weight", bodyWeightRouter);
 app.use("/api/tracked-exercises", trackedExerciseRouter);
 app.use("/api/progress-photos", progressPhotoRouter);
 app.use("/api/exercise-notes", exerciseNoteRouter);
+app.use("/api/import", importRouter);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

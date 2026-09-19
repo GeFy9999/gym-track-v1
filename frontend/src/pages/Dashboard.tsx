@@ -23,14 +23,15 @@ type PRCelebrationData = {
   unit: string;
 };
 
+type ExerciseDelta = { exerciseName: string; delta: number; unit: string };
+
 type WorkoutSummaryData = {
   muscleGroups: string[];
   durationMinutes: number;
   totalSets: number;
-  totalVolume: number;
   totalExercises: number;
-  unit: string;
   prs: PRCelebrationData[];
+  exerciseDeltas: ExerciseDelta[];
 };
 
 const formatAbandonedDate = (dateStr: string) =>
@@ -340,23 +341,48 @@ export default function DashboardPage() {
       });
 
       const newPRs: PRCelebrationData[] = [];
+      const allPRs: PRCelebrationData[] = [];
       let summary: WorkoutSummaryData | null = null;
 
       if (sessionsRes.ok) {
         const sessions = await sessionsRes.json();
         const unit = getWeightUnit();
 
-        // Baseline: best weight ever logged on an already-validated set.
-        // A set's own weight is saved to the DB as soon as it's typed
-        // (independent of "completed"), so building the baseline from any
-        // set — validated or not — would compare a candidate against
-        // itself and never register as a PR.
-        const bestByExercise: Record<string, number> = {};
-        for (const session of sessions) {
-          for (const se of session.sessionExercises as {
+        // For the "vs last time" deltas shown in the recap: the most recent
+        // already-completed session (before this end-of-session action)
+        // that has a real working set for a given exercise. Also the source
+        // for the PR baseline below — deliberately excludes the session(s)
+        // being finished right now, since a set's "completed" flag is set
+        // the moment it's validated (independent of the session itself
+        // being marked complete), so a PR set the user already validated
+        // live during this very session would otherwise poison its own
+        // baseline and never register as a record.
+        type SessionWithSets = {
+          completed: boolean;
+          date: string;
+          sessionExercises: {
             exercise: { id: string; name: string };
-            sets: { weight: number; completed: boolean; type: string }[];
-          }[]) {
+            sets: {
+              weight: number;
+              reps: number;
+              completed: boolean;
+              type: string;
+            }[];
+          }[];
+        };
+
+        const completedSessions = (sessions as SessionWithSets[])
+          .filter((s) => s.completed)
+          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+        const isWorkingSet = (s: { weight: number; reps: number; type: string }) =>
+          s.type !== "warmup" && (s.weight > 0 || s.reps > 0);
+
+        // Baseline: best weight ever validated, from sessions already
+        // completed before this one.
+        const bestByExercise: Record<string, number> = {};
+        for (const session of completedSessions) {
+          for (const se of session.sessionExercises) {
             for (const set of se.sets) {
               if (!set.completed || set.type === "warmup") continue;
               const current = bestByExercise[se.exercise.id] ?? 0;
@@ -366,9 +392,30 @@ export default function DashboardPage() {
             }
           }
         }
+        // Snapshot of exercises with a prior record — an exercise never
+        // done before has no prior record to beat, so it shouldn't count
+        // as a PR the very first time it's logged.
+        const hadPriorRecord = new Set(Object.keys(bestByExercise));
+
+        const findPreviousMax = (exerciseId: string): number | null => {
+          for (const session of completedSessions) {
+            const match = session.sessionExercises.find(
+              (se) => se.exercise.id === exerciseId,
+            );
+            if (!match) continue;
+            const working = match.sets.filter(isWorkingSet);
+            if (working.length === 0) continue;
+            return Math.max(...working.map((s) => s.weight));
+          }
+          return null;
+        };
+
+        const currentMaxByExercise: Record<
+          string,
+          { name: string; weight: number }
+        > = {};
 
         let totalSets = 0;
-        let totalVolume = 0;
         let totalExercises = 0;
         const muscleGroups: string[] = [];
         let earliestDate: Date | null = null;
@@ -402,25 +449,40 @@ export default function DashboardPage() {
               );
               if (performedSets.length > 0) totalExercises += 1;
 
+              const workingSets = performedSets.filter(isWorkingSet);
+              if (workingSets.length > 0) {
+                const maxWeight = Math.max(...workingSets.map((s) => s.weight));
+                const existing = currentMaxByExercise[se.exercise.id];
+                if (!existing || maxWeight > existing.weight) {
+                  currentMaxByExercise[se.exercise.id] = {
+                    name: se.exercise.name,
+                    weight: maxWeight,
+                  };
+                }
+              }
+
               for (const set of performedSets) {
                 totalSets += 1;
-                if (set.type !== "warmup") {
-                  totalVolume += set.weight * set.reps;
-                }
 
-                // Catch PRs on sets the user typed but never tapped
-                // "Valider" for — those never went through the checkmark
-                // flow that already celebrates them on the Session page.
-                if (set.completed || set.weight <= 0) continue;
-                if (set.type === "warmup") continue;
+                if (set.weight <= 0 || set.type === "warmup") continue;
                 const previousBest = bestByExercise[se.exercise.id] ?? 0;
                 if (set.weight > previousBest) {
                   bestByExercise[se.exercise.id] = set.weight;
-                  newPRs.push({
-                    exerciseName: se.exercise.name,
-                    weight: set.weight,
-                    unit,
-                  });
+                  if (hadPriorRecord.has(se.exercise.id)) {
+                    const pr = {
+                      exerciseName: se.exercise.name,
+                      weight: set.weight,
+                      unit,
+                    };
+                    allPRs.push(pr);
+                    // Sets validated via the checkmark already got a live
+                    // celebration on the Session page — only queue a popup
+                    // here for ones that slipped through without ever
+                    // being tapped "Valider".
+                    if (!set.completed) {
+                      newPRs.push(pr);
+                    }
+                  }
                 }
               }
             }
@@ -432,6 +494,18 @@ export default function DashboardPage() {
             await fetch(`${API_URL}/sessions/${session.id}`, {
               method: "DELETE",
             });
+          }
+        }
+
+        const exerciseDeltas: { exerciseName: string; delta: number; unit: string }[] =
+          [];
+        for (const exerciseId of Object.keys(currentMaxByExercise)) {
+          const { name, weight } = currentMaxByExercise[exerciseId];
+          const previousMax = findPreviousMax(exerciseId);
+          if (previousMax === null) continue;
+          const diff = Math.round((weight - previousMax) * 10) / 10;
+          if (diff !== 0) {
+            exerciseDeltas.push({ exerciseName: name, delta: diff, unit });
           }
         }
 
@@ -452,10 +526,9 @@ export default function DashboardPage() {
                     )
                   : 0,
                 totalSets,
-                totalVolume: Math.round(totalVolume),
                 totalExercises,
-                unit,
-                prs: newPRs,
+                prs: allPRs,
+                exerciseDeltas,
               };
       }
 
@@ -738,10 +811,9 @@ export default function DashboardPage() {
           muscleGroups={workoutSummary.muscleGroups}
           durationMinutes={workoutSummary.durationMinutes}
           totalSets={workoutSummary.totalSets}
-          totalVolume={workoutSummary.totalVolume}
           totalExercises={workoutSummary.totalExercises}
-          unit={workoutSummary.unit}
           prs={workoutSummary.prs}
+          exerciseDeltas={workoutSummary.exerciseDeltas}
           onClose={() => setWorkoutSummary(null)}
         />
       )}
