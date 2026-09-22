@@ -48,6 +48,22 @@ export default function TourOverlay({ tourKey, steps, refs }: Props) {
     localStorage.setItem(storageKey, "true");
   };
 
+  // Lock page scroll while the tour is active — otherwise the user can
+  // scroll the page out from under the highlight, which only re-measures
+  // on step change or window resize and would then point at empty space.
+  useEffect(() => {
+    if (step === null) return;
+    const { body, documentElement: html } = document;
+    const prevBodyOverflow = body.style.overflow;
+    const prevHtmlOverflow = html.style.overflow;
+    body.style.overflow = "hidden";
+    html.style.overflow = "hidden";
+    return () => {
+      body.style.overflow = prevBodyOverflow;
+      html.style.overflow = prevHtmlOverflow;
+    };
+  }, [step === null]);
+
   // Resolve the current step's target and highlight it. A target may not be
   // in the DOM yet the instant a step becomes active — data can still be
   // loading (History's week list, a just-added set row) — so this polls for

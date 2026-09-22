@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import GoogleLoginButton from "../components/GoogleLoginButton";
 import { API_URL } from "../lib/api";
 
@@ -58,107 +58,126 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#faf6f1] flex flex-col pt-16 px-6">
-      <div className="mb-10 text-center">
+    <div className="min-h-screen bg-[#faf6f1] pb-10">
+      <div
+        className="px-6 pt-12 pb-8 text-center"
+        style={{ background: "#191714" }}
+      >
         <img
           src="/LogoGymsTrack5.webp"
           alt="GymsTrack"
-          className="h-16 mx-auto mb-2"
+          className="h-16 mx-auto mb-3"
         />
-        <p className="text-gray-500 text-sm mt-2">Connecte-toi à ton compte</p>
+        <p className="text-xs font-bold text-white/60 uppercase tracking-widest">
+          Connecte-toi à ton compte
+        </p>
       </div>
 
-      {serverError && (
-        <div className="bg-red-50 border border-red-200 text-red-500 text-sm rounded-xl px-4 py-3 mb-6">
-          {serverError}
-        </div>
-      )}
+      <div className="px-6 pt-6">
+        {serverError && (
+          <div className="bg-red-50 border border-red-200 text-red-500 text-sm rounded-2xl px-4 py-3 mb-6">
+            {serverError}
+          </div>
+        )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-        <div>
-          <label
-            htmlFor="email"
-            className="text-m font-semibold text-gray-900 mb-1 block"
-          >
-            Courriel
-          </label>
-          <input
-            id="email"
-            type="text"
-            {...register("email")}
-            className={`w-full bg-white border rounded-2xl px-4 py-3.5 text-gray-900 placeholder-gray-400 focus:outline-none transition-colors ${
-              errors.email
-                ? "border-red-500"
-                : "border-gray-200 focus:border-[#c9552c]"
-            }`}
-            placeholder="ton@courriel.com"
-          />
-          {errors.email && (
-            <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
-          )}
-        </div>
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+          <div>
+            <label
+              htmlFor="email"
+              className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-1.5 block"
+            >
+              Courriel
+            </label>
+            <div className="relative">
+              <Mail
+                size={16}
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+              />
+              <input
+                id="email"
+                type="text"
+                {...register("email")}
+                className={`w-full bg-[#ece7dd] rounded-full pl-11 pr-4 py-3.5 text-gray-900 placeholder-gray-400 focus:outline-none transition-colors ${
+                  errors.email ? "ring-2 ring-red-500" : ""
+                }`}
+                placeholder="ton@courriel.com"
+              />
+            </div>
+            {errors.email && (
+              <p className="text-red-500 text-xs mt-1.5 ml-1">
+                {errors.email.message}
+              </p>
+            )}
+          </div>
 
-        <div className="relative">
-          <label
-            htmlFor="password"
-            className="text-m font-semibold text-gray-900 mb-1 block"
-          >
-            Mot de passe
-          </label>
-          <input
-            id="password"
-            type={showPassword ? "text" : "password"}
-            {...register("password")}
-            className={`w-full bg-white border rounded-2xl px-4 py-3.5 pr-12 text-gray-900 placeholder-gray-400 focus:outline-none transition-colors ${
-              errors.password
-                ? "border-red-500"
-                : "border-gray-200 focus:border-[#c9552c]"
-            }`}
-            placeholder="••••••••"
-          />
+          <div>
+            <label
+              htmlFor="password"
+              className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-1.5 block"
+            >
+              Mot de passe
+            </label>
+            <div className="relative">
+              <Lock
+                size={16}
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+              />
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                {...register("password")}
+                className={`w-full bg-[#ece7dd] rounded-full pl-11 pr-12 py-3.5 text-gray-900 placeholder-gray-400 focus:outline-none transition-colors ${
+                  errors.password ? "ring-2 ring-red-500" : ""
+                }`}
+                placeholder="••••••••"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 transition-colors"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+            {errors.password && (
+              <p className="text-red-500 text-xs mt-1.5 ml-1">
+                {errors.password.message}
+              </p>
+            )}
+          </div>
+
           <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-4 top-10 text-gray-400 transition-colors"
+            type="submit"
+            disabled={loading}
+            className="w-full bg-[#c9552c] disabled:opacity-50 text-white py-3.5 rounded-full font-bold uppercase tracking-wide text-sm transition-all shadow-sm mt-2 active:scale-[0.98]"
           >
-            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            {loading ? "Connexion..." : "Se connecter"}
           </button>
-          {errors.password && (
-            <p className="text-red-500 text-xs mt-1">
-              {errors.password.message}
-            </p>
-          )}
+          <Link
+            to="/forgot-password"
+            className="text-xs font-bold text-[#c9552c] uppercase tracking-wide text-center mt-1"
+          >
+            Mot de passe oublié ?
+          </Link>
+        </form>
+
+        <div className="flex items-center gap-3 my-6">
+          <div className="flex-1 h-px bg-gray-300" />
+          <span className="text-xs font-bold text-gray-400 uppercase tracking-wide">
+            ou
+          </span>
+          <div className="flex-1 h-px bg-gray-300" />
         </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-[#e8622b] disabled:opacity-50 text-white py-3.5 rounded-2xl font-semibold transition-all shadow-md mt-2"
-        >
-          {loading ? "Connexion..." : "Se connecter"}
-        </button>
-        <Link
-          to="/forgot-password"
-          className="text-m text-[#e8622b] text-center mt-1"
-        >
-          Mot de passe oublié ?
-        </Link>
-      </form>
+        <GoogleLoginButton />
 
-      <div className="flex items-center gap-3 my-6">
-        <div className="flex-1 h-px bg-gray-200" />
-        <span className="text-xs text-gray-400">ou</span>
-        <div className="flex-1 h-px bg-gray-200" />
+        <p className="text-center text-sm text-gray-500 mt-8">
+          Pas encore de compte ?{" "}
+          <Link to="/register" className="text-[#c9552c] font-bold">
+            Créer un compte
+          </Link>
+        </p>
       </div>
-
-      <GoogleLoginButton />
-
-      <p className="text-center text-m text-gray-500 mt-8">
-        Pas encore de compte ?{" "}
-        <Link to="/register" className="text-[#e8622b] font-semibold">
-          Créer un compte
-        </Link>
-      </p>
     </div>
   );
 }

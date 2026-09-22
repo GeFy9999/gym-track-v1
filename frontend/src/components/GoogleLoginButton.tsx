@@ -33,6 +33,7 @@ declare global {
 
 export default function GoogleLoginButton() {
   const navigate = useNavigate();
+  const containerRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -79,6 +80,7 @@ export default function GoogleLoginButton() {
         text: "continue_with",
         shape: "pill",
         locale: "fr",
+        width: containerRef.current?.offsetWidth || 320,
       });
     };
 
@@ -104,8 +106,10 @@ export default function GoogleLoginButton() {
   }, [navigate]);
 
   return (
-    <div className="flex justify-center">
-      <div ref={buttonRef} />
+    <div className="w-full px-4">
+      <div ref={containerRef} className="w-full flex justify-center py-1">
+        <div ref={buttonRef} className="w-full origin-center scale-110" />
+      </div>
     </div>
   );
 }

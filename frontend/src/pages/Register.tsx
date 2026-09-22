@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, User, Mail, Lock } from "lucide-react";
 import GoogleLoginButton from "../components/GoogleLoginButton";
 import { API_URL } from "../lib/api";
 
@@ -14,6 +14,19 @@ const passwordRules = [
   { regex: /[0-9]/, label: "Un chiffre" },
   { regex: /[^A-Za-z0-9]/, label: "Un caractère spécial (!@#$...)" },
 ];
+
+const STRENGTH_LEVELS = [
+  { label: "Faible", color: "#c9552c" },
+  { label: "Moyen", color: "#e2703a" },
+  { label: "Correct", color: "#3a9e6e" },
+];
+
+function getPasswordStrength(password: string) {
+  const passed = passwordRules.filter((r) => r.regex.test(password)).length;
+  if (passed <= 2) return 1;
+  if (passed <= 4) return 2;
+  return 3;
+}
 
 const registerSchema = z
   .object({
@@ -59,6 +72,8 @@ export default function RegisterPage() {
   });
 
   const watchPassword = watch("password", "");
+  const strength = getPasswordStrength(watchPassword);
+  const strengthInfo = STRENGTH_LEVELS[strength - 1];
 
   const onSubmit = async (data: RegisterForm) => {
     setServerError(null);
@@ -92,176 +107,207 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#faf6f1] flex flex-col pt-16 px-6">
-      <div className="mb-10 text-center">
+    <div className="min-h-screen bg-[#faf6f1] pb-10">
+      <div
+        className="px-6 pt-12 pb-8 text-center"
+        style={{ background: "#191714" }}
+      >
         <img
           src="/LogoGymsTrack5.webp"
           alt="GymsTrack"
-          className="h-16 mx-auto mb-2"
+          className="h-16 mx-auto mb-3"
         />
-        <p className="text-gray-500 text-sm mt-2">Crée ton compte</p>
+        <p className="text-xs font-bold text-white/60 uppercase tracking-widest">
+          Crée ton compte
+        </p>
       </div>
 
-      {serverError && (
-        <div className="bg-red-50 border border-red-200 text-red-500 text-sm rounded-xl px-4 py-3 mb-6">
-          {serverError}
-        </div>
-      )}
+      <div className="px-6 pt-6">
+        {serverError && (
+          <div className="bg-red-50 border border-red-200 text-red-500 text-sm rounded-2xl px-4 py-3 mb-6">
+            {serverError}
+          </div>
+        )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-        <div>
-          <label
-            htmlFor="name"
-            className="text-m font-semibold text-gray-900 mb-1 block"
-          >
-            Nom
-          </label>
-          <input
-            id="name"
-            type="text"
-            {...register("name")}
-            className={`w-full bg-white border rounded-2xl px-4 py-3.5 text-gray-900 placeholder-gray-400 focus:outline-none transition-colors ${
-              errors.name
-                ? "border-red-500"
-                : "border-gray-200 focus:border-[#e8622b]"
-            }`}
-            placeholder="Ton nom"
-          />
-          {errors.name && (
-            <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>
-          )}
-        </div>
-
-        <div>
-          <label
-            htmlFor="email"
-            className="text-m font-semibold text-gray-900 mb-1 block"
-          >
-            Courriel
-          </label>
-          <input
-            id="email"
-            type="text"
-            {...register("email")}
-            className={`w-full bg-white border rounded-2xl px-4 py-3.5 text-gray-900 placeholder-gray-400 focus:outline-none transition-colors ${
-              errors.email
-                ? "border-red-500"
-                : "border-gray-200 focus:border-[#e8622b]"
-            }`}
-            placeholder="ton@courriel.com"
-          />
-          {errors.email && (
-            <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
-          )}
-        </div>
-
-        <div className="relative">
-          <label
-            htmlFor="password"
-            className="text-m font-semibold text-gray-900 mb-1 block"
-          >
-            Mot de passe
-          </label>
-          <input
-            id="password"
-            type={showPassword ? "text" : "password"}
-            {...register("password")}
-            className={`w-full bg-white border rounded-2xl px-4 py-3.5 pr-12 text-gray-900 placeholder-gray-400 focus:outline-none transition-colors ${
-              errors.password
-                ? "border-red-500"
-                : "border-gray-200 focus:border-[#e8622b]"
-            }`}
-            placeholder="••••••••"
-          />
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-4 top-10 text-gray-400 transition-colors"
-          >
-            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-          </button>
-
-          {watchPassword.length > 0 && (
-            <div className="mt-2 space-y-1">
-              {passwordRules.map((rule) => {
-                const passes = rule.regex.test(watchPassword);
-                return (
-                  <div
-                    key={rule.label}
-                    className="flex items-center gap-2 text-xs"
-                  >
-                    <span
-                      className={passes ? "text-[#3a9e6e]" : "text-gray-400"}
-                    >
-                      {passes ? "✓" : "✗"}
-                    </span>
-                    <span
-                      className={passes ? "text-[#3a9e6e]" : "text-gray-400"}
-                    >
-                      {rule.label}
-                    </span>
-                  </div>
-                );
-              })}
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+          <div>
+            <label
+              htmlFor="name"
+              className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-1.5 block"
+            >
+              Nom
+            </label>
+            <div className="relative">
+              <User
+                size={16}
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+              />
+              <input
+                id="name"
+                type="text"
+                {...register("name")}
+                className={`w-full bg-[#ece7dd] rounded-full pl-11 pr-4 py-3.5 text-gray-900 placeholder-gray-400 focus:outline-none transition-colors ${
+                  errors.name ? "ring-2 ring-red-500" : ""
+                }`}
+                placeholder="Ton nom"
+              />
             </div>
-          )}
-        </div>
+            {errors.name && (
+              <p className="text-red-500 text-xs mt-1.5 ml-1">
+                {errors.name.message}
+              </p>
+            )}
+          </div>
 
-        <div className="relative">
-          <label
-            htmlFor="confirmPassword"
-            className="text-m font-semibold text-gray-900 mb-1 block"
-          >
-            Confirmer le mot de passe
-          </label>
-          <input
-            id="confirmPassword"
-            type={showConfirm ? "text" : "password"}
-            {...register("confirmPassword")}
-            className={`w-full bg-white border rounded-2xl px-4 py-3.5 pr-12 text-gray-900 placeholder-gray-400 focus:outline-none transition-colors ${
-              errors.confirmPassword
-                ? "border-red-500"
-                : "border-gray-200 focus:border-[#e8622b]"
-            }`}
-            placeholder="••••••••"
-          />
+          <div>
+            <label
+              htmlFor="email"
+              className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-1.5 block"
+            >
+              Courriel
+            </label>
+            <div className="relative">
+              <Mail
+                size={16}
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+              />
+              <input
+                id="email"
+                type="text"
+                {...register("email")}
+                className={`w-full bg-[#ece7dd] rounded-full pl-11 pr-4 py-3.5 text-gray-900 placeholder-gray-400 focus:outline-none transition-colors ${
+                  errors.email ? "ring-2 ring-red-500" : ""
+                }`}
+                placeholder="ton@courriel.com"
+              />
+            </div>
+            {errors.email && (
+              <p className="text-red-500 text-xs mt-1.5 ml-1">
+                {errors.email.message}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label
+              htmlFor="password"
+              className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-1.5 block"
+            >
+              Mot de passe
+            </label>
+            <div className="relative">
+              <Lock
+                size={16}
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+              />
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                {...register("password")}
+                className={`w-full bg-[#ece7dd] rounded-full pl-11 pr-12 py-3.5 text-gray-900 placeholder-gray-400 focus:outline-none transition-colors ${
+                  errors.password ? "ring-2 ring-red-500" : ""
+                }`}
+                placeholder="••••••••"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 transition-colors"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+
+            {watchPassword.length > 0 && (
+              <div className="flex items-center gap-2 mt-2">
+                <div className="flex-1 flex gap-1">
+                  {[1, 2, 3].map((level) => (
+                    <div
+                      key={level}
+                      className="flex-1 h-1.5 rounded-full bg-gray-300 overflow-hidden"
+                    >
+                      <div
+                        className="h-full rounded-full transition-all"
+                        style={{
+                          width: level <= strength ? "100%" : "0%",
+                          background: strengthInfo.color,
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+                <span
+                  className="text-[10px] font-bold uppercase tracking-wide flex-shrink-0"
+                  style={{ color: strengthInfo.color }}
+                >
+                  {strengthInfo.label}
+                </span>
+              </div>
+            )}
+          </div>
+
+          <div>
+            <label
+              htmlFor="confirmPassword"
+              className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-1.5 block"
+            >
+              Confirmer le mot de passe
+            </label>
+            <div className="relative">
+              <Lock
+                size={16}
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+              />
+              <input
+                id="confirmPassword"
+                type={showConfirm ? "text" : "password"}
+                {...register("confirmPassword")}
+                className={`w-full bg-[#ece7dd] rounded-full pl-11 pr-12 py-3.5 text-gray-900 placeholder-gray-400 focus:outline-none transition-colors ${
+                  errors.confirmPassword ? "ring-2 ring-red-500" : ""
+                }`}
+                placeholder="••••••••"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirm(!showConfirm)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 transition-colors"
+              >
+                {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+            {errors.confirmPassword && (
+              <p className="text-red-500 text-xs mt-1.5 ml-1">
+                {errors.confirmPassword.message}
+              </p>
+            )}
+          </div>
+
           <button
-            type="button"
-            onClick={() => setShowConfirm(!showConfirm)}
-            className="absolute right-4 top-10 text-gray-400 transition-colors"
+            type="submit"
+            disabled={loading}
+            className="w-full bg-[#c9552c] disabled:opacity-50 text-white py-3.5 rounded-full font-bold uppercase tracking-wide text-sm transition-all shadow-sm mt-2 active:scale-[0.98]"
           >
-            {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+            {loading ? "Création..." : "Créer mon compte"}
           </button>
-          {errors.confirmPassword && (
-            <p className="text-red-500 text-xs mt-1">
-              {errors.confirmPassword.message}
-            </p>
-          )}
+        </form>
+
+        <div className="flex items-center gap-3 my-6">
+          <div className="flex-1 h-px bg-gray-300" />
+          <span className="text-xs font-bold text-gray-400 uppercase tracking-wide">
+            ou
+          </span>
+          <div className="flex-1 h-px bg-gray-300" />
         </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-[#e8622b] disabled:opacity-50 text-white py-3.5 rounded-2xl font-semibold transition-all shadow-md mt-2"
-        >
-          {loading ? "Création..." : "Créer mon compte"}
-        </button>
-      </form>
+        <GoogleLoginButton />
 
-      <div className="flex items-center gap-3 my-6">
-        <div className="flex-1 h-px bg-gray-200" />
-        <span className="text-xs text-gray-400">ou</span>
-        <div className="flex-1 h-px bg-gray-200" />
+        <p className="text-center text-sm text-gray-500 mt-8 pb-8">
+          Déjà un compte ?{" "}
+          <Link to="/login" className="text-[#c9552c] font-bold">
+            Se connecter
+          </Link>
+        </p>
       </div>
-
-      <GoogleLoginButton />
-
-      <p className="text-center text-m text-gray-500 mt-8 pb-8">
-        Déjà un compte ?{" "}
-        <Link to="/login" className="text-[#e8622b] font-semibold">
-          Se connecter
-        </Link>
-      </p>
     </div>
   );
 }
