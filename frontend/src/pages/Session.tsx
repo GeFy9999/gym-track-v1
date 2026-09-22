@@ -593,7 +593,7 @@ export default function SessionPage() {
     ...(barbellModeEnabled
       ? [
           {
-            title: "Mode barbell",
+            title: "Mode barre",
             description:
               "Active-le pour saisir le poids ajouté de chaque côté de la barre — l'app calcule le poids total et les plaques à charger.",
             selector: "[data-tour='session-barbell-chip']",
@@ -630,7 +630,7 @@ export default function SessionPage() {
     {
       title: "Poids",
       description:
-        "Saisis le poids soulevé. En mode barbell, c'est le poids ajouté d'un seul côté de la barre.",
+        "Saisis le poids soulevé. En mode barre, c'est le poids ajouté d'un seul côté de la barre.",
       selector: "[data-tour='session-set-weight']",
     },
     {

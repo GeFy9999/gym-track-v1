@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Trophy } from "lucide-react";
 import { getWeightUnit } from "../../utils/units";
 import { API_URL } from "../../lib/api";
 
@@ -68,13 +69,10 @@ export default function EstimatedOneRepMax() {
     return (
       <div className="grid grid-cols-2 gap-3 animate-pulse">
         {[1, 2].map((i) => (
-          <div
-            key={i}
-            className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm"
-          >
-            <div className="h-3 w-20 bg-gray-200 rounded mb-2" />
-            <div className="h-5 w-16 bg-gray-200 rounded mb-3" />
-            <div className="h-8 bg-gray-100 rounded-lg" />
+          <div key={i} className="bg-[#ece7dd] rounded-2xl p-4 shadow-sm">
+            <div className="h-3 w-20 bg-gray-300/50 rounded mb-2" />
+            <div className="h-5 w-16 bg-gray-300/50 rounded mb-3" />
+            <div className="h-8 bg-gray-300/30 rounded-lg" />
           </div>
         ))}
       </div>
@@ -85,8 +83,9 @@ export default function EstimatedOneRepMax() {
 
   if (withData.length === 0) {
     return (
-      <div className="bg-white/60 border border-dashed border-gray-300 rounded-2xl p-5 text-center">
-        <p className="text-xs text-gray-400">
+      <div className="border-2 border-dashed border-gray-300 rounded-3xl p-7 text-center">
+        <Trophy size={26} strokeWidth={2} className="text-[#c9552c] mx-auto mb-3" />
+        <p className="text-sm text-gray-500 leading-relaxed">
           Active le trophée sur un exercice et enregistre un set pour voir son
           1RM estimé ici.
         </p>
@@ -130,9 +129,11 @@ function OneRepMaxCard({
     .join(" ");
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
-      <p className="text-xs text-gray-500 mb-1 truncate">{name}</p>
-      <p className="text-lg font-bold text-[#c9552c]">
+    <div className="bg-[#ece7dd] rounded-2xl p-4 shadow-sm">
+      <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1 truncate">
+        {name}
+      </p>
+      <p className="text-lg font-black text-[#c9552c]">
         {Math.round(current)} {unit}
       </p>
       {points.length >= 2 && (

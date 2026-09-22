@@ -72,43 +72,47 @@ export default function HeaderDashboard() {
   }, []);
 
   return (
-    <div className="px-5 pt-6 pb-2">
+    <div className="px-5 pt-8 pb-5" style={{ background: "#191714" }}>
       <div className="flex justify-between items-start">
         <div>
-          <p className="text-s tracking-wide text-gray-400 mb-1">
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">
             {capitalizedDate}
           </p>
-          <h1 className="text-[32px] font-black text-gray-900 leading-tight">
-            Bonjour, {userName}
+          <h1 className="text-[26px] font-black uppercase leading-tight">
+            <span className="text-white">Bonjour,</span>
+            <br />
+            <span className="text-white">{userName}</span>
           </h1>
         </div>
-        <div className="relative mt-1">
-          <div className="w-10 h-10 rounded-full bg-[#c9552c]/10 flex items-center justify-center">
+        <div className="relative mt-1 shrink-0">
+          <div className="w-11 h-11 rounded-full bg-[#3d271a] flex items-center justify-center">
             <Flame
               size={20}
-              className="text-[#c9552c] animate-flame"
-              fill="#c9552c"
+              className="text-[#e2703a] animate-flame"
+              fill="#e2703a"
             />
           </div>
-          <div className="absolute -bottom-1 -right-1 min-w-5 h-5 rounded-full bg-[#c9552c] flex items-center justify-center px-1">
+          <div className="absolute -bottom-1 -right-1 min-w-5 h-5 rounded-full bg-[#a8481a] flex items-center justify-center px-1">
             <span className="text-[10px] font-bold text-white">{streak}</span>
           </div>
         </div>
       </div>
 
-      <div className="flex items-center gap-1.5 mt-3">
-        <div className="flex gap-1">
+      <div className="flex items-center gap-2 mt-5">
+        <div className="flex gap-1.5 flex-1">
           {Array.from({ length: 7 }).map((_, i) => (
             <div
               key={i}
-              className={`w-5 h-1.5 rounded-full ${
-                i < weekDays ? "bg-[#c9552c] animate-streak-fill" : "bg-gray-200"
+              className={`h-1.5 flex-1 rounded-full ${
+                i < weekDays ? "bg-[#c9552c] animate-streak-fill" : "bg-white/15"
               }`}
               style={i < weekDays ? { animationDelay: `${i * 80}ms` } : undefined}
             />
           ))}
         </div>
-        <span className="text-xs text-gray-400 ml-1">{weekDays}/7 jours</span>
+        <span className="text-xs font-bold text-white/70 uppercase tracking-wide whitespace-nowrap">
+          {weekDays}/7 jours
+        </span>
       </div>
     </div>
   );

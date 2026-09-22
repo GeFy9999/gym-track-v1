@@ -232,14 +232,29 @@ export async function linkSuperset(exerciseIds: string[]) {
     ),
   ];
 
-  const newSupersetId = crypto.randomUUID();
+  // Re-confirming an unchanged group (same single existing supersetId,
+  // same member count) keeps its id — otherwise the color derived from the
+  // id would visibly shuffle every time the user reopens and confirms
+  // without actually changing anything.
+  let supersetId: string = crypto.randomUUID();
+  const [onlyOldGroupId] = oldGroupIds;
+  if (oldGroupIds.length === 1 && onlyOldGroupId) {
+    const currentGroupSize = await prisma.sessionExercise.count({
+      where: { supersetId: onlyOldGroupId },
+    });
+    if (currentGroupSize === exerciseIds.length) {
+      supersetId = onlyOldGroupId;
+    }
+  }
+
   await prisma.sessionExercise.updateMany({
     where: { id: { in: exerciseIds } },
-    data: { supersetId: newSupersetId },
+    data: { supersetId },
   });
 
   // A superset needs 2+ members — dissolve any old group left with fewer.
   for (const oldId of oldGroupIds) {
+    if (oldId === supersetId) continue;
     const remaining = await prisma.sessionExercise.count({
       where: { supersetId: oldId },
     });
@@ -251,7 +266,7 @@ export async function linkSuperset(exerciseIds: string[]) {
     }
   }
 
-  return newSupersetId;
+  return supersetId;
 }
 
 export async function unlinkSuperset(sessionExerciseId: string) {

@@ -49,12 +49,9 @@ export default function PersonalRecordCards() {
     return (
       <div className="grid grid-cols-2 gap-3 animate-pulse">
         {[1, 2, 3, 4].map((i) => (
-          <div
-            key={i}
-            className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm"
-          >
-            <div className="h-3 w-20 bg-gray-200 rounded mb-2" />
-            <div className="h-5 w-16 bg-gray-200 rounded" />
+          <div key={i} className="bg-[#ece7dd] rounded-2xl p-4 shadow-sm">
+            <div className="h-3 w-20 bg-gray-300/50 rounded mb-3" />
+            <div className="h-5 w-16 bg-gray-300/50 rounded" />
           </div>
         ))}
       </div>
@@ -66,14 +63,16 @@ export default function PersonalRecordCards() {
     return (
       <div className="grid grid-cols-2 gap-3">
         {placeholders.map((name) => (
-          <div
-            key={name}
-            className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm"
-          >
-            <p className="text-xs text-gray-500 mb-1">{name}</p>
-            <p className="text-lg font-bold text-gray-800">
-              -- {getWeightUnit()}
+          <div key={name} className="bg-[#ece7dd] rounded-2xl p-4 shadow-sm">
+            <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-3">
+              {name}
             </p>
+            <div className="flex items-baseline gap-1.5">
+              <div className="h-2.5 w-14 rounded-full bg-gray-400/40" />
+              <span className="text-xs font-bold text-gray-400 uppercase">
+                {getWeightUnit()}
+              </span>
+            </div>
           </div>
         ))}
       </div>
@@ -83,12 +82,11 @@ export default function PersonalRecordCards() {
   return (
     <div className="grid grid-cols-2 gap-3">
       {records.map(({ name, weight }) => (
-        <div
-          key={name}
-          className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm"
-        >
-          <p className="text-xs text-gray-500 mb-1">{name}</p>
-          <p className="text-lg font-bold text-[#c9552c]">
+        <div key={name} className="bg-[#ece7dd] rounded-2xl p-4 shadow-sm">
+          <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">
+            {name}
+          </p>
+          <p className="text-lg font-black text-[#c9552c]">
             {Math.round(weight)} {getWeightUnit()}
           </p>
         </div>

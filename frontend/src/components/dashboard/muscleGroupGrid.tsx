@@ -195,8 +195,8 @@ export default function MuscleGroupsCards({ weekActive, refreshKey }: Props) {
   }
 
   return (
-    <div className="mt-6">
-      <p className="text-[15px] font-bold text-gray-900 mb-3 px-5">
+    <div className="mt-7">
+      <p className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-3 px-5">
         Groupes musculaires
       </p>
       <div
@@ -216,12 +216,12 @@ export default function MuscleGroupsCards({ weekActive, refreshKey }: Props) {
               key={group.id}
               onClick={() => handleClick(group)}
               disabled={!weekActive}
-              className={`relative flex-shrink-0 w-36 rounded-2xl pt-6 pb-3 flex flex-col items-center transition-all ${
+              className={`relative flex-shrink-0 w-36 rounded-2xl pt-6 pb-3 flex flex-col items-center transition-all shadow-sm ${
                 weekActive
                   ? isActive
-                    ? "bg-white border-2 border-[#c9552c] shadow-sm active:scale-[0.97]"
-                    : "bg-white border border-gray-200 shadow-sm active:scale-[0.97]"
-                  : "bg-white/60 border border-gray-100 opacity-50"
+                    ? "bg-[#ece7dd] border-2 border-[#c9552c] active:scale-[0.97]"
+                    : "bg-[#ece7dd] active:scale-[0.97]"
+                  : "bg-[#ece7dd]/50 opacity-50 shadow-none"
               }`}
             >
               {isDone && (
@@ -250,7 +250,7 @@ export default function MuscleGroupsCards({ weekActive, refreshKey }: Props) {
                 )}
               </div>
 
-              <span className="text-sm font-semibold text-gray-700 text-center px-2">
+              <span className="text-xs font-bold text-gray-900 uppercase tracking-wide text-center px-2">
                 {group.name}
               </span>
             </button>

@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Camera, Trash2, X } from "lucide-react";
+import { ChevronLeft, Camera, Trash2, X } from "lucide-react";
 import { API_URL } from "../lib/api";
 
 type PhotoMeta = {
@@ -113,27 +113,59 @@ export default function ProgressPhotosPage() {
     });
   };
 
+  const formatShortDate = (dateStr: string) => {
+    const d = new Date(dateStr);
+    return d
+      .toLocaleDateString("fr-FR", { day: "numeric", month: "short" })
+      .toUpperCase()
+      .replace(".", ".");
+  };
+
+  const formatGroupLabel = (dateStr: string) => {
+    const d = new Date(dateStr);
+    return d
+      .toLocaleDateString("fr-FR", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      })
+      .toUpperCase();
+  };
+
+  const photoGroups = useMemo(() => {
+    const groups = new Map<string, PhotoMeta[]>();
+    for (const photo of photos) {
+      const key = new Date(photo.createdAt).toDateString();
+      const list = groups.get(key) ?? [];
+      list.push(photo);
+      groups.set(key, list);
+    }
+    return Array.from(groups.values());
+  }, [photos]);
+
   return (
     <div className="min-h-screen bg-[#faf6f1] pb-28">
-      <div className="flex items-center gap-3 px-5 pt-6 pb-4">
+      <div className="flex items-center gap-3 px-5 pt-8 pb-6" style={{ background: "#191714" }}>
         <button
           onClick={() => navigate(-1)}
-          className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center active:bg-gray-300 transition-colors flex-shrink-0"
+          className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center active:bg-white/20 transition-colors flex-shrink-0"
         >
-          <ArrowLeft size={16} className="text-gray-700" />
+          <ChevronLeft size={16} className="text-white" />
         </button>
         <div>
-          <h1 className="text-[26px] font-black text-gray-900 leading-tight">
+          <h1 className="text-[26px] font-black text-white uppercase tracking-wide leading-tight">
             Progression
           </h1>
-          <p className="text-sm text-gray-500 mt-0.5">
+          <p className="text-xs font-bold text-white/50 uppercase tracking-widest mt-1">
             Suis ton évolution physique en photos
           </p>
         </div>
       </div>
 
+      <div className="px-5 pt-5">
+
       {/* Upload button */}
-      <div className="px-5 mb-6">
+      <div className="mb-6">
         <input
           ref={fileRef}
           type="file"
@@ -144,7 +176,7 @@ export default function ProgressPhotosPage() {
         <button
           onClick={() => fileRef.current?.click()}
           disabled={uploading}
-          className="w-full bg-[#c9552c] disabled:opacity-50 text-white py-3.5 rounded-2xl font-semibold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+          className="w-full bg-[#c9552c] disabled:opacity-50 text-white py-3.5 rounded-full font-bold uppercase tracking-wide text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-transform shadow-sm"
         >
           <Camera size={18} />
           {uploading ? "Envoi en cours..." : "Ajouter une photo"}
@@ -153,47 +185,70 @@ export default function ProgressPhotosPage() {
 
       {/* Photo grid */}
       {loading ? (
-        <div className="px-5">
-          <div className="grid grid-cols-3 gap-2 animate-pulse">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="aspect-square bg-gray-200 rounded-xl" />
-            ))}
-          </div>
+        <div className="grid grid-cols-3 gap-2 animate-pulse">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="aspect-square bg-[#ece7dd] rounded-2xl" />
+          ))}
         </div>
       ) : photos.length === 0 ? (
-        <div className="px-5 text-center py-12">
-          <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
-            <Camera size={24} className="text-gray-300" />
+        <div className="text-center py-12">
+          <div className="w-16 h-16 rounded-full bg-[#ece7dd] flex items-center justify-center mx-auto mb-4 shadow-sm">
+            <Camera size={24} className="text-[#c9552c]" />
           </div>
-          <p className="text-sm text-gray-400">Aucune photo pour le moment</p>
-          <p className="text-xs text-gray-300 mt-1">
+          <p className="text-sm font-bold text-gray-900 uppercase">
+            Aucune photo pour le moment
+          </p>
+          <p className="text-xs text-gray-400 mt-1">
             Prends une photo pour commencer à suivre ta progression
           </p>
         </div>
       ) : (
-        <div className="px-5">
-          <div className="grid grid-cols-3 gap-2">
-            {photos.map((photo) => (
-              <button
-                key={photo.id}
-                onClick={() => setViewPhoto(photo)}
-                className="relative aspect-square bg-gray-200 rounded-xl overflow-hidden active:scale-[0.97] transition-transform"
-              >
-                <img
-                  src={photo.data}
-                  alt="Progression"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute bottom-0 left-0 right-0 bg-black/40 px-2 py-1">
-                  <p className="text-[10px] text-white font-medium truncate">
-                    {formatDate(photo.createdAt)}
-                  </p>
-                </div>
-              </button>
-            ))}
-          </div>
+        <div className="space-y-5">
+          {photoGroups.map((group) => (
+            <div key={group[0].id}>
+              <div className="flex items-center justify-between mb-2 px-1">
+                <p className="text-xs font-bold text-gray-900 uppercase tracking-widest">
+                  {formatGroupLabel(group[0].createdAt)}
+                </p>
+                <span className="text-[10px] font-bold text-gray-600 uppercase bg-[#ece7dd] px-2.5 py-1 rounded-full shadow-sm">
+                  {group.length} photo{group.length > 1 ? "s" : ""}
+                </span>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                {group.map((photo) => (
+                  <button
+                    key={photo.id}
+                    onClick={() => setViewPhoto(photo)}
+                    className="relative aspect-square bg-[#ece7dd] border-2 border-dashed border-[#d6d0c1] rounded-2xl overflow-hidden active:scale-[0.97] transition-transform shadow-sm"
+                  >
+                    <img
+                      src={photo.data}
+                      alt="Progression"
+                      className="w-full h-full object-cover"
+                    />
+                    <span className="absolute bottom-1.5 left-1/2 -translate-x-1/2 text-[9px] font-bold text-white uppercase tracking-wide bg-[#191714] px-2 py-1 rounded-full whitespace-nowrap">
+                      {formatShortDate(photo.createdAt)}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
       )}
+
+      {/* Tip */}
+      <div className="border-2 border-dashed border-gray-300 rounded-3xl p-6 text-center mt-6">
+        <p className="text-sm font-black text-gray-900 uppercase tracking-wide mb-1">
+          Une photo par semaine
+        </p>
+        <p className="text-sm text-gray-500 leading-relaxed">
+          Même pose, même éclairage : la comparaison sera bien plus parlante
+          dans un mois.
+        </p>
+      </div>
+
+      </div>
 
       {/* View photo modal */}
       {viewPhoto && (

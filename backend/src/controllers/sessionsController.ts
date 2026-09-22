@@ -7,6 +7,8 @@ import {
   getUserPersonalRecords,
   getUserMuscleVolume,
   getUserExerciseProgress,
+  getUserExerciseStats,
+  getUserExerciseHistory,
 } from "../services/sessionsService.js";
 import {
   authMiddleware,
@@ -128,6 +130,39 @@ sessionsRouter.get(
       const exerciseId = req.params.exerciseId as string;
       const progress = await getUserExerciseProgress(userId, exerciseId);
       return res.status(200).json(progress);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      return res.status(500).json({ error: message });
+    }
+  },
+);
+
+// GET /api/sessions/me/exercise-stats
+sessionsRouter.get(
+  "/me/exercise-stats",
+  authMiddleware,
+  async (req: AuthRequest, res) => {
+    try {
+      const userId = req.userId!;
+      const stats = await getUserExerciseStats(userId);
+      return res.status(200).json(stats);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      return res.status(500).json({ error: message });
+    }
+  },
+);
+
+// GET /api/sessions/me/exercise-history/:exerciseId
+sessionsRouter.get(
+  "/me/exercise-history/:exerciseId",
+  authMiddleware,
+  async (req: AuthRequest, res) => {
+    try {
+      const userId = req.userId!;
+      const exerciseId = req.params.exerciseId as string;
+      const history = await getUserExerciseHistory(userId, exerciseId);
+      return res.status(200).json(history);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       return res.status(500).json({ error: message });

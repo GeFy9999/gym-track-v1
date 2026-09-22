@@ -81,7 +81,7 @@ export default function ProfilePage() {
     {
       title: "Entraînement",
       description:
-        "Active le minuteur de repos automatique et sa durée par défaut, ainsi que le mode barbell pour calculer les plaques à charger.",
+        "Active le minuteur de repos automatique et sa durée par défaut, ainsi que le mode barre pour calculer les plaques à charger.",
       refIndex: 3,
       tooltipPosition: "above" as const,
     },
@@ -217,7 +217,7 @@ export default function ProfilePage() {
       setActiveModal(null);
       setCustomMinutes("");
       setCustomSeconds("");
-      setSuccess("Timer de repos mis à jour");
+      setSuccess("Minuteur de repos mis à jour");
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
       console.error(err);
@@ -272,13 +272,6 @@ export default function ProfilePage() {
     }
   };
 
-  const truncateEmail = (email: string) => {
-    if (!email) return "";
-    const [local, domain] = email.split("@");
-    if (local.length <= 10) return email;
-    return `${local.slice(0, 10)}...@${domain}`;
-  };
-
   const formatRestTimer = (seconds: number) => {
     if (seconds < 60) return `${seconds}s`;
     const minutes = Math.floor(seconds / 60);
@@ -287,26 +280,27 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="pb-28 bg-[#faf6f1] min-h-screen px-5">
-      {/* Profile card */}
-      <div className="pt-6 mb-6">
-        <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm flex items-center gap-4 relative overflow-hidden">
-          <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-[#c9552c]/8" />
-          <div
-            className="w-14 h-14 rounded-2xl flex items-center justify-center text-lg font-bold text-white flex-shrink-0"
-            style={{
-              background:
-                "linear-gradient(135deg, #f09040 0%, #e8622b 50%, #d94e28 100%)",
-            }}
-          >
-            {initials}
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-lg font-bold text-gray-900">{user?.name}</p>
-            <p className="text-sm text-gray-400 truncate">{user?.email}</p>
-          </div>
+    <div className="pb-28 bg-[#faf6f1] min-h-screen">
+      {/* Header card */}
+      <div
+        className="px-5 pt-8 pb-6 flex items-center gap-4"
+        style={{ background: "#191714" }}
+      >
+        <div
+          className="w-14 h-14 rounded-2xl flex items-center justify-center text-lg font-bold text-white flex-shrink-0"
+          style={{ background: "#c9552c" }}
+        >
+          {initials}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-lg font-black text-white uppercase tracking-wide truncate">
+            {user?.name}
+          </p>
+          <p className="text-sm text-white/40 truncate">{user?.email}</p>
         </div>
       </div>
+
+      <div className="px-5 pt-5">
 
       {success && (
         <div className="bg-[#3a9e6e] text-white text-sm font-medium px-4 py-3 rounded-2xl mb-4 text-center">
@@ -315,61 +309,66 @@ export default function ProfilePage() {
       )}
 
       {/* Progression */}
-      <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-2 px-1">
+      <p className="text-xs text-gray-900 uppercase tracking-widest font-bold mb-2 px-1">
         Progression
       </p>
-      <div ref={tourRef0} className="bg-white border border-gray-200 rounded-2xl mb-6 shadow-sm">
+      <div ref={tourRef0} className="bg-[#ece7dd] rounded-2xl mb-6 shadow-sm">
         <button
           onClick={() => navigate("/progression")}
           className="w-full flex items-center gap-3 px-4 py-4"
         >
-          <div className="w-9 h-9 rounded-xl bg-[#c9552c]/10 flex items-center justify-center flex-shrink-0">
+          <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <Camera size={16} className="text-[#c9552c]" />
           </div>
-          <p className="flex-1 text-left text-sm font-medium text-gray-900">
+          <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
             Photos de progression
           </p>
-          <p className="text-sm text-gray-400">Voir</p>
-          <ChevronRight size={16} className="text-gray-300 flex-shrink-0" />
+          <span className="text-[10px] font-bold text-gray-600 uppercase bg-white/60 px-2.5 py-1 rounded-full">
+            Voir
+          </span>
+          <ChevronRight size={16} className="text-[#c9552c] flex-shrink-0" />
         </button>
       </div>
 
       {/* Données */}
-      <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-2 px-1">
+      <p className="text-xs text-gray-900 uppercase tracking-widest font-bold mb-2 px-1">
         Données
       </p>
-      <div className="bg-white border border-gray-200 rounded-2xl mb-6 shadow-sm">
+      <div className="bg-[#ece7dd] rounded-2xl mb-6 shadow-sm">
         <button
           onClick={() => navigate("/import")}
           className="w-full flex items-center gap-3 px-4 py-4"
         >
-          <div className="w-9 h-9 rounded-xl bg-[#c9552c]/10 flex items-center justify-center flex-shrink-0">
+          <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <Download size={16} className="text-[#c9552c]" />
           </div>
-          <p className="flex-1 text-left text-sm font-medium text-gray-900">
+          <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
             Importer des données
           </p>
-          <p className="text-sm text-gray-400">CSV</p>
-          <ChevronRight size={16} className="text-gray-300 flex-shrink-0" />
+          <span className="text-[10px] font-bold text-gray-600 uppercase bg-white/60 px-2.5 py-1 rounded-full">
+            CSV
+          </span>
+          <ChevronRight size={16} className="text-[#c9552c] flex-shrink-0" />
         </button>
       </div>
 
       {/* Compte */}
-      <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-2 px-1">
+      <p className="text-xs text-gray-900 uppercase tracking-widest font-bold mb-2 px-1">
         Compte
       </p>
-      <div ref={tourRef1} className="bg-white border border-gray-200 rounded-2xl mb-6 shadow-sm">
-        <div className="w-full flex items-center gap-3 px-4 py-4 border-b border-gray-100">
-          <div className="w-9 h-9 rounded-xl bg-[#c9552c]/10 flex items-center justify-center flex-shrink-0">
+      <div ref={tourRef1} className="bg-[#ece7dd] rounded-2xl mb-6 shadow-sm">
+        <div className="w-full flex items-center gap-3 px-4 py-4 border-b border-black/5">
+          <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <Mail size={16} className="text-[#c9552c]" />
           </div>
-          <p className="flex-1 text-left text-sm font-medium text-gray-900">
-            Courriel
-          </p>
-          <p className="text-sm text-gray-400">
-            {truncateEmail(user?.email || "")}
-          </p>
-          <span className="w-4 flex-shrink-0" />
+          <div className="flex-1 text-left min-w-0">
+            <p className="text-sm font-bold text-gray-900 uppercase">
+              Courriel
+            </p>
+            <p className="text-xs text-gray-500 truncate">
+              {user?.email}
+            </p>
+          </div>
         </div>
 
         <button
@@ -377,18 +376,18 @@ export default function ProfilePage() {
             setActiveModal("password");
             setError(null);
           }}
-          className="w-full flex items-center gap-3 px-4 py-4 border-b border-gray-100"
+          className="w-full flex items-center gap-3 px-4 py-4 border-b border-black/5"
         >
-          <div className="w-9 h-9 rounded-xl bg-[#c9552c]/10 flex items-center justify-center flex-shrink-0">
+          <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <Lock size={16} className="text-[#c9552c]" />
           </div>
-          <p className="flex-1 text-left text-sm font-medium text-gray-900">
+          <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
             Mot de passe
           </p>
-          <p className="text-sm text-gray-400">
+          <span className="text-[10px] font-bold uppercase bg-[#c9552c]/10 text-[#c9552c] px-2.5 py-1 rounded-full whitespace-nowrap">
             {user?.authProvider === "google" ? "Non défini" : "Modifier"}
-          </p>
-          <ChevronRight size={16} className="text-gray-300 flex-shrink-0" />
+          </span>
+          <ChevronRight size={16} className="text-[#c9552c] flex-shrink-0" />
         </button>
 
         <button
@@ -398,55 +397,79 @@ export default function ProfilePage() {
           }}
           className="w-full flex items-center gap-3 px-4 py-4"
         >
-          <div className="w-9 h-9 rounded-xl bg-[#c9552c]/10 flex items-center justify-center flex-shrink-0">
+          <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <MailPlus size={16} className="text-[#c9552c]" />
           </div>
-          <p className="flex-1 text-left text-sm font-medium text-gray-900">
+          <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
             Courriel de récupération
           </p>
-          <p className="text-sm text-gray-400">
-            {user?.recoveryEmail ? "Configuré" : "Non configuré"}
-          </p>
-          <ChevronRight size={16} className="text-gray-300" />
+          <span
+            className={`text-[10px] font-bold uppercase px-2.5 py-1 rounded-full whitespace-nowrap ${
+              user?.recoveryEmail
+                ? "bg-white/60 text-gray-600"
+                : "bg-[#c9552c]/10 text-[#c9552c]"
+            }`}
+          >
+            {user?.recoveryEmail ? "Configuré" : "Non conf."}
+          </span>
+          <ChevronRight size={16} className="text-[#c9552c]" />
         </button>
       </div>
 
       {/* Préférences */}
-      <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-2 px-1">
+      <p className="text-xs text-gray-900 uppercase tracking-widest font-bold mb-2 px-1">
         Préférences
       </p>
-      <div ref={tourRef2} className="bg-white border border-gray-200 rounded-2xl mb-6 shadow-sm">
-        <button
-          onClick={() => setActiveModal("unit")}
-          className="w-full flex items-center gap-3 px-4 py-4"
-        >
-          <div className="w-9 h-9 rounded-xl bg-[#c9552c]/10 flex items-center justify-center flex-shrink-0">
+      <div ref={tourRef2} className="bg-[#ece7dd] rounded-2xl mb-6 shadow-sm">
+        <div className="w-full flex items-center gap-3 px-4 py-4">
+          <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <Scale size={16} className="text-[#c9552c]" />
           </div>
-          <p className="flex-1 text-left text-sm font-medium text-gray-900">
+          <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
             Unité de poids
           </p>
-          <p className="text-sm text-gray-400">
-            {weightUnit === "lb" ? "lb (livres)" : "kg (kilogrammes)"}
-          </p>
-          <ChevronRight size={16} className="text-gray-300" />
-        </button>
+          <div className="relative flex w-28 bg-gray-300 rounded-full p-1 flex-shrink-0">
+            <div
+              className="absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] rounded-full bg-[#191714] transition-transform duration-200 ease-out"
+              style={{
+                transform:
+                  weightUnit === "lb" ? "translateX(100%)" : "translateX(0)",
+              }}
+            />
+            <button
+              onClick={() => handleWeightUnit("kg")}
+              className={`relative z-10 flex-1 py-1.5 rounded-full text-xs font-bold uppercase transition-colors ${
+                weightUnit === "kg" ? "text-white" : "text-gray-500"
+              }`}
+            >
+              Kg
+            </button>
+            <button
+              onClick={() => handleWeightUnit("lb")}
+              className={`relative z-10 flex-1 py-1.5 rounded-full text-xs font-bold uppercase transition-colors ${
+                weightUnit === "lb" ? "text-white" : "text-gray-500"
+              }`}
+            >
+              Lb
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Entraînement */}
-      <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-2 px-1">
+      <p className="text-xs text-gray-900 uppercase tracking-widest font-bold mb-2 px-1">
         Entraînement
       </p>
-      <div ref={tourRef3} className="bg-white border border-gray-200 rounded-2xl mb-6 shadow-sm">
-        <div className="w-full flex items-center gap-3 px-4 py-4 border-b border-gray-100">
-          <div className="w-9 h-9 rounded-xl bg-[#c9552c]/10 flex items-center justify-center flex-shrink-0">
+      <div ref={tourRef3} className="bg-[#ece7dd] rounded-2xl mb-6 shadow-sm">
+        <div className="w-full flex items-center gap-3 px-4 py-4 border-b border-black/5">
+          <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <Timer size={16} className="text-[#c9552c]" />
           </div>
           <div className="flex-1 text-left">
-            <p className="text-sm font-medium text-gray-900">
-              Rest timer automatique
+            <p className="text-sm font-bold text-gray-900 uppercase">
+              Minuteur de repos automatique
             </p>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-gray-500 mt-0.5">
               Démarre dès qu'un set est marqué complété
             </p>
           </div>
@@ -455,7 +478,7 @@ export default function ProfilePage() {
             className={`w-11 h-6 rounded-full relative flex-shrink-0 transition-colors ${
               restTimerEnabled ? "bg-[#3a9e6e]" : "bg-gray-300"
             }`}
-            aria-label="Activer le rest timer automatique"
+            aria-label="Activer le minuteur de repos automatique"
           >
             <span
               className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${
@@ -468,27 +491,29 @@ export default function ProfilePage() {
         <button
           onClick={() => restTimerEnabled && setActiveModal("restTimer")}
           disabled={!restTimerEnabled}
-          className="w-full flex items-center gap-3 px-4 py-4 border-b border-gray-100 disabled:opacity-50"
+          className="w-full flex items-center gap-3 px-4 py-4 border-b border-black/5 disabled:opacity-50"
         >
-          <div className="w-9 h-9 rounded-xl bg-[#c9552c]/10 flex items-center justify-center flex-shrink-0">
+          <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <Timer size={16} className="text-[#c9552c]" />
           </div>
-          <p className="flex-1 text-left text-sm font-medium text-gray-900">
+          <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
             Durée par défaut
           </p>
-          <p className="text-sm text-gray-400">
+          <span className="text-[10px] font-bold text-gray-600 uppercase bg-white/60 px-2.5 py-1 rounded-full">
             {formatRestTimer(restTimerSeconds)}
-          </p>
-          <ChevronRight size={16} className="text-gray-300" />
+          </span>
+          <ChevronRight size={16} className="text-[#c9552c]" />
         </button>
 
         <div className="w-full flex items-center gap-3 px-4 py-4">
-          <div className="w-9 h-9 rounded-xl bg-[#c9552c]/10 flex items-center justify-center flex-shrink-0">
+          <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <Dumbbell size={16} className="text-[#c9552c]" />
           </div>
           <div className="flex-1 text-left">
-            <p className="text-sm font-medium text-gray-900">Mode barbell</p>
-            <p className="text-xs text-gray-400">
+            <p className="text-sm font-bold text-gray-900 uppercase">
+              Mode barre
+            </p>
+            <p className="text-xs text-gray-500 mt-0.5">
               Saisis le poids de chaque côté de la barre
             </p>
           </div>
@@ -497,7 +522,7 @@ export default function ProfilePage() {
             className={`w-11 h-6 rounded-full relative flex-shrink-0 transition-colors ${
               barbellModeEnabled ? "bg-[#3a9e6e]" : "bg-gray-300"
             }`}
-            aria-label="Activer le mode barbell"
+            aria-label="Activer le mode barre"
           >
             <span
               className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${
@@ -509,10 +534,10 @@ export default function ProfilePage() {
       </div>
 
       {/* Zone de danger */}
-      <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-2 px-1">
+      <p className="text-xs text-gray-900 uppercase tracking-widest font-bold mb-2 px-1">
         Zone de danger
       </p>
-      <div ref={tourRef4} className="bg-white border border-gray-200 rounded-2xl mb-6 shadow-sm">
+      <div ref={tourRef4} className="bg-[#ece7dd] rounded-2xl mb-6 shadow-sm">
         <button
           onClick={() => {
             setActiveModal("delete");
@@ -520,14 +545,14 @@ export default function ProfilePage() {
           }}
           className="w-full flex items-center gap-3 px-4 py-4"
         >
-          <div className="w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center flex-shrink-0">
+          <div className="w-9 h-9 rounded-xl bg-red-500/10 flex items-center justify-center flex-shrink-0">
             <Trash2 size={16} className="text-red-500" />
           </div>
           <div className="flex-1 text-left">
-            <p className="text-sm font-medium text-red-500">
+            <p className="text-sm font-bold text-red-500 uppercase">
               Supprimer le compte
             </p>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-gray-500 mt-0.5">
               Toutes tes données seront perdues
             </p>
           </div>
@@ -537,11 +562,14 @@ export default function ProfilePage() {
       {/* Déconnexion */}
       <button
         onClick={() => setActiveModal("logout")}
-        className="w-full bg-white border border-gray-200 text-gray-700 py-4 rounded-2xl font-semibold flex items-center justify-center gap-2 shadow-sm"
+        className="w-full text-white py-4 rounded-full font-bold uppercase tracking-wide text-sm flex items-center justify-center gap-2 shadow-sm active:opacity-90 transition-opacity"
+        style={{ background: "#191714" }}
       >
-        <LogOut size={18} className="text-gray-500" />
-        Déconnexion
+        <LogOut size={16} className="text-[#e2703a]" />
+        Se déconnecter
       </button>
+
+      </div>
 
       {/* Modal déconnexion */}
       {activeModal === "logout" && (
@@ -712,53 +740,13 @@ export default function ProfilePage() {
         </div>
       )}
 
-      {/* Modal unité */}
-      {activeModal === "unit" && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6 animate-fade-in">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
-            <div className="flex justify-between items-center mb-4">
-              <p className="text-base font-bold text-gray-900">
-                Unité de poids
-              </p>
-              <button onClick={() => setActiveModal(null)}>
-                <X size={20} className="text-gray-400" />
-              </button>
-            </div>
-            <div className="space-y-2">
-              <button
-                onClick={() => handleWeightUnit("lb")}
-                className={`w-full text-left px-4 py-3.5 rounded-xl border transition-colors ${
-                  weightUnit === "lb"
-                    ? "border-[#c9552c] bg-[#c9552c]/5 text-[#c9552c]"
-                    : "border-gray-200 bg-gray-50 text-gray-700"
-                }`}
-              >
-                <p className="text-sm font-semibold">lb (livres)</p>
-                <p className="text-xs text-gray-400 mt-0.5">Système impérial</p>
-              </button>
-              <button
-                onClick={() => handleWeightUnit("kg")}
-                className={`w-full text-left px-4 py-3.5 rounded-xl border transition-colors ${
-                  weightUnit === "kg"
-                    ? "border-[#c9552c] bg-[#c9552c]/5 text-[#c9552c]"
-                    : "border-gray-200 bg-gray-50 text-gray-700"
-                }`}
-              >
-                <p className="text-sm font-semibold">kg (kilogrammes)</p>
-                <p className="text-xs text-gray-400 mt-0.5">Système métrique</p>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Modal timer de repos */}
       {activeModal === "restTimer" && (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6 animate-fade-in">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
             <div className="flex justify-between items-center mb-4">
               <p className="text-base font-bold text-gray-900">
-                Timer de repos
+                Minuteur de repos
               </p>
               <button
                 onClick={() => {

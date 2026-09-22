@@ -7,6 +7,12 @@ type MuscleGroupVolume = {
   percentage: number;
 };
 
+const BAR_COLORS = ["#191714", "#c9552c", "#d9835a", "#e6ab8c"];
+
+function getBarColor(index: number) {
+  return BAR_COLORS[index] ?? BAR_COLORS[BAR_COLORS.length - 1];
+}
+
 export default function MuscleVolume() {
   const [volumes, setVolumes] = useState<MuscleGroupVolume[]>([]);
   const [loading, setLoading] = useState(true);
@@ -34,12 +40,12 @@ export default function MuscleVolume() {
 
   if (loading) {
     return (
-      <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm animate-pulse">
+      <div className="bg-[#ece7dd] rounded-2xl p-4 shadow-sm animate-pulse">
         <div className="space-y-4">
           {[1, 2, 3, 4].map((i) => (
             <div key={i}>
-              <div className="h-3 w-20 bg-gray-200 rounded mb-2" />
-              <div className="h-3 bg-gray-100 rounded-full" />
+              <div className="h-3 w-20 bg-white/50 rounded mb-2" />
+              <div className="h-3 bg-white/40 rounded-full" />
             </div>
           ))}
         </div>
@@ -55,17 +61,21 @@ export default function MuscleVolume() {
       { name: "Épaules", pct: 45 },
     ];
     return (
-      <div className="space-y-3 opacity-50">
-        {placeholders.map(({ name, pct }) => (
+      <div className="bg-[#ece7dd] rounded-2xl p-4 space-y-3.5 opacity-60">
+        {placeholders.map(({ name, pct }, i) => (
           <div key={name} className="flex items-center gap-3">
-            <span className="text-sm text-gray-500 w-24 shrink-0">{name}</span>
-            <div className="flex-1 h-3 bg-gray-200 rounded-full overflow-hidden">
+            <span className="text-xs font-bold text-gray-900 uppercase tracking-wide w-20 shrink-0">
+              {name}
+            </span>
+            <div className="flex-1 h-3 bg-white/50 rounded-full overflow-hidden">
               <div
-                className="h-full bg-gray-500 rounded-full"
-                style={{ width: `${pct}%` }}
+                className="h-full rounded-full"
+                style={{ width: `${pct}%`, background: getBarColor(i) }}
               />
             </div>
-            <span className="text-xs text-gray-500 w-12 text-right">--</span>
+            <span className="text-xs font-bold text-gray-500 w-14 text-right">
+              --
+            </span>
           </div>
         ))}
       </div>
@@ -73,18 +83,20 @@ export default function MuscleVolume() {
   }
 
   return (
-    <div className="space-y-3">
-      {volumes.map(({ name, sets, percentage }) => (
+    <div className="bg-[#ece7dd] rounded-2xl p-4 space-y-3.5 shadow-sm">
+      {volumes.map(({ name, sets, percentage }, i) => (
         <div key={name} className="flex items-center gap-3">
-          <span className="text-sm text-gray-700 w-24 shrink-0">{name}</span>
-          <div className="flex-1 h-3 bg-gray-200 rounded-full overflow-hidden">
+          <span className="text-xs font-bold text-gray-900 uppercase tracking-wide w-20 shrink-0">
+            {name}
+          </span>
+          <div className="flex-1 h-3 bg-white/50 rounded-full overflow-hidden">
             <div
-              className="h-full bg-gray-800 rounded-full transition-all duration-500"
-              style={{ width: `${percentage}%` }}
+              className="h-full rounded-full transition-all duration-500"
+              style={{ width: `${percentage}%`, background: getBarColor(i) }}
             />
           </div>
-          <span className="text-xs text-gray-500 w-12 text-right">
-            {sets} sets
+          <span className="text-xs font-bold text-gray-900 w-14 text-right">
+            {sets} SET{sets === 1 ? "" : "S"}
           </span>
         </div>
       ))}

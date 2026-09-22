@@ -1,62 +1,88 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, BarChart3, History, User, Trophy } from "lucide-react";
+import { useLayoutEffect, useRef, useState } from "react";
+import { Home, BarChart3, History, User, Dumbbell } from "lucide-react";
 
 const links = [
-  { to: "/dashboard", label: "Accueil", icon: Home },
-  { to: "/stats", label: "Stats", icon: BarChart3 },
-  { to: "/history", label: "Historique", icon: History },
-  { to: "/profil", label: "Profil", icon: User },
+  { to: "/dashboard", label: "Accueil", tourKey: "accueil", icon: Home },
+  { to: "/stats", label: "Stats", tourKey: "stats", icon: BarChart3 },
+  {
+    to: "/exercises",
+    label: "Exercices",
+    tourKey: "records",
+    icon: Dumbbell,
+    accent: true,
+  },
+  { to: "/history", label: "Histo.", tourKey: "historique", icon: History },
+  { to: "/profil", label: "Profil", tourKey: "profil", icon: User },
 ];
 
 export default function BottomNav() {
   const location = useLocation();
+  const itemRefs = useRef<(HTMLLIElement | null)[]>([]);
+  const [indicator, setIndicator] = useState<{
+    left: number;
+    width: number;
+  } | null>(null);
 
-  const renderLink = (link: (typeof links)[number]) => {
-    const isActive = location.pathname === link.to;
-    const Icon = link.icon;
-    return (
-      <li key={link.to}>
-        <Link
-          to={link.to}
-          data-tour={`nav-${link.label.toLowerCase()}`}
-          className="flex flex-col items-center gap-1 px-2 py-2.5"
-        >
-          <Icon
-            size={22}
-            strokeWidth={isActive ? 2.2 : 1.5}
-            className={isActive ? "text-[#c9552c]" : "text-gray-400"}
-          />
-          {isActive && (
-            <div className="w-1.5 h-1.5 rounded-full bg-[#c9552c]" />
-          )}
-        </Link>
-      </li>
-    );
-  };
+  const activeIndex = links.findIndex((l) => l.to === location.pathname);
+
+  useLayoutEffect(() => {
+    const el = itemRefs.current[activeIndex];
+    if (el) {
+      setIndicator({ left: el.offsetLeft, width: el.offsetWidth });
+    } else {
+      setIndicator(null);
+    }
+  }, [activeIndex]);
 
   return (
     <nav
       aria-label="Navigation"
-      className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 w-[280px]"
+      className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50"
     >
-      <div className="bg-white rounded-full shadow-[0_2px_20px_rgba(0,0,0,0.12)] border border-gray-100 px-2 py-1.5">
-        <ul className="flex w-full justify-around items-center">
-          {links.slice(0, 2).map(renderLink)}
-
-          {/* Temporarily hidden — kept in code to re-enable later. */}
-          {false && (
-            <li>
-              <Link
-                to="/add-exercise"
-                data-tour="nav-records"
-                className="flex items-center justify-center w-11 h-11 rounded-full bg-[#c9552c]"
-              >
-                <Trophy size={22} className="text-white" strokeWidth={2.5} />
-              </Link>
-            </li>
+      <div className="bg-[#ece7dd] rounded-2xl px-2 py-2 shadow-sm">
+        <ul className="relative flex items-center gap-1">
+          {indicator && (
+            <div
+              className="absolute top-0 h-full bg-[#191714] rounded-xl transition-all duration-300 ease-out"
+              style={{ left: indicator.left, width: indicator.width }}
+            />
           )}
-
-          {links.slice(2).map(renderLink)}
+          {links.map((link, i) => {
+            const isActive = i === activeIndex;
+            const Icon = link.icon;
+            const color = isActive
+              ? "text-white"
+              : link.accent
+                ? "text-[#c9552c]"
+                : "text-gray-500";
+            return (
+              <li
+                key={link.to}
+                ref={(el) => {
+                  itemRefs.current[i] = el;
+                }}
+                className="relative z-10"
+              >
+                <Link
+                  to={link.to}
+                  data-tour={`nav-${link.tourKey}`}
+                  className="flex flex-col items-center gap-1 px-3 py-2 whitespace-nowrap"
+                >
+                  <Icon
+                    size={18}
+                    strokeWidth={isActive ? 2.2 : 1.8}
+                    className={color}
+                  />
+                  <span
+                    className={`text-[9px] font-bold uppercase tracking-wide ${color}`}
+                  >
+                    {link.label}
+                  </span>
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </div>
     </nav>

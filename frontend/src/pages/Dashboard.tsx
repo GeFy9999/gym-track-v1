@@ -4,7 +4,7 @@ import MuscleGroupsCards from "../components/dashboard/muscleGroupGrid";
 import RecentActivity from "../components/dashboard/recentActivity";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Scale, ChevronRight } from "lucide-react";
+import { Scale, ChevronRight, Check } from "lucide-react";
 import { API_URL } from "../lib/api";
 import TourOverlay from "../components/TourOverlay";
 import PRCelebration from "../components/session/PRCelebration";
@@ -27,6 +27,7 @@ type ExerciseDelta = { exerciseName: string; delta: number; unit: string };
 
 type WorkoutSummaryData = {
   muscleGroups: string[];
+  date: string;
   durationMinutes: number;
   totalSets: number;
   totalExercises: number;
@@ -53,6 +54,7 @@ export default function DashboardPage() {
   const [showEndConfirm, setShowEndConfirm] = useState(false);
   const [showWeightPrompt, setShowWeightPrompt] = useState(false);
   const [bodyWeight, setBodyWeight] = useState("");
+  const [promptUnit, setPromptUnit] = useState(() => getWeightUnit());
   const [refreshKey, setRefreshKey] = useState(0);
   const [abandonedQueue, setAbandonedQueue] = useState<AbandonedSession[]>([]);
   const [prQueue, setPrQueue] = useState<PRCelebrationData[]>([]);
@@ -517,6 +519,7 @@ export default function DashboardPage() {
             ? null
             : {
                 muscleGroups: [...new Set(muscleGroups)],
+                date: (earliestDate ?? new Date()).toISOString(),
                 durationMinutes: earliestDate
                   ? Math.max(
                       1,
@@ -553,6 +556,25 @@ export default function DashboardPage() {
     if (!token || !bodyWeight) return;
 
     try {
+      if (promptUnit !== getWeightUnit()) {
+        const unitRes = await fetch(`${API_URL}/auth/weight-unit`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ weightUnit: promptUnit }),
+        });
+        if (unitRes.ok) {
+          const stored = localStorage.getItem("user");
+          if (stored) {
+            const u = JSON.parse(stored);
+            u.weightUnit = promptUnit;
+            localStorage.setItem("user", JSON.stringify(u));
+          }
+        }
+      }
+
       await fetch(`${API_URL}/body-weight`, {
         method: "POST",
         headers: {
@@ -595,7 +617,7 @@ export default function DashboardPage() {
         <div className="px-5 mt-6">
           <button
             onClick={() => setShowEndConfirm(true)}
-            className="w-full bg-[#3a9e6e] active:scale-[0.98] text-white py-4 rounded-2xl font-semibold transition-all shadow-md flex items-center justify-center"
+            className="w-full bg-[#191714] active:scale-[0.98] text-white py-4 rounded-full font-bold uppercase tracking-wide text-sm transition-all flex items-center justify-center shadow-sm"
           >
             Terminer la séance
           </button>
@@ -604,28 +626,37 @@ export default function DashboardPage() {
 
       {showEndConfirm && (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6 animate-fade-in">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
-            <p className="text-base font-semibold text-gray-900 text-center mb-2">
-              Terminer la séance ?
-            </p>
-            <p className="text-sm text-gray-400 text-center mb-6">
-              Tes séances en cours seront marquées comme terminées et rangées
-              dans ton historique. Tu pourras en recommencer de nouvelles pour
-              ces groupes musculaires.
-            </p>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowEndConfirm(false)}
-                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-xl font-semibold transition-colors"
-              >
-                Annuler
-              </button>
-              <button
-                onClick={handleEndSession}
-                className="flex-1 bg-[#3a9e6e] text-white py-3 rounded-xl font-semibold transition-colors"
-              >
-                Terminer
-              </button>
+          <div className="bg-[#faf6f1] rounded-3xl w-full max-w-sm shadow-2xl animate-scale-in overflow-hidden">
+            <div
+              className="px-6 pt-7 pb-6 text-center"
+              style={{ background: "#191714" }}
+            >
+              <h2 className="text-xl font-black text-white uppercase tracking-wide">
+                Terminer la séance ?
+              </h2>
+            </div>
+
+            <div className="px-5 pt-5 pb-6">
+              <p className="text-sm text-gray-500 text-center leading-relaxed mb-6">
+                Tes séances en cours seront marquées comme terminées et
+                rangées dans ton historique. Tu pourras en recommencer de
+                nouvelles pour ces groupes musculaires.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowEndConfirm(false)}
+                  className="flex-1 bg-[#ece7dd] text-gray-700 py-3.5 rounded-full font-bold uppercase tracking-wide text-sm transition-colors active:opacity-80"
+                >
+                  Annuler
+                </button>
+                <button
+                  onClick={handleEndSession}
+                  className="flex-1 bg-[#3a9e6e] text-white py-3.5 rounded-full font-bold uppercase tracking-wide text-sm transition-colors active:opacity-90 flex items-center justify-center gap-1.5"
+                >
+                  <Check size={16} strokeWidth={3} />
+                  Terminer
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -662,50 +693,77 @@ export default function DashboardPage() {
 
       {showWeightPrompt && (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6 animate-fade-in">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
-            <div className="flex flex-col items-center mb-4">
-              <div className="w-12 h-12 rounded-full bg-orange-50 flex items-center justify-center mb-3">
-                <Scale size={24} className="text-orange-500" />
+          <div className="bg-[#faf6f1] rounded-3xl w-full max-w-sm shadow-2xl animate-scale-in overflow-hidden">
+            <div
+              className="px-6 pt-8 pb-6 text-center"
+              style={{ background: "#191714" }}
+            >
+              <div className="w-14 h-14 rounded-full bg-[#3d271a] flex items-center justify-center mx-auto mb-4">
+                <Scale size={24} className="text-[#f0994a]" />
               </div>
-              <p className="text-base font-semibold text-gray-900 text-center">
+              <h2 className="text-xl font-black text-white uppercase tracking-wide">
                 Quel est ton poids ?
-              </p>
-              <p className="text-xs text-gray-400 text-center mt-1">
+              </h2>
+              <p className="text-sm text-white/50 mt-1">
                 Entre ton poids pour suivre ta progression
               </p>
             </div>
 
-            <div className="relative mb-4">
-              <input
-                type="number"
-                value={bodyWeight}
-                onChange={(e) => setBodyWeight(e.target.value)}
-                placeholder="0"
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-center text-xl font-semibold text-gray-900 placeholder-gray-300 focus:outline-none focus:border-orange-500 transition-colors"
-              />
-              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-gray-400">
-                {(() => {
-                  const stored = localStorage.getItem("user");
-                  if (!stored) return "lb";
-                  return JSON.parse(stored).weightUnit || "lb";
-                })()}
-              </span>
-            </div>
+            <div className="px-5 pt-5 pb-6">
+              <div className="flex items-center justify-between bg-[#ece7dd] rounded-full pl-5 pr-1.5 py-1.5 mb-5">
+                <input
+                  type="number"
+                  value={bodyWeight}
+                  onChange={(e) => setBodyWeight(e.target.value)}
+                  placeholder="0"
+                  autoFocus
+                  className="w-20 bg-transparent text-4xl font-black text-gray-900 placeholder-gray-300 focus:outline-none"
+                />
+                <div className="relative flex w-28 bg-gray-300 rounded-full p-1">
+                  <div
+                    className="absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] rounded-full bg-[#191714] transition-transform duration-200 ease-out"
+                    style={{
+                      transform:
+                        promptUnit === "kg" ? "translateX(100%)" : "translateX(0)",
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setPromptUnit("lb")}
+                    className={`relative z-10 flex-1 py-2 rounded-full text-xs font-bold uppercase transition-colors ${
+                      promptUnit === "lb" ? "text-white" : "text-gray-500"
+                    }`}
+                  >
+                    Lb
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPromptUnit("kg")}
+                    className={`relative z-10 flex-1 py-2 rounded-full text-xs font-bold uppercase transition-colors ${
+                      promptUnit === "kg" ? "text-white" : "text-gray-500"
+                    }`}
+                  >
+                    Kg
+                  </button>
+                </div>
+              </div>
 
-            <div className="flex gap-3">
-              <button
-                onClick={handleSnoozeWeight}
-                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-xl font-semibold transition-colors"
-              >
-                Plus tard
-              </button>
-              <button
-                onClick={handleSaveWeight}
-                disabled={!bodyWeight}
-                className="flex-1 bg-[#c9552c] disabled:opacity-50 text-white py-3 rounded-xl font-semibold transition-colors"
-              >
-                Sauvegarder
-              </button>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleSnoozeWeight}
+                  className="flex-1 bg-[#ece7dd] text-gray-700 py-3.5 rounded-full font-bold uppercase tracking-wide text-sm transition-colors active:opacity-80"
+                >
+                  Plus tard
+                </button>
+                <button
+                  onClick={handleSaveWeight}
+                  disabled={!bodyWeight}
+                  className="flex-1 bg-[#191714] disabled:opacity-40 text-white py-3.5 rounded-full font-bold uppercase tracking-wide text-sm transition-colors active:opacity-90 flex items-center justify-center gap-1.5"
+                >
+                  <Check size={16} strokeWidth={3} />
+                  Sauvegarder
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -809,6 +867,7 @@ export default function DashboardPage() {
       {workoutSummary && (
         <WorkoutSummary
           muscleGroups={workoutSummary.muscleGroups}
+          date={workoutSummary.date}
           durationMinutes={workoutSummary.durationMinutes}
           totalSets={workoutSummary.totalSets}
           totalExercises={workoutSummary.totalExercises}

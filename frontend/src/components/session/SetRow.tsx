@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Check, X } from "lucide-react";
 import type { SetData } from "../../types/session";
 import {
@@ -8,6 +9,7 @@ import {
   MAX_REPS,
 } from "../../utils/plates";
 import { getSetTypeColor, getSetBadgeLabel } from "../../utils/setTypes";
+import { playSetCompleteSound } from "../../utils/sound";
 import PlateRow from "./PlateRow";
 import SetTypeMenu from "./SetTypeMenu";
 
@@ -55,6 +57,17 @@ export default function SetRow({
   const { plates, remainder } = barbell
     ? calculatePlates(perSide, unit)
     : { plates: [], remainder: 0 };
+
+  const [justCompleted, setJustCompleted] = useState(false);
+
+  const handleToggleCompleted = () => {
+    if (!set.completed) {
+      playSetCompleteSound();
+      setJustCompleted(true);
+      setTimeout(() => setJustCompleted(false), 400);
+    }
+    onToggleCompleted();
+  };
 
   return (
     <div>
@@ -146,17 +159,22 @@ export default function SetRow({
 
         {!readOnly && (
           <div className="flex flex-col gap-1.5 w-11 flex-shrink-0">
-            <button
-              data-tour="session-set-check"
-              onClick={onToggleCompleted}
-              className={`flex-1 rounded-lg flex items-center justify-center transition-colors ${
-                set.completed
-                  ? "bg-[#3a9e6e] text-white"
-                  : "bg-gray-900 text-white active:bg-gray-800"
-              }`}
-            >
-              <Check size={16} strokeWidth={3} />
-            </button>
+            <div className="relative flex-1">
+              {justCompleted && (
+                <div className="absolute inset-0 rounded-lg bg-[#3a9e6e] animate-set-check-ring" />
+              )}
+              <button
+                data-tour="session-set-check"
+                onClick={handleToggleCompleted}
+                className={`relative w-full h-full rounded-lg flex items-center justify-center transition-colors ${
+                  set.completed
+                    ? "bg-[#3a9e6e] text-white"
+                    : "bg-gray-900 text-white active:bg-gray-800"
+                } ${justCompleted ? "animate-set-check-pop" : ""}`}
+              >
+                <Check size={16} strokeWidth={3} />
+              </button>
+            </div>
             <button
               data-tour="session-set-delete"
               onClick={onDelete}

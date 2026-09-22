@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Plus, Trash2, Trophy, Link2, Unlink, StickyNote, Flame } from "lucide-react";
 import type { SessionExercise, SetData } from "../../types/session";
 import { formatDuration } from "../../utils/units";
@@ -100,10 +101,12 @@ export default function ExerciseCard({
   onAddSet,
   onOpenWarmupModal,
 }: Props) {
+  const [trophyPopping, setTrophyPopping] = useState(false);
+
   return (
     <div
       ref={cardRef}
-      className={`bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm ${
+      className={`bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm transition-colors duration-300 ${
         isRemoving ? "animate-slide-out-right" : "animate-slide-up"
       } ${supersetColor ? "border-l-4" : ""}`}
       style={{
@@ -114,8 +117,7 @@ export default function ExerciseCard({
       <div
         className="relative p-5 pb-6 rounded-t-2xl"
         style={{
-          background:
-            "linear-gradient(135deg, #3d2a1e 0%, #2a1c14 50%, #1a1210 100%)",
+          background: "#191714",
         }}
       >
         <div className="flex items-start justify-between mb-3">
@@ -141,7 +143,11 @@ export default function ExerciseCard({
             )}
             <button
               data-tour="session-trophy"
-              onClick={onToggleTracked}
+              onClick={() => {
+                onToggleTracked();
+                setTrophyPopping(true);
+              }}
+              onAnimationEnd={() => setTrophyPopping(false)}
               aria-label="Suivre en record personnel"
               className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
                 isTracked
@@ -149,7 +155,10 @@ export default function ExerciseCard({
                   : "bg-white/10 text-white/40"
               }`}
             >
-              <Trophy size={17} />
+              <Trophy
+                size={17}
+                className={trophyPopping ? "animate-trophy-pop" : ""}
+              />
             </button>
             <button
               data-tour="session-note"
@@ -167,10 +176,13 @@ export default function ExerciseCard({
                 onClick={onOpenSupersetModal}
                 aria-label="Lier en superset"
                 className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
-                  supersetColor
-                    ? "bg-white/10 text-white"
-                    : "bg-white/10 text-white/40"
+                  !supersetColor ? "bg-white/10 text-white/40" : ""
                 }`}
+                style={
+                  supersetColor
+                    ? { backgroundColor: `${supersetColor}26`, color: supersetColor }
+                    : undefined
+                }
               >
                 {supersetColor ? <Unlink size={16} /> : <Link2 size={16} />}
               </button>
@@ -217,7 +229,7 @@ export default function ExerciseCard({
                     : "bg-white/10 text-white/60"
                 }`}
               >
-                Mode barbell
+                Mode barre
               </button>
             )}
 

@@ -4,6 +4,7 @@ import { getRestTimerSeconds } from "../utils/units";
 
 type RestTimerContextValue = {
   secondsLeft: number;
+  totalSeconds: number;
   isActive: boolean;
   start: (seconds?: number) => void;
   skip: () => void;

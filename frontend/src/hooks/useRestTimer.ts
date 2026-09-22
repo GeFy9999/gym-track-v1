@@ -45,6 +45,7 @@ function notifyRestOver() {
 
 export function useRestTimer(defaultSeconds: number) {
   const [secondsLeft, setSecondsLeft] = useState(0);
+  const [totalSeconds, setTotalSeconds] = useState(0);
   const [isActive, setIsActive] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
@@ -102,6 +103,7 @@ export function useRestTimer(defaultSeconds: number) {
 
       clearTimer();
       setSecondsLeft(total);
+      setTotalSeconds(total);
       setIsActive(true);
 
       intervalRef.current = setInterval(() => {
@@ -129,6 +131,7 @@ export function useRestTimer(defaultSeconds: number) {
           setIsActive(false);
           handleTimerEnd();
         }
+        setTotalSeconds((total) => Math.max(total, next));
         return next;
       });
     },
@@ -137,5 +140,5 @@ export function useRestTimer(defaultSeconds: number) {
 
   useEffect(() => clearTimer, [clearTimer]);
 
-  return { secondsLeft, isActive, start, skip, adjustSeconds };
+  return { secondsLeft, totalSeconds, isActive, start, skip, adjustSeconds };
 }

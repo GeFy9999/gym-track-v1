@@ -139,25 +139,25 @@ export default function RecentActivity() {
     sets.length > 0 ? Math.max(...sets.map((s) => s.weight)) : 0;
 
   return (
-    <div className="px-5 mt-6">
-      <p className="text-[15px] font-bold text-gray-900 mb-3">
+    <div className="px-5 mt-7">
+      <p className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-3">
         Dernière séance
       </p>
 
       {lastSession && firstExercise && bestSet ? (
-        <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
+        <div className="bg-[#ece7dd] rounded-2xl p-4 shadow-sm">
           <div className="flex justify-between items-start mb-3">
             <div>
-              <p className="text-sm font-semibold text-gray-900">
+              <p className="text-sm font-bold text-gray-900">
                 {firstExercise.exercise.name}
               </p>
-              <p className="text-xs text-gray-400 mt-0.5">
+              <p className="text-xs text-gray-500 mt-0.5">
                 {bestSet.weight} {bestSet.unit} × {bestSet.reps} reps
               </p>
             </div>
             {delta && (
-              <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#c9552c]/10 text-[#c9552c] border border-[#c9552c]/20">
-                <span className="text-xs font-semibold">
+              <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-white text-[#c9552c]">
+                <span className="text-xs font-bold">
                   {delta.value > 0 ? "↑" : "↓"} {delta.value > 0 ? "+" : ""}
                   {delta.value} {delta.unit}
                 </span>
@@ -172,7 +172,7 @@ export default function RecentActivity() {
               return (
                 <div
                   key={i}
-                  className="flex-1 rounded-sm bg-gray-300 animate-grow-bar"
+                  className="flex-1 rounded-full bg-[#c9552c] animate-grow-bar"
                   style={{
                     height: `${Math.max(height, 15)}%`,
                     animationDelay: `${i * 80}ms`,
@@ -183,18 +183,18 @@ export default function RecentActivity() {
           </div>
         </div>
       ) : (
-        <div className="bg-white/60 border border-gray-100 rounded-2xl p-4">
-          <p className="text-sm text-gray-400 text-center mb-3">
+        <div className="border-2 border-dashed border-[#d6d0c1] rounded-2xl p-5">
+          <p className="text-xs font-bold text-gray-900 uppercase tracking-wide text-center mb-4">
             Aucune séance la semaine dernière
           </p>
           <div className="flex items-end justify-center gap-2 h-12">
-            <div className="w-6 h-3 rounded-sm bg-gray-200" />
-            <div className="w-6 h-5 rounded-sm bg-gray-200" />
-            <div className="w-6 h-4 rounded-sm bg-gray-200" />
-            <div className="w-6 h-7 rounded-sm bg-gray-200" />
-            <div className="w-6 h-6 rounded-sm bg-gray-200" />
-            <div className="w-6 h-9 rounded-sm bg-gray-200" />
-            <div className="w-6 h-4 rounded-sm bg-gray-200" />
+            <div className="w-6 h-3 rounded-full bg-gray-300" />
+            <div className="w-6 h-5 rounded-full bg-gray-300" />
+            <div className="w-6 h-4 rounded-full bg-gray-300" />
+            <div className="w-6 h-7 rounded-full bg-gray-300" />
+            <div className="w-6 h-6 rounded-full bg-gray-300" />
+            <div className="w-6 h-9 rounded-full bg-gray-300" />
+            <div className="w-6 h-4 rounded-full bg-gray-300" />
           </div>
         </div>
       )}

@@ -31,3 +31,16 @@ export function formatDuration(seconds: number): string {
   const rest = seconds % 60;
   return `${minutes}:${rest.toString().padStart(2, "0")}`;
 }
+
+const LB_PER_KG = 2.2046226218;
+
+export function convertWeight(value: number, from: string, to: string): number {
+  if (from === to) return value;
+  if (from === "kg" && to === "lb") return value * LB_PER_KG;
+  if (from === "lb" && to === "kg") return value / LB_PER_KG;
+  return value;
+}
+
+export function roundWeight(value: number): number {
+  return Math.round(value * 10) / 10;
+}

@@ -56,5 +56,5 @@ export function useTrackedExercises() {
     }
   };
 
-  return { isTracked, fetchTracked, toggleTracked };
+  return { tracked, isTracked, fetchTracked, toggleTracked };
 }

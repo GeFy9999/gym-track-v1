@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getWeightUnit } from "../../utils/units";
 import { API_URL } from "../../lib/api";
+import ProgressLineChart from "../charts/ProgressLineChart";
 
 type BodyWeightEntry = {
   id: string;
@@ -48,58 +49,22 @@ export default function ProgressChart() {
 
   if (loading) {
     return (
-      <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm animate-pulse">
-        <div className="h-32 bg-gray-100 rounded-lg" />
+      <div className="bg-[#ece7dd] rounded-3xl p-4 shadow-sm animate-pulse">
+        <div className="h-32 bg-white/60 rounded-2xl" />
       </div>
     );
   }
 
   if (entries.length === 0) {
-    const fakePoints = [40, 55, 45, 60, 50, 65];
-    const fakeMax = Math.max(...fakePoints);
-    const cw = 300;
-    const ch = 120;
-
-    const fakePath = fakePoints
-      .map((p, i) => {
-        const x = (i / (fakePoints.length - 1)) * cw;
-        const y = ch - (p / fakeMax) * ch * 0.8 - ch * 0.1;
-        return `${i === 0 ? "M" : "L"} ${x} ${y}`;
-      })
-      .join(" ");
-
     return (
-      <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm relative overflow-hidden">
-        <div className="opacity-20">
-          <svg
-            viewBox={`0 0 ${cw} ${ch}`}
-            className="w-full h-36"
-            preserveAspectRatio="none"
-          >
-            <path
-              d={`${fakePath} L ${cw} ${ch} L 0 ${ch} Z`}
-              fill="rgba(201,85,44,0.15)"
-            />
-            <path d={fakePath} fill="none" stroke="#c9552c" strokeWidth="2" />
-            {fakePoints.map((p, i) => (
-              <circle
-                key={i}
-                cx={(i / (fakePoints.length - 1)) * cw}
-                cy={ch - (p / fakeMax) * ch * 0.8 - ch * 0.1}
-                r="4"
-                fill="#c9552c"
-              />
-            ))}
-          </svg>
-        </div>
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <p className="text-mm text-gray-800 font-bold mb-1">
-            Pas encore de données
-          </p>
-          <p className="text-s text-[#c9552c]">
-            Ton poids sera enregistré chaque semaine
-          </p>
-        </div>
+      <div className="bg-[#ece7dd] rounded-3xl p-4 shadow-sm">
+        <ProgressLineChart
+          title="Poids corporel"
+          subtitle={getWeightUnit().toUpperCase()}
+          points={[]}
+          emptyTitle="Pas encore de données"
+          emptyHint="Ton poids sera enregistré chaque semaine"
+        />
       </div>
     );
   }
@@ -127,8 +92,6 @@ export default function ProgressChart() {
   const linePath = entries
     .map((e, i) => `${i === 0 ? "M" : "L"} ${getX(i)} ${getY(e.value)}`)
     .join(" ");
-
-  const areaPath = `${linePath} L ${chartWidth} ${chartHeight} L 0 ${chartHeight} Z`;
 
   const dates = entries.map((e) => new Date(e.date));
 
@@ -160,12 +123,18 @@ export default function ProgressChart() {
       : 0;
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
-      <div className="flex flex-col items-center mb-4">
-        <span className="text-xs text-gray-500 mb-2">
-          Poids corporel ({getWeightUnit()})
+    <div className="bg-[#ece7dd] rounded-3xl p-4 shadow-sm">
+      <div className="flex items-start justify-between mb-3">
+        <span className="text-base font-black text-gray-900 uppercase tracking-wide">
+          Poids corporel
         </span>
+        <span className="text-[10px] font-bold uppercase tracking-wide text-gray-400 mt-1">
+          {getWeightUnit()}
+        </span>
+      </div>
 
+      <div className="bg-white rounded-2xl p-3">
+      <div className="flex flex-col items-center mb-2">
         <span className="text-3xl font-black text-gray-900">
           {activeIndex !== null
             ? `${Math.round(entries[activeIndex].value)} ${getWeightUnit()}`
@@ -245,6 +214,7 @@ export default function ProgressChart() {
             </div>
           );
         })}
+      </div>
       </div>
     </div>
   );

@@ -26,11 +26,16 @@ export default function HeaderStats() {
     : "Termine ta première semaine pour débloquer tes statistiques";
 
   return (
-    <div className="pt-6">
-      <h1 className="text-[32px] font-black text-gray-900 leading-tight">
+    <div
+      className="-mx-5 px-6 pt-6 pb-6"
+      style={{ background: "var(--color-ink)" }}
+    >
+      <h1 className="text-[32px] font-black text-white uppercase tracking-wide leading-tight">
         Stats
       </h1>
-      <p className="text-lg text-gray-500 mt-1">{message}</p>
+      <p className="text-xs font-bold text-white/50 uppercase tracking-widest mt-1">
+        {message}
+      </p>
     </div>
   );
 }

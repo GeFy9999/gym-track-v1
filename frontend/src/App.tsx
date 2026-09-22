@@ -11,19 +11,26 @@ import SessionPage from "./pages/Session.tsx";
 import HistoryPage from "./pages/History.tsx";
 import ProfilePage from "./pages/Profile.tsx";
 import { API_URL } from "./lib/api";
-import AddExercisePage from "./pages/AddExercise.tsx";
 import ForgotPasswordPage from "./pages/ForgotPassword.tsx";
 import ResetPasswordPage from "./pages/ResetPassword.tsx";
 import ProgressPhotosPage from "./pages/ProgressPhotos.tsx";
 import ImportPage from "./pages/Import.tsx";
+import ExercisesPage from "./pages/Exercises.tsx";
+import ExerciseDetailPage from "./pages/ExerciseDetail.tsx";
 import { RestTimerProvider, useRestTimerContext } from "./contexts/RestTimerContext";
 import RestTimer from "./components/session/RestTimer";
 
 function GlobalRestTimer() {
-  const { isActive, secondsLeft, skip, adjustSeconds } = useRestTimerContext();
+  const { isActive, secondsLeft, totalSeconds, skip, adjustSeconds } =
+    useRestTimerContext();
   if (!isActive) return null;
   return (
-    <RestTimer secondsLeft={secondsLeft} onSkip={skip} onAdjust={adjustSeconds} />
+    <RestTimer
+      secondsLeft={secondsLeft}
+      totalSeconds={totalSeconds}
+      onSkip={skip}
+      onAdjust={adjustSeconds}
+    />
   );
 }
 
@@ -72,7 +79,9 @@ function App() {
       "/reset-password",
       "/progression",
       "/import",
-    ].includes(location.pathname) || location.pathname.startsWith("/session/");
+    ].includes(location.pathname) ||
+    location.pathname.startsWith("/session/") ||
+    location.pathname.startsWith("/exercise/");
 
   const getApiHealth = async (): Promise<void> => {
     try {
@@ -142,10 +151,18 @@ function App() {
               }
             />
             <Route
-              path="/add-exercise"
+              path="/exercises"
               element={
                 <ProtectedRoute>
-                  <AddExercisePage />
+                  <ExercisesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/exercise/:exerciseId"
+              element={
+                <ProtectedRoute>
+                  <ExerciseDetailPage />
                 </ProtectedRoute>
               }
             />
