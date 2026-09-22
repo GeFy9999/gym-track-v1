@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   Check,
   Clock,
@@ -6,6 +7,7 @@ import {
   Trophy,
   TrendingUp,
 } from "lucide-react";
+import { getDateLocale } from "../../i18n";
 
 type PR = {
   exerciseName: string;
@@ -39,30 +41,13 @@ function formatDuration(minutes: number): string {
 
 function formatDate(dateStr: string): string {
   const d = new Date(dateStr);
-  const days = [
-    "Dimanche",
-    "Lundi",
-    "Mardi",
-    "Mercredi",
-    "Jeudi",
-    "Vendredi",
-    "Samedi",
-  ];
-  const months = [
-    "janv.",
-    "févr.",
-    "mars",
-    "avr.",
-    "mai",
-    "juin",
-    "juil.",
-    "août",
-    "sept.",
-    "oct.",
-    "nov.",
-    "déc.",
-  ];
-  return `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]}`.toUpperCase();
+  return d
+    .toLocaleDateString(getDateLocale(), {
+      weekday: "long",
+      day: "numeric",
+      month: "short",
+    })
+    .toUpperCase();
 }
 
 export default function WorkoutSummary({
@@ -75,12 +60,13 @@ export default function WorkoutSummary({
   exerciseDeltas,
   onClose,
 }: Props) {
+  const { t } = useTranslation();
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-6 animate-fade-in">
-      <div className="bg-white rounded-3xl w-full max-w-sm shadow-2xl animate-scale-in overflow-hidden">
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[60] px-6 animate-fade-in">
+      <div className="bg-white rounded-3xl w-full max-w-sm shadow-2xl animate-scale-in overflow-hidden flex flex-col max-h-[90vh]">
         {/* ── Header sombre ── */}
         <div
-          className="px-6 pt-8 pb-6 text-center"
+          className="px-6 pt-8 pb-6 text-center flex-shrink-0"
           style={{
             background: "#191714",
           }}
@@ -92,7 +78,7 @@ export default function WorkoutSummary({
             </div>
           </div>
           <h2 className="text-[22px] font-black text-white uppercase tracking-wide">
-            Séance terminée
+            {t("session.summary.title")}
           </h2>
           {muscleGroups.length > 0 && (
             <p className="text-[13px] font-semibold text-white/50 uppercase tracking-widest mt-1">
@@ -105,7 +91,7 @@ export default function WorkoutSummary({
         </div>
 
         {/* ── Contenu ── */}
-        <div className="px-5 pt-5 pb-6">
+        <div className="px-5 pt-5 pb-4 overflow-y-auto flex-1 min-h-0">
           <div className="space-y-4">
             {/* Grille 2×2 */}
             <div className="grid grid-cols-2 gap-2.5">
@@ -119,7 +105,7 @@ export default function WorkoutSummary({
                   {formatDuration(durationMinutes)}
                 </p>
                 <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-2">
-                  Durée
+                  {t("session.summary.duration")}
                 </p>
               </div>
               <div className="bg-[#ece7dd] rounded-2xl px-4 py-3.5">
@@ -132,7 +118,7 @@ export default function WorkoutSummary({
                   {totalSets}
                 </p>
                 <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-2">
-                  Sets
+                  {t("session.summary.sets")}
                 </p>
               </div>
               <div className="bg-[#ece7dd] rounded-2xl px-4 py-3.5">
@@ -147,8 +133,7 @@ export default function WorkoutSummary({
                   {prs.length}
                 </p>
                 <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-2">
-                  Record{prs.length === 1 ? "" : "s"} battu
-                  {prs.length === 1 ? "" : "s"}
+                  {t("session.summary.recordsBeaten", { count: prs.length })}
                 </p>
               </div>
               <div className="bg-[#ece7dd] rounded-2xl px-4 py-3.5">
@@ -161,7 +146,7 @@ export default function WorkoutSummary({
                   {totalExercises}
                 </p>
                 <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-2">
-                  Exercices
+                  {t("session.summary.exercises")}
                 </p>
               </div>
             </div>
@@ -172,8 +157,7 @@ export default function WorkoutSummary({
                 <div className="flex items-center gap-1.5 mb-2">
                   <Trophy size={14} className="text-[#c9552c]" />
                   <p className="text-xs font-bold uppercase tracking-wide text-[#c9552c]">
-                    {prs.length} nouveau{prs.length > 1 ? "x" : ""} record
-                    {prs.length > 1 ? "s" : ""}
+                    {t("session.summary.newRecords", { count: prs.length })}
                   </p>
                 </div>
                 <div className="space-y-1">
@@ -200,7 +184,7 @@ export default function WorkoutSummary({
                 <div className="flex items-center gap-1.5 mb-2">
                   <TrendingUp size={18} strokeWidth={2.5} className="text-gray-900" />
                   <p className="text-sm font-black uppercase tracking-wide text-gray-900">
-                    Progression vs dernière fois
+                    {t("session.summary.progressionTitle")}
                   </p>
                 </div>
                 <div className="space-y-1">
@@ -221,14 +205,16 @@ export default function WorkoutSummary({
               </div>
             )}
           </div>
+        </div>
 
-          {/* Bouton Continuer */}
+        {/* Bouton Continuer */}
+        <div className="px-5 pt-2 pb-6 flex-shrink-0">
           <button
             onClick={onClose}
-            className="w-full text-white py-3.5 rounded-2xl font-bold uppercase tracking-wider text-[15px] mt-5 transition-colors active:opacity-90"
+            className="w-full text-white py-3.5 rounded-2xl font-bold uppercase tracking-wider text-[15px] transition-colors active:opacity-90"
             style={{ background: "#191714" }}
           >
-            Continuer
+            {t("session.summary.continue")}
           </button>
         </div>
       </div>

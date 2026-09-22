@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { BAR_WEIGHTS } from "../../utils/plates";
 
 type Props = {
@@ -11,10 +12,11 @@ export default function BarbellSelector({
   currentBarWeight,
   onSelect,
 }: Props) {
+  const { t } = useTranslation();
   return (
     <div className="mb-3">
       <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1.5">
-        Barre
+        {t("session.barbell.bar")}
       </p>
       <div className="flex gap-2">
         {(BAR_WEIGHTS[unit] || BAR_WEIGHTS.lb).map((bw) => (

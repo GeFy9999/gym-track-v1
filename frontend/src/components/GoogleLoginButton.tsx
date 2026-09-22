@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { API_URL } from "../lib/api";
 
 const GOOGLE_CLIENT_ID =
@@ -33,6 +34,7 @@ declare global {
 
 export default function GoogleLoginButton() {
   const navigate = useNavigate();
+  const { i18n } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLDivElement>(null);
 
@@ -42,7 +44,13 @@ export default function GoogleLoginButton() {
         const res = await fetch(`${API_URL}/auth/google`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ credential: response.credential }),
+          body: JSON.stringify({
+            credential: response.credential,
+            // Only used the first time, when this Google sign-in creates a
+            // brand-new account — an existing account keeps its own saved
+            // language preference instead.
+            language: i18n.language?.startsWith("en") ? "en" : "fr",
+          }),
         });
 
         const data = await res.json();
@@ -55,6 +63,9 @@ export default function GoogleLoginButton() {
         localStorage.setItem("user", JSON.stringify(data.user));
         if (!data.isNewUser) {
           localStorage.setItem(`onboardingDone_${data.user.id}`, "true");
+        }
+        if (data.user.language) {
+          i18n.changeLanguage(data.user.language);
         }
         navigate("/dashboard");
       } catch (err) {

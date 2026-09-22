@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Check } from "lucide-react";
 import type { SessionExercise } from "../../types/session";
 
@@ -18,17 +19,17 @@ export default function SupersetModal({
   onClose,
   onConfirm,
 }: Props) {
+  const { t } = useTranslation();
   const target = exercises.find((s) => s.id === supersetModalFor);
 
   return (
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6 animate-fade-in">
       <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
         <p className="text-base font-bold text-gray-900 text-center mb-1">
-          Lier en superset
+          {t("session.superset.title")}
         </p>
         <p className="text-sm text-gray-400 text-center mb-4">
-          Choisis les exercices à enchaîner sans repos avec{" "}
-          {target?.exercise.name}.
+          {t("session.superset.body", { name: target?.exercise.name })}
         </p>
 
         <div className="space-y-1.5 max-h-64 overflow-y-auto mb-4">
@@ -63,7 +64,7 @@ export default function SupersetModal({
             })}
           {exercises.length < 2 && (
             <p className="text-xs text-gray-400 text-center py-3">
-              Ajoute un autre exercice à la séance pour créer un superset.
+              {t("session.superset.needMore")}
             </p>
           )}
         </div>
@@ -73,13 +74,13 @@ export default function SupersetModal({
             onClick={onClose}
             className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-xl font-semibold transition-colors"
           >
-            Annuler
+            {t("session.cancel")}
           </button>
           <button
             onClick={onConfirm}
             className="flex-1 bg-[#c9552c] text-white py-3 rounded-xl font-semibold transition-colors"
           >
-            Confirmer
+            {t("session.confirm")}
           </button>
         </div>
       </div>

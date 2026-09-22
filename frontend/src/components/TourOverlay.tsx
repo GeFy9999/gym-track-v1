@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useLayoutEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 type TourStep = {
   title: string;
@@ -21,6 +22,7 @@ const MAX_POLL_ATTEMPTS = 30; // ~3s — covers a normal data fetch/render cycle
 const EDGE_MARGIN = 16;
 
 export default function TourOverlay({ tourKey, steps, refs }: Props) {
+  const { t } = useTranslation();
   const storageKey = `tour_${tourKey}`;
   const [step, setStep] = useState<number | null>(null);
   const [rect, setRect] = useState<Rect | null>(null);
@@ -214,13 +216,13 @@ export default function TourOverlay({ tourKey, steps, refs }: Props) {
               onClick={skip}
               className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-semibold transition-colors"
             >
-              Passer
+              {t("common.skip")}
             </button>
             <button
               onClick={next}
               className="flex-1 bg-[#c9552c] text-white py-3 rounded-xl font-semibold transition-colors"
             >
-              {step < steps.length - 1 ? "Suivant" : "Terminé"}
+              {step < steps.length - 1 ? t("common.next") : t("common.done")}
             </button>
           </div>
         </div>

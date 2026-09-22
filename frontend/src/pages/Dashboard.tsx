@@ -4,12 +4,15 @@ import MuscleGroupsCards from "../components/dashboard/muscleGroupGrid";
 import RecentActivity from "../components/dashboard/recentActivity";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Scale, ChevronRight, Check } from "lucide-react";
 import { API_URL } from "../lib/api";
 import TourOverlay from "../components/TourOverlay";
 import PRCelebration from "../components/session/PRCelebration";
 import WorkoutSummary from "../components/session/WorkoutSummary";
 import { getWeightUnit } from "../utils/units";
+import { useUiChrome } from "../contexts/UiChromeContext";
+import { getDateLocale } from "../i18n";
 
 type AbandonedSession = {
   id: string;
@@ -36,13 +39,14 @@ type WorkoutSummaryData = {
 };
 
 const formatAbandonedDate = (dateStr: string) =>
-  new Date(dateStr).toLocaleDateString("fr-FR", {
+  new Date(dateStr).toLocaleDateString(getDateLocale(), {
     weekday: "long",
     day: "numeric",
   });
 
 export default function DashboardPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const stored = localStorage.getItem("user");
   const user = stored ? JSON.parse(stored) : null;
   const userName = user?.name || "";
@@ -66,6 +70,13 @@ export default function DashboardPage() {
   // Onboarding
   const [showWelcome, setShowWelcome] = useState(false);
   const [showOnboardingWeight, setShowOnboardingWeight] = useState(false);
+  const { setNavHidden } = useUiChrome();
+
+  useEffect(() => {
+    setNavHidden(showWelcome);
+    return () => setNavHidden(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showWelcome]);
   const [showTour, setShowTour] = useState(false);
 
   const handleSetWeekActive = (val: boolean) => {
@@ -262,55 +273,47 @@ export default function DashboardPage() {
 
   const dashboardTourSteps = [
     {
-      title: "Commencer ta semaine",
-      description:
-        "Appuie ici pour démarrer ta semaine d'entraînement. Une fois active, tu pourras ajouter des sessions.",
+      title: t("dashboard.tour.week.title"),
+      description: t("dashboard.tour.week.desc"),
       refIndex: 0,
     },
     {
-      title: "Groupes musculaires",
-      description:
-        "Clique sur un groupe musculaire pour créer une session et ajouter des exercices. Un badge orange apparaîtra quand une session est en cours.",
+      title: t("dashboard.tour.muscleGroups.title"),
+      description: t("dashboard.tour.muscleGroups.desc"),
       refIndex: 1,
     },
     {
-      title: "Activité récente",
-      description:
-        "Ici tu retrouves tes dernières sessions avec les exercices et sets que tu as faits.",
+      title: t("dashboard.tour.activity.title"),
+      description: t("dashboard.tour.activity.desc"),
       refIndex: 2,
     },
     {
-      title: "Accueil",
-      description:
-        "C'est ici, ton tableau de bord principal. Tu y verras ta semaine, tes groupes musculaires et ton activité récente.",
+      title: t("dashboard.tour.home.title"),
+      description: t("dashboard.tour.home.desc"),
       selector: "[data-tour='nav-accueil']",
       tooltipPosition: "above" as const,
     },
     {
-      title: "Statistiques",
-      description:
-        "Consulte tes records personnels, ta progression et le volume de travail par groupe musculaire.",
+      title: t("dashboard.tour.stats.title"),
+      description: t("dashboard.tour.stats.desc"),
       selector: "[data-tour='nav-stats']",
       tooltipPosition: "above" as const,
     },
     {
-      title: "Records personnels",
-      description:
-        "Appuie sur le trophée pour choisir quels exercices suivre en record personnel. Une fois l'exercice fait au moins une fois, ton meilleur poids apparaîtra dans Stats.",
+      title: t("dashboard.tour.records.title"),
+      description: t("dashboard.tour.records.desc"),
       selector: "[data-tour='nav-records']",
       tooltipPosition: "above" as const,
     },
     {
-      title: "Historique",
-      description:
-        "Retrouve toutes tes séances passées organisées par semaine. Clique sur une séance pour revoir les détails.",
+      title: t("dashboard.tour.history.title"),
+      description: t("dashboard.tour.history.desc"),
       selector: "[data-tour='nav-historique']",
       tooltipPosition: "above" as const,
     },
     {
-      title: "Profil",
-      description:
-        "Gère ton compte, change ton mot de passe, suis ton poids corporel et consulte tes photos de progression.",
+      title: t("dashboard.tour.profile.title"),
+      description: t("dashboard.tour.profile.desc"),
       selector: "[data-tour='nav-profil']",
       tooltipPosition: "above" as const,
     },
@@ -619,42 +622,40 @@ export default function DashboardPage() {
             onClick={() => setShowEndConfirm(true)}
             className="w-full bg-[#191714] active:scale-[0.98] text-white py-4 rounded-full font-bold uppercase tracking-wide text-sm transition-all flex items-center justify-center shadow-sm"
           >
-            Terminer la séance
+            {t("dashboard.finishSession")}
           </button>
         </div>
       )}
 
       {showEndConfirm && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6 animate-fade-in">
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-[60] px-6 animate-fade-in">
           <div className="bg-[#faf6f1] rounded-3xl w-full max-w-sm shadow-2xl animate-scale-in overflow-hidden">
             <div
               className="px-6 pt-7 pb-6 text-center"
               style={{ background: "#191714" }}
             >
               <h2 className="text-xl font-black text-white uppercase tracking-wide">
-                Terminer la séance ?
+                {t("dashboard.finishSessionTitle")}
               </h2>
             </div>
 
             <div className="px-5 pt-5 pb-6">
               <p className="text-sm text-gray-500 text-center leading-relaxed mb-6">
-                Tes séances en cours seront marquées comme terminées et
-                rangées dans ton historique. Tu pourras en recommencer de
-                nouvelles pour ces groupes musculaires.
+                {t("dashboard.finishSessionBody")}
               </p>
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowEndConfirm(false)}
                   className="flex-1 bg-[#ece7dd] text-gray-700 py-3.5 rounded-full font-bold uppercase tracking-wide text-sm transition-colors active:opacity-80"
                 >
-                  Annuler
+                  {t("dashboard.cancel")}
                 </button>
                 <button
                   onClick={handleEndSession}
                   className="flex-1 bg-[#3a9e6e] text-white py-3.5 rounded-full font-bold uppercase tracking-wide text-sm transition-colors active:opacity-90 flex items-center justify-center gap-1.5"
                 >
                   <Check size={16} strokeWidth={3} />
-                  Terminer
+                  {t("dashboard.finish")}
                 </button>
               </div>
             </div>
@@ -663,28 +664,31 @@ export default function DashboardPage() {
       )}
 
       {abandonedQueue.length > 0 && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6 animate-fade-in">
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-[60] px-6 animate-fade-in">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
             <p className="text-base font-semibold text-gray-900 text-center mb-2">
-              Séance {abandonedQueue[0].muscleGroup} en cours
+              {t("dashboard.abandoned.title", {
+                group: abandonedQueue[0].muscleGroup,
+              })}
             </p>
             <p className="text-sm text-gray-400 text-center mb-6">
-              Tu as un workout {abandonedQueue[0].muscleGroup} en cours du{" "}
-              {formatAbandonedDate(abandonedQueue[0].date)}. Reprendre ou
-              terminer ?
+              {t("dashboard.abandoned.body", {
+                group: abandonedQueue[0].muscleGroup,
+                date: formatAbandonedDate(abandonedQueue[0].date),
+              })}
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => handleFinishAbandoned(abandonedQueue[0])}
                 className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-xl font-semibold transition-colors"
               >
-                Terminer
+                {t("dashboard.finish")}
               </button>
               <button
                 onClick={() => handleResumeAbandoned(abandonedQueue[0])}
                 className="flex-1 bg-[#c9552c] text-white py-3 rounded-xl font-semibold transition-colors"
               >
-                Reprendre
+                {t("dashboard.resume")}
               </button>
             </div>
           </div>
@@ -692,7 +696,7 @@ export default function DashboardPage() {
       )}
 
       {showWeightPrompt && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6 animate-fade-in">
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-[60] px-6 animate-fade-in">
           <div className="bg-[#faf6f1] rounded-3xl w-full max-w-sm shadow-2xl animate-scale-in overflow-hidden">
             <div
               className="px-6 pt-8 pb-6 text-center"
@@ -702,10 +706,10 @@ export default function DashboardPage() {
                 <Scale size={24} className="text-[#f0994a]" />
               </div>
               <h2 className="text-xl font-black text-white uppercase tracking-wide">
-                Quel est ton poids ?
+                {t("dashboard.weightPrompt.title")}
               </h2>
               <p className="text-sm text-white/50 mt-1">
-                Entre ton poids pour suivre ta progression
+                {t("dashboard.weightPrompt.subtitle")}
               </p>
             </div>
 
@@ -753,7 +757,7 @@ export default function DashboardPage() {
                   onClick={handleSnoozeWeight}
                   className="flex-1 bg-[#ece7dd] text-gray-700 py-3.5 rounded-full font-bold uppercase tracking-wide text-sm transition-colors active:opacity-80"
                 >
-                  Plus tard
+                  {t("dashboard.weightPrompt.later")}
                 </button>
                 <button
                   onClick={handleSaveWeight}
@@ -761,7 +765,7 @@ export default function DashboardPage() {
                   className="flex-1 bg-[#191714] disabled:opacity-40 text-white py-3.5 rounded-full font-bold uppercase tracking-wide text-sm transition-colors active:opacity-90 flex items-center justify-center gap-1.5"
                 >
                   <Check size={16} strokeWidth={3} />
-                  Sauvegarder
+                  {t("dashboard.weightPrompt.save")}
                 </button>
               </div>
             </div>
@@ -778,17 +782,16 @@ export default function DashboardPage() {
             className="h-20 mb-6"
           />
           <h1 className="text-2xl font-black text-gray-900 text-center mb-2">
-            Bienvenue{userName ? `, ${userName}` : ""} !
+            {t("dashboard.welcome.title", { name: userName })}
           </h1>
           <p className="text-sm text-gray-500 text-center mb-8 max-w-xs">
-            Ton espace pour suivre tes entraînements, ta progression et
-            atteindre tes objectifs.
+            {t("dashboard.welcome.subtitle")}
           </p>
           <button
             onClick={handleWelcomeNext}
             className="w-full max-w-xs bg-[#c9552c] text-white py-4 rounded-2xl font-semibold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
           >
-            Commencer
+            {t("dashboard.welcome.start")}
             <ChevronRight size={18} />
           </button>
         </div>
@@ -796,17 +799,17 @@ export default function DashboardPage() {
 
       {/* Onboarding weight prompt */}
       {showOnboardingWeight && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6 animate-fade-in">
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-[60] px-6 animate-fade-in">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
             <div className="flex flex-col items-center mb-4">
               <div className="w-12 h-12 rounded-full bg-orange-50 flex items-center justify-center mb-3">
                 <Scale size={24} className="text-orange-500" />
               </div>
               <p className="text-base font-semibold text-gray-900 text-center">
-                Quel est ton poids actuel ?
+                {t("dashboard.onboardingWeight.title")}
               </p>
               <p className="text-xs text-gray-400 text-center mt-1">
-                On va utiliser ça pour suivre ton évolution
+                {t("dashboard.onboardingWeight.subtitle")}
               </p>
             </div>
 
@@ -832,14 +835,14 @@ export default function DashboardPage() {
                 onClick={handleOnboardingWeightSkip}
                 className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-xl font-semibold transition-colors"
               >
-                Passer
+                {t("dashboard.onboardingWeight.skip")}
               </button>
               <button
                 onClick={handleOnboardingWeightSave}
                 disabled={!bodyWeight}
                 className="flex-1 bg-[#c9552c] disabled:opacity-50 text-white py-3 rounded-xl font-semibold transition-colors"
               >
-                Continuer
+                {t("dashboard.onboardingWeight.continue")}
               </button>
             </div>
           </div>

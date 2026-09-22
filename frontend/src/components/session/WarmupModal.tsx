@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Flame, Minus, Plus } from "lucide-react";
 import {
   computeWarmupSets,
@@ -18,6 +19,7 @@ type Props = {
 };
 
 export default function WarmupModal({ unit, onClose, onConfirm }: Props) {
+  const { t } = useTranslation();
   const [weight, setWeight] = useState("");
   const [reps, setReps] = useState("8");
   const [count, setCount] = useState(DEFAULT_WARMUP_SETS);
@@ -35,17 +37,17 @@ export default function WarmupModal({ unit, onClose, onConfirm }: Props) {
         <div className="flex items-center justify-center gap-2 mb-1">
           <Flame size={18} className="text-[#c9552c]" />
           <p className="text-base font-bold text-gray-900">
-            Échauffement auto
+            {t("session.warmupModal.title")}
           </p>
         </div>
         <p className="text-sm text-gray-400 text-center mb-4">
-          Entre ton poids de travail, on génère la montée en charge.
+          {t("session.warmupModal.subtitle")}
         </p>
 
         <div className="grid grid-cols-2 gap-3 mb-4">
           <div className="bg-gray-100 rounded-2xl p-3">
             <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">
-              Poids de travail
+              {t("session.warmupModal.workingWeight")}
             </p>
             <div className="flex items-baseline gap-1">
               <input
@@ -67,7 +69,7 @@ export default function WarmupModal({ unit, onClose, onConfirm }: Props) {
           </div>
           <div className="bg-gray-100 rounded-2xl p-3">
             <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">
-              Reps de travail
+              {t("session.warmupModal.workingReps")}
             </p>
             <input
               type="text"
@@ -83,7 +85,7 @@ export default function WarmupModal({ unit, onClose, onConfirm }: Props) {
 
         <div className="flex items-center justify-between bg-gray-100 rounded-2xl p-3 mb-4">
           <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
-            Nombre de sets d'échauffement
+            {t("session.warmupModal.setsCount")}
           </p>
           <div className="flex items-center gap-3">
             <button
@@ -115,7 +117,9 @@ export default function WarmupModal({ unit, onClose, onConfirm }: Props) {
                 key={i}
                 className="flex items-center justify-between text-sm"
               >
-                <span className="text-gray-400">Échauffement {i + 1}</span>
+                <span className="text-gray-400">
+                  {t("session.warmupModal.warmupSet", { index: i + 1 })}
+                </span>
                 <span className="font-semibold text-gray-800">
                   {s.weight} {unit} × {s.reps}
                 </span>
@@ -123,7 +127,7 @@ export default function WarmupModal({ unit, onClose, onConfirm }: Props) {
             ))}
             <div className="flex items-center justify-between text-sm pt-1.5 border-t border-gray-200">
               <span className="text-[#c9552c] font-semibold">
-                Set de travail
+                {t("session.warmupModal.workingSet")}
               </span>
               <span className="font-bold text-[#c9552c]">
                 {workingWeight} {unit} × {workingReps}
@@ -137,14 +141,14 @@ export default function WarmupModal({ unit, onClose, onConfirm }: Props) {
             onClick={onClose}
             className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-xl font-semibold transition-colors"
           >
-            Annuler
+            {t("session.cancel")}
           </button>
           <button
             onClick={() => onConfirm(workingWeight, workingReps, count)}
             disabled={workingWeight <= 0 || workingReps <= 0}
             className="flex-1 bg-[#c9552c] disabled:opacity-50 text-white py-3 rounded-xl font-semibold transition-colors"
           >
-            Générer
+            {t("session.warmupModal.generate")}
           </button>
         </div>
       </div>

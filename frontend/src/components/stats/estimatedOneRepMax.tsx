@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Trophy } from "lucide-react";
 import { getWeightUnit } from "../../utils/units";
 import { API_URL } from "../../lib/api";
@@ -9,6 +10,7 @@ type ProgressPoint = { week: string; oneRepMax: number };
 type ExerciseOneRM = { exerciseId: string; name: string; points: ProgressPoint[] };
 
 export default function EstimatedOneRepMax() {
+  const { t: translate } = useTranslation();
   const [data, setData] = useState<ExerciseOneRM[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -48,7 +50,7 @@ export default function EstimatedOneRepMax() {
             const points: ProgressPoint[] = res.ok ? await res.json() : [];
             return {
               exerciseId: t.exerciseId,
-              name: nameById.get(t.exerciseId) ?? "Exercice",
+              name: nameById.get(t.exerciseId) ?? translate("common.exercise"),
               points,
             };
           }),
@@ -86,8 +88,7 @@ export default function EstimatedOneRepMax() {
       <div className="border-2 border-dashed border-gray-300 rounded-3xl p-7 text-center">
         <Trophy size={26} strokeWidth={2} className="text-[#c9552c] mx-auto mb-3" />
         <p className="text-sm text-gray-500 leading-relaxed">
-          Active le trophée sur un exercice et enregistre un set pour voir son
-          1RM estimé ici.
+          {translate("stats.oneRepMaxEmpty")}
         </p>
       </div>
     );

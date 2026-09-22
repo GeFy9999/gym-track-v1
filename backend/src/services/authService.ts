@@ -15,6 +15,7 @@ export const register = async (payload: {
   email: string;
   password: string;
   name: string;
+  language?: string;
 }) => {
   const existing = await getUserByEmail(payload.email);
   if (existing) throw new Error("Email déjà utilisé");
@@ -24,6 +25,9 @@ export const register = async (payload: {
     email: payload.email,
     password: hashed,
     name: payload.name,
+    // The client detects the browser's locale and passes it along so a new
+    // account starts in the visitor's language instead of always "fr".
+    language: payload.language === "en" ? "en" : "fr",
   });
 
   const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, {
@@ -41,6 +45,7 @@ export const register = async (payload: {
       restTimerSeconds: user.restTimerSeconds,
       restTimerEnabled: user.restTimerEnabled,
       barbellModeEnabled: user.barbellModeEnabled,
+      language: user.language,
       authProvider: user.authProvider,
     },
   };
@@ -68,12 +73,13 @@ export const login = async (payload: { email: string; password: string }) => {
       restTimerSeconds: user.restTimerSeconds,
       restTimerEnabled: user.restTimerEnabled,
       barbellModeEnabled: user.barbellModeEnabled,
+      language: user.language,
       authProvider: user.authProvider,
     },
   };
 };
 
-export const googleLogin = async (credential: string) => {
+export const googleLogin = async (credential: string, language?: string) => {
   const ticket = await googleClient.verifyIdToken({
     idToken: credential,
     audience: process.env.GOOGLE_CLIENT_ID!,
@@ -100,6 +106,7 @@ export const googleLogin = async (credential: string) => {
       password: randomPassword,
       name,
       authProvider: "google",
+      language: language === "en" ? "en" : "fr",
     });
   }
 
@@ -119,6 +126,7 @@ export const googleLogin = async (credential: string) => {
       restTimerSeconds: user.restTimerSeconds,
       restTimerEnabled: user.restTimerEnabled,
       barbellModeEnabled: user.barbellModeEnabled,
+      language: user.language,
       authProvider: user.authProvider,
     },
   };
@@ -224,6 +232,13 @@ export const updateRestTimerEnabled = async (
   await prisma.user.update({
     where: { id: userId },
     data: { restTimerEnabled },
+  });
+};
+
+export const updateLanguage = async (userId: string, language: string) => {
+  await prisma.user.update({
+    where: { id: userId },
+    data: { language },
   });
 };
 

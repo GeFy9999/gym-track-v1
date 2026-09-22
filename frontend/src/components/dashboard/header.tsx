@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Flame } from "lucide-react";
 import { API_URL } from "../../lib/api";
+import { getDateLocale } from "../../i18n";
 
 export default function HeaderDashboard() {
+  const { t } = useTranslation();
   const today = new Date();
-  const formattedDate = today.toLocaleDateString("fr-FR", {
+  const formattedDate = today.toLocaleDateString(getDateLocale(), {
     weekday: "long",
     day: "numeric",
     month: "long",
@@ -13,7 +16,7 @@ export default function HeaderDashboard() {
     formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
 
   const stored = localStorage.getItem("user");
-  const userName = stored ? JSON.parse(stored).name : "Utilisateur";
+  const userName = stored ? JSON.parse(stored).name : t("common.user");
 
   const [streak, setStreak] = useState(0);
   const [weekDays, setWeekDays] = useState(0);
@@ -79,7 +82,7 @@ export default function HeaderDashboard() {
             {capitalizedDate}
           </p>
           <h1 className="text-[26px] font-black uppercase leading-tight">
-            <span className="text-white">Bonjour,</span>
+            <span className="text-white">{t("dashboard.greeting")}</span>
             <br />
             <span className="text-white">{userName}</span>
           </h1>
@@ -111,7 +114,7 @@ export default function HeaderDashboard() {
           ))}
         </div>
         <span className="text-xs font-bold text-white/70 uppercase tracking-wide whitespace-nowrap">
-          {weekDays}/7 jours
+          {t("dashboard.daysProgress", { count: weekDays })}
         </span>
       </div>
     </div>

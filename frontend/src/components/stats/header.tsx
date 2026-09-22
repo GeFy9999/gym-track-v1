@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { API_URL } from "../../lib/api";
 
 export default function HeaderStats() {
+  const { t } = useTranslation();
   const [hasCompletedWeek, setHasCompletedWeek] = useState<boolean>(false);
 
   useEffect(() => {
@@ -22,8 +24,8 @@ export default function HeaderStats() {
   }, []);
 
   const message = hasCompletedWeek
-    ? "Tes statistiques de progression"
-    : "Termine ta première semaine pour débloquer tes statistiques";
+    ? t("stats.subtitleReady")
+    : t("stats.subtitleLocked");
 
   return (
     <div
@@ -31,7 +33,7 @@ export default function HeaderStats() {
       style={{ background: "var(--color-ink)" }}
     >
       <h1 className="text-[32px] font-black text-white uppercase tracking-wide leading-tight">
-        Stats
+        {t("stats.title")}
       </h1>
       <p className="text-xs font-bold text-white/50 uppercase tracking-widest mt-1">
         {message}

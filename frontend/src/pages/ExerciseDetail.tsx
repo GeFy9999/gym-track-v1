@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   ArrowLeft,
   Dumbbell,
@@ -11,6 +12,7 @@ import {
 import { API_URL } from "../lib/api";
 import { useTrackedExercises } from "../hooks/useTrackedExercises";
 import { getWeightUnit, convertWeight, roundWeight } from "../utils/units";
+import { getDateLocale } from "../i18n";
 import ProgressLineChart from "../components/charts/ProgressLineChart";
 
 type Exercise = {
@@ -51,7 +53,7 @@ type ExerciseHistoryResponse = {
 const IS_PRO = true;
 
 function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("fr-FR", {
+  return new Date(iso).toLocaleDateString(getDateLocale(), {
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -97,7 +99,13 @@ function RecordRow({
   );
 }
 
-function ProGate({ children }: { children: React.ReactNode }) {
+function ProGate({
+  children,
+  goProLabel,
+}: {
+  children: React.ReactNode;
+  goProLabel: string;
+}) {
   return (
     <div className="relative">
       <div className="blur-[3px] opacity-50 pointer-events-none select-none">
@@ -108,7 +116,7 @@ function ProGate({ children }: { children: React.ReactNode }) {
           onClick={() => {}}
           className="flex items-center gap-1.5 bg-gray-900 text-white text-xs font-bold px-4 py-2.5 rounded-full shadow-lg active:scale-[0.97] transition-transform"
         >
-          <Lock size={13} /> Passer à Pro
+          <Lock size={13} /> {goProLabel}
         </button>
       </div>
     </div>
@@ -116,6 +124,7 @@ function ProGate({ children }: { children: React.ReactNode }) {
 }
 
 export default function ExerciseDetailPage() {
+  const { t } = useTranslation();
   const { exerciseId } = useParams();
   const navigate = useNavigate();
   const { isTracked, fetchTracked, toggleTracked } = useTrackedExercises();
@@ -187,7 +196,7 @@ export default function ExerciseDetailPage() {
   if (!exercise || !data) {
     return (
       <div className="min-h-screen bg-[#faf6f1] flex items-center justify-center">
-        <p className="text-red-400">Exercice introuvable</p>
+        <p className="text-red-400">{t("exerciseDetail.notFound")}</p>
       </div>
     );
   }
@@ -258,7 +267,7 @@ export default function ExerciseDetailPage() {
             setTrophyPopping(true);
           }}
           onAnimationEnd={() => setTrophyPopping(false)}
-          aria-label="Suivre en record personnel"
+          aria-label={t("exerciseDetail.trackAria")}
           className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${
             isTracked(exercise.id)
               ? "bg-[#c9552c] text-white"
@@ -294,7 +303,7 @@ export default function ExerciseDetailPage() {
         {note && (
           <div className="bg-[#c9552c]/5 border border-[#c9552c]/20 rounded-2xl px-4 py-3">
             <p className="text-[10px] font-bold uppercase tracking-wide text-[#c9552c] mb-1">
-              Ta note
+              {t("exerciseDetail.yourNote")}
             </p>
             <p className="text-sm text-gray-700">{note}</p>
           </div>
@@ -302,49 +311,59 @@ export default function ExerciseDetailPage() {
 
         <div>
           <p className="text-[15px] font-bold text-gray-900 mb-2">
-            Records personnels
+            {t("exerciseDetail.personalRecords")}
           </p>
           <div className="space-y-2">
             {convertedRecords.bestWeight ? (
               <RecordRow
                 icon={<Dumbbell size={18} className="text-[#c9552c]" />}
                 value={`${convertedRecords.bestWeight.weight} ${unit}`}
-                label="Meilleur poids"
+                label={t("exerciseDetail.bestWeight")}
                 detail={formatDate(convertedRecords.bestWeight.date)}
               />
             ) : (
               <RecordRow
                 icon={<Dumbbell size={18} className="text-[#c9552c]" />}
                 value={`-- ${unit}`}
-                label="Meilleur poids"
+                label={t("exerciseDetail.bestWeight")}
               />
             )}
             {convertedRecords.bestVolume ? (
               <RecordRow
                 icon={<Layers size={18} className="text-[#c9552c]" />}
                 value={`${convertedRecords.bestVolume.weight} ${unit} × ${convertedRecords.bestVolume.reps}`}
-                label={`Meilleur volume (${convertedRecords.bestVolume.volume} ${unit})`}
+                label={t("exerciseDetail.bestVolume", {
+                  volume: convertedRecords.bestVolume.volume,
+                  unit,
+                })}
                 detail={formatDate(convertedRecords.bestVolume.date)}
               />
             ) : (
               <RecordRow
                 icon={<Layers size={18} className="text-[#c9552c]" />}
                 value={`-- ${unit}`}
-                label="Meilleur volume"
+                label={t("exerciseDetail.bestVolume", { volume: "--", unit })}
               />
             )}
             {convertedRecords.bestOneRepMax ? (
               <RecordRow
                 icon={<TrendingUp size={18} className="text-[#c9552c]" />}
-                value={`${Math.round(convertedRecords.bestOneRepMax.oneRepMax)} ${unit} (estimé)`}
-                label={`Via ${convertedRecords.bestOneRepMax.weight} ${unit} × ${convertedRecords.bestOneRepMax.reps}`}
+                value={t("exerciseDetail.oneRepMaxEstimated", {
+                  value: Math.round(convertedRecords.bestOneRepMax.oneRepMax),
+                  unit,
+                })}
+                label={t("exerciseDetail.via", {
+                  weight: convertedRecords.bestOneRepMax.weight,
+                  unit,
+                  reps: convertedRecords.bestOneRepMax.reps,
+                })}
                 detail={formatDate(convertedRecords.bestOneRepMax.date)}
               />
             ) : (
               <RecordRow
                 icon={<TrendingUp size={18} className="text-[#c9552c]" />}
                 value={`-- ${unit}`}
-                label="1RM estimé"
+                label={t("exerciseDetail.bestOneRepMax")}
               />
             )}
           </div>
@@ -352,15 +371,15 @@ export default function ExerciseDetailPage() {
 
         <div>
           <p className="text-[15px] font-bold text-gray-900 mb-2 flex items-center gap-1.5">
-            Records par répétitions
+            {t("exerciseDetail.recordsByReps")}
             {!IS_PRO && <Lock size={13} className="text-gray-400" />}
           </p>
           {convertedRecords.byReps.length === 0 ? (
             <p className="text-xs text-gray-400 text-center py-4">
-              Pas encore de données
+              {t("exerciseDetail.noDataYet")}
             </p>
           ) : (
-            <ProGateOrContent isPro={IS_PRO}>
+            <ProGateOrContent isPro={IS_PRO} goProLabel={t("exerciseDetail.goPro")}>
               <div className="space-y-1.5">
                 {convertedRecords.byReps.map((r) => (
                   <div
@@ -368,7 +387,7 @@ export default function ExerciseDetailPage() {
                     className="flex items-center justify-between text-sm bg-white border border-gray-200 rounded-xl px-3.5 py-2.5"
                   >
                     <span className="text-gray-500">
-                      {r.reps} rep{r.reps > 1 ? "s" : ""}
+                      {r.reps} {t("exerciseDetail.rep", { count: r.reps })}
                     </span>
                     <span className="font-bold text-gray-900">
                       {r.weight} {unit}
@@ -381,10 +400,10 @@ export default function ExerciseDetailPage() {
         </div>
 
         <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
-          <ProGateOrContent isPro={IS_PRO}>
+          <ProGateOrContent isPro={IS_PRO} goProLabel={t("exerciseDetail.goPro")}>
             <ProgressLineChart
-              title="Volume total"
-              subtitle={`Par séance (${unit})`}
+              title={t("exerciseDetail.volumeTotal")}
+              subtitle={t("exerciseDetail.perSession", { unit })}
               points={convertedRecords.volumeOverTime.map((p) => ({
                 date: p.date,
                 value: p.volume,
@@ -394,16 +413,16 @@ export default function ExerciseDetailPage() {
           {!IS_PRO && (
             <div className="flex items-center gap-1 mt-2">
               <Lock size={11} className="text-gray-400" />
-              <span className="text-[10px] text-gray-400">Fonctionnalité Pro</span>
+              <span className="text-[10px] text-gray-400">{t("exerciseDetail.proFeature")}</span>
             </div>
           )}
         </div>
 
         <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
-          <ProGateOrContent isPro={IS_PRO}>
+          <ProGateOrContent isPro={IS_PRO} goProLabel={t("exerciseDetail.goPro")}>
             <ProgressLineChart
-              title="1RM estimé"
-              subtitle={`Meilleur set (${unit})`}
+              title={t("exerciseDetail.oneRepMaxTitle")}
+              subtitle={t("exerciseDetail.bestSet", { unit })}
               points={convertedRecords.oneRepMaxOverTime.map((p) => ({
                 date: p.date,
                 value: p.oneRepMax,
@@ -413,18 +432,18 @@ export default function ExerciseDetailPage() {
           {!IS_PRO && (
             <div className="flex items-center gap-1 mt-2">
               <Lock size={11} className="text-gray-400" />
-              <span className="text-[10px] text-gray-400">Fonctionnalité Pro</span>
+              <span className="text-[10px] text-gray-400">{t("exerciseDetail.proFeature")}</span>
             </div>
           )}
         </div>
 
         <div>
           <p className="text-[15px] font-bold text-gray-900 mb-2">
-            Historique des séances
+            {t("exerciseDetail.sessionHistory")}
           </p>
           {history.length === 0 ? (
             <p className="text-xs text-gray-400 text-center py-4">
-              Aucune séance avec cet exercice pour l'instant
+              {t("exerciseDetail.noSessionsYet")}
             </p>
           ) : (
             <div className="space-y-2">
@@ -441,7 +460,7 @@ export default function ExerciseDetailPage() {
                       {formatDate(entry.date)}
                     </p>
                     <p className="text-xs text-gray-400">
-                      {entry.sets.length} set{entry.sets.length > 1 ? "s" : ""}
+                      {entry.sets.length} {t("exerciseDetail.set", { count: entry.sets.length })}
                     </p>
                   </div>
                   <p className="text-xs text-gray-500">
@@ -451,7 +470,7 @@ export default function ExerciseDetailPage() {
               ))}
               {!IS_PRO && history.length > 5 && (
                 <p className="text-xs text-gray-400 text-center py-2 flex items-center justify-center gap-1.5">
-                  <Lock size={12} /> Historique complet avec Pro
+                  <Lock size={12} /> {t("exerciseDetail.fullHistoryPro")}
                 </p>
               )}
             </div>
@@ -465,10 +484,12 @@ export default function ExerciseDetailPage() {
 function ProGateOrContent({
   isPro,
   children,
+  goProLabel,
 }: {
   isPro: boolean;
   children: React.ReactNode;
+  goProLabel: string;
 }) {
   if (isPro) return <>{children}</>;
-  return <ProGate>{children}</ProGate>;
+  return <ProGate goProLabel={goProLabel}>{children}</ProGate>;
 }

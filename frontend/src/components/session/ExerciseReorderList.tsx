@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { GripVertical } from "lucide-react";
 import type { SessionExercise } from "../../types/session";
 
@@ -16,6 +17,7 @@ export default function ExerciseReorderList({
   onReorderLive,
   onDrop,
 }: Props) {
+  const { t } = useTranslation();
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [dragRect, setDragRect] = useState<{
     left: number;
@@ -141,7 +143,7 @@ export default function ExerciseReorderList({
                 className={`w-9 h-9 rounded-lg flex items-center justify-center text-gray-400 cursor-grab active:cursor-grabbing flex-shrink-0 touch-none ${
                   isDragging ? "invisible" : "bg-gray-100"
                 }`}
-                aria-label="Réordonner l'exercice"
+                aria-label={t("session.reorderAria")}
               >
                 <GripVertical size={18} />
               </button>

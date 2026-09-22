@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, useMemo, useLayoutEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   ChevronDown,
   ChevronRight,
@@ -12,6 +13,7 @@ import {
   List,
 } from "lucide-react";
 import { API_URL } from "../lib/api";
+import { getDateLocale } from "../i18n";
 import TourOverlay from "../components/TourOverlay";
 import Toast from "../components/Toast";
 import { useToast } from "../hooks/useToast";
@@ -33,13 +35,6 @@ type SessionData = {
   }[];
 };
 
-const SET_TYPE_CSV_LABELS: Record<string, string> = {
-  normal: "Normal",
-  warmup: "Échauffement",
-  dropset: "Drop set",
-  failure: "Échec",
-};
-
 const escapeCsvField = (value: string | number): string => {
   const str = String(value);
   if (/[",\n]/.test(str)) {
@@ -53,22 +48,6 @@ type WeekGroup = {
   startDate: Date;
   sessions: SessionData[];
 };
-
-const MONTH_LABELS = [
-  "Janvier",
-  "Février",
-  "Mars",
-  "Avril",
-  "Mai",
-  "Juin",
-  "Juillet",
-  "Août",
-  "Septembre",
-  "Octobre",
-  "Novembre",
-  "Décembre",
-];
-const DAY_LABELS = ["L", "M", "M", "J", "V", "S", "D"];
 
 const dateKey = (d: Date) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
@@ -84,6 +63,19 @@ const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 export default function HistoryPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const MONTH_LABELS = t("history.months", {
+    returnObjects: true,
+  }) as string[];
+  const DAY_LABELS = t("history.dayLabels", {
+    returnObjects: true,
+  }) as string[];
+  const SET_TYPE_CSV_LABELS: Record<string, string> = {
+    normal: t("history.setTypes.normal"),
+    warmup: t("history.setTypes.warmup"),
+    dropset: t("history.setTypes.dropset"),
+    failure: t("history.setTypes.failure"),
+  };
   const [allSessions, setAllSessions] = useState<SessionData[]>([]);
   const [openWeek, setOpenWeek] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -117,21 +109,18 @@ export default function HistoryPage() {
 
   const tourSteps = [
     {
-      title: "Ce mois-ci",
-      description:
-        "Ton historique montre les semaines du mois en cours, organisées avec le nombre de séances et de sets faits.",
+      title: t("history.tour.month.title"),
+      description: t("history.tour.month.desc"),
       refIndex: 0,
     },
     {
-      title: "Vue calendrier",
-      description:
-        "Pour retrouver un mois précédent, bascule sur la vue calendrier et navigue avec les flèches.",
+      title: t("history.tour.calendarView.title"),
+      description: t("history.tour.calendarView.desc"),
       refIndex: 1,
     },
     {
-      title: "Détail d'une séance",
-      description:
-        "Clique sur une séance pour revoir tes exercices, poids et répétitions en lecture seule.",
+      title: t("history.tour.sessionDetail.title"),
+      description: t("history.tour.sessionDetail.desc"),
       refIndex: 2,
     },
   ];
@@ -187,13 +176,16 @@ export default function HistoryPage() {
     return Object.entries(grouped)
       .map(([key, sessions]) => {
         const startDate = new Date(key);
-        const label = `Semaine du ${startDate.toLocaleDateString("fr-FR", {
-          day: "numeric",
-          month: "long",
-        })}`;
+        const label = t("history.weekOf", {
+          date: startDate.toLocaleDateString(getDateLocale(), {
+            day: "numeric",
+            month: "long",
+          }),
+        });
         return { label, startDate, sessions };
       })
       .sort((a, b) => b.startDate.getTime() - a.startDate.getTime());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allSessions]);
 
   const now = new Date();
@@ -268,21 +260,21 @@ export default function HistoryPage() {
   const exportToCsv = () => {
     try {
       if (allSessions.length === 0) {
-        throw new Error("Aucune séance à exporter");
+        throw new Error(t("history.csvNoSessions"));
       }
 
       const rows: string[] = [];
       rows.push(
         [
-          "Date",
-          "Groupe musculaire",
-          "Exercice",
-          "Set",
-          "Type",
-          "Poids",
-          "Unité",
-          "Reps",
-          "Validé",
+          t("history.csv.date"),
+          t("history.csv.muscleGroup"),
+          t("history.csv.exercise"),
+          t("history.csv.set"),
+          t("history.csv.type"),
+          t("history.csv.weight"),
+          t("history.csv.unit"),
+          t("history.csv.reps"),
+          t("history.csv.validated"),
         ]
           .map(escapeCsvField)
           .join(","),
@@ -302,11 +294,11 @@ export default function HistoryPage() {
                 session.muscleGroup,
                 se.exercise.name,
                 i + 1,
-                SET_TYPE_CSV_LABELS[set.type] ?? "Normal",
+                SET_TYPE_CSV_LABELS[set.type] ?? t("history.setTypes.normal"),
                 set.weight,
                 set.unit,
                 set.reps,
-                set.completed ? "Oui" : "Non",
+                set.completed ? t("history.csv.yes") : t("history.csv.no"),
               ]
                 .map(escapeCsvField)
                 .join(","),
@@ -325,10 +317,10 @@ export default function HistoryPage() {
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
-      showToast("Export réussi");
+      showToast(t("history.exportSuccess"));
     } catch (err) {
       console.error(err);
-      showToast("Échec de l'export, réessaie", "error");
+      showToast(t("history.exportError"), "error");
     }
   };
 
@@ -361,14 +353,16 @@ export default function HistoryPage() {
         <div className="flex items-start justify-between gap-3 mb-5">
           <div>
             <h1 className="text-[26px] font-black text-white uppercase tracking-wide leading-tight">
-              Historique
+              {t("history.title")}
             </h1>
             <p className="text-xs font-bold text-white/50 uppercase tracking-widest mt-1">
               {allSessions.length > 0
                 ? viewMode === "list"
-                  ? `${currentMonthWeeks.length} semaine${currentMonthWeeks.length > 1 ? "s" : ""} ce mois-ci`
-                  : `${allSessions.length} séance${allSessions.length > 1 ? "s" : ""} au total`
-                : "Aucun historique encore"}
+                  ? t("history.weeksThisMonth", {
+                      count: currentMonthWeeks.length,
+                    })
+                  : t("history.sessionsTotal", { count: allSessions.length })
+                : t("history.noHistoryYet")}
             </p>
           </div>
 
@@ -378,7 +372,7 @@ export default function HistoryPage() {
               className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-white bg-white/10 px-3.5 py-2.5 rounded-full active:scale-[0.98] transition-all flex-shrink-0 shadow-sm"
             >
               <Upload size={14} className="text-[#e2703a]" />
-              Exporter
+              {t("history.export")}
             </button>
           )}
         </div>
@@ -398,7 +392,7 @@ export default function HistoryPage() {
                 viewMode === "list" ? "text-gray-900" : "text-white/50"
               }`}
             >
-              <List size={14} /> Liste
+              <List size={14} /> {t("history.list")}
             </button>
             <button
               ref={calendarTabRef}
@@ -407,7 +401,7 @@ export default function HistoryPage() {
                 viewMode === "calendar" ? "text-gray-900" : "text-white/50"
               }`}
             >
-              <CalendarIcon size={14} /> Calendrier
+              <CalendarIcon size={14} /> {t("history.calendar")}
             </button>
           </div>
         )}
@@ -420,18 +414,17 @@ export default function HistoryPage() {
             <History size={24} className="text-[#c9552c]" />
           </div>
           <p className="text-base font-bold text-gray-900 mb-1">
-            Aucun historique
+            {t("history.noHistory")}
           </p>
           <p className="text-sm text-gray-400 text-center px-8 mb-6">
-            Tes séances apparaîtront ici une fois que tu auras commencé à
-            t'entraîner
+            {t("history.noHistoryDesc")}
           </p>
           <button
             onClick={() => navigate("/dashboard")}
             className="bg-[#c9552c] text-white px-6 py-3 rounded-2xl font-semibold text-sm flex items-center gap-2 shadow-md active:scale-[0.98] transition-all"
           >
             <Plus size={16} />
-            Commencer une séance
+            {t("history.startSession")}
           </button>
         </div>
       ) : (
@@ -440,18 +433,17 @@ export default function HistoryPage() {
             currentMonthWeeks.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16">
                 <p className="text-sm font-bold text-gray-900 mb-1">
-                  Aucune séance ce mois-ci
+                  {t("history.noSessionThisMonth")}
                 </p>
                 <p className="text-xs text-gray-400 text-center px-8 mb-4">
-                  Consulte le calendrier pour retrouver tes séances des mois
-                  précédents
+                  {t("history.checkCalendarHint")}
                 </p>
                 <button
                   onClick={() => setViewMode("calendar")}
                   className="flex items-center gap-1.5 bg-[#ece7dd] text-gray-700 px-4 py-2.5 rounded-full font-bold uppercase tracking-wide text-xs shadow-sm"
                 >
                   <CalendarIcon size={14} className="text-[#c9552c]" />
-                  Voir le calendrier
+                  {t("history.viewCalendar")}
                 </button>
               </div>
             ) : (
@@ -492,16 +484,17 @@ export default function HistoryPage() {
                           {totalSessions > 0 ? (
                             <div className="flex items-center gap-1.5 mt-2">
                               <span className="text-[10px] font-bold uppercase tracking-wide text-gray-600 bg-white/60 px-2.5 py-1 rounded-full">
-                                {totalSessions} séance
-                                {totalSessions > 1 ? "s" : ""}
+                                {t("history.sessionsCount", {
+                                  count: totalSessions,
+                                })}
                               </span>
                               <span className="text-[10px] font-bold uppercase tracking-wide text-gray-600 bg-white/60 px-2.5 py-1 rounded-full">
-                                {totalSets} sets
+                                {t("history.setsCount", { count: totalSets })}
                               </span>
                             </div>
                           ) : (
                             <p className="text-xs text-gray-400 mt-1">
-                              Aucune séance
+                              {t("history.noSession")}
                             </p>
                           )}
                         </div>
@@ -526,13 +519,13 @@ export default function HistoryPage() {
                             const dayNum = sessionDate.getDate();
                             const dayAbbrev = capitalize(
                               sessionDate
-                                .toLocaleDateString("fr-FR", {
+                                .toLocaleDateString(getDateLocale(), {
                                   weekday: "short",
                                 })
                                 .replace(".", ""),
                             );
                             const fullDateStr = capitalize(
-                              sessionDate.toLocaleDateString("fr-FR", {
+                              sessionDate.toLocaleDateString(getDateLocale(), {
                                 day: "numeric",
                                 month: "long",
                               }),
@@ -567,8 +560,10 @@ export default function HistoryPage() {
                                       {session.muscleGroup}
                                     </p>
                                     <p className="text-xs font-semibold text-gray-400 mt-0.5 uppercase">
-                                      {fullDateStr} · {exerciseCount}{" "}
-                                      exercice{exerciseCount > 1 ? "s" : ""}
+                                      {fullDateStr} ·{" "}
+                                      {t("history.exerciseCount", {
+                                        count: exerciseCount,
+                                      })}
                                     </p>
                                   </div>
                                   <ChevronRight
@@ -606,8 +601,9 @@ export default function HistoryPage() {
                     {calendarMonth.getFullYear()}
                   </p>
                   <p className="text-[11px] font-bold text-[#c9552c] uppercase tracking-wide mt-0.5">
-                    {monthSessionsCount} séance
-                    {monthSessionsCount > 1 ? "s" : ""} ce mois
+                    {t("history.sessionsThisMonth", {
+                      count: monthSessionsCount,
+                    })}
                   </p>
                 </div>
                 <button
@@ -678,13 +674,13 @@ export default function HistoryPage() {
                 <div className="flex items-center gap-1.5">
                   <div className="w-2 h-2 rounded-full bg-[#191714]" />
                   <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wide">
-                    Séance
+                    {t("history.legendSession")}
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <div className="w-2 h-2 rounded-full bg-[#c9552c]" />
                   <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wide">
-                    Aujourd'hui
+                    {t("history.legendToday")}
                   </span>
                 </div>
               </div>
@@ -704,7 +700,7 @@ export default function HistoryPage() {
                 <div className="min-w-0">
                   <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wide truncate">
                     {capitalize(
-                      displayedDay.date.toLocaleDateString("fr-FR", {
+                      displayedDay.date.toLocaleDateString(getDateLocale(), {
                         weekday: "long",
                         day: "numeric",
                         month: "short",
@@ -744,28 +740,27 @@ export default function HistoryPage() {
       <TourOverlay tourKey="history" steps={tourSteps} refs={[ref0, ref1, ref2]} />
 
       {showExportConfirm && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6 animate-fade-in">
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-[60] px-6 animate-fade-in">
           <div className="bg-[#faf6f1] rounded-3xl w-full max-w-sm shadow-2xl animate-scale-in overflow-hidden">
             <div
               className="px-6 pt-7 pb-6 text-center"
               style={{ background: "#191714" }}
             >
               <h2 className="text-xl font-black text-white uppercase tracking-wide">
-                Exporter tes données ?
+                {t("history.exportConfirmTitle")}
               </h2>
             </div>
 
             <div className="px-5 pt-5 pb-6">
               <p className="text-sm text-gray-500 text-center leading-relaxed mb-6">
-                Un fichier CSV contenant l'historique de tes séances,
-                exercices et sets sera téléchargé sur ton appareil.
+                {t("history.exportConfirmBody")}
               </p>
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowExportConfirm(false)}
                   className="flex-1 bg-[#ece7dd] text-gray-700 py-3.5 rounded-full font-bold uppercase tracking-wide text-sm transition-colors active:opacity-80"
                 >
-                  Annuler
+                  {t("dashboard.cancel")}
                 </button>
                 <button
                   onClick={() => {
@@ -775,7 +770,7 @@ export default function HistoryPage() {
                   className="flex-1 bg-[#3a9e6e] text-white py-3.5 rounded-full font-bold uppercase tracking-wide text-sm transition-colors active:opacity-90 flex items-center justify-center gap-1.5"
                 >
                   <Check size={16} strokeWidth={3} />
-                  Exporter
+                  {t("history.exportAction")}
                 </button>
               </div>
             </div>

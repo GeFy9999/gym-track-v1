@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Timer, X, Minus, Plus } from "lucide-react";
 
 type Props = {
@@ -16,6 +17,7 @@ export default function RestTimer({
   onSkip,
   onAdjust,
 }: Props) {
+  const { t } = useTranslation();
   const minutes = Math.floor(secondsLeft / 60);
   const seconds = secondsLeft % 60;
   const label = `${minutes}:${seconds.toString().padStart(2, "0")}`;
@@ -61,28 +63,28 @@ export default function RestTimer({
       <div className="flex flex-col leading-none">
         <span className="text-xl font-bold tabular-nums">{label}</span>
         <span className="text-[10px] text-gray-400 uppercase tracking-wide">
-          Repos
+          {t("session.restTimer.label")}
         </span>
       </div>
       <div className="flex items-center gap-1.5 pl-1">
         <button
           onClick={() => onAdjust(-5)}
           className="w-8 h-8 rounded-full bg-white/10 active:bg-white/20 flex items-center justify-center transition-colors"
-          aria-label="Retirer 5 secondes"
+          aria-label={t("session.restTimer.removeAria")}
         >
           <Minus size={14} className="text-white" />
         </button>
         <button
           onClick={() => onAdjust(5)}
           className="w-8 h-8 rounded-full bg-white/10 active:bg-white/20 flex items-center justify-center transition-colors"
-          aria-label="Ajouter 5 secondes"
+          aria-label={t("session.restTimer.addAria")}
         >
           <Plus size={14} className="text-white" />
         </button>
         <button
           onClick={onSkip}
           className="w-8 h-8 rounded-full bg-white/10 active:bg-white/20 flex items-center justify-center transition-colors ml-1"
-          aria-label="Passer le temps de repos"
+          aria-label={t("session.restTimer.skipAria")}
         >
           <X size={15} className="text-white" />
         </button>

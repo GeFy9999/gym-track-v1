@@ -1,23 +1,30 @@
 import { Link, useLocation } from "react-router-dom";
 import { useLayoutEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Home, BarChart3, History, User, Dumbbell } from "lucide-react";
 
 const links = [
-  { to: "/dashboard", label: "Accueil", tourKey: "accueil", icon: Home },
-  { to: "/stats", label: "Stats", tourKey: "stats", icon: BarChart3 },
+  { to: "/dashboard", labelKey: "nav.home", tourKey: "accueil", icon: Home },
+  { to: "/stats", labelKey: "nav.stats", tourKey: "stats", icon: BarChart3 },
   {
     to: "/exercises",
-    label: "Exercices",
+    labelKey: "nav.exercises",
     tourKey: "records",
     icon: Dumbbell,
     accent: true,
   },
-  { to: "/history", label: "Histo.", tourKey: "historique", icon: History },
-  { to: "/profil", label: "Profil", tourKey: "profil", icon: User },
+  {
+    to: "/history",
+    labelKey: "nav.history",
+    tourKey: "historique",
+    icon: History,
+  },
+  { to: "/profil", labelKey: "nav.profile", tourKey: "profil", icon: User },
 ];
 
 export default function BottomNav() {
   const location = useLocation();
+  const { t } = useTranslation();
   const itemRefs = useRef<(HTMLLIElement | null)[]>([]);
   const [indicator, setIndicator] = useState<{
     left: number;
@@ -77,7 +84,7 @@ export default function BottomNav() {
                   <span
                     className={`text-[9px] font-bold uppercase tracking-wide ${color}`}
                   >
-                    {link.label}
+                    {t(link.labelKey)}
                   </span>
                 </Link>
               </li>

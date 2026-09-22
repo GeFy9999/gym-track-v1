@@ -303,6 +303,7 @@ export async function insertUser(user: {
   password: string;
   name: string;
   authProvider?: string;
+  language?: string;
 }) {
   return await prisma.user.create({
     data: user,

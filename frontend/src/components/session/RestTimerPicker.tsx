@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { formatDuration } from "../../utils/units";
 
 const REST_DURATION_OPTIONS = [30, 60, 90, 120, 180];
@@ -14,6 +15,7 @@ export default function RestTimerPicker({
   isClosing,
   onSelect,
 }: Props) {
+  const { t } = useTranslation();
   const [customDuration, setCustomDuration] = useState("");
 
   return (
@@ -40,7 +42,7 @@ export default function RestTimerPicker({
           type="number"
           value={customDuration}
           onChange={(e) => setCustomDuration(e.target.value)}
-          placeholder="Custom (s)"
+          placeholder={t("session.restTimer.custom")}
           className="flex-1 min-w-0 bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:border-[#c9552c]"
         />
         <button

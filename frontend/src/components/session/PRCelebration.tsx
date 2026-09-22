@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Trophy, X } from "lucide-react";
 
 type Props = {
@@ -16,6 +17,7 @@ export default function PRCelebration({
   unit,
   onClose,
 }: Props) {
+  const { t } = useTranslation();
   const confetti = useMemo(
     () =>
       Array.from({ length: 36 }).map((_, i) => ({
@@ -64,7 +66,7 @@ export default function PRCelebration({
         <button
           onClick={onClose}
           className="absolute top-3 right-3 w-7 h-7 rounded-full bg-white/15 flex items-center justify-center text-white/80"
-          aria-label="Fermer"
+          aria-label={t("session.pr.close")}
         >
           <X size={14} />
         </button>
@@ -74,7 +76,7 @@ export default function PRCelebration({
         </div>
 
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/80 mb-1">
-          Bravo — nouveau record
+          {t("session.pr.congrats")}
         </p>
 
         <div className="flex items-baseline justify-center gap-1.5 my-2">

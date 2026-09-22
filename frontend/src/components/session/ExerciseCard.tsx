@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Plus, Trash2, Trophy, Link2, Unlink, StickyNote, Flame } from "lucide-react";
 import type { SessionExercise, SetData } from "../../types/session";
 import { formatDuration } from "../../utils/units";
@@ -101,6 +102,7 @@ export default function ExerciseCard({
   onAddSet,
   onOpenWarmupModal,
 }: Props) {
+  const { t } = useTranslation();
   const [trophyPopping, setTrophyPopping] = useState(false);
 
   return (
@@ -133,12 +135,18 @@ export default function ExerciseCard({
                   className="text-xs font-extrabold uppercase tracking-wider"
                   style={{ color: supersetColor }}
                 >
-                  Superset {supersetPosition + 1}/{supersetGroupLength}
+                  {t("session.card.supersetLabel", {
+                    position: supersetPosition + 1,
+                    length: supersetGroupLength,
+                  })}
                 </span>
               </div>
             ) : (
               <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400">
-                Exercice {seIndex + 1} / {totalExercises}
+                {t("session.card.exerciseLabel", {
+                  index: seIndex + 1,
+                  total: totalExercises,
+                })}
               </p>
             )}
             <button
@@ -148,7 +156,7 @@ export default function ExerciseCard({
                 setTrophyPopping(true);
               }}
               onAnimationEnd={() => setTrophyPopping(false)}
-              aria-label="Suivre en record personnel"
+              aria-label={t("session.card.trackAria")}
               className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
                 isTracked
                   ? "bg-[#c9552c] text-white"
@@ -163,7 +171,7 @@ export default function ExerciseCard({
             <button
               data-tour="session-note"
               onClick={onOpenNoteModal}
-              aria-label="Note personnelle"
+              aria-label={t("session.card.noteAria")}
               className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
                 note ? "bg-[#c9552c] text-white" : "bg-white/10 text-white/40"
               }`}
@@ -174,7 +182,7 @@ export default function ExerciseCard({
               <button
                 data-tour="session-superset"
                 onClick={onOpenSupersetModal}
-                aria-label="Lier en superset"
+                aria-label={t("session.card.supersetAria")}
                 className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
                   !supersetColor ? "bg-white/10 text-white/40" : ""
                 }`}
@@ -229,7 +237,7 @@ export default function ExerciseCard({
                     : "bg-white/10 text-white/60"
                 }`}
               >
-                Mode barre
+                {t("session.card.barMode")}
               </button>
             )}
 
@@ -239,7 +247,9 @@ export default function ExerciseCard({
                 onClick={onToggleDurationPicker}
                 className="text-[11px] font-bold uppercase tracking-wide px-3 py-1.5 rounded-full bg-white/10 text-white/80"
               >
-                Repos {formatDuration(exerciseDuration)}
+                {t("session.card.rest", {
+                  duration: formatDuration(exerciseDuration),
+                })}
               </button>
             )}
           </div>
@@ -260,7 +270,7 @@ export default function ExerciseCard({
         {lastTime && (
           <div className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-gray-100 mb-3">
             <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
-              Dernière fois
+              {t("session.card.lastTime")}
             </span>
             <span className="text-sm font-bold text-gray-900">
               {formatLastTime(lastTime)}
@@ -282,7 +292,7 @@ export default function ExerciseCard({
             onClick={onOpenWarmupModal}
             className="mb-3 w-full border border-dashed border-gray-300 active:bg-gray-50 text-gray-500 font-bold uppercase text-sm py-3 rounded-full flex items-center justify-center gap-1.5 transition-colors"
           >
-            <Flame size={14} /> Échauffement auto
+            <Flame size={14} /> {t("session.card.autoWarmup")}
           </button>
         )}
 
@@ -318,7 +328,7 @@ export default function ExerciseCard({
             onClick={onAddSet}
             className="mt-3 w-full border border-dashed border-[#c9552c]/40 active:bg-[#c9552c]/5 text-[#c9552c] font-bold uppercase text-sm py-3 rounded-full flex items-center justify-center gap-1.5 transition-colors"
           >
-            <Plus size={14} /> Ajouter un set
+            <Plus size={14} /> {t("session.card.addSet")}
           </button>
         )}
       </div>

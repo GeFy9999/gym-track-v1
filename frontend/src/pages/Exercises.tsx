@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Search, Dumbbell, Trophy, ChevronDown } from "lucide-react";
 import { API_URL } from "../lib/api";
 import { useTrackedExercises } from "../hooks/useTrackedExercises";
@@ -18,7 +19,9 @@ type ExerciseStat = { exerciseId: string; sessionCount: number; lastDate: string
 const PAGE_SIZE = 20;
 
 export default function ExercisesPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const { isTracked, fetchTracked, toggleTracked, tracked } = useTrackedExercises();
 
   const [exercises, setExercises] = useState<Exercise[]>([]);
@@ -27,7 +30,9 @@ export default function ExercisesPage() {
   const [loading, setLoading] = useState(true);
 
   const [search, setSearch] = useState("");
-  const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
+  const [selectedGroup, setSelectedGroup] = useState<string | null>(
+    () => (location.state as { group?: string } | null)?.group ?? null,
+  );
   const [trackedOpen, setTrackedOpen] = useState(true);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [poppingId, setPoppingId] = useState<string | null>(null);
@@ -147,14 +152,14 @@ export default function ExercisesPage() {
             }`}
           >
             {ex.muscleGroup.name}
-            {tracked ? " · Suivi" : ""}
+            {tracked ? ` · ${t("exercises.trackedSuffix")}` : ""}
           </p>
         </div>
 
         <div className="flex flex-col items-end gap-1 flex-shrink-0">
           {stat && stat.sessionCount > 0 && (
             <span className="text-[11px] font-semibold text-[#c9552c]">
-              {stat.sessionCount} session{stat.sessionCount > 1 ? "s" : ""}
+              {stat.sessionCount} {t("exercises.session", { count: stat.sessionCount })}
             </span>
           )}
           <span
@@ -167,7 +172,7 @@ export default function ExercisesPage() {
               setPoppingId((current) => (current === ex.id ? null : current))
             }
             role="button"
-            aria-label="Suivre en record personnel"
+            aria-label={t("exercises.trackAria")}
             className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors ${
               tracked ? "bg-[#c9552c] text-white" : "bg-white text-gray-400"
             }`}
@@ -203,10 +208,10 @@ export default function ExercisesPage() {
     <div className="min-h-screen bg-[#faf6f1] pb-28">
       <div className="px-5 pt-8 pb-6" style={{ background: "#191714" }}>
         <h1 className="text-[26px] font-black text-white uppercase tracking-wide leading-tight">
-          Exercices
+          {t("exercises.title")}
         </h1>
         <p className="text-xs font-bold text-white/50 uppercase tracking-widest mt-1 mb-4">
-          Explore et suis ta progression
+          {t("exercises.subtitle")}
         </p>
 
         <div className="relative">
@@ -218,7 +223,7 @@ export default function ExercisesPage() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Rechercher un exercice..."
+            placeholder={t("exercises.searchPlaceholder")}
             className="w-full bg-white/10 rounded-full pl-10 pr-4 py-3 text-sm text-white placeholder-white/40 focus:outline-none transition-colors"
           />
         </div>
@@ -234,7 +239,7 @@ export default function ExercisesPage() {
                 : "bg-[#ece7dd] text-gray-700"
             }`}
           >
-            Tous
+            {t("exercises.all")}
           </button>
           {muscleGroups.map((mg) => (
             <button
@@ -260,7 +265,7 @@ export default function ExercisesPage() {
               className="w-full flex items-center justify-between mb-2 px-1"
             >
               <p className="text-xs font-bold text-gray-900 uppercase tracking-widest">
-                Exercices suivis{" "}
+                {t("exercises.tracked")}{" "}
                 <span className="text-gray-400">
                   ({trackedExercises.length})
                 </span>
@@ -283,7 +288,7 @@ export default function ExercisesPage() {
         <div>
           <div className="flex items-center justify-between mb-2 px-1">
             <p className="text-xs font-bold text-gray-900 uppercase tracking-widest">
-              Tous les exercices
+              {t("exercises.allExercises")}
             </p>
             <span className="text-xs font-bold text-[#c9552c]">
               {filtered.length}
@@ -293,12 +298,12 @@ export default function ExercisesPage() {
             {visible.map((ex) => renderCard(ex))}
             {visible.length === 0 && (
               <p className="text-sm text-gray-400 text-center py-8">
-                Aucun exercice trouvé
+                {t("exercises.noneFound")}
               </p>
             )}
             {hasMore && (
               <p className="text-xs text-gray-400 text-center py-3">
-                Scroll pour voir plus...
+                {t("exercises.scrollForMore")}
               </p>
             )}
           </div>

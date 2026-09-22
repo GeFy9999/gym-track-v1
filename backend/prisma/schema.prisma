@@ -29,6 +29,7 @@ datasource db {
   restTimerSeconds Int   @default(120)
   restTimerEnabled Boolean @default(false)
   barbellModeEnabled Boolean @default(false)
+  language      String   @default("fr")
   authProvider  String   @default("email")
   resetToken    String?
   resetTokenExpiry DateTime?  

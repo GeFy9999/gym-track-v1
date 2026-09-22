@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { getWeightUnit } from "../../utils/units";
+import { getDateLocale } from "../../i18n";
 import { API_URL } from "../../lib/api";
 import ProgressLineChart from "../charts/ProgressLineChart";
 
@@ -9,7 +11,7 @@ type BodyWeightEntry = {
   date: string;
 };
 
-const MONTHS = [
+const MONTHS_FR = [
   "Jan",
   "Fév",
   "Mar",
@@ -24,7 +26,24 @@ const MONTHS = [
   "Déc",
 ];
 
+const MONTHS_EN = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+
 export default function ProgressChart() {
+  const { t, i18n } = useTranslation();
+  const MONTHS = i18n.language?.startsWith("en") ? MONTHS_EN : MONTHS_FR;
   const [entries, setEntries] = useState<BodyWeightEntry[]>([]);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
@@ -59,11 +78,11 @@ export default function ProgressChart() {
     return (
       <div className="bg-[#ece7dd] rounded-3xl p-4 shadow-sm">
         <ProgressLineChart
-          title="Poids corporel"
+          title={t("stats.bodyWeight")}
           subtitle={getWeightUnit().toUpperCase()}
           points={[]}
-          emptyTitle="Pas encore de données"
-          emptyHint="Ton poids sera enregistré chaque semaine"
+          emptyTitle={t("stats.noData")}
+          emptyHint={t("stats.weightWillBeSaved")}
         />
       </div>
     );
@@ -126,7 +145,7 @@ export default function ProgressChart() {
     <div className="bg-[#ece7dd] rounded-3xl p-4 shadow-sm">
       <div className="flex items-start justify-between mb-3">
         <span className="text-base font-black text-gray-900 uppercase tracking-wide">
-          Poids corporel
+          {t("stats.bodyWeight")}
         </span>
         <span className="text-[10px] font-bold uppercase tracking-wide text-gray-400 mt-1">
           {getWeightUnit()}
@@ -146,16 +165,16 @@ export default function ProgressChart() {
             className={`text-sm font-semibold mt-1 ${totalDiff > 0 ? "text-[#c9552c]" : "text-gray-500"}`}
           >
             {totalDiff > 0 ? "↑" : "↓"} {Math.abs(totalDiff)} {getWeightUnit()}{" "}
-            au total
+            {t("stats.sessionsTotal")}
           </span>
         )}
 
         {activeIndex !== null && (
           <span className="text-xs text-gray-500 mt-1">
-            {new Date(entries[activeIndex].date).toLocaleDateString("fr-FR", {
-              day: "numeric",
-              month: "long",
-            })}
+            {new Date(entries[activeIndex].date).toLocaleDateString(
+              getDateLocale(),
+              { day: "numeric", month: "long" },
+            )}
           </span>
         )}
       </div>

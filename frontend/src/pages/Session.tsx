@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import { ArrowLeft, Dumbbell } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { ChevronLeft, Dumbbell } from "lucide-react";
 import {
   getWeightUnit,
   getRestTimerSeconds,
@@ -8,6 +9,7 @@ import {
   getBarbellModeEnabled,
 } from "../utils/units";
 import { API_URL } from "../lib/api";
+import { getDateLocale } from "../i18n";
 import { useExerciseHistory } from "../hooks/useExerciseDeltas";
 import { useRestTimerContext } from "../contexts/RestTimerContext";
 import { useTrackedExercises } from "../hooks/useTrackedExercises";
@@ -47,6 +49,7 @@ const getSupersetColor = (supersetId: string) => {
 export default function SessionPage() {
   const { sessionId } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const readOnly = searchParams.get("readonly") === "true";
 
@@ -342,7 +345,7 @@ export default function SessionPage() {
           unit,
         }),
       });
-      showToast("Échauffement généré");
+      showToast(t("session.warmupGenerated"));
       fetchSession();
     } catch (err) {
       console.error(err);
@@ -510,7 +513,7 @@ export default function SessionPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#faf6f1] flex items-center justify-center">
-        <p className="text-gray-400">Chargement...</p>
+        <p className="text-gray-400">{t("session.loading")}</p>
       </div>
     );
   }
@@ -518,7 +521,7 @@ export default function SessionPage() {
   if (!session) {
     return (
       <div className="min-h-screen bg-[#faf6f1] flex items-center justify-center">
-        <p className="text-red-400">Session introuvable</p>
+        <p className="text-red-400">{t("session.notFound")}</p>
       </div>
     );
   }
@@ -539,11 +542,10 @@ export default function SessionPage() {
 
   const isEmpty = session.sessionExercises.length === 0;
 
-  const formattedDate = new Date(session.date).toLocaleDateString("fr-FR", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-  });
+  const formattedDate = new Date(session.date).toLocaleDateString(
+    getDateLocale(),
+    { weekday: "long", day: "numeric", month: "long" },
+  );
   const capitalizedDate =
     formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
 
@@ -551,51 +553,45 @@ export default function SessionPage() {
 
   const sessionTourSteps = [
     {
-      title: "Retour",
-      description: "Retourne à l'écran précédent.",
+      title: t("session.tour.back.title"),
+      description: t("session.tour.back.desc"),
       selector: "[data-tour='session-back']",
     },
     {
-      title: "Ajouter un exercice",
-      description: "Cherche et ajoute un exercice à ta séance.",
+      title: t("session.tour.addExercise.title"),
+      description: t("session.tour.addExercise.desc"),
       selector: "[data-tour='session-add-exercise']",
     },
     {
-      title: "Réorganiser les exercices",
-      description:
-        "Appuie ici pour glisser-déposer tes exercices dans l'ordre que tu veux.",
+      title: t("session.tour.reorder.title"),
+      description: t("session.tour.reorder.desc"),
       selector: "[data-tour='session-edit-toggle']",
     },
     {
-      title: "Suivre ce record",
-      description:
-        "Active le trophée pour suivre le record personnel de cet exercice dans Stats.",
+      title: t("session.tour.trophy.title"),
+      description: t("session.tour.trophy.desc"),
       selector: "[data-tour='session-trophy']",
     },
     {
-      title: "Note personnelle",
-      description:
-        "Écris une note sur cet exercice (technique, sensation, objectif). Elle reste liée à l'exercice, pas juste à cette séance.",
+      title: t("session.tour.note.title"),
+      description: t("session.tour.note.desc"),
       selector: "[data-tour='session-note']",
     },
     {
-      title: "Superset",
-      description:
-        "Lie plusieurs exercices ensemble pour les enchaîner sans repos entre eux.",
+      title: t("session.tour.superset.title"),
+      description: t("session.tour.superset.desc"),
       selector: "[data-tour='session-superset']",
     },
     {
-      title: "Supprimer l'exercice",
-      description:
-        "Retire cet exercice de la séance. Tous ses sets seront aussi supprimés.",
+      title: t("session.tour.delete.title"),
+      description: t("session.tour.delete.desc"),
       selector: "[data-tour='session-delete']",
     },
     ...(barbellModeEnabled
       ? [
           {
-            title: "Mode barre",
-            description:
-              "Active-le pour saisir le poids ajouté de chaque côté de la barre — l'app calcule le poids total et les plaques à charger.",
+            title: t("session.tour.barMode.title"),
+            description: t("session.tour.barMode.desc"),
             selector: "[data-tour='session-barbell-chip']",
           },
         ]
@@ -603,22 +599,20 @@ export default function SessionPage() {
     ...(restTimerEnabled
       ? [
           {
-            title: "Repos",
-            description:
-              "Change la durée du minuteur de repos pour cet exercice précis.",
+            title: t("session.tour.rest.title"),
+            description: t("session.tour.rest.desc"),
             selector: "[data-tour='session-rest-chip']",
           },
         ]
       : []),
     {
-      title: "Échauffement auto",
-      description:
-        "Entre ton poids de travail : l'app génère automatiquement une montée en charge progressive avant ton set de travail.",
+      title: t("session.tour.warmup.title"),
+      description: t("session.tour.warmup.desc"),
       selector: "[data-tour='session-warmup']",
     },
     {
-      title: "Ajouter un set",
-      description: "Ajoute une nouvelle série à cet exercice.",
+      title: t("session.tour.addSet.title"),
+      description: t("session.tour.addSet.desc"),
       selector: "[data-tour='session-add-set']",
     },
   ];
@@ -628,70 +622,76 @@ export default function SessionPage() {
   // there's nothing to point at until a set actually exists.
   const setRowTourSteps = [
     {
-      title: "Poids",
-      description:
-        "Saisis le poids soulevé. En mode barre, c'est le poids ajouté d'un seul côté de la barre.",
+      title: t("session.setRowTour.weight.title"),
+      description: t("session.setRowTour.weight.desc"),
       selector: "[data-tour='session-set-weight']",
     },
     {
-      title: "Reps",
-      description: "Le nombre de répétitions effectuées pour ce set.",
+      title: t("session.setRowTour.reps.title"),
+      description: t("session.setRowTour.reps.desc"),
       selector: "[data-tour='session-set-reps']",
     },
     {
-      title: "Type de set",
-      description:
-        "Change le type du set : normal, échauffement, dégressif ou jusqu'à l'échec.",
+      title: t("session.setRowTour.type.title"),
+      description: t("session.setRowTour.type.desc"),
       selector: "[data-tour='session-set-type']",
     },
     {
-      title: "Valider le set",
-      description:
-        "Marque le set comme complété. Le minuteur de repos démarre automatiquement si activé.",
+      title: t("session.setRowTour.check.title"),
+      description: t("session.setRowTour.check.desc"),
       selector: "[data-tour='session-set-check']",
     },
     {
-      title: "Supprimer le set",
-      description: "Retire cette série.",
+      title: t("session.setRowTour.delete.title"),
+      description: t("session.setRowTour.delete.desc"),
       selector: "[data-tour='session-set-delete']",
     },
   ];
 
   return (
     <div className="min-h-screen bg-[#faf6f1] pb-8">
-      <div className="flex items-center justify-between gap-3 px-5 pt-6 pb-4">
-        <div className="flex items-center gap-3">
+      <div
+        className="flex items-center justify-between gap-3 px-5 pt-8 pb-6"
+        style={{ background: "#191714" }}
+      >
+        <div className="flex items-center gap-3 min-w-0">
           <button
             data-tour="session-back"
             onClick={() => navigate(-1)}
-            className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center active:bg-gray-300 transition-colors flex-shrink-0"
+            className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center active:bg-white/20 transition-colors flex-shrink-0"
           >
-            <ArrowLeft size={16} className="text-gray-700" />
+            <ChevronLeft size={16} className="text-white" />
           </button>
-          <div>
-            <h1 className="text-[26px] font-black text-gray-900 leading-tight">
+          <div className="min-w-0">
+            <h1 className="text-xl font-black text-white uppercase tracking-wide leading-tight truncate">
               {session.muscleGroup}
             </h1>
-            <p className="text-sm text-gray-500">{capitalizedDate}</p>
+            <p className="text-xs font-bold text-white/50 uppercase tracking-widest mt-0.5">
+              {capitalizedDate}
+            </p>
           </div>
         </div>
 
-        {!readOnly && !isEmpty && (
+        {!readOnly && !isEmpty ? (
           <button
             data-tour="session-edit-toggle"
             onClick={() => setIsEditMode((v) => !v)}
-            className={`flex items-center gap-1.5 text-sm font-semibold px-3.5 py-2 rounded-xl transition-colors flex-shrink-0 ${
-              isEditMode
-                ? "bg-[#c9552c] text-white"
-                : "bg-white border border-gray-200 text-gray-700"
+            className={`text-xs font-bold uppercase tracking-wide px-3.5 py-2 rounded-full transition-colors flex-shrink-0 ${
+              isEditMode ? "bg-[#c9552c] text-white" : "bg-white/10 text-white"
             }`}
           >
-            {isEditMode ? "Terminé" : "Modifier"}
+            {isEditMode ? t("session.done") : t("session.edit")}
           </button>
+        ) : (
+          <span className="text-[10px] font-bold uppercase tracking-wide bg-[#c9552c]/15 text-[#c9552c] px-3 py-1.5 rounded-full flex-shrink-0 whitespace-nowrap">
+            {t("session.exerciseCountBadge", {
+              count: session.sessionExercises.length,
+            })}
+          </span>
         )}
       </div>
 
-      <div className="px-5 space-y-4">
+      <div className="px-5 pt-5 space-y-4">
         {!readOnly && !isEditMode && (
           <AddExercisePanel
             muscleGroup={session.muscleGroup}
@@ -701,15 +701,15 @@ export default function SessionPage() {
         )}
 
         {isEmpty && (
-          <div className="bg-white/60 border border-dashed border-gray-300 rounded-2xl p-8 flex flex-col items-center">
-            <div className="w-12 h-12 rounded-full bg-[#c9552c]/10 flex items-center justify-center mb-3">
+          <div className="bg-[#ece7dd] border-2 border-dashed border-[#d6d0c1] rounded-3xl p-8 flex flex-col items-center">
+            <div className="w-12 h-12 rounded-full bg-white/60 flex items-center justify-center mb-3">
               <Dumbbell size={20} className="text-[#c9552c]" />
             </div>
-            <p className="text-sm font-bold text-gray-900 mb-1">
-              Aucun exercice pour l'instant
+            <p className="text-sm font-black text-gray-900 uppercase mb-1">
+              {t("session.emptyTitle")}
             </p>
-            <p className="text-xs text-gray-400 text-center">
-              Ajoute ton premier exercice pour{"\n"}commencer la séance
+            <p className="text-xs text-gray-500 text-center whitespace-pre-line">
+              {t("session.emptyDesc")}
             </p>
           </div>
         )}
@@ -777,8 +777,8 @@ export default function SessionPage() {
                   toggleTracked(se.exercise.id);
                   showToast(
                     wasTracked
-                      ? "Exercice retiré du suivi"
-                      : "Exercice ajouté au suivi",
+                      ? t("session.trackedRemoved")
+                      : t("session.trackedAdded"),
                   );
                 }}
                 onOpenNoteModal={() => openNoteModal(se.exercise.id)}
@@ -849,7 +849,7 @@ export default function SessionPage() {
               });
               setConfirmDelete(null);
               setRemovingId(confirmDelete);
-              showToast("Exercice supprimé");
+              showToast(t("session.exerciseDeleted"));
               setTimeout(() => {
                 setRemovingId(null);
                 fetchSession();

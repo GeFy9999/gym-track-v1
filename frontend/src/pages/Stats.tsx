@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { useTranslation } from "react-i18next";
 import HeaderStats from "../components/stats/header";
 import PersonalRecordCards from "../components/stats/personalRecord";
 import EstimatedOneRepMax from "../components/stats/estimatedOneRepMax";
@@ -7,6 +8,7 @@ import MuscleVolume from "../components/stats/muscleVolume";
 import TourOverlay from "../components/TourOverlay";
 
 export default function StatsPage() {
+  const { t } = useTranslation();
   const tourRef0 = useRef<HTMLDivElement>(null);
   const tourRef1 = useRef<HTMLDivElement>(null);
   const tourRef2 = useRef<HTMLDivElement>(null);
@@ -14,26 +16,23 @@ export default function StatsPage() {
 
   const statsTourSteps = [
     {
-      title: "Records personnels",
-      description:
-        "Le meilleur poids jamais soulevé pour chaque exercice que tu suis (active le trophée sur une carte d'exercice pour l'ajouter ici).",
+      title: t("stats.tour.records.title"),
+      description: t("stats.tour.records.desc"),
       refIndex: 0,
     },
     {
-      title: "Force maximale estimée par 1 répétition",
-      description:
-        "Ton 1RM estimé (formule d'Epley) pour chaque exercice suivi, avec sa progression dans le temps.",
+      title: t("stats.tour.oneRepMax.title"),
+      description: t("stats.tour.oneRepMax.desc"),
       refIndex: 1,
     },
     {
-      title: "Progression",
-      description: "L'évolution de ton poids corporel au fil des semaines.",
+      title: t("stats.tour.progression.title"),
+      description: t("stats.tour.progression.desc"),
       refIndex: 2,
     },
     {
-      title: "Volume par groupe musculaire",
-      description:
-        "Le nombre de sets effectués par groupe musculaire, pour voir où va ton volume d'entraînement.",
+      title: t("stats.tour.volume.title"),
+      description: t("stats.tour.volume.desc"),
       refIndex: 3,
       tooltipPosition: "above" as const,
     },
@@ -45,28 +44,28 @@ export default function StatsPage() {
 
       <section ref={tourRef0} className="mt-7">
         <h2 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-3">
-          Records personnels
+          {t("stats.personalRecords")}
         </h2>
         <PersonalRecordCards />
       </section>
 
       <section ref={tourRef1} className="mt-8">
         <h2 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-3">
-          Force maximale estimée · 1RM
+          {t("stats.oneRepMax")}
         </h2>
         <EstimatedOneRepMax />
       </section>
 
       <section ref={tourRef2} className="mt-8">
         <h2 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-3">
-          Progression
+          {t("stats.progression")}
         </h2>
         <ProgressChart />
       </section>
 
       <section ref={tourRef3} className="mt-8 mb-4">
         <h2 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-3">
-          Volume par groupe musculaire
+          {t("stats.muscleVolume")}
         </h2>
         <MuscleVolume />
       </section>

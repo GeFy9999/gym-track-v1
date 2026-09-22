@@ -18,6 +18,7 @@ import ImportPage from "./pages/Import.tsx";
 import ExercisesPage from "./pages/Exercises.tsx";
 import ExerciseDetailPage from "./pages/ExerciseDetail.tsx";
 import { RestTimerProvider, useRestTimerContext } from "./contexts/RestTimerContext";
+import { UiChromeProvider, useUiChrome } from "./contexts/UiChromeContext";
 import RestTimer from "./components/session/RestTimer";
 
 function GlobalRestTimer() {
@@ -67,11 +68,13 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-function App() {
+function AppShell() {
   const [error, setError] = useState<string | undefined>(undefined);
   const location = useLocation();
+  const { navHidden } = useUiChrome();
 
   const hideNav =
+    navHidden ||
     [
       "/login",
       "/register",
@@ -189,6 +192,14 @@ function App() {
         </div>
       </div>
     </RestTimerProvider>
+  );
+}
+
+function App() {
+  return (
+    <UiChromeProvider>
+      <AppShell />
+    </UiChromeProvider>
   );
 }
 

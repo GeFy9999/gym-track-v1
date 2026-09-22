@@ -1,38 +1,19 @@
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Lock } from "lucide-react";
 import { API_URL } from "../lib/api";
 
-const passwordRules = [
-  { regex: /.{8,}/, label: "Minimum 8 caractères" },
-  { regex: /[A-Z]/, label: "Une lettre majuscule" },
-  { regex: /[a-z]/, label: "Une lettre minuscule" },
-  { regex: /[0-9]/, label: "Un chiffre" },
-  { regex: /[^A-Za-z0-9]/, label: "Un caractère spécial (!@#$...)" },
-];
-
-const resetSchema = z
-  .object({
-    password: z
-      .string()
-      .min(8, "Minimum 8 caractères")
-      .regex(/[A-Z]/, "Doit contenir une majuscule")
-      .regex(/[a-z]/, "Doit contenir une minuscule")
-      .regex(/[0-9]/, "Doit contenir un chiffre")
-      .regex(/[^A-Za-z0-9]/, "Doit contenir un caractère spécial"),
-    confirm: z.string().min(1, "Confirme ton mot de passe"),
-  })
-  .refine((data) => data.password === data.confirm, {
-    message: "Les mots de passe ne correspondent pas",
-    path: ["confirm"],
-  });
-
-type ResetForm = z.infer<typeof resetSchema>;
+type ResetForm = {
+  password: string;
+  confirm: string;
+};
 
 export default function ResetPasswordPage() {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
 
@@ -41,6 +22,30 @@ export default function ResetPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+
+  const passwordRules = [
+    { regex: /.{8,}/, label: t("resetPassword.rules.minLength") },
+    { regex: /[A-Z]/, label: t("resetPassword.rules.uppercase") },
+    { regex: /[a-z]/, label: t("resetPassword.rules.lowercase") },
+    { regex: /[0-9]/, label: t("resetPassword.rules.digit") },
+    { regex: /[^A-Za-z0-9]/, label: t("resetPassword.rules.special") },
+  ];
+
+  const resetSchema = z
+    .object({
+      password: z
+        .string()
+        .min(8, t("resetPassword.errors.minLength"))
+        .regex(/[A-Z]/, t("resetPassword.errors.uppercase"))
+        .regex(/[a-z]/, t("resetPassword.errors.lowercase"))
+        .regex(/[0-9]/, t("resetPassword.errors.digit"))
+        .regex(/[^A-Za-z0-9]/, t("resetPassword.errors.special")),
+      confirm: z.string().min(1, t("resetPassword.errors.confirmRequired")),
+    })
+    .refine((data) => data.password === data.confirm, {
+      message: t("resetPassword.errors.mismatch"),
+      path: ["confirm"],
+    });
 
   const {
     register,
@@ -66,11 +71,11 @@ export default function ResetPasswordPage() {
       });
 
       const result = await res.json();
-      if (!res.ok) throw new Error(result.error || "Erreur");
+      if (!res.ok) throw new Error(result.error || t("resetPassword.errors.generic"));
 
       setDone(true);
     } catch (err) {
-      setServerError(err instanceof Error ? err.message : "Erreur");
+      setServerError(err instanceof Error ? err.message : t("resetPassword.errors.generic"));
     } finally {
       setLoading(false);
     }
@@ -79,9 +84,9 @@ export default function ResetPasswordPage() {
   if (!token) {
     return (
       <div className="min-h-screen bg-[#faf6f1] flex flex-col items-center justify-center px-6">
-        <p className="text-red-500 mb-4">Lien invalide</p>
+        <p className="text-red-500 mb-4">{t("resetPassword.invalidLink")}</p>
         <Link to="/login" className="text-[#c9552c] font-semibold text-sm">
-          Retour à la connexion
+          {t("resetPassword.backToLogin")}
         </Link>
       </div>
     );
@@ -99,16 +104,16 @@ export default function ResetPasswordPage() {
           <Lock size={24} className="text-[#3a9e6e]" />
         </div>
         <h1 className="text-xl font-bold text-gray-900 mb-2">
-          Mot de passe réinitialisé
+          {t("resetPassword.resetDone")}
         </h1>
         <p className="text-sm text-gray-500 mb-8">
-          Tu peux maintenant te connecter avec ton nouveau mot de passe.
+          {t("resetPassword.resetDoneDesc")}
         </p>
         <Link
           to="/login"
           className="bg-[#c9552c] text-white px-8 py-3 rounded-2xl font-semibold shadow-md"
         >
-          Se connecter
+          {t("resetPassword.signIn")}
         </Link>
       </div>
     );
@@ -129,10 +134,10 @@ export default function ResetPasswordPage() {
       </div>
 
       <h1 className="text-[24px] font-black text-gray-900 leading-tight mb-1">
-        Nouveau mot de passe
+        {t("resetPassword.title")}
       </h1>
       <p className="text-sm text-gray-500 mb-6">
-        Choisis un nouveau mot de passe pour ton compte.
+        {t("resetPassword.subtitle")}
       </p>
 
       {serverError && (
@@ -144,7 +149,7 @@ export default function ResetPasswordPage() {
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <div className="relative">
           <label className="text-sm font-semibold text-gray-900 mb-1 block">
-            Nouveau mot de passe
+            {t("resetPassword.newPassword")}
           </label>
           <input
             type={showPassword ? "text" : "password"}
@@ -192,7 +197,7 @@ export default function ResetPasswordPage() {
 
         <div className="relative">
           <label className="text-sm font-semibold text-gray-900 mb-1 block">
-            Confirmer
+            {t("resetPassword.confirm")}
           </label>
           <input
             type={showConfirm ? "text" : "password"}
@@ -223,7 +228,7 @@ export default function ResetPasswordPage() {
           disabled={loading}
           className="w-full bg-[#e8622b] disabled:opacity-50 text-white py-3.5 rounded-2xl font-semibold transition-all shadow-md mt-2"
         >
-          {loading ? "Réinitialisation..." : "Réinitialiser"}
+          {loading ? t("resetPassword.resetting") : t("resetPassword.resetAction")}
         </button>
       </form>
     </div>

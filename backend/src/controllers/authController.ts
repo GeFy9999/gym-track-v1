@@ -10,6 +10,7 @@ import {
   updateRestTimer,
   updateRestTimerEnabled,
   updateBarbellModeEnabled,
+  updateLanguage,
   forgotPassword,
   resetPassword,
 } from "../services/authService.js";
@@ -23,13 +24,13 @@ export const authRouter = express.Router();
 // POST /api/auth/register
 authRouter.post("/register", async (req, res) => {
   try {
-    const { email, password, name } = req.body;
+    const { email, password, name, language } = req.body;
     if (!email) return res.status(400).json({ error: "Email requis" });
     if (!password)
       return res.status(400).json({ error: "Mot de passe requis" });
     if (!name) return res.status(400).json({ error: "Nom requis" });
 
-    const result = await register({ email, password, name });
+    const result = await register({ email, password, name, language });
     return res.status(201).json(result);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
@@ -56,11 +57,11 @@ authRouter.post("/login", async (req, res) => {
 // POST /api/auth/google
 authRouter.post("/google", async (req, res) => {
   try {
-    const { credential } = req.body;
+    const { credential, language } = req.body;
     if (!credential)
       return res.status(400).json({ error: "Token Google requis" });
 
-    const result = await googleLogin(credential);
+    const result = await googleLogin(credential, language);
     return res.status(200).json(result);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
@@ -225,6 +226,28 @@ authRouter.patch(
 
       await updateBarbellModeEnabled(userId, barbellModeEnabled);
       return res.status(200).json({ message: "Préférence mise à jour" });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      return res.status(400).json({ error: message });
+    }
+  },
+);
+
+// PATCH /api/auth/language
+authRouter.patch(
+  "/language",
+  authMiddleware,
+  async (req: AuthRequest, res) => {
+    try {
+      const userId = req.userId!;
+      const { language } = req.body;
+
+      if (!language || !["fr", "en"].includes(language)) {
+        return res.status(400).json({ error: "Langue invalide (fr ou en)" });
+      }
+
+      await updateLanguage(userId, language);
+      return res.status(200).json({ message: "Langue mise à jour" });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       return res.status(400).json({ error: message });

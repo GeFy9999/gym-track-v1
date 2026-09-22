@@ -1,3 +1,5 @@
+import i18n from "../i18n";
+
 export type SetType = "normal" | "warmup" | "dropset" | "failure";
 
 export const SET_TYPE_LETTERS: Record<SetType, string> = {
@@ -21,12 +23,14 @@ export const SET_TYPE_ACCENTS: Record<SetType, string> = {
   failure: "#c9552c",
 };
 
-export const SET_TYPE_OPTIONS: { value: SetType; label: string }[] = [
-  { value: "normal", label: "Normal Set" },
-  { value: "warmup", label: "Warm-up Set" },
-  { value: "dropset", label: "Drop Set" },
-  { value: "failure", label: "Failure Set" },
-];
+export function getSetTypeOptions(): { value: SetType; label: string }[] {
+  return [
+    { value: "normal", label: i18n.t("session.setTypeOptions.normal") },
+    { value: "warmup", label: i18n.t("session.setTypeOptions.warmup") },
+    { value: "dropset", label: i18n.t("session.setTypeOptions.dropset") },
+    { value: "failure", label: i18n.t("session.setTypeOptions.failure") },
+  ];
+}
 
 export function getSetTypeColor(type: string): string {
   return SET_TYPE_COLORS[type as SetType] ?? SET_TYPE_COLORS.normal;

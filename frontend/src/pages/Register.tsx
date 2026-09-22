@@ -3,63 +3,70 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslation } from "react-i18next";
 import { Eye, EyeOff, User, Mail, Lock } from "lucide-react";
 import GoogleLoginButton from "../components/GoogleLoginButton";
 import { API_URL } from "../lib/api";
 
-const passwordRules = [
-  { regex: /.{8,}/, label: "Minimum 8 caractères" },
-  { regex: /[A-Z]/, label: "Une lettre majuscule" },
-  { regex: /[a-z]/, label: "Une lettre minuscule" },
-  { regex: /[0-9]/, label: "Un chiffre" },
-  { regex: /[^A-Za-z0-9]/, label: "Un caractère spécial (!@#$...)" },
-];
-
-const STRENGTH_LEVELS = [
-  { label: "Faible", color: "#c9552c" },
-  { label: "Moyen", color: "#e2703a" },
-  { label: "Correct", color: "#3a9e6e" },
+const PASSWORD_RULES = [
+  /.{8,}/,
+  /[A-Z]/,
+  /[a-z]/,
+  /[0-9]/,
+  /[^A-Za-z0-9]/,
 ];
 
 function getPasswordStrength(password: string) {
-  const passed = passwordRules.filter((r) => r.regex.test(password)).length;
+  const passed = PASSWORD_RULES.filter((r) => r.test(password)).length;
   if (passed <= 2) return 1;
   if (passed <= 4) return 2;
   return 3;
 }
 
-const registerSchema = z
-  .object({
-    name: z
-      .string()
-      .min(2, "Le nom doit contenir au moins 2 caractères")
-      .max(50, "Le nom ne peut pas dépasser 50 caractères"),
-    email: z
-      .string()
-      .min(1, "Le courriel est requis")
-      .email("Courriel invalide"),
-    password: z
-      .string()
-      .min(8, "Minimum 8 caractères")
-      .regex(/[A-Z]/, "Doit contenir une majuscule")
-      .regex(/[a-z]/, "Doit contenir une minuscule")
-      .regex(/[0-9]/, "Doit contenir un chiffre")
-      .regex(/[^A-Za-z0-9]/, "Doit contenir un caractère spécial"),
-    confirmPassword: z.string().min(1, "Confirme ton mot de passe"),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Les mots de passe ne correspondent pas",
-    path: ["confirmPassword"],
-  });
-
-type RegisterForm = z.infer<typeof registerSchema>;
+type RegisterForm = {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+};
 
 export default function RegisterPage() {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const [serverError, setServerError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+
+  const STRENGTH_LEVELS = [
+    { label: t("register.strength.weak"), color: "#c9552c" },
+    { label: t("register.strength.medium"), color: "#e2703a" },
+    { label: t("register.strength.good"), color: "#3a9e6e" },
+  ];
+
+  const registerSchema = z
+    .object({
+      name: z
+        .string()
+        .min(2, t("register.errors.nameMin"))
+        .max(50, t("register.errors.nameMax")),
+      email: z
+        .string()
+        .min(1, t("register.errors.emailRequired"))
+        .email(t("register.errors.emailInvalid")),
+      password: z
+        .string()
+        .min(8, t("register.errors.passwordMin"))
+        .regex(/[A-Z]/, t("register.errors.passwordUppercase"))
+        .regex(/[a-z]/, t("register.errors.passwordLowercase"))
+        .regex(/[0-9]/, t("register.errors.passwordDigit"))
+        .regex(/[^A-Za-z0-9]/, t("register.errors.passwordSpecial")),
+      confirmPassword: z.string().min(1, t("register.errors.confirmRequired")),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: t("register.errors.passwordMismatch"),
+      path: ["confirmPassword"],
+    });
 
   const {
     register,
@@ -87,20 +94,25 @@ export default function RegisterPage() {
           email: data.email,
           password: data.password,
           name: data.name,
+          // Detected from the browser locale by i18next-browser-languagedetector
+          // so a new account starts in the visitor's own language.
+          language: i18n.language?.startsWith("en") ? "en" : "fr",
         }),
       });
 
       const result = await res.json();
 
       if (!res.ok) {
-        throw new Error(result.error || "Erreur lors de l'inscription");
+        throw new Error(result.error || t("register.errors.generic"));
       }
 
       localStorage.setItem("token", result.token);
       localStorage.setItem("user", JSON.stringify(result.user));
       navigate("/dashboard");
     } catch (err) {
-      setServerError(err instanceof Error ? err.message : "Erreur inconnue");
+      setServerError(
+        err instanceof Error ? err.message : t("register.errors.unknown"),
+      );
     } finally {
       setLoading(false);
     }
@@ -118,7 +130,7 @@ export default function RegisterPage() {
           className="h-16 mx-auto mb-3"
         />
         <p className="text-xs font-bold text-white/60 uppercase tracking-widest">
-          Crée ton compte
+          {t("register.subtitle")}
         </p>
       </div>
 
@@ -135,7 +147,7 @@ export default function RegisterPage() {
               htmlFor="name"
               className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-1.5 block"
             >
-              Nom
+              {t("register.name")}
             </label>
             <div className="relative">
               <User
@@ -149,7 +161,7 @@ export default function RegisterPage() {
                 className={`w-full bg-[#ece7dd] rounded-full pl-11 pr-4 py-3.5 text-gray-900 placeholder-gray-400 focus:outline-none transition-colors ${
                   errors.name ? "ring-2 ring-red-500" : ""
                 }`}
-                placeholder="Ton nom"
+                placeholder={t("register.namePlaceholder")}
               />
             </div>
             {errors.name && (
@@ -164,7 +176,7 @@ export default function RegisterPage() {
               htmlFor="email"
               className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-1.5 block"
             >
-              Courriel
+              {t("register.email")}
             </label>
             <div className="relative">
               <Mail
@@ -178,7 +190,7 @@ export default function RegisterPage() {
                 className={`w-full bg-[#ece7dd] rounded-full pl-11 pr-4 py-3.5 text-gray-900 placeholder-gray-400 focus:outline-none transition-colors ${
                   errors.email ? "ring-2 ring-red-500" : ""
                 }`}
-                placeholder="ton@courriel.com"
+                placeholder={t("register.emailPlaceholder")}
               />
             </div>
             {errors.email && (
@@ -193,7 +205,7 @@ export default function RegisterPage() {
               htmlFor="password"
               className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-1.5 block"
             >
-              Mot de passe
+              {t("register.password")}
             </label>
             <div className="relative">
               <Lock
@@ -251,7 +263,7 @@ export default function RegisterPage() {
               htmlFor="confirmPassword"
               className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-1.5 block"
             >
-              Confirmer le mot de passe
+              {t("register.confirmPassword")}
             </label>
             <div className="relative">
               <Lock
@@ -287,14 +299,14 @@ export default function RegisterPage() {
             disabled={loading}
             className="w-full bg-[#c9552c] disabled:opacity-50 text-white py-3.5 rounded-full font-bold uppercase tracking-wide text-sm transition-all shadow-sm mt-2 active:scale-[0.98]"
           >
-            {loading ? "Création..." : "Créer mon compte"}
+            {loading ? t("register.submitting") : t("register.submit")}
           </button>
         </form>
 
         <div className="flex items-center gap-3 my-6">
           <div className="flex-1 h-px bg-gray-300" />
           <span className="text-xs font-bold text-gray-400 uppercase tracking-wide">
-            ou
+            {t("register.or")}
           </span>
           <div className="flex-1 h-px bg-gray-300" />
         </div>
@@ -302,9 +314,9 @@ export default function RegisterPage() {
         <GoogleLoginButton />
 
         <p className="text-center text-sm text-gray-500 mt-8 pb-8">
-          Déjà un compte ?{" "}
+          {t("register.haveAccount")}{" "}
           <Link to="/login" className="text-[#c9552c] font-bold">
-            Se connecter
+            {t("register.signIn")}
           </Link>
         </p>
       </div>

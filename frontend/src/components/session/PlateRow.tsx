@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 type Props = {
   plates: number[];
   remainder: number;
@@ -14,6 +16,7 @@ export default function PlateRow({
   totalWeight,
   unit,
 }: Props) {
+  const { t } = useTranslation();
   if (plates.length === 0 && remainder <= 0) return null;
 
   const maxPlate = plates.length > 0 ? Math.max(...plates) : 1;
@@ -21,7 +24,7 @@ export default function PlateRow({
   return (
     <div className="flex items-center gap-2 flex-wrap pl-9">
       <span className="text-[11px] text-gray-400 flex-shrink-0">
-        Par côté :
+        {t("session.perSide")}
       </span>
       <div className="flex items-center gap-1 flex-wrap">
         {plates.map((p, i) => {
@@ -38,12 +41,12 @@ export default function PlateRow({
         })}
         {remainder > 0 && (
           <span className="text-[10px] text-gray-400">
-            +{remainder} non calculable
+            {t("session.notCalculable", { count: remainder })}
           </span>
         )}
       </div>
       <span className="text-xs font-bold text-[#c9552c] ml-auto flex-shrink-0">
-        {totalWeight} {unit} total
+        {t("session.total", { weight: totalWeight, unit })}
       </span>
     </div>
   );

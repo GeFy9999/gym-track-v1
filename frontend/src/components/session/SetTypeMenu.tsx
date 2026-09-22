@@ -1,6 +1,7 @@
+import { useTranslation } from "react-i18next";
 import { Check } from "lucide-react";
 import {
-  SET_TYPE_OPTIONS,
+  getSetTypeOptions,
   SET_TYPE_LETTERS,
   getSetTypeColor,
   getSetTypeAccent,
@@ -17,13 +18,14 @@ export default function SetTypeMenu({
   isClosing,
   onSelect,
 }: Props) {
+  useTranslation();
   return (
     <div
       className={`mb-2 bg-white border border-gray-200 rounded-2xl shadow-lg p-2 grid grid-cols-2 gap-1.5 origin-top ${
         isClosing ? "animate-menu-close" : "animate-slide-down"
       }`}
     >
-      {SET_TYPE_OPTIONS.map((opt) => {
+      {getSetTypeOptions().map((opt) => {
         const selected = currentType === opt.value;
         const accent = getSetTypeAccent(opt.value);
         return (

@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   Mail,
   Lock,
@@ -13,12 +14,14 @@ import {
   Timer,
   Dumbbell,
   Download,
+  Globe,
 } from "lucide-react";
 import { API_URL } from "../lib/api";
 import TourOverlay from "../components/TourOverlay";
 
 export default function ProfilePage() {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
 
   const stored = localStorage.getItem("user");
   const user = stored ? JSON.parse(stored) : null;
@@ -39,6 +42,7 @@ export default function ProfilePage() {
   const [success, setSuccess] = useState<string | null>(null);
   const [recoveryEmail, setRecoveryEmail] = useState(user?.recoveryEmail || "");
   const [weightUnit, setWeightUnit] = useState(user?.weightUnit || "lb");
+  const [language, setLanguage] = useState(user?.language || i18n.language || "fr");
   const [restTimerSeconds, setRestTimerSeconds] = useState(
     user?.restTimerSeconds || 120,
   );
@@ -61,34 +65,29 @@ export default function ProfilePage() {
 
   const profileTourSteps = [
     {
-      title: "Photos de progression",
-      description:
-        "Prends des photos régulièrement pour visualiser ta progression physique dans le temps.",
+      title: t("profile.tour.progressPhotos.title"),
+      description: t("profile.tour.progressPhotos.description"),
       refIndex: 0,
     },
     {
-      title: "Compte",
-      description:
-        "Gère ton courriel, ton mot de passe et un courriel de récupération en cas de perte d'accès.",
+      title: t("profile.tour.account.title"),
+      description: t("profile.tour.account.description"),
       refIndex: 1,
     },
     {
-      title: "Unité de poids",
-      description:
-        "Choisis lb ou kg — tout l'app (séances, stats, historique) s'adapte à ton choix.",
+      title: t("profile.tour.weightUnit.title"),
+      description: t("profile.tour.weightUnit.description"),
       refIndex: 2,
     },
     {
-      title: "Entraînement",
-      description:
-        "Active le minuteur de repos automatique et sa durée par défaut, ainsi que le mode barre pour calculer les plaques à charger.",
+      title: t("profile.tour.training.title"),
+      description: t("profile.tour.training.description"),
       refIndex: 3,
       tooltipPosition: "above" as const,
     },
     {
-      title: "Zone de danger",
-      description:
-        "Supprime ton compte et toutes tes données. Cette action est irréversible.",
+      title: t("profile.tour.dangerZone.title"),
+      description: t("profile.tour.dangerZone.description"),
       refIndex: 4,
       tooltipPosition: "above" as const,
     },
@@ -114,14 +113,14 @@ export default function ProfilePage() {
         body: JSON.stringify({ currentPassword, newPassword }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Erreur");
+      if (!res.ok) throw new Error(data.error || t("profile.errorGeneric"));
       setActiveModal(null);
       setCurrentPassword("");
       setNewPassword("");
-      setSuccess("Mot de passe modifié");
+      setSuccess(t("profile.toastPasswordChanged"));
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur");
+      setError(err instanceof Error ? err.message : t("profile.errorGeneric"));
     }
   };
 
@@ -152,7 +151,7 @@ export default function ProfilePage() {
         body: JSON.stringify({ recoveryEmail }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Erreur");
+      if (!res.ok) throw new Error(data.error || t("profile.errorGeneric"));
       const s = localStorage.getItem("user");
       if (s) {
         const u = JSON.parse(s);
@@ -160,10 +159,10 @@ export default function ProfilePage() {
         localStorage.setItem("user", JSON.stringify(u));
       }
       setActiveModal(null);
-      setSuccess("Courriel de récupération mis à jour");
+      setSuccess(t("profile.toastRecoveryEmailUpdated"));
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur");
+      setError(err instanceof Error ? err.message : t("profile.errorGeneric"));
     }
   };
 
@@ -187,8 +186,33 @@ export default function ProfilePage() {
         localStorage.setItem("user", JSON.stringify(u));
       }
       setActiveModal(null);
-      setSuccess(`Unité changée en ${unit}`);
+      setSuccess(t("profile.toastUnitChanged", { unit }));
       setTimeout(() => setSuccess(null), 3000);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleLanguage = async (lang: string) => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_URL}/auth/language`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ language: lang }),
+      });
+      if (!res.ok) return;
+      setLanguage(lang);
+      i18n.changeLanguage(lang);
+      const s = localStorage.getItem("user");
+      if (s) {
+        const u = JSON.parse(s);
+        u.language = lang;
+        localStorage.setItem("user", JSON.stringify(u));
+      }
     } catch (err) {
       console.error(err);
     }
@@ -217,7 +241,7 @@ export default function ProfilePage() {
       setActiveModal(null);
       setCustomMinutes("");
       setCustomSeconds("");
-      setSuccess("Minuteur de repos mis à jour");
+      setSuccess(t("profile.toastRestTimerUpdated"));
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
       console.error(err);
@@ -310,7 +334,7 @@ export default function ProfilePage() {
 
       {/* Progression */}
       <p className="text-xs text-gray-900 uppercase tracking-widest font-bold mb-2 px-1">
-        Progression
+        {t("profile.progression")}
       </p>
       <div ref={tourRef0} className="bg-[#ece7dd] rounded-2xl mb-6 shadow-sm">
         <button
@@ -321,10 +345,10 @@ export default function ProfilePage() {
             <Camera size={16} className="text-[#c9552c]" />
           </div>
           <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
-            Photos de progression
+            {t("profile.progressPhotos")}
           </p>
           <span className="text-[10px] font-bold text-gray-600 uppercase bg-white/60 px-2.5 py-1 rounded-full">
-            Voir
+            {t("profile.view")}
           </span>
           <ChevronRight size={16} className="text-[#c9552c] flex-shrink-0" />
         </button>
@@ -332,7 +356,7 @@ export default function ProfilePage() {
 
       {/* Données */}
       <p className="text-xs text-gray-900 uppercase tracking-widest font-bold mb-2 px-1">
-        Données
+        {t("profile.data")}
       </p>
       <div className="bg-[#ece7dd] rounded-2xl mb-6 shadow-sm">
         <button
@@ -343,7 +367,7 @@ export default function ProfilePage() {
             <Download size={16} className="text-[#c9552c]" />
           </div>
           <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
-            Importer des données
+            {t("profile.importData")}
           </p>
           <span className="text-[10px] font-bold text-gray-600 uppercase bg-white/60 px-2.5 py-1 rounded-full">
             CSV
@@ -354,7 +378,7 @@ export default function ProfilePage() {
 
       {/* Compte */}
       <p className="text-xs text-gray-900 uppercase tracking-widest font-bold mb-2 px-1">
-        Compte
+        {t("profile.account")}
       </p>
       <div ref={tourRef1} className="bg-[#ece7dd] rounded-2xl mb-6 shadow-sm">
         <div className="w-full flex items-center gap-3 px-4 py-4 border-b border-black/5">
@@ -363,7 +387,7 @@ export default function ProfilePage() {
           </div>
           <div className="flex-1 text-left min-w-0">
             <p className="text-sm font-bold text-gray-900 uppercase">
-              Courriel
+              {t("profile.email")}
             </p>
             <p className="text-xs text-gray-500 truncate">
               {user?.email}
@@ -382,10 +406,12 @@ export default function ProfilePage() {
             <Lock size={16} className="text-[#c9552c]" />
           </div>
           <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
-            Mot de passe
+            {t("profile.password")}
           </p>
           <span className="text-[10px] font-bold uppercase bg-[#c9552c]/10 text-[#c9552c] px-2.5 py-1 rounded-full whitespace-nowrap">
-            {user?.authProvider === "google" ? "Non défini" : "Modifier"}
+            {user?.authProvider === "google"
+              ? t("profile.notSet")
+              : t("profile.edit")}
           </span>
           <ChevronRight size={16} className="text-[#c9552c] flex-shrink-0" />
         </button>
@@ -401,7 +427,7 @@ export default function ProfilePage() {
             <MailPlus size={16} className="text-[#c9552c]" />
           </div>
           <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
-            Courriel de récupération
+            {t("profile.recoveryEmail")}
           </p>
           <span
             className={`text-[10px] font-bold uppercase px-2.5 py-1 rounded-full whitespace-nowrap ${
@@ -410,7 +436,9 @@ export default function ProfilePage() {
                 : "bg-[#c9552c]/10 text-[#c9552c]"
             }`}
           >
-            {user?.recoveryEmail ? "Configuré" : "Non conf."}
+            {user?.recoveryEmail
+              ? t("profile.configured")
+              : t("profile.notConfigured")}
           </span>
           <ChevronRight size={16} className="text-[#c9552c]" />
         </button>
@@ -418,15 +446,15 @@ export default function ProfilePage() {
 
       {/* Préférences */}
       <p className="text-xs text-gray-900 uppercase tracking-widest font-bold mb-2 px-1">
-        Préférences
+        {t("profile.preferences")}
       </p>
       <div ref={tourRef2} className="bg-[#ece7dd] rounded-2xl mb-6 shadow-sm">
-        <div className="w-full flex items-center gap-3 px-4 py-4">
+        <div className="w-full flex items-center gap-3 px-4 py-4 border-b border-black/5">
           <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <Scale size={16} className="text-[#c9552c]" />
           </div>
           <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
-            Unité de poids
+            {t("profile.weightUnit")}
           </p>
           <div className="relative flex w-28 bg-gray-300 rounded-full p-1 flex-shrink-0">
             <div
@@ -454,11 +482,45 @@ export default function ProfilePage() {
             </button>
           </div>
         </div>
+
+        <div className="w-full flex items-center gap-3 px-4 py-4">
+          <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
+            <Globe size={16} className="text-[#c9552c]" />
+          </div>
+          <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
+            {t("profile.language")}
+          </p>
+          <div className="relative flex w-28 bg-gray-300 rounded-full p-1 flex-shrink-0">
+            <div
+              className="absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] rounded-full bg-[#191714] transition-transform duration-200 ease-out"
+              style={{
+                transform:
+                  language === "en" ? "translateX(100%)" : "translateX(0)",
+              }}
+            />
+            <button
+              onClick={() => handleLanguage("fr")}
+              className={`relative z-10 flex-1 py-1.5 rounded-full text-xs font-bold uppercase transition-colors ${
+                language === "fr" ? "text-white" : "text-gray-500"
+              }`}
+            >
+              Fr
+            </button>
+            <button
+              onClick={() => handleLanguage("en")}
+              className={`relative z-10 flex-1 py-1.5 rounded-full text-xs font-bold uppercase transition-colors ${
+                language === "en" ? "text-white" : "text-gray-500"
+              }`}
+            >
+              En
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Entraînement */}
       <p className="text-xs text-gray-900 uppercase tracking-widest font-bold mb-2 px-1">
-        Entraînement
+        {t("profile.training")}
       </p>
       <div ref={tourRef3} className="bg-[#ece7dd] rounded-2xl mb-6 shadow-sm">
         <div className="w-full flex items-center gap-3 px-4 py-4 border-b border-black/5">
@@ -467,10 +529,10 @@ export default function ProfilePage() {
           </div>
           <div className="flex-1 text-left">
             <p className="text-sm font-bold text-gray-900 uppercase">
-              Minuteur de repos automatique
+              {t("profile.restTimerAuto")}
             </p>
             <p className="text-xs text-gray-500 mt-0.5">
-              Démarre dès qu'un set est marqué complété
+              {t("profile.restTimerAutoDesc")}
             </p>
           </div>
           <button
@@ -478,7 +540,7 @@ export default function ProfilePage() {
             className={`w-11 h-6 rounded-full relative flex-shrink-0 transition-colors ${
               restTimerEnabled ? "bg-[#3a9e6e]" : "bg-gray-300"
             }`}
-            aria-label="Activer le minuteur de repos automatique"
+            aria-label={t("profile.restTimerAutoAria")}
           >
             <span
               className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${
@@ -497,7 +559,7 @@ export default function ProfilePage() {
             <Timer size={16} className="text-[#c9552c]" />
           </div>
           <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
-            Durée par défaut
+            {t("profile.restTimerDefault")}
           </p>
           <span className="text-[10px] font-bold text-gray-600 uppercase bg-white/60 px-2.5 py-1 rounded-full">
             {formatRestTimer(restTimerSeconds)}
@@ -511,10 +573,10 @@ export default function ProfilePage() {
           </div>
           <div className="flex-1 text-left">
             <p className="text-sm font-bold text-gray-900 uppercase">
-              Mode barre
+              {t("profile.barModeTitle")}
             </p>
             <p className="text-xs text-gray-500 mt-0.5">
-              Saisis le poids de chaque côté de la barre
+              {t("profile.barModeDesc")}
             </p>
           </div>
           <button
@@ -522,7 +584,7 @@ export default function ProfilePage() {
             className={`w-11 h-6 rounded-full relative flex-shrink-0 transition-colors ${
               barbellModeEnabled ? "bg-[#3a9e6e]" : "bg-gray-300"
             }`}
-            aria-label="Activer le mode barre"
+            aria-label={t("profile.barModeAria")}
           >
             <span
               className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${
@@ -535,7 +597,7 @@ export default function ProfilePage() {
 
       {/* Zone de danger */}
       <p className="text-xs text-gray-900 uppercase tracking-widest font-bold mb-2 px-1">
-        Zone de danger
+        {t("profile.dangerZone")}
       </p>
       <div ref={tourRef4} className="bg-[#ece7dd] rounded-2xl mb-6 shadow-sm">
         <button
@@ -545,15 +607,15 @@ export default function ProfilePage() {
           }}
           className="w-full flex items-center gap-3 px-4 py-4"
         >
-          <div className="w-9 h-9 rounded-xl bg-red-500/10 flex items-center justify-center flex-shrink-0">
-            <Trash2 size={16} className="text-red-500" />
+          <div className="w-9 h-9 rounded-xl bg-[#dc2626]/10 flex items-center justify-center flex-shrink-0">
+            <Trash2 size={16} className="text-[#dc2626]" />
           </div>
           <div className="flex-1 text-left">
-            <p className="text-sm font-bold text-red-500 uppercase">
-              Supprimer le compte
+            <p className="text-sm font-bold text-[#dc2626] uppercase">
+              {t("profile.deleteAccount")}
             </p>
             <p className="text-xs text-gray-500 mt-0.5">
-              Toutes tes données seront perdues
+              {t("profile.deleteAccountDesc")}
             </p>
           </div>
         </button>
@@ -566,33 +628,33 @@ export default function ProfilePage() {
         style={{ background: "#191714" }}
       >
         <LogOut size={16} className="text-[#e2703a]" />
-        Se déconnecter
+        {t("profile.signOut")}
       </button>
 
       </div>
 
       {/* Modal déconnexion */}
       {activeModal === "logout" && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6 animate-fade-in">
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-[60] px-6 animate-fade-in">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
             <p className="text-base font-bold text-gray-900 text-center mb-2">
-              Se déconnecter ?
+              {t("profile.logoutModal.title")}
             </p>
             <p className="text-sm text-gray-400 text-center mb-6">
-              Tu devras te reconnecter pour accéder à ton compte.
+              {t("profile.logoutModal.desc")}
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setActiveModal(null)}
                 className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-semibold"
               >
-                Annuler
+                {t("profile.logoutModal.cancel")}
               </button>
               <button
                 onClick={handleLogout}
                 className="flex-1 bg-red-500 text-white py-3 rounded-xl font-semibold"
               >
-                Déconnexion
+                {t("profile.logoutModal.confirm")}
               </button>
             </div>
           </div>
@@ -601,13 +663,13 @@ export default function ProfilePage() {
 
       {/* Modal mot de passe */}
       {activeModal === "password" && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6 animate-fade-in">
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-[60] px-6 animate-fade-in">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
             <div className="flex justify-between items-center mb-4">
               <p className="text-base font-bold text-gray-900">
                 {user?.authProvider === "google"
-                  ? "Définir un mot de passe"
-                  : "Changer le mot de passe"}
+                  ? t("profile.passwordModal.setTitle")
+                  : t("profile.passwordModal.changeTitle")}
               </p>
               <button onClick={() => setActiveModal(null)}>
                 <X size={20} className="text-gray-400" />
@@ -622,7 +684,7 @@ export default function ProfilePage() {
               {user?.authProvider !== "google" && (
                 <div>
                   <label className="text-xs text-gray-500 mb-1 block">
-                    Mot de passe actuel
+                    {t("profile.passwordModal.currentLabel")}
                   </label>
                   <input
                     type="password"
@@ -634,7 +696,7 @@ export default function ProfilePage() {
               )}
               <div>
                 <label className="text-xs text-gray-500 mb-1 block">
-                  Nouveau mot de passe
+                  {t("profile.passwordModal.newLabel")}
                 </label>
                 <input
                   type="password"
@@ -652,7 +714,7 @@ export default function ProfilePage() {
               }
               className="w-full bg-[#c9552c] disabled:opacity-50 text-white py-3 rounded-xl font-semibold"
             >
-              Confirmer
+              {t("profile.passwordModal.confirm")}
             </button>
           </div>
         </div>
@@ -660,27 +722,24 @@ export default function ProfilePage() {
 
       {/* Modal supprimer */}
       {activeModal === "delete" && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6 animate-fade-in">
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-[60] px-6 animate-fade-in">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
             <p className="text-base font-bold text-gray-900 text-center mb-2">
-              Supprimer le compte ?
+              {t("profile.deleteModal.title")}
             </p>
             <p className="text-sm text-gray-400 text-center mb-4">
-              Cette action est irréversible. Toutes tes sessions, exercices et
-              données seront définitivement supprimées.
+              {t("profile.deleteModal.desc")}
             </p>
             <p className="text-sm text-gray-400 text-center mb-4">
-              Tape{" "}
-              <span className="font-mono text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
-                SUPPRIMER
-              </span>{" "}
-              pour confirmer
+              {t("profile.deleteModal.typeToConfirm", {
+                word: t("profile.deleteModal.confirmWord"),
+              })}
             </p>
             <input
               type="text"
               value={confirmText}
               onChange={(e) => setConfirmText(e.target.value)}
-              placeholder="SUPPRIMER"
+              placeholder={t("profile.deleteModal.confirmWord")}
               className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-300 focus:outline-none focus:border-red-500 mb-4"
             />
             <div className="flex gap-3">
@@ -688,14 +747,14 @@ export default function ProfilePage() {
                 onClick={() => setActiveModal(null)}
                 className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-semibold"
               >
-                Annuler
+                {t("profile.deleteModal.cancel")}
               </button>
               <button
                 onClick={handleDeleteAccount}
-                disabled={confirmText !== "SUPPRIMER"}
+                disabled={confirmText !== t("profile.deleteModal.confirmWord")}
                 className="flex-1 bg-red-500 disabled:opacity-50 text-white py-3 rounded-xl font-semibold"
               >
-                Supprimer
+                {t("profile.deleteModal.confirm")}
               </button>
             </div>
           </div>
@@ -704,11 +763,11 @@ export default function ProfilePage() {
 
       {/* Modal recovery */}
       {activeModal === "recovery" && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6 animate-fade-in">
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-[60] px-6 animate-fade-in">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
             <div className="flex justify-between items-center mb-4">
               <p className="text-base font-bold text-gray-900">
-                Courriel de récupération
+                {t("profile.recoveryModal.title")}
               </p>
               <button onClick={() => setActiveModal(null)}>
                 <X size={20} className="text-gray-400" />
@@ -720,13 +779,13 @@ export default function ProfilePage() {
               </div>
             )}
             <label className="text-xs text-gray-500 mb-1 block">
-              Courriel alternatif
+              {t("profile.recoveryModal.label")}
             </label>
             <input
               type="email"
               value={recoveryEmail}
               onChange={(e) => setRecoveryEmail(e.target.value)}
-              placeholder="ton@autre-courriel.com"
+              placeholder={t("profile.recoveryModal.placeholder")}
               className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-300 focus:outline-none focus:border-[#c9552c] mb-4"
             />
             <button
@@ -734,7 +793,7 @@ export default function ProfilePage() {
               disabled={!recoveryEmail}
               className="w-full bg-[#c9552c] disabled:opacity-50 text-white py-3 rounded-xl font-semibold"
             >
-              Sauvegarder
+              {t("profile.recoveryModal.save")}
             </button>
           </div>
         </div>
@@ -742,11 +801,11 @@ export default function ProfilePage() {
 
       {/* Modal timer de repos */}
       {activeModal === "restTimer" && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6 animate-fade-in">
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-[60] px-6 animate-fade-in">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
             <div className="flex justify-between items-center mb-4">
               <p className="text-base font-bold text-gray-900">
-                Minuteur de repos
+                {t("profile.restTimerModal.title")}
               </p>
               <button
                 onClick={() => {
@@ -776,7 +835,7 @@ export default function ProfilePage() {
               ))}
             </div>
             <label className="text-xs text-gray-500 mb-1 block">
-              Durée personnalisée
+              {t("profile.restTimerModal.customDuration")}
             </label>
             <div className="flex items-center gap-3 mb-4">
               <div className="flex-1">
@@ -791,7 +850,7 @@ export default function ProfilePage() {
                   className="w-full bg-gray-100 border border-gray-300 rounded-xl px-4 py-3 text-center text-gray-900 font-semibold placeholder-gray-400 focus:outline-none focus:border-[#c9552c]"
                 />
                 <p className="text-[11px] text-gray-500 text-center mt-1">
-                  minutes
+                  {t("profile.restTimerModal.minutes")}
                 </p>
               </div>
               <span className="text-gray-300 font-semibold pb-5">:</span>
@@ -807,7 +866,7 @@ export default function ProfilePage() {
                   className="w-full bg-gray-100 border border-gray-300 rounded-xl px-4 py-3 text-center text-gray-900 font-semibold placeholder-gray-400 focus:outline-none focus:border-[#c9552c]"
                 />
                 <p className="text-[11px] text-gray-500 text-center mt-1">
-                  secondes
+                  {t("profile.restTimerModal.seconds")}
                 </p>
               </div>
             </div>
@@ -816,7 +875,7 @@ export default function ProfilePage() {
               disabled={customTotalSeconds < 5 || customTotalSeconds > 600}
               className="w-full bg-[#c9552c] disabled:opacity-50 text-white py-3 rounded-xl font-semibold"
             >
-              Confirmer
+              {t("profile.restTimerModal.confirm")}
             </button>
           </div>
         </div>

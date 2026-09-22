@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { ChevronLeft, Camera, Trash2, X } from "lucide-react";
 import { API_URL } from "../lib/api";
+import { getDateLocale } from "../i18n";
 
 type PhotoMeta = {
   id: string;
@@ -37,6 +39,7 @@ function compressImage(
 }
 
 export default function ProgressPhotosPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const fileRef = useRef<HTMLInputElement>(null);
   const [photos, setPhotos] = useState<PhotoMeta[]>([]);
@@ -106,7 +109,7 @@ export default function ProgressPhotosPage() {
 
   const formatDate = (dateStr: string) => {
     const d = new Date(dateStr);
-    return d.toLocaleDateString("fr-FR", {
+    return d.toLocaleDateString(getDateLocale(), {
       day: "numeric",
       month: "short",
       year: "numeric",
@@ -116,7 +119,7 @@ export default function ProgressPhotosPage() {
   const formatShortDate = (dateStr: string) => {
     const d = new Date(dateStr);
     return d
-      .toLocaleDateString("fr-FR", { day: "numeric", month: "short" })
+      .toLocaleDateString(getDateLocale(), { day: "numeric", month: "short" })
       .toUpperCase()
       .replace(".", ".");
   };
@@ -124,7 +127,7 @@ export default function ProgressPhotosPage() {
   const formatGroupLabel = (dateStr: string) => {
     const d = new Date(dateStr);
     return d
-      .toLocaleDateString("fr-FR", {
+      .toLocaleDateString(getDateLocale(), {
         day: "numeric",
         month: "long",
         year: "numeric",
@@ -154,10 +157,10 @@ export default function ProgressPhotosPage() {
         </button>
         <div>
           <h1 className="text-[26px] font-black text-white uppercase tracking-wide leading-tight">
-            Progression
+            {t("progressPhotos.title")}
           </h1>
           <p className="text-xs font-bold text-white/50 uppercase tracking-widest mt-1">
-            Suis ton évolution physique en photos
+            {t("progressPhotos.subtitle")}
           </p>
         </div>
       </div>
@@ -179,7 +182,7 @@ export default function ProgressPhotosPage() {
           className="w-full bg-[#c9552c] disabled:opacity-50 text-white py-3.5 rounded-full font-bold uppercase tracking-wide text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-transform shadow-sm"
         >
           <Camera size={18} />
-          {uploading ? "Envoi en cours..." : "Ajouter une photo"}
+          {uploading ? t("progressPhotos.uploading") : t("progressPhotos.addPhoto")}
         </button>
       </div>
 
@@ -196,10 +199,10 @@ export default function ProgressPhotosPage() {
             <Camera size={24} className="text-[#c9552c]" />
           </div>
           <p className="text-sm font-bold text-gray-900 uppercase">
-            Aucune photo pour le moment
+            {t("progressPhotos.noPhotosYet")}
           </p>
           <p className="text-xs text-gray-400 mt-1">
-            Prends une photo pour commencer à suivre ta progression
+            {t("progressPhotos.noPhotosDesc")}
           </p>
         </div>
       ) : (
@@ -211,7 +214,7 @@ export default function ProgressPhotosPage() {
                   {formatGroupLabel(group[0].createdAt)}
                 </p>
                 <span className="text-[10px] font-bold text-gray-600 uppercase bg-[#ece7dd] px-2.5 py-1 rounded-full shadow-sm">
-                  {group.length} photo{group.length > 1 ? "s" : ""}
+                  {t("progressPhotos.photo", { count: group.length })}
                 </span>
               </div>
               <div className="grid grid-cols-3 gap-2">
@@ -223,7 +226,7 @@ export default function ProgressPhotosPage() {
                   >
                     <img
                       src={photo.data}
-                      alt="Progression"
+                      alt={t("progressPhotos.photoAlt")}
                       className="w-full h-full object-cover"
                     />
                     <span className="absolute bottom-1.5 left-1/2 -translate-x-1/2 text-[9px] font-bold text-white uppercase tracking-wide bg-[#191714] px-2 py-1 rounded-full whitespace-nowrap">
@@ -240,11 +243,10 @@ export default function ProgressPhotosPage() {
       {/* Tip */}
       <div className="border-2 border-dashed border-gray-300 rounded-3xl p-6 text-center mt-6">
         <p className="text-sm font-black text-gray-900 uppercase tracking-wide mb-1">
-          Une photo par semaine
+          {t("progressPhotos.tipTitle")}
         </p>
         <p className="text-sm text-gray-500 leading-relaxed">
-          Même pose, même éclairage : la comparaison sera bien plus parlante
-          dans un mois.
+          {t("progressPhotos.tipDesc")}
         </p>
       </div>
 
@@ -277,7 +279,7 @@ export default function ProgressPhotosPage() {
           <div className="flex-1 flex items-center justify-center px-4">
             <img
               src={viewPhoto.data}
-              alt="Progression"
+              alt={t("progressPhotos.photoAlt")}
               className="max-w-full max-h-full object-contain rounded-lg"
             />
           </div>
@@ -287,23 +289,23 @@ export default function ProgressPhotosPage() {
             <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-60 px-6 animate-fade-in">
               <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
                 <p className="text-base font-bold text-gray-900 text-center mb-2">
-                  Supprimer cette photo ?
+                  {t("progressPhotos.deletePhotoTitle")}
                 </p>
                 <p className="text-sm text-gray-400 text-center mb-6">
-                  Cette action est irréversible.
+                  {t("progressPhotos.deletePhotoDesc")}
                 </p>
                 <div className="flex gap-3">
                   <button
                     onClick={() => setDeleteConfirm(null)}
                     className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-semibold"
                   >
-                    Annuler
+                    {t("progressPhotos.cancel")}
                   </button>
                   <button
                     onClick={() => handleDelete(deleteConfirm)}
                     className="flex-1 bg-red-500 text-white py-3 rounded-xl font-semibold"
                   >
-                    Supprimer
+                    {t("progressPhotos.delete")}
                   </button>
                 </div>
               </div>

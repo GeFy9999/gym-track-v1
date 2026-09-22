@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { API_URL } from "../../lib/api";
 
 type SessionData = {
@@ -33,6 +34,7 @@ function getPreviousWeekRange(): { start: Date; end: Date } {
 }
 
 export default function RecentActivity() {
+  const { t } = useTranslation();
   const [lastSession, setLastSession] = useState<SessionData | null>(null);
   const [delta, setDelta] = useState<{ value: number; unit: string } | null>(
     null,
@@ -141,7 +143,7 @@ export default function RecentActivity() {
   return (
     <div className="px-5 mt-7">
       <p className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-3">
-        Dernière séance
+        {t("dashboard.lastSession")}
       </p>
 
       {lastSession && firstExercise && bestSet ? (
@@ -152,7 +154,8 @@ export default function RecentActivity() {
                 {firstExercise.exercise.name}
               </p>
               <p className="text-xs text-gray-500 mt-0.5">
-                {bestSet.weight} {bestSet.unit} × {bestSet.reps} reps
+                {bestSet.weight} {bestSet.unit} × {bestSet.reps}{" "}
+                {t("dashboard.reps")}
               </p>
             </div>
             {delta && (
@@ -185,7 +188,7 @@ export default function RecentActivity() {
       ) : (
         <div className="border-2 border-dashed border-[#d6d0c1] rounded-2xl p-5">
           <p className="text-xs font-bold text-gray-900 uppercase tracking-wide text-center mb-4">
-            Aucune séance la semaine dernière
+            {t("dashboard.noSessionLastWeek")}
           </p>
           <div className="flex items-end justify-center gap-2 h-12">
             <div className="w-6 h-3 rounded-full bg-gray-300" />

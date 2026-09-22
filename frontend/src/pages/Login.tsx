@@ -3,22 +3,30 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslation } from "react-i18next";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import GoogleLoginButton from "../components/GoogleLoginButton";
 import { API_URL } from "../lib/api";
 
-const loginSchema = z.object({
-  email: z.string().min(1, "Le courriel est requis").email("Courriel invalide"),
-  password: z.string().min(1, "Le mot de passe est requis"),
-});
-
-type LoginForm = z.infer<typeof loginSchema>;
+type LoginForm = {
+  email: string;
+  password: string;
+};
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const [serverError, setServerError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  const loginSchema = z.object({
+    email: z
+      .string()
+      .min(1, t("login.errors.emailRequired"))
+      .email(t("login.errors.emailInvalid")),
+    password: z.string().min(1, t("login.errors.passwordRequired")),
+  });
 
   const {
     register,
@@ -43,15 +51,20 @@ export default function LoginPage() {
       const result = await res.json();
 
       if (!res.ok) {
-        throw new Error(result.error || "Erreur de connexion");
+        throw new Error(result.error || t("login.errors.generic"));
       }
 
       localStorage.setItem("token", result.token);
       localStorage.setItem("user", JSON.stringify(result.user));
       localStorage.setItem(`onboardingDone_${result.user.id}`, "true");
+      if (result.user.language) {
+        i18n.changeLanguage(result.user.language);
+      }
       navigate("/dashboard");
     } catch (err) {
-      setServerError(err instanceof Error ? err.message : "Erreur inconnue");
+      setServerError(
+        err instanceof Error ? err.message : t("login.errors.unknown"),
+      );
     } finally {
       setLoading(false);
     }
@@ -69,7 +82,7 @@ export default function LoginPage() {
           className="h-16 mx-auto mb-3"
         />
         <p className="text-xs font-bold text-white/60 uppercase tracking-widest">
-          Connecte-toi à ton compte
+          {t("login.subtitle")}
         </p>
       </div>
 
@@ -86,7 +99,7 @@ export default function LoginPage() {
               htmlFor="email"
               className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-1.5 block"
             >
-              Courriel
+              {t("login.email")}
             </label>
             <div className="relative">
               <Mail
@@ -100,7 +113,7 @@ export default function LoginPage() {
                 className={`w-full bg-[#ece7dd] rounded-full pl-11 pr-4 py-3.5 text-gray-900 placeholder-gray-400 focus:outline-none transition-colors ${
                   errors.email ? "ring-2 ring-red-500" : ""
                 }`}
-                placeholder="ton@courriel.com"
+                placeholder={t("login.emailPlaceholder")}
               />
             </div>
             {errors.email && (
@@ -115,7 +128,7 @@ export default function LoginPage() {
               htmlFor="password"
               className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-1.5 block"
             >
-              Mot de passe
+              {t("login.password")}
             </label>
             <div className="relative">
               <Lock
@@ -151,20 +164,20 @@ export default function LoginPage() {
             disabled={loading}
             className="w-full bg-[#c9552c] disabled:opacity-50 text-white py-3.5 rounded-full font-bold uppercase tracking-wide text-sm transition-all shadow-sm mt-2 active:scale-[0.98]"
           >
-            {loading ? "Connexion..." : "Se connecter"}
+            {loading ? t("login.submitting") : t("login.submit")}
           </button>
           <Link
             to="/forgot-password"
             className="text-xs font-bold text-[#c9552c] uppercase tracking-wide text-center mt-1"
           >
-            Mot de passe oublié ?
+            {t("login.forgotPassword")}
           </Link>
         </form>
 
         <div className="flex items-center gap-3 my-6">
           <div className="flex-1 h-px bg-gray-300" />
           <span className="text-xs font-bold text-gray-400 uppercase tracking-wide">
-            ou
+            {t("login.or")}
           </span>
           <div className="flex-1 h-px bg-gray-300" />
         </div>
@@ -172,9 +185,9 @@ export default function LoginPage() {
         <GoogleLoginButton />
 
         <p className="text-center text-sm text-gray-500 mt-8">
-          Pas encore de compte ?{" "}
+          {t("login.noAccount")}{" "}
           <Link to="/register" className="text-[#c9552c] font-bold">
-            Créer un compte
+            {t("login.createAccount")}
           </Link>
         </p>
       </div>

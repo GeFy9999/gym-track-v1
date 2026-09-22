@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Check, X } from "lucide-react";
 import type { SetData } from "../../types/session";
 import {
@@ -53,6 +54,7 @@ export default function SetRow({
   onToggleCompleted,
   onDelete,
 }: Props) {
+  const { t } = useTranslation();
   const perSide = barbell ? Math.max(0, (set.weight - barWeight) / 2) : 0;
   const { plates, remainder } = barbell
     ? calculatePlates(perSide, unit)
@@ -85,7 +87,7 @@ export default function SetRow({
         <div className="grid grid-cols-2 gap-3 flex-1">
           <div data-tour="session-set-weight" className="bg-gray-100 rounded-2xl p-3">
             <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">
-              {barbell ? "Poids / côté" : "Poids"}
+              {barbell ? t("session.weightPerSide") : t("session.weight")}
             </p>
             <div className="flex items-baseline gap-1">
               <input
@@ -129,7 +131,7 @@ export default function SetRow({
 
           <div data-tour="session-set-reps" className="bg-gray-100 rounded-2xl p-3">
             <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">
-              Reps
+              {t("session.reps")}
             </p>
             <input
               type="text"

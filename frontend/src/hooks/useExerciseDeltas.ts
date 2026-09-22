@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { API_URL } from "../lib/api";
+import i18n from "../i18n";
 
 type SetData = {
   weight: number;
@@ -127,12 +128,23 @@ export function formatLastTime(lastTime: LastTime): string {
   );
 
   if (allSame) {
-    const setsLabel = sets.length > 1 ? "séries" : "série";
-    const repsLabel = first.reps > 1 ? "reps" : "rep";
-    return `${sets.length} ${setsLabel} de ${first.reps} ${repsLabel} à ${first.weight} ${unit}`;
+    return i18n.t("session.lastTimeUniform", {
+      count: sets.length,
+      reps: first.reps,
+      weight: first.weight,
+      unit,
+      context: first.reps > 1 ? "plural" : undefined,
+    });
   }
 
   return sets
-    .map((s) => `${s.weight} ${unit} × ${s.reps} rep${s.reps > 1 ? "s" : ""}`)
+    .map((s) =>
+      i18n.t("session.lastTimeSet", {
+        weight: s.weight,
+        unit,
+        reps: s.reps,
+        count: s.reps,
+      }),
+    )
     .join(", ");
 }

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import i18n from "../i18n";
 
 const NOTIFICATION_ICON = "/icon192_maskable.png";
 const VIBRATION_PATTERN = [200, 100, 200];
@@ -24,11 +25,11 @@ function notifyRestOver() {
   if (typeof Notification === "undefined") return;
   if (Notification.permission !== "granted") return;
 
-  const title = "Repos terminé 💪";
+  const title = i18n.t("session.restOverNotification.title");
   // `vibrate` triggers device vibration from the notification itself, which
   // keeps working even when the screen is off (unlike navigator.vibrate()).
   const options: NotificationOptions & { vibrate?: number[] } = {
-    body: "C'est reparti pour le prochain set.",
+    body: i18n.t("session.restOverNotification.body"),
     icon: NOTIFICATION_ICON,
     tag: "rest-timer",
     vibrate: VIBRATION_PATTERN,

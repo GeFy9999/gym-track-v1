@@ -1,7 +1,8 @@
 import { useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
-  ArrowLeft,
+  ChevronLeft,
   Download,
   Check,
   AlertTriangle,
@@ -10,6 +11,7 @@ import {
 } from "lucide-react";
 import { API_URL } from "../lib/api";
 import { getWeightUnit } from "../utils/units";
+import { getDateLocale } from "../i18n";
 import {
   parseStrongCsv,
   getUniqueExerciseNames,
@@ -30,6 +32,7 @@ type Resolution = { exerciseId: string; muscleGroupName: string };
 type Step = "upload" | "preview" | "mapping" | "confirm" | "done";
 
 export default function ImportPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const fileRef = useRef<HTMLInputElement>(null);
   const token = localStorage.getItem("token");
@@ -65,19 +68,27 @@ export default function ImportPage() {
   const dateRange = useMemo(() => getDateRange(workouts), [workouts]);
   const unresolvedNames = uniqueNames.filter((n) => !resolutions[n]);
 
-  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const MAX_FILE_SIZE = 10 * 1024 * 1024;
+
+  const processFile = async (file: File) => {
     setError(null);
+
+    if (!file.name.toLowerCase().endsWith(".csv")) {
+      setError(t("import.errorCsvOnly"));
+      return;
+    }
+    if (file.size > MAX_FILE_SIZE) {
+      setError(t("import.errorFileTooLarge"));
+      return;
+    }
+
     setParsing(true);
 
     try {
       const text = await file.text();
       const parsedWorkouts = parseStrongCsv(text);
       if (parsedWorkouts.length === 0) {
-        setError(
-          "Aucune donnée reconnue dans ce fichier. Vérifie qu'il s'agit bien d'un fichier CSV valide.",
-        );
+        setError(t("import.errorNoData"));
         setParsing(false);
         return;
       }
@@ -87,7 +98,7 @@ export default function ImportPage() {
         fetch(`${API_URL}/muscleGroups`),
       ]);
       if (!exercisesRes.ok || !muscleGroupsRes.ok) {
-        throw new Error("Impossible de charger la liste des exercices");
+        throw new Error(t("import.errorLoadExercises"));
       }
       const allExercises: ExerciseCandidate[] = await exercisesRes.json();
       const allMuscleGroups: MuscleGroup[] = await muscleGroupsRes.json();
@@ -116,11 +127,25 @@ export default function ImportPage() {
       setStep("preview");
     } catch (err) {
       console.error(err);
-      setError("Erreur pendant la lecture du fichier.");
+      setError(t("import.errorReadFile"));
     } finally {
       setParsing(false);
       if (fileRef.current) fileRef.current.value = "";
     }
+  };
+
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) processFile(file);
+  };
+
+  const [isDraggingFile, setIsDraggingFile] = useState(false);
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDraggingFile(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) processFile(file);
   };
 
   const resolveWith = (name: string, exercise: ExerciseCandidate) => {
@@ -155,7 +180,7 @@ export default function ImportPage() {
           isCustom: true,
         }),
       });
-      if (!res.ok) throw new Error("Erreur création exercice");
+      if (!res.ok) throw new Error(t("import.errorCreateExercise"));
       const created: ExerciseCandidate = await res.json();
       setExercises((prev) => [...prev, created]);
       resolveWith(name, created);
@@ -166,7 +191,7 @@ export default function ImportPage() {
       });
     } catch (err) {
       console.error(err);
-      setError("Erreur pendant la création de l'exercice.");
+      setError(t("import.errorCreateExercise"));
     } finally {
       setSavingCustomFor(null);
     }
@@ -217,12 +242,12 @@ export default function ImportPage() {
         body: JSON.stringify({ workouts: buildImportPayload() }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Erreur pendant l'import");
+      if (!res.ok) throw new Error(data.error || t("import.errorImport"));
       setImportResult(data);
       setStep("done");
     } catch (err) {
       console.error(err);
-      setError(err instanceof Error ? err.message : "Erreur pendant l'import");
+      setError(err instanceof Error ? err.message : t("import.errorImport"));
     } finally {
       setImporting(false);
     }
@@ -239,7 +264,7 @@ export default function ImportPage() {
       setUndone(true);
     } catch (err) {
       console.error(err);
-      setError("Erreur pendant l'annulation.");
+      setError(t("import.errorUndo"));
     } finally {
       setUndoing(false);
     }
@@ -247,118 +272,162 @@ export default function ImportPage() {
 
   return (
     <div className="min-h-screen bg-[#faf6f1] pb-16">
-      <div className="flex items-center gap-3 px-5 pt-6 pb-4">
+      <div className="flex items-center gap-3 px-5 pt-8 pb-6" style={{ background: "#191714" }}>
         <button
           onClick={() => navigate(-1)}
-          className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center active:bg-gray-300 transition-colors flex-shrink-0"
+          className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center active:bg-white/20 transition-colors flex-shrink-0"
         >
-          <ArrowLeft size={16} className="text-gray-700" />
+          <ChevronLeft size={16} className="text-white" />
         </button>
         <div>
-          <h1 className="text-[26px] font-black text-gray-900 leading-tight">
-            Importer des données
+          <h1 className="text-xl font-black text-white uppercase tracking-wide leading-tight">
+            {t("import.title")}
           </h1>
-          <p className="text-sm text-gray-500 mt-0.5">Depuis un fichier CSV</p>
+          <p className="text-xs font-bold text-white/50 uppercase tracking-widest mt-1">
+            {t("import.subtitle")}
+          </p>
         </div>
       </div>
 
-      <div className="px-5 space-y-4">
+      <div className="px-5 pt-5 space-y-4">
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-500 text-sm rounded-xl px-4 py-3 flex items-start gap-2">
+          <div className="bg-red-50 border border-red-200 text-red-500 text-sm rounded-2xl px-4 py-3 flex items-start gap-2">
             <AlertTriangle size={16} className="flex-shrink-0 mt-0.5" />
             <span>{error}</span>
           </div>
         )}
 
         {step === "upload" && (
-          <div className="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col items-center text-center shadow-sm">
-            <div className="w-14 h-14 rounded-full bg-[#c9552c]/10 flex items-center justify-center mb-3">
-              <Download size={22} className="text-[#c9552c]" />
-            </div>
-            <p className="text-base font-bold text-gray-900 mb-1">
-              Choisis ton fichier CSV
-            </p>
-            <p className="text-sm text-gray-400 mb-5">
-              Exporte tes données au format CSV depuis ton app d'entraînement
-              et importe-les ici pour retrouver ton historique.
-            </p>
-            <input
-              ref={fileRef}
-              type="file"
-              accept=".csv,text/csv"
-              onChange={handleFile}
-              className="hidden"
-            />
-            <button
-              onClick={() => fileRef.current?.click()}
-              disabled={parsing}
-              className="w-full bg-[#c9552c] disabled:opacity-50 text-white py-3.5 rounded-2xl font-semibold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+          <>
+            <div
+              onDragOver={(e) => {
+                e.preventDefault();
+                setIsDraggingFile(true);
+              }}
+              onDragLeave={() => setIsDraggingFile(false)}
+              onDrop={handleDrop}
+              className={`bg-[#ece7dd] border-2 border-dashed rounded-3xl p-6 flex flex-col items-center text-center shadow-sm transition-colors ${
+                isDraggingFile ? "border-[#c9552c]" : "border-[#d6d0c1]"
+              }`}
             >
-              <Download size={18} />
-              {parsing ? "Lecture en cours..." : "Choisir un fichier"}
-            </button>
-          </div>
+              <div className="w-14 h-14 rounded-full bg-white/60 flex items-center justify-center mb-3">
+                <Download size={22} className="text-[#c9552c]" />
+              </div>
+              <p className="text-base font-black text-gray-900 uppercase mb-1">
+                {t("import.chooseFile")}
+              </p>
+              <p className="text-sm text-gray-500 mb-5">
+                {t("import.chooseFileDesc")}
+              </p>
+              <input
+                ref={fileRef}
+                type="file"
+                accept=".csv,text/csv"
+                onChange={handleFile}
+                className="hidden"
+              />
+              <button
+                onClick={() => fileRef.current?.click()}
+                disabled={parsing}
+                className="w-full bg-[#c9552c] disabled:opacity-50 text-white py-3.5 rounded-full font-bold uppercase tracking-wide text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+              >
+                <Download size={18} />
+                {parsing ? t("import.readingInProgress") : t("import.chooseAFile")}
+              </button>
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-wide mt-3">
+                {t("import.orDropHere")}
+              </p>
+            </div>
+
+            <div className="border-2 border-dashed border-gray-300 rounded-3xl p-5">
+              <p className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-3">
+                {t("import.howToExport")}
+              </p>
+              <div className="space-y-3">
+                {(t("import.exportSteps", { returnObjects: true }) as string[]).map((text, i) => (
+                  <div key={i} className="flex items-start gap-3">
+                    <span
+                      className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-black text-white flex-shrink-0"
+                      style={{ background: "#191714" }}
+                    >
+                      {i + 1}
+                    </span>
+                    <p className="text-sm text-gray-500 leading-relaxed">
+                      {text}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between bg-[#ece7dd] rounded-2xl px-4 py-3 shadow-sm">
+              <span className="text-xs font-bold text-gray-900 uppercase tracking-widest">
+                {t("import.acceptedFormats")}
+              </span>
+              <span className="text-xs font-bold text-[#c9552c] uppercase">
+                {t("import.acceptedFormatsValue")}
+              </span>
+            </div>
+          </>
         )}
 
         {step === "preview" && dateRange && (
           <>
-            <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
-              <p className="text-sm font-bold text-gray-900 mb-3">
-                Aperçu de l'import
+            <div className="bg-[#ece7dd] rounded-2xl p-5 shadow-sm">
+              <p className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-3">
+                {t("import.previewTitle")}
               </p>
               <div className="grid grid-cols-2 gap-3">
-                <div className="bg-gray-50 rounded-xl p-3">
+                <div className="bg-white/60 rounded-xl p-3">
                   <p className="text-xl font-black text-gray-900">
                     {workouts.length}
                   </p>
-                  <p className="text-[11px] text-gray-400 font-semibold uppercase">
-                    Séances
+                  <p className="text-[11px] text-gray-500 font-bold uppercase">
+                    {t("import.sessions")}
                   </p>
                 </div>
-                <div className="bg-gray-50 rounded-xl p-3">
+                <div className="bg-white/60 rounded-xl p-3">
                   <p className="text-xl font-black text-gray-900">
                     {uniqueNames.length}
                   </p>
-                  <p className="text-[11px] text-gray-400 font-semibold uppercase">
-                    Exercices uniques
+                  <p className="text-[11px] text-gray-500 font-bold uppercase">
+                    {t("import.uniqueExercises")}
                   </p>
                 </div>
-                <div className="bg-gray-50 rounded-xl p-3 col-span-2">
+                <div className="bg-white/60 rounded-xl p-3 col-span-2">
                   <p className="text-sm font-bold text-gray-900">
-                    {dateRange[0].toLocaleDateString("fr-FR")} —{" "}
-                    {dateRange[1].toLocaleDateString("fr-FR")}
+                    {dateRange[0].toLocaleDateString(getDateLocale())} —{" "}
+                    {dateRange[1].toLocaleDateString(getDateLocale())}
                   </p>
-                  <p className="text-[11px] text-gray-400 font-semibold uppercase">
-                    Plage de dates
+                  <p className="text-[11px] text-gray-500 font-bold uppercase">
+                    {t("import.dateRange")}
                   </p>
                 </div>
               </div>
 
               {unresolvedNames.length > 0 && (
-                <div className="mt-3 flex items-center gap-2 bg-[#c9552c]/5 border border-[#c9552c]/20 rounded-xl px-3 py-2.5">
+                <div className="mt-3 flex items-center gap-2 bg-[#c9552c]/10 rounded-xl px-3 py-2.5">
                   <AlertTriangle size={15} className="text-[#c9552c] flex-shrink-0" />
-                  <p className="text-xs text-[#c9552c] font-medium">
-                    {unresolvedNames.length} exercice
-                    {unresolvedNames.length > 1 ? "s" : ""} à faire correspondre
-                    manuellement
+                  <p className="text-xs text-[#c9552c] font-bold">
+                    {t("import.exerciseToMatch", { count: unresolvedNames.length })}
                   </p>
                 </div>
               )}
             </div>
 
-            <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
-              <p className="text-sm font-bold text-gray-900 mb-3">
-                Unité de poids du fichier
+            <div className="bg-[#ece7dd] rounded-2xl p-5 shadow-sm">
+              <p className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-3">
+                {t("import.fileWeightUnit")}
               </p>
               <div className="flex gap-2">
                 {(["lb", "kg"] as const).map((u) => (
                   <button
                     key={u}
                     onClick={() => setWeightUnit(u)}
-                    className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-colors ${
+                    className={`flex-1 py-2.5 rounded-full text-sm font-bold uppercase transition-colors ${
                       weightUnit === u
-                        ? "bg-[#c9552c] text-white"
-                        : "bg-gray-100 text-gray-500"
+                        ? "bg-[#191714] text-white"
+                        : "bg-white/60 text-gray-500"
                     }`}
                   >
                     {u}
@@ -371,9 +440,9 @@ export default function ImportPage() {
               onClick={() =>
                 setStep(unresolvedNames.length > 0 ? "mapping" : "confirm")
               }
-              className="w-full bg-gray-900 text-white py-3.5 rounded-2xl font-bold active:bg-gray-800 transition-colors"
+              className="w-full bg-[#191714] text-white py-3.5 rounded-full font-bold uppercase tracking-wide text-sm active:opacity-90 transition-opacity shadow-sm"
             >
-              Continuer
+              {t("import.continue")}
             </button>
           </>
         )}
@@ -381,8 +450,7 @@ export default function ImportPage() {
         {step === "mapping" && (
           <>
             <p className="text-sm text-gray-500 px-1">
-              Fais correspondre chaque exercice non reconnu à un exercice
-              existant, ou crée-le comme exercice personnalisé.
+              {t("import.mappingDesc")}
             </p>
             {unresolvedNames.map((name) => (
               <ExerciseMappingCard
@@ -410,10 +478,10 @@ export default function ImportPage() {
             ))}
 
             {unresolvedNames.length === 0 && (
-              <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm text-center">
+              <div className="bg-[#ece7dd] rounded-2xl p-5 shadow-sm text-center">
                 <Check size={20} className="text-[#3a9e6e] mx-auto mb-2" />
-                <p className="text-sm font-semibold text-gray-900">
-                  Tous les exercices sont associés
+                <p className="text-sm font-bold text-gray-900">
+                  {t("import.allMatched")}
                 </p>
               </div>
             )}
@@ -421,52 +489,54 @@ export default function ImportPage() {
             <button
               onClick={() => setStep("confirm")}
               disabled={unresolvedNames.length > 0}
-              className="w-full bg-gray-900 disabled:opacity-40 text-white py-3.5 rounded-2xl font-bold active:bg-gray-800 transition-colors"
+              className="w-full bg-[#191714] disabled:opacity-40 text-white py-3.5 rounded-full font-bold uppercase tracking-wide text-sm active:opacity-90 transition-opacity shadow-sm"
             >
-              Continuer
+              {t("import.continue")}
             </button>
           </>
         )}
 
         {step === "confirm" && dateRange && (
           <>
-            <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
-              <p className="text-sm font-bold text-gray-900 mb-3">
-                Prêt à importer
+            <div className="bg-[#ece7dd] rounded-2xl p-5 shadow-sm">
+              <p className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-3">
+                {t("import.readyToImport")}
               </p>
-              <p className="text-sm text-gray-500 mb-1">
-                {workouts.length} séance{workouts.length > 1 ? "s" : ""} du{" "}
-                {dateRange[0].toLocaleDateString("fr-FR")} au{" "}
-                {dateRange[1].toLocaleDateString("fr-FR")}, avec{" "}
-                {uniqueNames.length} exercice{uniqueNames.length > 1 ? "s" : ""}.
+              <p className="text-sm text-gray-600 mb-1">
+                {t("import.importSummary", {
+                  sessions: t("import.session", { count: workouts.length }),
+                  from: dateRange[0].toLocaleDateString(getDateLocale()),
+                  to: dateRange[1].toLocaleDateString(getDateLocale()),
+                  exercises: t("import.exercise", { count: uniqueNames.length }),
+                })}
               </p>
-              <p className="text-xs text-gray-400">
-                Ces séances seront ajoutées à ton historique comme terminées.
+              <p className="text-xs text-gray-500">
+                {t("import.willBeAdded")}
               </p>
             </div>
 
             <button
               onClick={handleImport}
               disabled={importing}
-              className="w-full bg-[#c9552c] disabled:opacity-50 text-white py-3.5 rounded-2xl font-bold active:scale-[0.98] transition-transform"
+              className="w-full bg-[#c9552c] disabled:opacity-50 text-white py-3.5 rounded-full font-bold uppercase tracking-wide text-sm active:scale-[0.98] transition-transform shadow-sm"
             >
-              {importing ? "Import en cours..." : "Importer"}
+              {importing ? t("import.importInProgress") : t("import.importAction")}
             </button>
           </>
         )}
 
         {step === "done" && importResult && (
-          <div className="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col items-center text-center shadow-sm">
+          <div className="bg-[#ece7dd] rounded-2xl p-6 flex flex-col items-center text-center shadow-sm">
             {undone ? (
               <>
-                <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mb-3">
+                <div className="w-14 h-14 rounded-full bg-white/60 flex items-center justify-center mb-3">
                   <Check size={22} className="text-gray-500" />
                 </div>
-                <p className="text-base font-bold text-gray-900 mb-1">
-                  Import annulé
+                <p className="text-base font-black text-gray-900 uppercase mb-1">
+                  {t("import.importCancelled")}
                 </p>
-                <p className="text-sm text-gray-400 mb-5">
-                  Les séances importées ont été supprimées.
+                <p className="text-sm text-gray-500 mb-5">
+                  {t("import.importCancelledDesc")}
                 </p>
               </>
             ) : (
@@ -474,32 +544,31 @@ export default function ImportPage() {
                 <div className="w-14 h-14 rounded-full bg-[#3a9e6e]/10 flex items-center justify-center mb-3">
                   <Check size={22} className="text-[#3a9e6e]" />
                 </div>
-                <p className="text-base font-bold text-gray-900 mb-1">
-                  Import terminé !
+                <p className="text-base font-black text-gray-900 uppercase mb-1">
+                  {t("import.importDone")}
                 </p>
-                <p className="text-sm text-gray-400 mb-5">
-                  {importResult.sessionsCreated} séance
-                  {importResult.sessionsCreated > 1 ? "s" : ""} et{" "}
-                  {importResult.setsCreated} set
-                  {importResult.setsCreated > 1 ? "s" : ""} ajoutés à ton
-                  historique.
+                <p className="text-sm text-gray-500 mb-5">
+                  {t("import.importDoneSummary", {
+                    sessions: t("import.session", { count: importResult.sessionsCreated }),
+                    sets: t("import.set", { count: importResult.setsCreated }),
+                  })}
                 </p>
               </>
             )}
 
             <button
               onClick={() => navigate("/profil")}
-              className="w-full bg-gray-900 text-white py-3.5 rounded-2xl font-bold active:bg-gray-800 transition-colors mb-2"
+              className="w-full bg-[#191714] text-white py-3.5 rounded-full font-bold uppercase tracking-wide text-sm active:opacity-90 transition-opacity mb-2"
             >
-              Terminer
+              {t("import.finish")}
             </button>
             {!undone && (
               <button
                 onClick={handleUndo}
                 disabled={undoing}
-                className="w-full bg-white border border-red-200 disabled:opacity-50 text-red-500 py-3 rounded-2xl font-semibold transition-colors"
+                className="w-full bg-white/60 disabled:opacity-50 text-red-500 py-3 rounded-full font-bold uppercase tracking-wide text-sm transition-colors"
               >
-                {undoing ? "Annulation..." : "Annuler l'import"}
+                {undoing ? t("import.undoing") : t("import.undoImport")}
               </button>
             )}
           </div>
@@ -534,6 +603,7 @@ function ExerciseMappingCard({
   onSaveCustom: () => void;
   onCancelCustom: () => void;
 }) {
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
 
@@ -542,7 +612,7 @@ function ExerciseMappingCard({
   );
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
+    <div className="bg-[#ece7dd] rounded-2xl p-4 shadow-sm">
       <p className="text-sm font-bold text-gray-900 mb-2">{csvName}</p>
 
       {!draft && (
@@ -566,13 +636,13 @@ function ExerciseMappingCard({
               onClick={() => setShowSearch((v) => !v)}
               className="flex-1 flex items-center justify-center gap-1.5 text-xs font-semibold px-3 py-2.5 rounded-xl border border-gray-200 text-gray-700"
             >
-              <Search size={13} /> Rechercher un exercice
+              <Search size={13} /> {t("import.searchExercise")}
             </button>
             <button
               onClick={onStartCustom}
               className="flex-1 flex items-center justify-center gap-1.5 text-xs font-semibold px-3 py-2.5 rounded-xl border border-[#c9552c]/40 text-[#c9552c]"
             >
-              <Plus size={13} /> Créer personnalisé
+              <Plus size={13} /> {t("import.createCustom")}
             </button>
           </div>
 
@@ -582,7 +652,7 @@ function ExerciseMappingCard({
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Rechercher..."
+                placeholder={t("import.search")}
                 autoFocus
                 className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm mb-1.5 focus:outline-none focus:border-[#c9552c]"
               />
@@ -602,7 +672,7 @@ function ExerciseMappingCard({
                 ))}
                 {filtered.length === 0 && (
                   <p className="text-xs text-gray-400 text-center py-2">
-                    Aucun résultat
+                    {t("import.noResults")}
                   </p>
                 )}
               </div>
@@ -617,7 +687,7 @@ function ExerciseMappingCard({
             type="text"
             value={draft.name}
             onChange={(e) => onDraftChange({ ...draft, name: e.target.value })}
-            placeholder="Nom de l'exercice"
+            placeholder={t("import.exerciseName")}
             className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#c9552c]"
           />
           <select
@@ -638,14 +708,14 @@ function ExerciseMappingCard({
               onClick={onCancelCustom}
               className="flex-1 bg-gray-100 text-gray-700 py-2.5 rounded-xl text-sm font-semibold"
             >
-              Annuler
+              {t("import.cancel")}
             </button>
             <button
               onClick={onSaveCustom}
               disabled={!draft.name.trim() || savingCustom}
               className="flex-1 bg-[#c9552c] disabled:opacity-50 text-white py-2.5 rounded-xl text-sm font-semibold"
             >
-              {savingCustom ? "Création..." : "Créer"}
+              {savingCustom ? t("import.creating") : t("import.create")}
             </button>
           </div>
         </div>

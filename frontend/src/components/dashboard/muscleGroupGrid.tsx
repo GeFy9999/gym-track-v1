@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { Check } from "lucide-react";
 import { API_URL } from "../../lib/api";
 
@@ -15,6 +16,7 @@ type Props = {
 
 export default function MuscleGroupsCards({ weekActive, refreshKey }: Props) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [groups, setGroups] = useState<MuscleGroup[]>([]);
   const [completedGroups, setCompletedGroups] = useState<Set<string>>(
     new Set(),
@@ -197,7 +199,7 @@ export default function MuscleGroupsCards({ weekActive, refreshKey }: Props) {
   return (
     <div className="mt-7">
       <p className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-3 px-5">
-        Groupes musculaires
+        {t("dashboard.muscleGroups")}
       </p>
       <div
         ref={scrollRef}
@@ -232,7 +234,7 @@ export default function MuscleGroupsCards({ weekActive, refreshKey }: Props) {
               {isActive && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10 bg-[#c9552c] text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full flex items-center gap-1.5 whitespace-nowrap">
                   <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                  En cours
+                  {t("dashboard.inProgress")}
                 </div>
               )}
 

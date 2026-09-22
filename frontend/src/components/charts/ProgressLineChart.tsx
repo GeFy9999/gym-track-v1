@@ -1,3 +1,6 @@
+import { useTranslation } from "react-i18next";
+import { getDateLocale } from "../../i18n";
+
 export type SeriesPoint = { date: string; value: number };
 
 // A generic example series shown (grayed out) when there's no real data yet,
@@ -35,7 +38,7 @@ export default function ProgressLineChart({
   title,
   subtitle,
   points,
-  emptyTitle = "Pas encore assez de données",
+  emptyTitle,
   emptyHint,
 }: {
   title: string;
@@ -44,6 +47,8 @@ export default function ProgressLineChart({
   emptyTitle?: string;
   emptyHint?: string;
 }) {
+  const { t } = useTranslation();
+  const resolvedEmptyTitle = emptyTitle ?? t("common.notEnoughData");
   const isEmpty = points.length === 0;
   const displayPoints = isEmpty ? buildFakeSeries() : points;
 
@@ -149,10 +154,10 @@ export default function ProgressLineChart({
             >
               {isEmpty
                 ? ""
-                : new Date(displayPoints[idx].date).toLocaleDateString("fr-FR", {
-                    day: "numeric",
-                    month: "short",
-                  })}
+                : new Date(displayPoints[idx].date).toLocaleDateString(
+                    getDateLocale(),
+                    { day: "numeric", month: "short" },
+                  )}
             </text>
           ))}
         </svg>
@@ -160,7 +165,7 @@ export default function ProgressLineChart({
         {isEmpty && (
           <div className="absolute inset-0 flex flex-col items-center justify-center px-8">
             <p className="text-sm font-black text-gray-900 text-center">
-              {emptyTitle}
+              {resolvedEmptyTitle}
             </p>
             {emptyHint && (
               <p className="text-xs font-semibold text-[#c9552c] text-center mt-1">
