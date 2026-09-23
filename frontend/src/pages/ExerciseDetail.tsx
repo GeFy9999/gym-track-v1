@@ -7,13 +7,15 @@ import {
   Layers,
   TrendingUp,
   Trophy,
-  Lock,
+  Crown,
 } from "lucide-react";
 import { API_URL } from "../lib/api";
 import { useTrackedExercises } from "../hooks/useTrackedExercises";
+import { useIsPro } from "../hooks/useIsPro";
 import { getWeightUnit, convertWeight, roundWeight } from "../utils/units";
 import { getDateLocale } from "../i18n";
 import ProgressLineChart from "../components/charts/ProgressLineChart";
+import { ProGateOrContent } from "../components/ProGate";
 
 type Exercise = {
   id: string;
@@ -46,11 +48,6 @@ type ExerciseHistoryResponse = {
     oneRepMaxOverTime: { date: string; oneRepMax: number }[];
   };
 };
-
-// Pro gating is disabled for now so every feature can be tested freely.
-// Flip this back to `false` (and the real Stripe-backed check comes later)
-// to re-enable the lock/blur treatment on Pro sections.
-const IS_PRO = true;
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString(getDateLocale(), {
@@ -99,35 +96,12 @@ function RecordRow({
   );
 }
 
-function ProGate({
-  children,
-  goProLabel,
-}: {
-  children: React.ReactNode;
-  goProLabel: string;
-}) {
-  return (
-    <div className="relative">
-      <div className="blur-[3px] opacity-50 pointer-events-none select-none">
-        {children}
-      </div>
-      <div className="absolute inset-0 flex items-center justify-center">
-        <button
-          onClick={() => {}}
-          className="flex items-center gap-1.5 bg-gray-900 text-white text-xs font-bold px-4 py-2.5 rounded-full shadow-lg active:scale-[0.97] transition-transform"
-        >
-          <Lock size={13} /> {goProLabel}
-        </button>
-      </div>
-    </div>
-  );
-}
-
 export default function ExerciseDetailPage() {
   const { t } = useTranslation();
   const { exerciseId } = useParams();
   const navigate = useNavigate();
   const { isTracked, fetchTracked, toggleTracked } = useTrackedExercises();
+  const { isPro } = useIsPro();
 
   const [exercise, setExercise] = useState<Exercise | null>(null);
   const [note, setNote] = useState<string>("");
@@ -214,7 +188,7 @@ export default function ExerciseDetailPage() {
     ...entry,
     sets: entry.sets.map((s) => ({ ...s, weight: conv(s.weight), unit })),
   }));
-  const visibleHistory = IS_PRO
+  const visibleHistory = isPro
     ? convertedHistory
     : convertedHistory.slice(0, 5);
 
@@ -372,14 +346,14 @@ export default function ExerciseDetailPage() {
         <div>
           <p className="text-[15px] font-bold text-gray-900 mb-2 flex items-center gap-1.5">
             {t("exerciseDetail.recordsByReps")}
-            {!IS_PRO && <Lock size={13} className="text-gray-400" />}
+            {!isPro && <Crown size={13} className="text-gray-400" />}
           </p>
           {convertedRecords.byReps.length === 0 ? (
             <p className="text-xs text-gray-400 text-center py-4">
               {t("exerciseDetail.noDataYet")}
             </p>
           ) : (
-            <ProGateOrContent isPro={IS_PRO} goProLabel={t("exerciseDetail.goPro")}>
+            <ProGateOrContent isPro={isPro} goProLabel={t("exerciseDetail.goPro")}>
               <div className="space-y-1.5">
                 {convertedRecords.byReps.map((r) => (
                   <div
@@ -400,7 +374,7 @@ export default function ExerciseDetailPage() {
         </div>
 
         <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
-          <ProGateOrContent isPro={IS_PRO} goProLabel={t("exerciseDetail.goPro")}>
+          <ProGateOrContent isPro={isPro} goProLabel={t("exerciseDetail.goPro")}>
             <ProgressLineChart
               title={t("exerciseDetail.volumeTotal")}
               subtitle={t("exerciseDetail.perSession", { unit })}
@@ -410,16 +384,16 @@ export default function ExerciseDetailPage() {
               }))}
             />
           </ProGateOrContent>
-          {!IS_PRO && (
+          {!isPro && (
             <div className="flex items-center gap-1 mt-2">
-              <Lock size={11} className="text-gray-400" />
+              <Crown size={11} className="text-gray-400" />
               <span className="text-[10px] text-gray-400">{t("exerciseDetail.proFeature")}</span>
             </div>
           )}
         </div>
 
         <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
-          <ProGateOrContent isPro={IS_PRO} goProLabel={t("exerciseDetail.goPro")}>
+          <ProGateOrContent isPro={isPro} goProLabel={t("exerciseDetail.goPro")}>
             <ProgressLineChart
               title={t("exerciseDetail.oneRepMaxTitle")}
               subtitle={t("exerciseDetail.bestSet", { unit })}
@@ -429,9 +403,9 @@ export default function ExerciseDetailPage() {
               }))}
             />
           </ProGateOrContent>
-          {!IS_PRO && (
+          {!isPro && (
             <div className="flex items-center gap-1 mt-2">
-              <Lock size={11} className="text-gray-400" />
+              <Crown size={11} className="text-gray-400" />
               <span className="text-[10px] text-gray-400">{t("exerciseDetail.proFeature")}</span>
             </div>
           )}
@@ -468,9 +442,9 @@ export default function ExerciseDetailPage() {
                   </p>
                 </button>
               ))}
-              {!IS_PRO && history.length > 5 && (
+              {!isPro && history.length > 5 && (
                 <p className="text-xs text-gray-400 text-center py-2 flex items-center justify-center gap-1.5">
-                  <Lock size={12} /> {t("exerciseDetail.fullHistoryPro")}
+                  <Crown size={12} /> {t("exerciseDetail.fullHistoryPro")}
                 </p>
               )}
             </div>
@@ -479,17 +453,4 @@ export default function ExerciseDetailPage() {
       </div>
     </div>
   );
-}
-
-function ProGateOrContent({
-  isPro,
-  children,
-  goProLabel,
-}: {
-  isPro: boolean;
-  children: React.ReactNode;
-  goProLabel: string;
-}) {
-  if (isPro) return <>{children}</>;
-  return <ProGate goProLabel={goProLabel}>{children}</ProGate>;
 }

@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ChevronLeft, Camera, Trash2, X } from "lucide-react";
+import { ChevronLeft, Camera, Trash2, X, Crown } from "lucide-react";
 import { API_URL } from "../lib/api";
 import { getDateLocale } from "../i18n";
+import { useIsPro } from "../hooks/useIsPro";
 
 type PhotoMeta = {
   id: string;
@@ -41,6 +42,7 @@ function compressImage(
 export default function ProgressPhotosPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { isPro } = useIsPro();
   const fileRef = useRef<HTMLInputElement>(null);
   const [photos, setPhotos] = useState<PhotoMeta[]>([]);
   const [loading, setLoading] = useState(true);
@@ -145,6 +147,47 @@ export default function ProgressPhotosPage() {
     }
     return Array.from(groups.values());
   }, [photos]);
+
+  if (!isPro) {
+    return (
+      <div className="min-h-screen bg-[#faf6f1] pb-28">
+        <div className="flex items-center gap-3 px-5 pt-8 pb-6" style={{ background: "#191714" }}>
+          <button
+            onClick={() => navigate(-1)}
+            className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center active:bg-white/20 transition-colors flex-shrink-0"
+          >
+            <ChevronLeft size={16} className="text-white" />
+          </button>
+          <div>
+            <h1 className="text-[26px] font-black text-white uppercase tracking-wide leading-tight">
+              {t("progressPhotos.title")}
+            </h1>
+            <p className="text-xs font-bold text-white/50 uppercase tracking-widest mt-1">
+              {t("progressPhotos.subtitle")}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-col items-center justify-center px-8 py-20 text-center">
+          <div className="w-16 h-16 rounded-full bg-[#c9552c]/10 flex items-center justify-center mb-4">
+            <Crown size={24} className="text-[#c9552c]" />
+          </div>
+          <p className="text-base font-bold text-gray-900 mb-1">
+            {t("progressPhotos.proOnly")}
+          </p>
+          <p className="text-sm text-gray-400 mb-6">
+            {t("progressPhotos.proOnlyDesc")}
+          </p>
+          <button
+            onClick={() => navigate("/upgrade")}
+            className="bg-[#c9552c] text-white px-6 py-3 rounded-2xl font-semibold text-sm shadow-md active:scale-[0.98] transition-all"
+          >
+            {t("upgrade.goPro")}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#faf6f1] pb-28">

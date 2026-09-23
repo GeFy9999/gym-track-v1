@@ -6,9 +6,12 @@ import EstimatedOneRepMax from "../components/stats/estimatedOneRepMax";
 import ProgressChart from "../components/stats/progress";
 import MuscleVolume from "../components/stats/muscleVolume";
 import TourOverlay from "../components/TourOverlay";
+import { useIsPro } from "../hooks/useIsPro";
+import { ProGateOrContent } from "../components/ProGate";
 
 export default function StatsPage() {
   const { t } = useTranslation();
+  const { isPro } = useIsPro();
   const tourRef0 = useRef<HTMLDivElement>(null);
   const tourRef1 = useRef<HTMLDivElement>(null);
   const tourRef2 = useRef<HTMLDivElement>(null);
@@ -53,7 +56,9 @@ export default function StatsPage() {
         <h2 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-3">
           {t("stats.oneRepMax")}
         </h2>
-        <EstimatedOneRepMax />
+        <ProGateOrContent isPro={isPro} goProLabel={t("upgrade.goPro")}>
+          <EstimatedOneRepMax />
+        </ProGateOrContent>
       </section>
 
       <section ref={tourRef2} className="mt-8">
@@ -67,7 +72,9 @@ export default function StatsPage() {
         <h2 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-3">
           {t("stats.muscleVolume")}
         </h2>
-        <MuscleVolume />
+        <ProGateOrContent isPro={isPro} goProLabel={t("upgrade.goPro")}>
+          <MuscleVolume />
+        </ProGateOrContent>
       </section>
 
       <TourOverlay

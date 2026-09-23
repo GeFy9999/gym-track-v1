@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Plus, Trash2, Trophy, Link2, Unlink, StickyNote, Flame } from "lucide-react";
+import { Plus, Trash2, Trophy, Link2, Unlink, StickyNote, Flame, Crown } from "lucide-react";
 import type { SessionExercise, SetData } from "../../types/session";
 import { formatDuration } from "../../utils/units";
 import { formatLastTime, type Delta as DeltaType, type LastTime as LastTimeType } from "../../hooks/useExerciseDeltas";
@@ -19,6 +19,7 @@ type Props = {
   barWeight: number;
   unit: string;
   readOnly: boolean;
+  isPro: boolean;
   barbellModeEnabled: boolean;
   isBarbellExercise: boolean;
   restTimerEnabled: boolean;
@@ -65,6 +66,7 @@ export default function ExerciseCard({
   barWeight,
   unit,
   readOnly,
+  isPro,
   barbellModeEnabled,
   isBarbellExercise,
   restTimerEnabled,
@@ -183,7 +185,7 @@ export default function ExerciseCard({
                 data-tour="session-superset"
                 onClick={onOpenSupersetModal}
                 aria-label={t("session.card.supersetAria")}
-                className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
+                className={`relative w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
                   !supersetColor ? "bg-white/10 text-white/40" : ""
                 }`}
                 style={
@@ -193,6 +195,12 @@ export default function ExerciseCard({
                 }
               >
                 {supersetColor ? <Unlink size={16} /> : <Link2 size={16} />}
+                {!isPro && !supersetColor && (
+                  <Crown
+                    size={14}
+                    className="absolute -top-1.5 -right-1.5 text-[#c9552c] drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]"
+                  />
+                )}
               </button>
             )}
           </div>
@@ -241,7 +249,7 @@ export default function ExerciseCard({
               </button>
             )}
 
-            {restTimerEnabled && (
+            {restTimerEnabled && isPro && (
               <button
                 data-tour="session-rest-chip"
                 onClick={onToggleDurationPicker}
@@ -257,6 +265,7 @@ export default function ExerciseCard({
 
         {!readOnly &&
           restTimerEnabled &&
+          isPro &&
           (openDurationPicker || closingDurationPicker) && (
             <RestTimerPicker
               currentDuration={exerciseDuration}
@@ -292,7 +301,8 @@ export default function ExerciseCard({
             onClick={onOpenWarmupModal}
             className="mb-3 w-full border border-dashed border-gray-300 active:bg-gray-50 text-gray-500 font-bold uppercase text-sm py-3 rounded-full flex items-center justify-center gap-1.5 transition-colors"
           >
-            <Flame size={14} /> {t("session.card.autoWarmup")}
+            {isPro ? <Flame size={14} /> : <Crown size={14} />}{" "}
+            {t("session.card.autoWarmup")}
           </button>
         )}
 

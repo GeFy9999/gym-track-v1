@@ -15,6 +15,10 @@ import { trackedExerciseRouter } from "./controllers/trackedExerciseController.j
 import { progressPhotoRouter } from "./controllers/progressPhotoController.js";
 import { exerciseNoteRouter } from "./controllers/exerciseNoteController.js";
 import { importRouter } from "./controllers/importController.js";
+import {
+  stripeRouter,
+  stripeWebhookHandler,
+} from "./controllers/stripeController.js";
 
 dotenv.config();
 
@@ -30,6 +34,15 @@ app.use(
     origin: allowedOrigins,
   }),
 );
+
+// Stripe needs the raw, unparsed request body to verify the webhook
+// signature — must be registered before express.json() below.
+app.post(
+  "/api/stripe/webhook",
+  express.raw({ type: "application/json" }),
+  stripeWebhookHandler,
+);
+
 app.use(express.json({ limit: "10mb" }));
 
 app.use("/api/calendar", calendarRouter);
@@ -46,6 +59,7 @@ app.use("/api/tracked-exercises", trackedExerciseRouter);
 app.use("/api/progress-photos", progressPhotoRouter);
 app.use("/api/exercise-notes", exerciseNoteRouter);
 app.use("/api/import", importRouter);
+app.use("/api/stripe", stripeRouter);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

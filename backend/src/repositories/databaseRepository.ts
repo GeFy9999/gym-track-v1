@@ -298,6 +298,18 @@ export async function getUserByEmail(email: string) {
   });
 }
 
+export async function getUserById(id: string) {
+  return await prisma.user.findUnique({
+    where: { id },
+  });
+}
+
+export async function getUserByStripeCustomerId(stripeCustomerId: string) {
+  return await prisma.user.findUnique({
+    where: { stripeCustomerId },
+  });
+}
+
 export async function insertUser(user: {
   email: string;
   password: string;

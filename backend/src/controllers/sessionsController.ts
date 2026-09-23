@@ -92,10 +92,19 @@ sessionsRouter.get(
 sessionsRouter.get("/me", authMiddleware, async (req: AuthRequest, res) => {
   try {
     const userId = req.userId!;
-    const start = req.query.start
+    let start = req.query.start
       ? new Date(req.query.start as string)
       : new Date(0);
     const end = req.query.end ? new Date(req.query.end as string) : new Date();
+
+    // Free users are limited to the last 90 days of history — enforced here
+    // so a hand-edited request can't bypass the frontend's own date filter.
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user?.isPro) {
+      const cutoff = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+      if (start < cutoff) start = cutoff;
+    }
+
     const sessions = await getUserSessions(userId, start, end);
     return res.status(200).json(sessions);
   } catch (error) {

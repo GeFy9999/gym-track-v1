@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ChevronLeft, Dumbbell } from "lucide-react";
+import { ChevronLeft, Dumbbell, Crown } from "lucide-react";
 import {
   getWeightUnit,
   getRestTimerSeconds,
@@ -16,6 +16,7 @@ import { useTrackedExercises } from "../hooks/useTrackedExercises";
 import { useExerciseNotes } from "../hooks/useExerciseNotes";
 import { useSupersetManager } from "../hooks/useSupersetManager";
 import { useToast } from "../hooks/useToast";
+import { useIsPro } from "../hooks/useIsPro";
 import { isLikelyBarbellExercise, getDefaultBarWeight } from "../utils/plates";
 import { computeWarmupSets } from "../utils/warmup";
 import PRCelebration from "../components/session/PRCelebration";
@@ -91,8 +92,11 @@ export default function SessionPage() {
   const exerciseRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const { deltas, lastTimes } = useExerciseHistory(sessionId);
   const restTimer = useRestTimerContext();
+  const { isPro } = useIsPro();
   const restTimerEnabled = getRestTimerEnabled();
-  const barbellModeEnabled = getBarbellModeEnabled();
+  // A lapsed subscription must stop surfacing barbell mode immediately even
+  // though the stored preference boolean itself is still `true`.
+  const barbellModeEnabled = getBarbellModeEnabled() && isPro;
 
   const { isTracked, fetchTracked, toggleTracked } = useTrackedExercises();
   const {
@@ -596,7 +600,7 @@ export default function SessionPage() {
           },
         ]
       : []),
-    ...(restTimerEnabled
+    ...(restTimerEnabled && isPro
       ? [
           {
             title: t("session.tour.rest.title"),
@@ -675,11 +679,14 @@ export default function SessionPage() {
         {!readOnly && !isEmpty ? (
           <button
             data-tour="session-edit-toggle"
-            onClick={() => setIsEditMode((v) => !v)}
-            className={`text-xs font-bold uppercase tracking-wide px-3.5 py-2 rounded-full transition-colors flex-shrink-0 ${
+            onClick={() =>
+              isPro ? setIsEditMode((v) => !v) : navigate("/upgrade")
+            }
+            className={`flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide px-3.5 py-2 rounded-full transition-colors flex-shrink-0 ${
               isEditMode ? "bg-[#c9552c] text-white" : "bg-white/10 text-white"
             }`}
           >
+            {!isPro && <Crown size={12} />}
             {isEditMode ? t("session.done") : t("session.edit")}
           </button>
         ) : (
@@ -752,6 +759,7 @@ export default function SessionPage() {
                 barWeight={barWeight}
                 unit={unit}
                 readOnly={readOnly}
+                isPro={isPro}
                 barbellModeEnabled={barbellModeEnabled}
                 isBarbellExercise={isBarbellExercise(se)}
                 restTimerEnabled={restTimerEnabled}
@@ -782,7 +790,9 @@ export default function SessionPage() {
                   );
                 }}
                 onOpenNoteModal={() => openNoteModal(se.exercise.id)}
-                onOpenSupersetModal={() => openSupersetModal(se)}
+                onOpenSupersetModal={() =>
+                  isPro ? openSupersetModal(se) : navigate("/upgrade")
+                }
                 onRequestDelete={() => setConfirmDelete(se.id)}
                 onToggleBarbellOverride={() =>
                   setBarbellOverrides((prev) => ({
@@ -823,7 +833,9 @@ export default function SessionPage() {
                 onToggleSetCompleted={(set) => toggleSetCompleted(set, se)}
                 onDeleteSet={deleteSet}
                 onAddSet={() => addSet(se.id, se.sets)}
-                onOpenWarmupModal={() => setWarmupModalFor(se.id)}
+                onOpenWarmupModal={() =>
+                  isPro ? setWarmupModalFor(se.id) : navigate("/upgrade")
+                }
               />
             );
           })}

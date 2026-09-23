@@ -11,12 +11,16 @@ import {
   Check,
   Calendar as CalendarIcon,
   List,
+  Crown,
 } from "lucide-react";
 import { API_URL } from "../lib/api";
 import { getDateLocale } from "../i18n";
 import TourOverlay from "../components/TourOverlay";
 import Toast from "../components/Toast";
 import { useToast } from "../hooks/useToast";
+import { useIsPro } from "../hooks/useIsPro";
+
+const FREE_HISTORY_DAYS = 90;
 
 type SessionData = {
   id: string;
@@ -64,6 +68,7 @@ const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 export default function HistoryPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { isPro } = useIsPro();
   const MONTH_LABELS = t("history.months", {
     returnObjects: true,
   }) as string[];
@@ -130,8 +135,12 @@ export default function HistoryPage() {
       const token = localStorage.getItem("token");
       if (!token) return;
 
+      const start = isPro
+        ? new Date(2000, 0, 1)
+        : new Date(Date.now() - FREE_HISTORY_DAYS * 24 * 60 * 60 * 1000);
+
       const res = await fetch(
-        `${API_URL}/sessions/me?start=2000-01-01&end=${new Date().toISOString()}`,
+        `${API_URL}/sessions/me?start=${start.toISOString()}&end=${new Date().toISOString()}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -155,7 +164,7 @@ export default function HistoryPage() {
       setLoading(false);
     };
     fetchHistory();
-  }, []);
+  }, [isPro]);
 
   const weeks = useMemo<WeekGroup[]>(() => {
     const grouped: { [key: string]: SessionData[] } = {};
@@ -368,10 +377,16 @@ export default function HistoryPage() {
 
           {allSessions.length > 0 && (
             <button
-              onClick={() => setShowExportConfirm(true)}
+              onClick={() =>
+                isPro ? setShowExportConfirm(true) : navigate("/upgrade")
+              }
               className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-white bg-white/10 px-3.5 py-2.5 rounded-full active:scale-[0.98] transition-all flex-shrink-0 shadow-sm"
             >
-              <Upload size={14} className="text-[#e2703a]" />
+              {isPro ? (
+                <Upload size={14} className="text-[#e2703a]" />
+              ) : (
+                <Crown size={14} className="text-[#e2703a]" />
+              )}
               {t("history.export")}
             </button>
           )}
@@ -396,18 +411,30 @@ export default function HistoryPage() {
             </button>
             <button
               ref={calendarTabRef}
-              onClick={() => setViewMode("calendar")}
+              onClick={() =>
+                isPro ? setViewMode("calendar") : navigate("/upgrade")
+              }
               className={`relative z-10 flex-1 flex items-center justify-center gap-1.5 text-xs font-bold uppercase tracking-wide py-2.5 rounded-xl transition-colors ${
                 viewMode === "calendar" ? "text-gray-900" : "text-white/50"
               }`}
             >
-              <CalendarIcon size={14} /> {t("history.calendar")}
+              {isPro ? <CalendarIcon size={14} /> : <Crown size={14} />}{" "}
+              {t("history.calendar")}
             </button>
           </div>
         )}
       </div>
 
       <div className="px-5 pt-5">
+      {!isPro && allSessions.length > 0 && (
+        <button
+          onClick={() => navigate("/upgrade")}
+          className="w-full flex items-center gap-2 bg-[#c9552c]/10 text-[#c9552c] text-xs font-semibold px-4 py-3 rounded-2xl mb-4 text-left"
+        >
+          <Crown size={14} className="flex-shrink-0" />
+          {t("history.freePlanBanner", { days: FREE_HISTORY_DAYS })}
+        </button>
+      )}
       {allSessions.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24">
           <div className="w-14 h-14 rounded-full bg-[#ece7dd] shadow-sm flex items-center justify-center mb-4">

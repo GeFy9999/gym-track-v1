@@ -32,7 +32,11 @@ datasource db {
   language      String   @default("fr")
   authProvider  String   @default("email")
   resetToken    String?
-  resetTokenExpiry DateTime?  
+  resetTokenExpiry DateTime?
+  isPro                Boolean   @default(false)
+  stripeCustomerId     String?   @unique
+  stripeSubscriptionId String?
+  proCurrentPeriodEnd  DateTime?
 }
 
 model Schedule {

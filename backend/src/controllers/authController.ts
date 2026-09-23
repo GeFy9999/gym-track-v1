@@ -13,6 +13,7 @@ import {
   updateLanguage,
   forgotPassword,
   resetPassword,
+  getMe,
 } from "../services/authService.js";
 import {
   authMiddleware,
@@ -254,6 +255,18 @@ authRouter.patch(
     }
   },
 );
+
+// GET /api/auth/me
+authRouter.get("/me", authMiddleware, async (req: AuthRequest, res) => {
+  try {
+    const userId = req.userId!;
+    const user = await getMe(userId);
+    return res.status(200).json({ user });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return res.status(400).json({ error: message });
+  }
+});
 
 // POST /api/auth/forgot-password
 authRouter.post("/forgot-password", async (req, res) => {

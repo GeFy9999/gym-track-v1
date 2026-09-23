@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -15,13 +15,18 @@ import {
   Dumbbell,
   Download,
   Globe,
+  Sparkles,
+  Crown,
 } from "lucide-react";
 import { API_URL } from "../lib/api";
+import { getDateLocale } from "../i18n";
+import { useIsPro } from "../hooks/useIsPro";
 import TourOverlay from "../components/TourOverlay";
 
 export default function ProfilePage() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
+  const { isPro, refreshProStatus } = useIsPro();
 
   const stored = localStorage.getItem("user");
   const user = stored ? JSON.parse(stored) : null;
@@ -56,6 +61,29 @@ export default function ProfilePage() {
   const [customSeconds, setCustomSeconds] = useState("");
   const customTotalSeconds =
     (Number(customMinutes) || 0) * 60 + (Number(customSeconds) || 0);
+
+  useEffect(() => {
+    refreshProStatus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const [portalLoading, setPortalLoading] = useState(false);
+  const handleManageSubscription = async () => {
+    setPortalLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_URL}/stripe/portal-session`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || t("profile.errorGeneric"));
+      window.location.href = data.url;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("profile.errorGeneric"));
+      setPortalLoading(false);
+    }
+  };
 
   const tourRef0 = useRef<HTMLDivElement>(null);
   const tourRef1 = useRef<HTMLDivElement>(null);
@@ -332,13 +360,60 @@ export default function ProfilePage() {
         </div>
       )}
 
+      {/* Pro */}
+      <div className="bg-[#ece7dd] rounded-2xl mb-6 shadow-sm px-4 py-4">
+        {isPro ? (
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-[#c9552c]/10 flex items-center justify-center flex-shrink-0">
+              <Sparkles size={16} className="text-[#c9552c]" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-bold text-gray-900 uppercase">
+                {t("profile.proActive")}
+              </p>
+              <p className="text-xs text-gray-500 mt-0.5">
+                {user?.proCurrentPeriodEnd
+                  ? t("profile.proRenewsOn", {
+                      date: new Date(user.proCurrentPeriodEnd).toLocaleDateString(
+                        getDateLocale(),
+                      ),
+                    })
+                  : t("profile.proLifetime")}
+              </p>
+            </div>
+            {user?.proCurrentPeriodEnd && (
+              <button
+                onClick={handleManageSubscription}
+                disabled={portalLoading}
+                className="text-[10px] font-bold text-gray-600 uppercase bg-white/60 px-2.5 py-1.5 rounded-full whitespace-nowrap disabled:opacity-50"
+              >
+                {t("profile.proManage")}
+              </button>
+            )}
+          </div>
+        ) : (
+          <button
+            onClick={() => navigate("/upgrade")}
+            className="w-full flex items-center gap-3"
+          >
+            <div className="w-9 h-9 rounded-xl bg-[#c9552c]/10 flex items-center justify-center flex-shrink-0">
+              <Crown size={16} className="text-[#c9552c]" />
+            </div>
+            <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
+              {t("profile.proUpsell")}
+            </p>
+            <ChevronRight size={16} className="text-[#c9552c] flex-shrink-0" />
+          </button>
+        )}
+      </div>
+
       {/* Progression */}
       <p className="text-xs text-gray-900 uppercase tracking-widest font-bold mb-2 px-1">
         {t("profile.progression")}
       </p>
       <div ref={tourRef0} className="bg-[#ece7dd] rounded-2xl mb-6 shadow-sm">
         <button
-          onClick={() => navigate("/progression")}
+          onClick={() => navigate(isPro ? "/progression" : "/upgrade")}
           className="w-full flex items-center gap-3 px-4 py-4"
         >
           <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
@@ -347,8 +422,8 @@ export default function ProfilePage() {
           <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
             {t("profile.progressPhotos")}
           </p>
-          <span className="text-[10px] font-bold text-gray-600 uppercase bg-white/60 px-2.5 py-1 rounded-full">
-            {t("profile.view")}
+          <span className="text-[10px] font-bold text-gray-600 uppercase bg-white/60 px-2.5 py-1 rounded-full flex items-center gap-1">
+            {isPro ? t("profile.view") : <Crown size={10} />}
           </span>
           <ChevronRight size={16} className="text-[#c9552c] flex-shrink-0" />
         </button>
@@ -572,23 +647,32 @@ export default function ProfilePage() {
             <Dumbbell size={16} className="text-[#c9552c]" />
           </div>
           <div className="flex-1 text-left">
-            <p className="text-sm font-bold text-gray-900 uppercase">
+            <p className="text-sm font-bold text-gray-900 uppercase flex items-center gap-1.5">
               {t("profile.barModeTitle")}
+              {!isPro && (
+                <span className="text-[9px] font-bold text-[#c9552c] bg-[#c9552c]/10 px-1.5 py-0.5 rounded-full normal-case">
+                  PRO
+                </span>
+              )}
             </p>
             <p className="text-xs text-gray-500 mt-0.5">
               {t("profile.barModeDesc")}
             </p>
           </div>
           <button
-            onClick={() => handleBarbellModeEnabled(!barbellModeEnabled)}
+            onClick={() =>
+              isPro
+                ? handleBarbellModeEnabled(!barbellModeEnabled)
+                : navigate("/upgrade")
+            }
             className={`w-11 h-6 rounded-full relative flex-shrink-0 transition-colors ${
-              barbellModeEnabled ? "bg-[#3a9e6e]" : "bg-gray-300"
+              barbellModeEnabled && isPro ? "bg-[#3a9e6e]" : "bg-gray-300"
             }`}
             aria-label={t("profile.barModeAria")}
           >
             <span
               className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${
-                barbellModeEnabled ? "translate-x-5" : "translate-x-0"
+                barbellModeEnabled && isPro ? "translate-x-5" : "translate-x-0"
               }`}
             />
           </button>

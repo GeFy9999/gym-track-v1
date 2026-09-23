@@ -47,6 +47,8 @@ export const register = async (payload: {
       barbellModeEnabled: user.barbellModeEnabled,
       language: user.language,
       authProvider: user.authProvider,
+      isPro: user.isPro,
+      proCurrentPeriodEnd: user.proCurrentPeriodEnd,
     },
   };
 };
@@ -75,6 +77,8 @@ export const login = async (payload: { email: string; password: string }) => {
       barbellModeEnabled: user.barbellModeEnabled,
       language: user.language,
       authProvider: user.authProvider,
+      isPro: user.isPro,
+      proCurrentPeriodEnd: user.proCurrentPeriodEnd,
     },
   };
 };
@@ -128,6 +132,8 @@ export const googleLogin = async (credential: string, language?: string) => {
       barbellModeEnabled: user.barbellModeEnabled,
       language: user.language,
       authProvider: user.authProvider,
+      isPro: user.isPro,
+      proCurrentPeriodEnd: user.proCurrentPeriodEnd,
     },
   };
 };
@@ -250,6 +256,26 @@ export const updateBarbellModeEnabled = async (
     where: { id: userId },
     data: { barbellModeEnabled },
   });
+};
+
+export const getMe = async (userId: string) => {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw new Error("Utilisateur introuvable");
+
+  return {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    recoveryEmail: user.recoveryEmail,
+    weightUnit: user.weightUnit,
+    restTimerSeconds: user.restTimerSeconds,
+    restTimerEnabled: user.restTimerEnabled,
+    barbellModeEnabled: user.barbellModeEnabled,
+    language: user.language,
+    authProvider: user.authProvider,
+    isPro: user.isPro,
+    proCurrentPeriodEnd: user.proCurrentPeriodEnd,
+  };
 };
 
 export const forgotPassword = async (email: string) => {

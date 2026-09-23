@@ -17,6 +17,7 @@ import ProgressPhotosPage from "./pages/ProgressPhotos.tsx";
 import ImportPage from "./pages/Import.tsx";
 import ExercisesPage from "./pages/Exercises.tsx";
 import ExerciseDetailPage from "./pages/ExerciseDetail.tsx";
+import UpgradePage from "./pages/Upgrade.tsx";
 import { RestTimerProvider, useRestTimerContext } from "./contexts/RestTimerContext";
 import { UiChromeProvider, useUiChrome } from "./contexts/UiChromeContext";
 import RestTimer from "./components/session/RestTimer";
@@ -82,6 +83,7 @@ function AppShell() {
       "/reset-password",
       "/progression",
       "/import",
+      "/upgrade",
     ].includes(location.pathname) ||
     location.pathname.startsWith("/session/") ||
     location.pathname.startsWith("/exercise/");
@@ -184,6 +186,14 @@ function AppShell() {
               element={
                 <ProtectedRoute>
                   <ImportPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/upgrade"
+              element={
+                <ProtectedRoute>
+                  <UpgradePage />
                 </ProtectedRoute>
               }
             />
