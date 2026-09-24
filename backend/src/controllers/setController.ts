@@ -13,6 +13,7 @@ import {
   authMiddleware,
   type AuthRequest,
 } from "../middleware/authMiddleware.js";
+import { sendServerError } from "../utils/errorResponse.js";
 
 export const setsRouter = express.Router();
 
@@ -30,8 +31,7 @@ setsRouter.get(
       const sets = await getSetsBySessionExercise(sessionExerciseId);
       return res.status(200).json(sets);
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      return res.status(500).json({ error: message });
+      return sendServerError(res, error);
     }
   },
 );
@@ -56,9 +56,7 @@ setsRouter.post("", authMiddleware, async (req: AuthRequest, res) => {
     const set = await createSet(payload);
     return res.status(201).json(set);
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error(message, error);
-    return res.status(500).json({ error: message });
+    return sendServerError(res, error);
   }
 });
 
@@ -74,9 +72,7 @@ setsRouter.patch("/:id", authMiddleware, async (req: AuthRequest, res) => {
     const set = await editSet(id, payload);
     return res.status(200).json(set);
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error(message, error);
-    return res.status(500).json({ error: message });
+    return sendServerError(res, error);
   }
 });
 
@@ -91,8 +87,6 @@ setsRouter.delete("/:id", authMiddleware, async (req: AuthRequest, res) => {
     await removeSet(id);
     return res.status(204).send();
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error(message, error);
-    return res.status(500).json({ error: message });
+    return sendServerError(res, error);
   }
 });

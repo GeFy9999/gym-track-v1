@@ -16,6 +16,7 @@ import {
 } from "../middleware/authMiddleware.js";
 import { prisma } from "../prisma.js";
 import { getSessionOwnerId } from "../repositories/databaseRepository.js";
+import { sendServerError } from "../utils/errorResponse.js";
 
 export const sessionsRouter = express.Router();
 
@@ -29,8 +30,7 @@ sessionsRouter.get(
       const records = await getUserPersonalRecords(userId);
       return res.status(200).json(records);
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      return res.status(500).json({ error: message });
+      return sendServerError(res, error);
     }
   },
 );
@@ -83,8 +83,7 @@ sessionsRouter.get(
 
       return res.status(200).json({ streak });
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      return res.status(500).json({ error: message });
+      return sendServerError(res, error);
     }
   },
 );
@@ -109,8 +108,7 @@ sessionsRouter.get("/me", authMiddleware, async (req: AuthRequest, res) => {
     const sessions = await getUserSessions(userId, start, end);
     return res.status(200).json(sessions);
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    return res.status(500).json({ error: message });
+    return sendServerError(res, error);
   }
 });
 
@@ -124,8 +122,7 @@ sessionsRouter.get(
       const volume = await getUserMuscleVolume(userId);
       return res.status(200).json(volume);
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      return res.status(500).json({ error: message });
+      return sendServerError(res, error);
     }
   },
 );
@@ -141,8 +138,7 @@ sessionsRouter.get(
       const progress = await getUserExerciseProgress(userId, exerciseId);
       return res.status(200).json(progress);
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      return res.status(500).json({ error: message });
+      return sendServerError(res, error);
     }
   },
 );
@@ -157,8 +153,7 @@ sessionsRouter.get(
       const stats = await getUserExerciseStats(userId);
       return res.status(200).json(stats);
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      return res.status(500).json({ error: message });
+      return sendServerError(res, error);
     }
   },
 );
@@ -174,8 +169,7 @@ sessionsRouter.get(
       const history = await getUserExerciseHistory(userId, exerciseId);
       return res.status(200).json(history);
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      return res.status(500).json({ error: message });
+      return sendServerError(res, error);
     }
   },
 );
@@ -204,8 +198,7 @@ sessionsRouter.delete(
 
       return res.status(200).json({ message: "Session supprimée" });
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      return res.status(500).json({ error: message });
+      return sendServerError(res, error);
     }
   },
 );
@@ -225,8 +218,7 @@ sessionsRouter.get(
       if (!session) return res.status(404).json({ error: "Session not found" });
       return res.status(200).json(session);
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      return res.status(500).json({ error: message });
+      return sendServerError(res, error);
     }
   },
 );
@@ -243,8 +235,7 @@ sessionsRouter.post("/", authMiddleware, async (req: AuthRequest, res) => {
     });
     return res.status(201).json(session);
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    return res.status(500).json({ error: message });
+    return sendServerError(res, error);
   }
 });
 
@@ -262,8 +253,7 @@ sessionsRouter.patch(
       const session = await completeSession(sessionId);
       return res.status(200).json(session);
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      return res.status(500).json({ error: message });
+      return sendServerError(res, error);
     }
   },
 );

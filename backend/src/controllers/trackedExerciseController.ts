@@ -8,6 +8,7 @@ import {
   authMiddleware,
   type AuthRequest,
 } from "../middleware/authMiddleware.js";
+import { sendServerError } from "../utils/errorResponse.js";
 
 export const trackedExerciseRouter = express.Router();
 
@@ -20,8 +21,7 @@ trackedExerciseRouter.get(
       const tracked = await getTrackedExercises(userId);
       return res.status(200).json(tracked);
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      return res.status(500).json({ error: message });
+      return sendServerError(res, error);
     }
   },
 );
@@ -59,8 +59,7 @@ trackedExerciseRouter.delete(
       }
       return res.status(200).json({ message: "Exercice retiré" });
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      return res.status(500).json({ error: message });
+      return sendServerError(res, error);
     }
   },
 );

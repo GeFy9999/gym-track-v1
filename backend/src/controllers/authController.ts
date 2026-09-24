@@ -23,6 +23,7 @@ import {
   authLimiter,
   passwordResetLimiter,
 } from "../middleware/rateLimiters.js";
+import { sendServerError } from "../utils/errorResponse.js";
 
 export const authRouter = express.Router();
 
@@ -114,8 +115,7 @@ authRouter.delete(
       await deleteAccount(userId);
       return res.status(200).json({ message: "Compte supprimé" });
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      return res.status(500).json({ error: message });
+      return sendServerError(res, error);
     }
   },
 );

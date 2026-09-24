@@ -4,6 +4,7 @@ import {
   authMiddleware,
   type AuthRequest,
 } from "../middleware/authMiddleware.js";
+import { sendServerError } from "../utils/errorResponse.js";
 
 export const importRouter = express.Router();
 
@@ -31,8 +32,7 @@ importRouter.delete(
       const count = await undoImportBatch(userId, importBatchId);
       return res.status(200).json({ sessionsDeleted: count });
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      return res.status(500).json({ error: message });
+      return sendServerError(res, error);
     }
   },
 );

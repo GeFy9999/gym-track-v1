@@ -4,6 +4,7 @@ import {
   getMuscleGroups,
 } from "../services/muscleGroupsService.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
+import { sendServerError } from "../utils/errorResponse.js";
 
 export const muscleGroupsRouter = express.Router();
 
@@ -12,8 +13,7 @@ muscleGroupsRouter.get("", async (req, res) => {
     const muscleGroups = await getMuscleGroups();
     return res.status(200).json(muscleGroups);
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    return res.status(500).json({ error: message });
+    return sendServerError(res, error);
   }
 });
 
@@ -35,8 +35,6 @@ muscleGroupsRouter.post("", authMiddleware, async (req, res) => {
     await createMuscleGroup(payload);
     return res.status(201).json();
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error(message, error);
-    return res.status(500).json({ error: message });
+    return sendServerError(res, error);
   }
 });

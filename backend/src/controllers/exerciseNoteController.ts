@@ -8,6 +8,7 @@ import {
   authMiddleware,
   type AuthRequest,
 } from "../middleware/authMiddleware.js";
+import { sendServerError } from "../utils/errorResponse.js";
 
 export const exerciseNoteRouter = express.Router();
 
@@ -18,8 +19,7 @@ exerciseNoteRouter.get("/", authMiddleware, async (req: AuthRequest, res) => {
     const notes = await getExerciseNotes(userId);
     return res.status(200).json(notes);
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    return res.status(500).json({ error: message });
+    return sendServerError(res, error);
   }
 });
 

@@ -4,6 +4,7 @@ import {
   authMiddleware,
   type AuthRequest,
 } from "../middleware/authMiddleware.js";
+import { sendServerError } from "../utils/errorResponse.js";
 
 export const progressPhotoRouter = express.Router();
 
@@ -18,8 +19,7 @@ progressPhotoRouter.get("/", authMiddleware, async (req: AuthRequest, res) => {
     });
     return res.status(200).json(photos);
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    return res.status(500).json({ error: message });
+    return sendServerError(res, error);
   }
 });
 
@@ -38,8 +38,7 @@ progressPhotoRouter.get(
       if (!photo) return res.status(404).json({ error: "Photo non trouvée" });
       return res.status(200).json({ data: photo.data });
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      return res.status(500).json({ error: message });
+      return sendServerError(res, error);
     }
   },
 );
@@ -60,8 +59,7 @@ progressPhotoRouter.post("/", authMiddleware, async (req: AuthRequest, res) => {
     });
     return res.status(201).json(photo);
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    return res.status(500).json({ error: message });
+    return sendServerError(res, error);
   }
 });
 
@@ -81,8 +79,7 @@ progressPhotoRouter.delete(
       await prisma.progressPhoto.delete({ where: { id } });
       return res.status(200).json({ success: true });
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      return res.status(500).json({ error: message });
+      return sendServerError(res, error);
     }
   },
 );

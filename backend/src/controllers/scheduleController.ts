@@ -8,6 +8,7 @@ import {
   authMiddleware,
   type AuthRequest,
 } from "../middleware/authMiddleware.js";
+import { sendServerError } from "../utils/errorResponse.js";
 
 export const scheduleRouter = express.Router();
 
@@ -18,8 +19,7 @@ scheduleRouter.get("/me", authMiddleware, async (req: AuthRequest, res) => {
     if (!schedule) return res.status(404).json({ error: "Schedule not found" });
     return res.status(200).json(schedule);
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    return res.status(500).json({ error: message });
+    return sendServerError(res, error);
   }
 });
 
@@ -34,8 +34,7 @@ scheduleRouter.post("/", authMiddleware, async (req: AuthRequest, res) => {
     const schedule = await createSchedule({ ...payload, userId: req.userId! });
     return res.status(201).json(schedule);
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    return res.status(500).json({ error: message });
+    return sendServerError(res, error);
   }
 });
 
@@ -46,7 +45,6 @@ scheduleRouter.put("/me", authMiddleware, async (req: AuthRequest, res) => {
     const schedule = await editSchedule(req.userId!, payload);
     return res.status(200).json(schedule);
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    return res.status(500).json({ error: message });
+    return sendServerError(res, error);
   }
 });
