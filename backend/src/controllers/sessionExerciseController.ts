@@ -15,6 +15,7 @@ import {
   authMiddleware,
   type AuthRequest,
 } from "../middleware/authMiddleware.js";
+import { sendServerError } from "../utils/errorResponse.js";
 
 export const sessionExercisesRouter = express.Router();
 
@@ -35,9 +36,7 @@ sessionExercisesRouter.patch(
       await reorderSessionExercisesForSession(order);
       return res.status(200).json({ message: "Ordre mis à jour" });
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      console.error(message, error);
-      return res.status(500).json({ error: message });
+      return sendServerError(res, error);
     }
   },
 );
@@ -65,9 +64,7 @@ sessionExercisesRouter.patch(
       const supersetId = await linkExercisesToSuperset(exerciseIds);
       return res.status(200).json({ supersetId });
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      console.error(message, error);
-      return res.status(500).json({ error: message });
+      return sendServerError(res, error);
     }
   },
 );
@@ -86,9 +83,7 @@ sessionExercisesRouter.delete(
       await unlinkExerciseFromSuperset(id);
       return res.status(200).json({ message: "Retiré du superset" });
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      console.error(message, error);
-      return res.status(500).json({ error: message });
+      return sendServerError(res, error);
     }
   },
 );
@@ -110,9 +105,7 @@ sessionExercisesRouter.post("", authMiddleware, async (req: AuthRequest, res) =>
     const sessionExercise = await addExerciseToSession(payload);
     return res.status(201).json(sessionExercise);
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error(message, error);
-    return res.status(500).json({ error: message });
+    return sendServerError(res, error);
   }
 });
 
@@ -130,9 +123,7 @@ sessionExercisesRouter.delete(
       await removeExerciseFromSession(id);
       return res.status(204).send();
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      console.error(message, error);
-      return res.status(500).json({ error: message });
+      return sendServerError(res, error);
     }
   },
 );

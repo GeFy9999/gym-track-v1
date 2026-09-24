@@ -8,6 +8,7 @@ import {
   type AuthRequest,
 } from "../middleware/authMiddleware.js";
 import { error } from "node:console";
+import { sendServerError } from "../utils/errorResponse.js";
 
 export const bodyWeightRouter = express.Router();
 
@@ -24,8 +25,7 @@ bodyWeightRouter.post("/", authMiddleware, async (req: AuthRequest, res) => {
     const entry = await insertBodyWeight({ userId, value });
     return res.status(201).json(entry);
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    return res.status(500).json({ error: message });
+    return sendServerError(res, error);
   }
 });
 
@@ -36,7 +36,6 @@ bodyWeightRouter.get("/", authMiddleware, async (req: AuthRequest, res) => {
     const entries = await getBodyWeights(userId);
     return res.status(200).json(entries);
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    return res.status(500).json({ error: message });
+    return sendServerError(res, error);
   }
 });
