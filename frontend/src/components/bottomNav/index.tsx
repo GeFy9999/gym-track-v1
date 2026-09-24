@@ -45,10 +45,13 @@ export default function BottomNav() {
   return (
     <nav
       aria-label="Navigation"
-      className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50"
+      className="fixed bottom-0 left-1/2 w-full max-w-[430px] -translate-x-1/2 z-50"
     >
-      <div className="bg-[#ece7dd] rounded-2xl px-2 py-2 shadow-sm">
-        <ul className="relative flex items-center gap-1">
+      <div
+        className="bg-[#ece7dd] px-2 pt-2 shadow-[0_-2px_8px_rgba(0,0,0,0.04)]"
+        style={{ paddingBottom: "max(0.5rem, env(safe-area-inset-bottom))" }}
+      >
+        <ul className="relative flex items-center justify-between">
           {indicator && (
             <div
               className="absolute top-0 h-full bg-[#191714] rounded-xl transition-all duration-300 ease-out"
@@ -69,7 +72,7 @@ export default function BottomNav() {
                 ref={(el) => {
                   itemRefs.current[i] = el;
                 }}
-                className="relative z-10"
+                className="relative z-10 flex-1"
               >
                 <Link
                   to={link.to}
