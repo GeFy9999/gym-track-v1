@@ -804,50 +804,57 @@ export default function DashboardPage() {
       {/* Onboarding weight prompt */}
       {showOnboardingWeight && (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-[60] px-6 animate-fade-in">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
-            <div className="flex flex-col items-center mb-4">
-              <div className="w-12 h-12 rounded-full bg-orange-50 flex items-center justify-center mb-3">
-                <Scale size={24} className="text-orange-500" />
+          <div className="bg-[#faf6f1] rounded-3xl w-full max-w-sm shadow-2xl animate-scale-in overflow-hidden">
+            <div
+              className="px-6 pt-8 pb-6 text-center"
+              style={{ background: "#191714" }}
+            >
+              <div className="w-14 h-14 rounded-full bg-[#3d271a] flex items-center justify-center mx-auto mb-4">
+                <Scale size={24} className="text-[#f0994a]" />
               </div>
-              <p className="text-base font-semibold text-gray-900 text-center">
+              <h2 className="text-xl font-black text-white uppercase tracking-wide">
                 {t("dashboard.onboardingWeight.title")}
-              </p>
-              <p className="text-xs text-gray-400 text-center mt-1">
+              </h2>
+              <p className="text-sm text-white/50 mt-1">
                 {t("dashboard.onboardingWeight.subtitle")}
               </p>
             </div>
 
-            <div className="relative mb-4">
-              <input
-                type="number"
-                value={bodyWeight}
-                onChange={(e) => setBodyWeight(e.target.value)}
-                placeholder="0"
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-center text-xl font-semibold text-gray-900 placeholder-gray-300 focus:outline-none focus:border-orange-500 transition-colors"
-              />
-              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-gray-400">
-                {(() => {
-                  const stored = localStorage.getItem("user");
-                  if (!stored) return "lb";
-                  return JSON.parse(stored).weightUnit || "lb";
-                })()}
-              </span>
-            </div>
+            <div className="px-5 pt-5 pb-6">
+              <div className="flex items-center justify-center gap-2 bg-[#ece7dd] rounded-full px-5 py-3 mb-5">
+                <input
+                  type="number"
+                  value={bodyWeight}
+                  onChange={(e) => setBodyWeight(e.target.value)}
+                  placeholder="0"
+                  autoFocus
+                  className="w-20 bg-transparent text-4xl font-black text-gray-900 placeholder-gray-300 focus:outline-none text-center"
+                />
+                <span className="text-sm font-bold uppercase text-gray-500">
+                  {(() => {
+                    const stored = localStorage.getItem("user");
+                    if (!stored) return "lb";
+                    return JSON.parse(stored).weightUnit || "lb";
+                  })()}
+                </span>
+              </div>
 
-            <div className="flex gap-3">
-              <button
-                onClick={handleOnboardingWeightSkip}
-                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-xl font-semibold transition-colors"
-              >
-                {t("dashboard.onboardingWeight.skip")}
-              </button>
-              <button
-                onClick={handleOnboardingWeightSave}
-                disabled={!bodyWeight}
-                className="flex-1 bg-[#c9552c] disabled:opacity-50 text-white py-3 rounded-xl font-semibold transition-colors"
-              >
-                {t("dashboard.onboardingWeight.continue")}
-              </button>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleOnboardingWeightSkip}
+                  className="flex-1 bg-[#ece7dd] text-gray-700 py-3.5 rounded-full font-bold uppercase tracking-wide text-sm transition-colors active:opacity-80"
+                >
+                  {t("dashboard.onboardingWeight.skip")}
+                </button>
+                <button
+                  onClick={handleOnboardingWeightSave}
+                  disabled={!bodyWeight}
+                  className="flex-1 bg-[#191714] disabled:opacity-40 text-white py-3.5 rounded-full font-bold uppercase tracking-wide text-sm transition-colors active:opacity-90 flex items-center justify-center gap-1.5"
+                >
+                  <Check size={16} strokeWidth={3} />
+                  {t("dashboard.onboardingWeight.continue")}
+                </button>
+              </div>
             </div>
           </div>
         </div>
