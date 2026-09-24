@@ -24,6 +24,10 @@ import {
 dotenv.config();
 
 const app = express();
+
+// Trust the reverse proxy (Docker / hosting)
+app.set("trust proxy", 1);
+
 const PORT = process.env.PORT || 3000;
 
 const allowedOrigins = (
