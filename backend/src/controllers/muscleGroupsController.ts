@@ -3,6 +3,7 @@ import {
   createMuscleGroup,
   getMuscleGroups,
 } from "../services/muscleGroupsService.js";
+import { authMiddleware } from "../middleware/authMiddleware.js";
 
 export const muscleGroupsRouter = express.Router();
 
@@ -16,7 +17,7 @@ muscleGroupsRouter.get("", async (req, res) => {
   }
 });
 
-muscleGroupsRouter.post("", async (req, res) => {
+muscleGroupsRouter.post("", authMiddleware, async (req, res) => {
   try {
     const payload = req.body;
     if (!payload) {

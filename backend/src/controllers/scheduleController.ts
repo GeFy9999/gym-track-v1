@@ -4,14 +4,17 @@ import {
   createSchedule,
   editSchedule,
 } from "../services/scheduleService.js";
+import {
+  authMiddleware,
+  type AuthRequest,
+} from "../middleware/authMiddleware.js";
 
 export const scheduleRouter = express.Router();
 
-// GET /api/schedule/:userId
-scheduleRouter.get("/:userId", async (req, res) => {
+// GET /api/schedule/me
+scheduleRouter.get("/me", authMiddleware, async (req: AuthRequest, res) => {
   try {
-    const { userId } = req.params;
-    const schedule = await getSchedule(userId);
+    const schedule = await getSchedule(req.userId!);
     if (!schedule) return res.status(404).json({ error: "Schedule not found" });
     return res.status(200).json(schedule);
   } catch (error) {
@@ -21,16 +24,14 @@ scheduleRouter.get("/:userId", async (req, res) => {
 });
 
 // POST /api/schedule
-scheduleRouter.post("/", async (req, res) => {
+scheduleRouter.post("/", authMiddleware, async (req: AuthRequest, res) => {
   try {
     const payload = req.body;
-    if (!payload.userId)
-      return res.status(400).json({ error: "userId not provided" });
     if (!payload.frequency)
       return res.status(400).json({ error: "frequency not provided" });
     if (!payload.days)
       return res.status(400).json({ error: "days not provided" });
-    const schedule = await createSchedule(payload);
+    const schedule = await createSchedule({ ...payload, userId: req.userId! });
     return res.status(201).json(schedule);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
@@ -38,13 +39,11 @@ scheduleRouter.post("/", async (req, res) => {
   }
 });
 
-// PUT /api/schedule/:userId
-// Pour plus tard (si user veut changer sa schedule)
-scheduleRouter.put("/:userId", async (req, res) => {
+// PUT /api/schedule/me
+scheduleRouter.put("/me", authMiddleware, async (req: AuthRequest, res) => {
   try {
-    const { userId } = req.params;
     const payload = req.body;
-    const schedule = await editSchedule(userId, payload);
+    const schedule = await editSchedule(req.userId!, payload);
     return res.status(200).json(schedule);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

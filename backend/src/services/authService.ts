@@ -7,6 +7,7 @@ import {
 } from "../repositories/databaseRepository.js";
 import { prisma } from "../prisma.js";
 import { Resend } from "resend";
+import { computeLoyaltyDiscountCents } from "../utils/loyalty.js";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -49,6 +50,9 @@ export const register = async (payload: {
       authProvider: user.authProvider,
       isPro: user.isPro,
       proCurrentPeriodEnd: user.proCurrentPeriodEnd,
+      proInterval: user.proInterval,
+      loyaltyPeriodsPaid: user.loyaltyPeriodsPaid,
+      loyaltyDiscountCents: computeLoyaltyDiscountCents(user.loyaltyPeriodsPaid),
     },
   };
 };
@@ -79,6 +83,9 @@ export const login = async (payload: { email: string; password: string }) => {
       authProvider: user.authProvider,
       isPro: user.isPro,
       proCurrentPeriodEnd: user.proCurrentPeriodEnd,
+      proInterval: user.proInterval,
+      loyaltyPeriodsPaid: user.loyaltyPeriodsPaid,
+      loyaltyDiscountCents: computeLoyaltyDiscountCents(user.loyaltyPeriodsPaid),
     },
   };
 };
@@ -134,6 +141,9 @@ export const googleLogin = async (credential: string, language?: string) => {
       authProvider: user.authProvider,
       isPro: user.isPro,
       proCurrentPeriodEnd: user.proCurrentPeriodEnd,
+      proInterval: user.proInterval,
+      loyaltyPeriodsPaid: user.loyaltyPeriodsPaid,
+      loyaltyDiscountCents: computeLoyaltyDiscountCents(user.loyaltyPeriodsPaid),
     },
   };
 };
@@ -275,12 +285,17 @@ export const getMe = async (userId: string) => {
     authProvider: user.authProvider,
     isPro: user.isPro,
     proCurrentPeriodEnd: user.proCurrentPeriodEnd,
+    proInterval: user.proInterval,
+    loyaltyPeriodsPaid: user.loyaltyPeriodsPaid,
+    loyaltyDiscountCents: computeLoyaltyDiscountCents(user.loyaltyPeriodsPaid),
   };
 };
 
 export const forgotPassword = async (email: string) => {
   const user = await getUserByEmail(email);
-  if (!user) throw new Error("Aucun compte avec ce courriel");
+  // Deliberately silent no-op for an unknown email — responding differently
+  // here would let an attacker enumerate which emails have an account.
+  if (!user) return;
 
   const token = crypto.randomUUID();
   const expiry = new Date(Date.now() + 60 * 60 * 1000);

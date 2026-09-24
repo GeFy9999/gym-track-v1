@@ -15,13 +15,17 @@ import {
   Dumbbell,
   Download,
   Globe,
-  Sparkles,
   Crown,
+  Calendar,
+  ArrowRight,
 } from "lucide-react";
 import { API_URL } from "../lib/api";
 import { getDateLocale } from "../i18n";
 import { useIsPro } from "../hooks/useIsPro";
 import TourOverlay from "../components/TourOverlay";
+
+const LOYALTY_CENTS_PER_PERIOD = 10;
+const LOYALTY_MAX_CENTS = 100;
 
 export default function ProfilePage() {
   const navigate = useNavigate();
@@ -30,6 +34,8 @@ export default function ProfilePage() {
 
   const stored = localStorage.getItem("user");
   const user = stored ? JSON.parse(stored) : null;
+  const loyaltyDiscountCents: number = user?.loyaltyDiscountCents ?? 0;
+  const loyaltyPeriodsPaid: number = Math.min(user?.loyaltyPeriodsPaid ?? 0, 10);
   const initials = user?.name
     ? user.name
         .split(" ")
@@ -66,24 +72,6 @@ export default function ProfilePage() {
     refreshProStatus();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const [portalLoading, setPortalLoading] = useState(false);
-  const handleManageSubscription = async () => {
-    setPortalLoading(true);
-    try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`${API_URL}/stripe/portal-session`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || t("profile.errorGeneric"));
-      window.location.href = data.url;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : t("profile.errorGeneric"));
-      setPortalLoading(false);
-    }
-  };
 
   const tourRef0 = useRef<HTMLDivElement>(null);
   const tourRef1 = useRef<HTMLDivElement>(null);
@@ -361,11 +349,11 @@ export default function ProfilePage() {
       )}
 
       {/* Pro */}
-      <div className="bg-[#ece7dd] rounded-2xl mb-6 shadow-sm px-4 py-4">
-        {isPro ? (
+      {isPro ? (
+        <div className="bg-[#ece7dd] rounded-2xl mb-6 shadow-sm px-4 py-4">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-[#c9552c]/10 flex items-center justify-center flex-shrink-0">
-              <Sparkles size={16} className="text-[#c9552c]" />
+              <Crown size={16} className="text-[#c9552c]" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold text-gray-900 uppercase">
@@ -383,29 +371,157 @@ export default function ProfilePage() {
             </div>
             {user?.proCurrentPeriodEnd && (
               <button
-                onClick={handleManageSubscription}
-                disabled={portalLoading}
-                className="text-[10px] font-bold text-gray-600 uppercase bg-white/60 px-2.5 py-1.5 rounded-full whitespace-nowrap disabled:opacity-50"
+                onClick={() => navigate("/upgrade")}
+                className="text-[10px] font-bold text-gray-600 uppercase bg-white/60 px-2.5 py-1.5 rounded-full whitespace-nowrap"
               >
                 {t("profile.proManage")}
               </button>
             )}
           </div>
-        ) : (
-          <button
-            onClick={() => navigate("/upgrade")}
-            className="w-full flex items-center gap-3"
-          >
+        </div>
+      ) : (
+        <button
+          onClick={() => navigate("/upgrade")}
+          className="w-full rounded-2xl mb-6 shadow-sm overflow-hidden text-left"
+        >
+          <div className="bg-[#3a9e6e] px-4 py-4 flex items-center gap-4">
+            <div className="flex flex-col items-center border-r border-white/25 pr-4 flex-shrink-0">
+              <span className="text-[9px] font-bold text-white/80 uppercase tracking-widest">
+                {t("profile.upTo")}
+              </span>
+              <span className="text-2xl font-black text-white leading-none whitespace-nowrap">
+                -1,00$
+              </span>
+            </div>
+            <p className="text-sm font-bold text-white leading-snug">
+              {t("profile.proUpsellSavings")}
+            </p>
+          </div>
+          <div className="bg-[#ece7dd] px-4 py-4 flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-[#c9552c]/10 flex items-center justify-center flex-shrink-0">
               <Crown size={16} className="text-[#c9552c]" />
             </div>
-            <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
+            <p className="flex-1 text-sm font-bold text-gray-900 uppercase">
               {t("profile.proUpsell")}
             </p>
-            <ChevronRight size={16} className="text-[#c9552c] flex-shrink-0" />
-          </button>
-        )}
-      </div>
+            <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "#191714" }}>
+              <ChevronRight size={16} className="text-white" />
+            </div>
+          </div>
+        </button>
+      )}
+
+      {/* Réduction de fidélité — seulement pertinent pour un abonnement
+          récurrent (les acheteurs à vie n'ont pas de "prochain paiement"). */}
+      {isPro &&
+        user?.proCurrentPeriodEnd &&
+        (() => {
+          const ringRadius = 34;
+          const circumference = 2 * Math.PI * ringRadius;
+          const ringOffset = circumference * (1 - loyaltyPeriodsPaid / 10);
+          const atMax = loyaltyDiscountCents >= LOYALTY_MAX_CENTS;
+          const daysUntilRenewal = Math.max(
+            0,
+            Math.ceil(
+              (new Date(user.proCurrentPeriodEnd).getTime() - Date.now()) /
+                (1000 * 60 * 60 * 24),
+            ),
+          );
+          // The very first period always ends in the first real payment
+          // (billing_reason "subscription_create"), not a renewal — no
+          // discount applies then. The first discount only lands on the
+          // renewal AFTER that, one full billing interval later.
+          const billingIntervalDays = user?.proInterval === "year" ? 365 : 30;
+          const daysUntilNextDiscount =
+            loyaltyPeriodsPaid > 0
+              ? daysUntilRenewal
+              : daysUntilRenewal + billingIntervalDays;
+          const nextDiscountCents = Math.min(
+            loyaltyDiscountCents + LOYALTY_CENTS_PER_PERIOD,
+            LOYALTY_MAX_CENTS,
+          );
+
+          return (
+            <div className="bg-[#ece7dd] rounded-2xl mb-6 shadow-sm p-4">
+              <div className="flex items-center gap-4">
+                <div className="relative w-20 h-20 flex-shrink-0">
+                  <svg viewBox="0 0 80 80" className="w-20 h-20 -rotate-90">
+                    <circle cx="40" cy="40" r={ringRadius} fill="none" stroke="#d6d0c1" strokeWidth="8" />
+                    <circle
+                      cx="40"
+                      cy="40"
+                      r={ringRadius}
+                      fill="none"
+                      stroke="#3a9e6e"
+                      strokeWidth="8"
+                      strokeLinecap="round"
+                      strokeDasharray={circumference}
+                      strokeDashoffset={ringOffset}
+                      className="transition-all duration-500"
+                    />
+                  </svg>
+                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-[#3a9e6e] border-2 border-[#ece7dd]" />
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className="text-base font-black text-gray-900 leading-none">
+                      {loyaltyPeriodsPaid}/10
+                    </span>
+                    <span className="text-[8px] font-bold text-gray-400 uppercase tracking-widest mt-1">
+                      {t("profile.loyaltyRenewalsShort")}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <p className="text-[10px] font-bold text-[#3a9e6e] uppercase tracking-widest">
+                    {t("profile.loyaltyTitle")}
+                  </p>
+                  <p className="flex items-baseline gap-1.5 mt-0.5">
+                    <span className="text-2xl font-black text-gray-900 whitespace-nowrap">
+                      -{(loyaltyDiscountCents / 100).toFixed(2)}$
+                    </span>
+                    <span className="text-[10px] font-bold text-gray-400 uppercase">
+                      {t("profile.loyaltyActuel")}
+                    </span>
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {atMax
+                      ? t("profile.loyaltyMaxed", {
+                          amount: (LOYALTY_MAX_CENTS / 100).toFixed(2),
+                        })
+                      : t("profile.loyaltyRemaining", {
+                          count: Math.ceil(
+                            (LOYALTY_MAX_CENTS - loyaltyDiscountCents) /
+                              LOYALTY_CENTS_PER_PERIOD,
+                          ),
+                          max: (LOYALTY_MAX_CENTS / 100).toFixed(2),
+                        })}
+                  </p>
+                </div>
+              </div>
+
+              {!atMax && (
+                <>
+                  <div className="border-t border-black/10 my-3" />
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                      <Calendar size={13} className="flex-shrink-0" />
+                      {t("profile.loyaltyInDays", { count: daysUntilNextDiscount })}
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs text-gray-400 line-through">
+                        -{(loyaltyDiscountCents / 100).toFixed(2)}$
+                      </span>
+                      <ArrowRight size={12} className="text-gray-400 flex-shrink-0" />
+                      <span className="text-xs font-bold text-white bg-[#3a9e6e] px-2 py-1 rounded-full whitespace-nowrap">
+                        -{(nextDiscountCents / 100).toFixed(2)}$
+                      </span>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          );
+        })()}
 
       {/* Progression */}
       <p className="text-xs text-gray-900 uppercase tracking-widest font-bold mb-2 px-1">
@@ -716,6 +832,7 @@ export default function ProfilePage() {
       </button>
 
       </div>
+
 
       {/* Modal déconnexion */}
       {activeModal === "logout" && (

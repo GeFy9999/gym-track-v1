@@ -112,7 +112,10 @@ export default function SessionPage() {
 
   const fetchSession = async () => {
     try {
-      const res = await fetch(`${API_URL}/sessions/${sessionId}`);
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_URL}/sessions/${sessionId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       if (!res.ok) throw new Error("Session introuvable");
       const data = await res.json();
       setSession(data);
@@ -268,9 +271,13 @@ export default function SessionPage() {
 
   const saveExerciseOrder = async (order: string[]) => {
     try {
+      const token = localStorage.getItem("token");
       await fetch(`${API_URL}/session-exercises/reorder`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({ order }),
       });
     } catch (err) {
@@ -281,9 +288,13 @@ export default function SessionPage() {
 
   const addExercise = async (exerciseId: string) => {
     try {
+      const token = localStorage.getItem("token");
       const res = await fetch(`${API_URL}/session-exercises`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({ sessionId, exerciseId }),
       });
       if (!res.ok) throw new Error("Erreur ajout exercice");
@@ -297,9 +308,13 @@ export default function SessionPage() {
     const lastSet = sets.length > 0 ? sets[sets.length - 1] : null;
 
     try {
+      const token = localStorage.getItem("token");
       const res = await fetch(`${API_URL}/sets`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({
           sessionExerciseId,
           weight: lastSet ? lastSet.weight : 0,
@@ -326,10 +341,14 @@ export default function SessionPage() {
     const plan = computeWarmupSets(workingWeight, unit, count);
 
     try {
+      const token = localStorage.getItem("token");
       for (const step of plan) {
         await fetch(`${API_URL}/sets`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
           body: JSON.stringify({
             sessionExerciseId,
             weight: step.weight,
@@ -341,7 +360,10 @@ export default function SessionPage() {
       }
       await fetch(`${API_URL}/sets`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({
           sessionExerciseId,
           weight: workingWeight,
@@ -438,9 +460,13 @@ export default function SessionPage() {
       }
     }
 
+    const token = localStorage.getItem("token");
     fetch(`${API_URL}/sets/${set.id}`, {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify({ completed: nextCompleted }),
     }).catch((err) => {
       console.error(err);
@@ -465,9 +491,13 @@ export default function SessionPage() {
     });
 
     try {
+      const token = localStorage.getItem("token");
       await fetch(`${API_URL}/sets/${setId}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(data),
       });
     } catch (err) {
@@ -507,7 +537,11 @@ export default function SessionPage() {
 
   const deleteSet = async (setId: string) => {
     try {
-      await fetch(`${API_URL}/sets/${setId}`, { method: "DELETE" });
+      const token = localStorage.getItem("token");
+      await fetch(`${API_URL}/sets/${setId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
       fetchSession();
     } catch (err) {
       console.error(err);
@@ -856,8 +890,10 @@ export default function SessionPage() {
           onCancel={() => setConfirmDelete(null)}
           onConfirm={async () => {
             try {
+              const token = localStorage.getItem("token");
               await fetch(`${API_URL}/session-exercises/${confirmDelete}`, {
                 method: "DELETE",
+                headers: { Authorization: `Bearer ${token}` },
               });
               setConfirmDelete(null);
               setRemovingId(confirmDelete);

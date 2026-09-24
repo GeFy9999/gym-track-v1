@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
 import dotenv from "dotenv";
 import { calendarRouter } from "./controllers/calendarController.js";
 import { metaRouter } from "./controllers/metaController.js";
@@ -29,6 +30,7 @@ const allowedOrigins = (
   process.env.CORS_ORIGIN || "http://localhost:5173"
 ).split(",");
 
+app.use(helmet());
 app.use(
   cors({
     origin: allowedOrigins,

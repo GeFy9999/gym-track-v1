@@ -90,6 +90,44 @@ export async function updateSchedule(
   });
 }
 
+// Ownership lookups — used by controllers to verify a resource actually
+// belongs to the authenticated user before letting them read/mutate it.
+export async function getSessionOwnerId(sessionId: string): Promise<string | null> {
+  const session = await prisma.session.findUnique({
+    where: { id: sessionId },
+    select: { userId: true },
+  });
+  return session?.userId ?? null;
+}
+
+export async function getSessionExerciseOwnerId(
+  sessionExerciseId: string,
+): Promise<string | null> {
+  const se = await prisma.sessionExercise.findUnique({
+    where: { id: sessionExerciseId },
+    select: { session: { select: { userId: true } } },
+  });
+  return se?.session.userId ?? null;
+}
+
+export async function getSessionExerciseOwnerIds(
+  sessionExerciseIds: string[],
+): Promise<Map<string, string>> {
+  const rows = await prisma.sessionExercise.findMany({
+    where: { id: { in: sessionExerciseIds } },
+    select: { id: true, session: { select: { userId: true } } },
+  });
+  return new Map(rows.map((r) => [r.id, r.session.userId]));
+}
+
+export async function getSetOwnerId(setId: string): Promise<string | null> {
+  const set = await prisma.set.findUnique({
+    where: { id: setId },
+    select: { sessionExercise: { select: { session: { select: { userId: true } } } } },
+  });
+  return set?.sessionExercise.session.userId ?? null;
+}
+
 export async function getSessionById(sessionId: string) {
   return await prisma.session.findUnique({
     where: { id: sessionId },
@@ -424,9 +462,9 @@ export async function addTrackedExercise(userId: string, exerciseId: string) {
   });
 }
 
-export async function removeTrackedExercise(id: string) {
-  return await prisma.trackedExercise.delete({
-    where: { id },
+export async function removeTrackedExercise(id: string, userId: string) {
+  return await prisma.trackedExercise.deleteMany({
+    where: { id, userId },
   });
 }
 

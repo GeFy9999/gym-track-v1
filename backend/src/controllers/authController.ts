@@ -19,11 +19,15 @@ import {
   authMiddleware,
   type AuthRequest,
 } from "../middleware/authMiddleware.js";
+import {
+  authLimiter,
+  passwordResetLimiter,
+} from "../middleware/rateLimiters.js";
 
 export const authRouter = express.Router();
 
 // POST /api/auth/register
-authRouter.post("/register", async (req, res) => {
+authRouter.post("/register", authLimiter, async (req, res) => {
   try {
     const { email, password, name, language } = req.body;
     if (!email) return res.status(400).json({ error: "Email requis" });
@@ -40,7 +44,7 @@ authRouter.post("/register", async (req, res) => {
 });
 
 // POST /api/auth/login
-authRouter.post("/login", async (req, res) => {
+authRouter.post("/login", authLimiter, async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email) return res.status(400).json({ error: "Email requis" });
@@ -56,7 +60,7 @@ authRouter.post("/login", async (req, res) => {
 });
 
 // POST /api/auth/google
-authRouter.post("/google", async (req, res) => {
+authRouter.post("/google", authLimiter, async (req, res) => {
   try {
     const { credential, language } = req.body;
     if (!credential)
@@ -269,7 +273,7 @@ authRouter.get("/me", authMiddleware, async (req: AuthRequest, res) => {
 });
 
 // POST /api/auth/forgot-password
-authRouter.post("/forgot-password", async (req, res) => {
+authRouter.post("/forgot-password", passwordResetLimiter, async (req, res) => {
   try {
     const { email } = req.body;
     if (!email) return res.status(400).json({ error: "Courriel requis" });
@@ -283,7 +287,7 @@ authRouter.post("/forgot-password", async (req, res) => {
 });
 
 // POST /api/auth/reset-password
-authRouter.post("/reset-password", async (req, res) => {
+authRouter.post("/reset-password", passwordResetLimiter, async (req, res) => {
   try {
     const { token, newPassword } = req.body;
     if (!token || !newPassword) {

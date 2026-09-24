@@ -136,15 +136,13 @@ export default function MuscleGroupsCards({ weekActive, refreshKey }: Props) {
         }
       }
 
-      const stored = localStorage.getItem("user");
-      if (!stored) return;
-      const user = JSON.parse(stored);
-
       const createRes = await fetch(`${API_URL}/sessions`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({
-          userId: user.id,
           muscleGroup: group.name,
         }),
       });

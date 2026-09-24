@@ -39,15 +39,22 @@ export function useSupersetManager(
     );
 
     try {
+      const token = localStorage.getItem("token");
       if (selected.length === 0) {
         await fetch(
           `${API_URL}/session-exercises/${supersetModalFor}/superset`,
-          { method: "DELETE" },
+          {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${token}` },
+          },
         );
       } else {
         await fetch(`${API_URL}/session-exercises/superset`, {
           method: "PATCH",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
           body: JSON.stringify({
             exerciseIds: [supersetModalFor, ...selected],
           }),

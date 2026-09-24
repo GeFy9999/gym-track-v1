@@ -4,6 +4,7 @@ import {
   getExercises,
   getExercisesForMuscleGroup,
 } from "../services/exercisesService.js";
+import { authMiddleware } from "../middleware/authMiddleware.js";
 
 export const exercisesRouter = express.Router();
 
@@ -20,7 +21,7 @@ exercisesRouter.get("", async (req, res) => {
   }
 });
 
-exercisesRouter.post("", async (req, res) => {
+exercisesRouter.post("", authMiddleware, async (req, res) => {
   try {
     const payload = req.body;
     if (!payload) {

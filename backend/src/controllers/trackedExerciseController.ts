@@ -53,7 +53,10 @@ trackedExerciseRouter.delete(
   async (req: AuthRequest, res) => {
     try {
       const id = req.params.id as string;
-      await removeTrackedExercise(id);
+      const result = await removeTrackedExercise(id, req.userId!);
+      if (result.count === 0) {
+        return res.status(404).json({ error: "Exercice suivi introuvable" });
+      }
       return res.status(200).json({ message: "Exercice retiré" });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);

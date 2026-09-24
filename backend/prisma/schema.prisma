@@ -37,6 +37,8 @@ datasource db {
   stripeCustomerId     String?   @unique
   stripeSubscriptionId String?
   proCurrentPeriodEnd  DateTime?
+  proInterval          String?
+  loyaltyPeriodsPaid   Int       @default(0)
 }
 
 model Schedule {

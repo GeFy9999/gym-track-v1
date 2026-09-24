@@ -46,7 +46,9 @@ export function useExerciseHistory(sessionId?: string) {
 
       try {
         const [currentRes, allRes] = await Promise.all([
-          fetch(`${API_URL}/sessions/${sessionId}`),
+          fetch(`${API_URL}/sessions/${sessionId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
           fetch(
             `${API_URL}/sessions/me?start=2000-01-01&end=${new Date().toISOString()}`,
             {

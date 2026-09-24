@@ -15,6 +15,7 @@ import {
   type AuthRequest,
 } from "../middleware/authMiddleware.js";
 import { prisma } from "../prisma.js";
+import { getSessionOwnerId } from "../repositories/databaseRepository.js";
 
 export const sessionsRouter = express.Router();
 
@@ -180,49 +181,66 @@ sessionsRouter.get(
 );
 
 // DELETE /api/sessions/:sessionId
-sessionsRouter.delete("/:sessionId", async (req, res) => {
-  try {
-    const { sessionId } = req.params;
+sessionsRouter.delete(
+  "/:sessionId",
+  authMiddleware,
+  async (req: AuthRequest, res) => {
+    try {
+      const sessionId = req.params.sessionId as string;
+      const ownerId = await getSessionOwnerId(sessionId);
+      if (ownerId !== req.userId!) {
+        return res.status(404).json({ error: "Session introuvable" });
+      }
 
-    await prisma.set.deleteMany({
-      where: { sessionExercise: { sessionId } },
-    });
-    await prisma.sessionExercise.deleteMany({
-      where: { sessionId },
-    });
-    await prisma.session.delete({
-      where: { id: sessionId },
-    });
+      await prisma.set.deleteMany({
+        where: { sessionExercise: { sessionId } },
+      });
+      await prisma.sessionExercise.deleteMany({
+        where: { sessionId },
+      });
+      await prisma.session.delete({
+        where: { id: sessionId },
+      });
 
-    return res.status(200).json({ message: "Session supprimée" });
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    return res.status(500).json({ error: message });
-  }
-});
+      return res.status(200).json({ message: "Session supprimée" });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      return res.status(500).json({ error: message });
+    }
+  },
+);
 
 // GET /api/sessions/:sessionId
-sessionsRouter.get("/:sessionId", async (req, res) => {
-  try {
-    const { sessionId } = req.params;
-    const session = await getSession(sessionId);
-    if (!session) return res.status(404).json({ error: "Session not found" });
-    return res.status(200).json(session);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    return res.status(500).json({ error: message });
-  }
-});
+sessionsRouter.get(
+  "/:sessionId",
+  authMiddleware,
+  async (req: AuthRequest, res) => {
+    try {
+      const sessionId = req.params.sessionId as string;
+      const ownerId = await getSessionOwnerId(sessionId);
+      if (ownerId !== req.userId!) {
+        return res.status(404).json({ error: "Session not found" });
+      }
+      const session = await getSession(sessionId);
+      if (!session) return res.status(404).json({ error: "Session not found" });
+      return res.status(200).json(session);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      return res.status(500).json({ error: message });
+    }
+  },
+);
 
 // POST /api/sessions
-sessionsRouter.post("/", async (req, res) => {
+sessionsRouter.post("/", authMiddleware, async (req: AuthRequest, res) => {
   try {
     const payload = req.body;
-    if (!payload.userId)
-      return res.status(400).json({ error: "userId not provided" });
     if (!payload.muscleGroup)
       return res.status(400).json({ error: "muscleGroup not provided" });
-    const session = await createSession(payload);
+    const session = await createSession({
+      ...payload,
+      userId: req.userId!,
+    });
     return res.status(201).json(session);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
@@ -231,13 +249,21 @@ sessionsRouter.post("/", async (req, res) => {
 });
 
 // PATCH /api/sessions/:sessionId/complete
-sessionsRouter.patch("/:sessionId/complete", async (req, res) => {
-  try {
-    const { sessionId } = req.params;
-    const session = await completeSession(sessionId);
-    return res.status(200).json(session);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    return res.status(500).json({ error: message });
-  }
-});
+sessionsRouter.patch(
+  "/:sessionId/complete",
+  authMiddleware,
+  async (req: AuthRequest, res) => {
+    try {
+      const sessionId = req.params.sessionId as string;
+      const ownerId = await getSessionOwnerId(sessionId);
+      if (ownerId !== req.userId!) {
+        return res.status(404).json({ error: "Session introuvable" });
+      }
+      const session = await completeSession(sessionId);
+      return res.status(200).json(session);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      return res.status(500).json({ error: message });
+    }
+  },
+);

@@ -326,8 +326,10 @@ export default function DashboardPage() {
 
   const handleFinishAbandoned = async (session: AbandonedSession) => {
     try {
+      const token = localStorage.getItem("token");
       await fetch(`${API_URL}/sessions/${session.id}/complete`, {
         method: "PATCH",
+        headers: { Authorization: `Bearer ${token}` },
       });
     } catch (err) {
       console.error(err);
@@ -494,10 +496,12 @@ export default function DashboardPage() {
 
             await fetch(`${API_URL}/sessions/${session.id}/complete`, {
               method: "PATCH",
+              headers: { Authorization: `Bearer ${token}` },
             });
           } else {
             await fetch(`${API_URL}/sessions/${session.id}`, {
               method: "DELETE",
+              headers: { Authorization: `Bearer ${token}` },
             });
           }
         }
