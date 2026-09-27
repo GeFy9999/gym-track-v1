@@ -31,6 +31,9 @@ import NoteModal from "../components/session/NoteModal";
 import DeleteExerciseModal from "../components/session/DeleteExerciseModal";
 import WarmupModal from "../components/session/WarmupModal";
 import { POPULAR_EXERCISES_BY_MUSCLE_GROUP } from "../utils/popularExercises";
+import { offlineAwareFetch } from "../lib/offlineFetch";
+import { getOfflineDb } from "../lib/offlineDb";
+import { onSyncQueueChange } from "../lib/syncQueue";
 import type {
   SetData,
   SessionExercise,
@@ -111,6 +114,7 @@ export default function SessionPage() {
   } = useExerciseNotes();
 
   const fetchSession = async () => {
+    if (!sessionId) return;
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(`${API_URL}/sessions/${sessionId}`, {
@@ -119,8 +123,19 @@ export default function SessionPage() {
       if (!res.ok) throw new Error("Session introuvable");
       const data = await res.json();
       setSession(data);
+      const db = await getOfflineDb();
+      await db.put("sessionCache", {
+        sessionId,
+        data,
+        cachedAt: Date.now(),
+      });
     } catch (err) {
       console.error(err);
+      // No connection — fall back to whatever we last saw for this session
+      // instead of leaving the page stuck on a spinner.
+      const db = await getOfflineDb();
+      const cached = await db.get("sessionCache", sessionId);
+      if (cached) setSession(cached.data as SessionData);
     } finally {
       setLoading(false);
     }
@@ -253,6 +268,15 @@ export default function SessionPage() {
     fetchExerciseNotes();
   }, [sessionId]);
 
+  // Once every queued offline write has synced, refetch so temporary
+  // (offline-created) set ids get replaced by the server's real ones.
+  useEffect(() => {
+    return onSyncQueueChange((pending) => {
+      if (pending === 0) fetchSession();
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionId]);
+
   useEffect(() => {
     if (!prCelebration) return;
     const timeout = setTimeout(() => setPrCelebration(null), 4000);
@@ -306,28 +330,46 @@ export default function SessionPage() {
 
   const addSet = async (sessionExerciseId: string, sets: SetData[]) => {
     const lastSet = sets.length > 0 ? sets[sets.length - 1] : null;
+    const payload = {
+      sessionExerciseId,
+      weight: lastSet ? lastSet.weight : 0,
+      reps: lastSet ? lastSet.reps : 0,
+      unit: lastSet ? lastSet.unit : getWeightUnit(),
+    };
 
-    try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`${API_URL}/sets`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          sessionExerciseId,
-          weight: lastSet ? lastSet.weight : 0,
-          reps: lastSet ? lastSet.reps : 0,
-          unit: lastSet ? lastSet.unit : getWeightUnit(),
-        }),
+    const result = await offlineAwareFetch("POST", "/sets", payload, "Nouveau set");
+
+    if (result.queued) {
+      // No connection — insert locally with a temporary id so the set shows
+      // up right away; a real id replaces it once the queued request syncs
+      // and we refetch (see syncQueue.ts).
+      const tempSet: SetData = {
+        id: `temp-${crypto.randomUUID()}`,
+        ...payload,
+        completed: false,
+        type: "normal",
+      };
+      setSession((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          sessionExercises: prev.sessionExercises.map((se) =>
+            se.id === sessionExerciseId
+              ? { ...se, sets: [...se.sets, tempSet] }
+              : se,
+          ),
+        };
       });
-      if (!res.ok) throw new Error("Erreur ajout set");
-      fetchSession();
       setShowSetRowTour(true);
-    } catch (err) {
-      console.error(err);
+      return;
     }
+
+    if (!result.response.ok) {
+      console.error("Erreur ajout set");
+      return;
+    }
+    fetchSession();
+    setShowSetRowTour(true);
   };
 
   const generateWarmup = async (
@@ -460,17 +502,22 @@ export default function SessionPage() {
       }
     }
 
-    const token = localStorage.getItem("token");
-    fetch(`${API_URL}/sets/${set.id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ completed: nextCompleted }),
-    }).catch((err) => {
-      console.error(err);
-      fetchSession();
+    // A set created offline only exists locally so far (see addSet) — there's
+    // no real id yet to send a PATCH for; the local toggle above is enough,
+    // it'll be included whenever the create itself finally syncs.
+    if (set.id.startsWith("temp-")) return;
+
+    offlineAwareFetch(
+      "PATCH",
+      `/sets/${set.id}`,
+      { completed: nextCompleted },
+      "Set complété",
+    ).then((result) => {
+      // A queued (offline) request keeps the optimistic update above as-is;
+      // a real server error reverts it by refetching the true state.
+      if (!result.queued && !result.response.ok) {
+        fetchSession();
+      }
     });
   };
 
@@ -490,19 +537,17 @@ export default function SessionPage() {
       };
     });
 
-    try {
-      const token = localStorage.getItem("token");
-      await fetch(`${API_URL}/sets/${setId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(data),
-      });
-    } catch (err) {
-      console.error(err);
-      // Revert on error
+    // Same reasoning as toggleSetCompleted — a not-yet-synced set has no
+    // real id on the server to PATCH.
+    if (setId.startsWith("temp-")) return;
+
+    const result = await offlineAwareFetch(
+      "PATCH",
+      `/sets/${setId}`,
+      data,
+      "Modification set",
+    );
+    if (!result.queued && !result.response.ok) {
       fetchSession();
     }
   };
@@ -536,15 +581,33 @@ export default function SessionPage() {
   };
 
   const deleteSet = async (setId: string) => {
-    try {
-      const token = localStorage.getItem("token");
-      await fetch(`${API_URL}/sets/${setId}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+    // Optimistic removal first, same pattern as updateSet.
+    setSession((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        sessionExercises: prev.sessionExercises.map((se) => ({
+          ...se,
+          sets: se.sets.filter((s) => s.id !== setId),
+        })),
+      };
+    });
+
+    // A set added while offline only ever existed locally — there's nothing
+    // to delete on the server, and no real id to queue a DELETE for.
+    if (setId.startsWith("temp-")) return;
+
+    const result = await offlineAwareFetch(
+      "DELETE",
+      `/sets/${setId}`,
+      undefined,
+      "Suppression set",
+    );
+    // Queued: keep the optimistic removal. Otherwise (success or real
+    // error), refetch — either to get the server's confirmed state, or to
+    // revert the optimistic removal if the delete actually failed.
+    if (!result.queued) {
       fetchSession();
-    } catch (err) {
-      console.error(err);
     }
   };
 

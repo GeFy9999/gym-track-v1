@@ -8,6 +8,11 @@
     "done": "Done",
     "continueWithGoogle": "Continue with Google"
   },
+  "offline": {
+    "offline": "Offline mode",
+    "syncing_one": "Syncing... ({{count}})",
+    "syncing_other": "Syncing... ({{count}})"
+  },
   "nav": {
     "home": "Home",
     "stats": "Stats",

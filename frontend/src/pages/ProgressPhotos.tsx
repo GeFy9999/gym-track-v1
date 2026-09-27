@@ -5,6 +5,8 @@ import { ChevronLeft, Camera, Trash2, X, Crown } from "lucide-react";
 import { API_URL } from "../lib/api";
 import { getDateLocale } from "../i18n";
 import { useIsPro } from "../hooks/useIsPro";
+import { offlineAwareFetch } from "../lib/offlineFetch";
+import { onSyncQueueChange } from "../lib/syncQueue";
 
 type PhotoMeta = {
   id: string;
@@ -69,6 +71,15 @@ export default function ProgressPhotosPage() {
     fetchPhotos();
   }, []);
 
+  // Once queued photo uploads finish syncing, refetch so their temporary
+  // (offline) ids get replaced by the server's real ones.
+  useEffect(() => {
+    return onSyncQueueChange((pending) => {
+      if (pending === 0) fetchPhotos();
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -76,15 +87,23 @@ export default function ProgressPhotosPage() {
     setUploading(true);
     try {
       const data = await compressImage(file);
-      const res = await fetch(`${API_URL}/progress-photos`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ data }),
-      });
-      if (res.ok) {
+      const result = await offlineAwareFetch(
+        "POST",
+        "/progress-photos",
+        { data },
+        "Photo de progression",
+      );
+      if (result.queued) {
+        setPhotos((prev) => [
+          {
+            id: `temp-${crypto.randomUUID()}`,
+            data,
+            note: null,
+            createdAt: new Date().toISOString(),
+          },
+          ...prev,
+        ]);
+      } else if (result.response.ok) {
         fetchPhotos();
       }
     } catch (err) {
@@ -96,14 +115,21 @@ export default function ProgressPhotosPage() {
   };
 
   const handleDelete = async (id: string) => {
+    setPhotos(photos.filter((p) => p.id !== id));
+    setViewPhoto(null);
+    setDeleteConfirm(null);
+
+    // A photo added offline only exists locally so far — nothing to delete
+    // on the server, and no real id to queue a DELETE for.
+    if (id.startsWith("temp-")) return;
+
     try {
-      await fetch(`${API_URL}/progress-photos/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setPhotos(photos.filter((p) => p.id !== id));
-      setViewPhoto(null);
-      setDeleteConfirm(null);
+      await offlineAwareFetch(
+        "DELETE",
+        `/progress-photos/${id}`,
+        undefined,
+        "Suppression photo",
+      );
     } catch (err) {
       console.error(err);
     }
