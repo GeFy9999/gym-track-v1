@@ -9,12 +9,32 @@ type RecordEntry = { name: string; weight: number; exerciseId: string };
 type ProgressPoint = { week: string; oneRepMax: number };
 type ExerciseOneRM = { exerciseId: string; name: string; points: ProgressPoint[] };
 
-export default function EstimatedOneRepMax() {
+// Fixed made-up numbers shown to non-Pro users instead of their real 1RM
+// progress — a CSS blur alone would still let the real values underneath be
+// read (devtools, squinting), defeating the gate.
+function buildDemoData(translate: (key: string) => string): ExerciseOneRM[] {
+  const today = Date.now();
+  const week = 7 * 24 * 60 * 60 * 1000;
+  const points = (base: number, step: number): ProgressPoint[] =>
+    [4, 3, 2, 1, 0].map((weeksAgo, i) => ({
+      week: new Date(today - weeksAgo * week).toISOString(),
+      oneRepMax: base + i * step,
+    }));
+
+  return [
+    { exerciseId: "demo-1", name: translate("common.exercise"), points: points(225, 6) },
+    { exerciseId: "demo-2", name: translate("common.exercise"), points: points(145, 4) },
+  ];
+}
+
+export default function EstimatedOneRepMax({ isPro }: { isPro: boolean }) {
   const { t: translate } = useTranslation();
   const [data, setData] = useState<ExerciseOneRM[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(isPro);
 
   useEffect(() => {
+    if (!isPro) return;
+
     const fetchData = async () => {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -65,7 +85,21 @@ export default function EstimatedOneRepMax() {
     };
 
     fetchData();
-  }, []);
+  }, [isPro]);
+
+  const withData = isPro
+    ? data.filter((ex) => ex.points.length > 0)
+    : buildDemoData(translate);
+
+  if (!isPro) {
+    return (
+      <div className="grid grid-cols-2 gap-3">
+        {withData.map((ex) => (
+          <OneRepMaxCard key={ex.exerciseId} name={ex.name} points={ex.points} />
+        ))}
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -80,8 +114,6 @@ export default function EstimatedOneRepMax() {
       </div>
     );
   }
-
-  const withData = data.filter((ex) => ex.points.length > 0);
 
   if (withData.length === 0) {
     return (

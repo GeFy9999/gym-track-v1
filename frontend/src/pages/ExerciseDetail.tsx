@@ -49,6 +49,32 @@ type ExerciseHistoryResponse = {
   };
 };
 
+// Fixed, made-up numbers shown behind the blur for non-Pro users — never the
+// user's real computed data. A CSS blur alone still lets a determined eye (or
+// disabling styles in devtools) read the real values underneath, defeating
+// the whole point of gating; rendering fake data closes that gap.
+function buildDemoRecords() {
+  const today = Date.now();
+  const day = 24 * 60 * 60 * 1000;
+  return {
+    byReps: [
+      { reps: 1, weight: 225 },
+      { reps: 3, weight: 205 },
+      { reps: 5, weight: 190 },
+      { reps: 8, weight: 170 },
+      { reps: 10, weight: 155 },
+    ],
+    volumeOverTime: [42, 35, 28, 21, 14, 7, 0].map((daysAgo, i) => ({
+      date: new Date(today - daysAgo * day).toISOString(),
+      volume: 3200 + i * 260,
+    })),
+    oneRepMaxOverTime: [42, 35, 28, 21, 14, 7, 0].map((daysAgo, i) => ({
+      date: new Date(today - daysAgo * day).toISOString(),
+      oneRepMax: 180 + i * 6,
+    })),
+  };
+}
+
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString(getDateLocale(), {
     day: "numeric",
@@ -192,6 +218,8 @@ export default function ExerciseDetailPage() {
     ? convertedHistory
     : convertedHistory.slice(0, 5);
 
+  const demoRecords = buildDemoRecords();
+
   const convertedRecords = {
     bestWeight: records.bestWeight
       ? { ...records.bestWeight, weight: conv(records.bestWeight.weight) }
@@ -210,15 +238,18 @@ export default function ExerciseDetailPage() {
           oneRepMax: conv(records.bestOneRepMax.oneRepMax),
         }
       : null,
-    byReps: records.byReps.map((r) => ({ ...r, weight: conv(r.weight) })),
-    volumeOverTime: records.volumeOverTime.map((p) => ({
-      ...p,
-      volume: conv(p.volume),
-    })),
-    oneRepMaxOverTime: records.oneRepMaxOverTime.map((p) => ({
-      ...p,
-      oneRepMax: conv(p.oneRepMax),
-    })),
+    byReps: isPro
+      ? records.byReps.map((r) => ({ ...r, weight: conv(r.weight) }))
+      : demoRecords.byReps,
+    volumeOverTime: isPro
+      ? records.volumeOverTime.map((p) => ({ ...p, volume: conv(p.volume) }))
+      : demoRecords.volumeOverTime,
+    oneRepMaxOverTime: isPro
+      ? records.oneRepMaxOverTime.map((p) => ({
+          ...p,
+          oneRepMax: conv(p.oneRepMax),
+        }))
+      : demoRecords.oneRepMaxOverTime,
   };
 
   return (
