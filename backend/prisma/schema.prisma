@@ -39,6 +39,10 @@ datasource db {
   proCurrentPeriodEnd  DateTime?
   proInterval          String?
   loyaltyPeriodsPaid   Int       @default(0)
+  // "stripe" (web/default) or "google_play" (Android, via RevenueCat).
+  // Loyalty discounts and the Stripe billing portal only apply to "stripe" —
+  // Google Play subscriptions are managed entirely through the Play Store.
+  billingProvider      String    @default("stripe")
 }
 
 model Schedule {

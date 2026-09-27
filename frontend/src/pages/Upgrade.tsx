@@ -8,6 +8,7 @@ import { API_URL } from "../lib/api";
 import { getDateLocale } from "../i18n";
 import { useIsPro } from "../hooks/useIsPro";
 import { openExternalUrl } from "../lib/openExternal";
+import { ensureRevenueCatConfigured, purchasePlan } from "../lib/revenueCat";
 
 type Plan = "monthly" | "annual" | "lifetime";
 
@@ -63,7 +64,46 @@ export default function UpgradePage() {
 
   const isCurrentSelection = isPro && plan === currentPlan;
 
+  // Play Store policy requires Android purchases to go through Google Play
+  // Billing (via RevenueCat) instead of Stripe — get the SDK ready as soon as
+  // we know who's logged in, before the user has a chance to tap a plan.
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform() || !user?.id) return;
+    ensureRevenueCatConfigured(user.id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
+
+  const isGooglePlayBilled =
+    Capacitor.isNativePlatform() && user?.billingProvider === "google_play";
+
+  // Polls our own backend after a native purchase — RevenueCat's webhook
+  // updates isPro asynchronously, same lag as the web Checkout redirect flow.
+  const pollAfterNativePurchase = async () => {
+    setActivating(true);
+    setActivationTimedOut(false);
+    for (let attempt = 1; attempt <= 5; attempt++) {
+      await refreshProStatus();
+      // refreshProStatus() writes to localStorage synchronously before its
+      // setIsPro() re-render lands, so check there instead of the (stale,
+      // closed-over) isPro value to stop polling as soon as it's confirmed.
+      const stored = localStorage.getItem("user");
+      if (stored && JSON.parse(stored).isPro) {
+        setActivating(false);
+        return;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+    }
+    setActivating(false);
+    setActivationTimedOut(true);
+  };
+
   const handleManageSubscription = async () => {
+    if (isGooglePlayBilled) {
+      await openExternalUrl(
+        `https://play.google.com/store/account/subscriptions?package=com.gymstrack.app`,
+      );
+      return;
+    }
     setPortalLoading(true);
     try {
       const token = localStorage.getItem("token");
@@ -84,6 +124,19 @@ export default function UpgradePage() {
   const handleChangePlan = async () => {
     setError(null);
     setLoading(true);
+
+    if (isGooglePlayBilled) {
+      try {
+        await purchasePlan(plan);
+        setLoading(false);
+        await pollAfterNativePurchase();
+      } catch (err) {
+        setError(err instanceof Error ? err.message : t("upgrade.errorGeneric"));
+        setLoading(false);
+      }
+      return;
+    }
+
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(`${API_URL}/stripe/change-plan`, {
@@ -141,6 +194,19 @@ export default function UpgradePage() {
   const handleCheckout = async () => {
     setError(null);
     setLoading(true);
+
+    if (Capacitor.isNativePlatform()) {
+      try {
+        await purchasePlan(plan);
+        setLoading(false);
+        await pollAfterNativePurchase();
+      } catch (err) {
+        setError(err instanceof Error ? err.message : t("upgrade.errorGeneric"));
+        setLoading(false);
+      }
+      return;
+    }
+
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(`${API_URL}/stripe/checkout-session`, {
