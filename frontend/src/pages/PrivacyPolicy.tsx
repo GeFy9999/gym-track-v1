@@ -127,6 +127,8 @@ function PrivacyContentFr() {
           .
         </p>
       </section>
+
+      <p className="text-xs text-gray-400 pt-4">© 2026 GymsTrack</p>
     </div>
   );
 }
@@ -207,6 +209,8 @@ function PrivacyContentEn() {
           .
         </p>
       </section>
+
+      <p className="text-xs text-gray-400 pt-4">© 2026 GymsTrack</p>
     </div>
   );
 }
