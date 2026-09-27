@@ -18,6 +18,7 @@ import ImportPage from "./pages/Import.tsx";
 import ExercisesPage from "./pages/Exercises.tsx";
 import ExerciseDetailPage from "./pages/ExerciseDetail.tsx";
 import UpgradePage from "./pages/Upgrade.tsx";
+import PrivacyPolicyPage from "./pages/PrivacyPolicy.tsx";
 import { RestTimerProvider, useRestTimerContext } from "./contexts/RestTimerContext";
 import { UiChromeProvider, useUiChrome } from "./contexts/UiChromeContext";
 import RestTimer from "./components/session/RestTimer";
@@ -86,6 +87,7 @@ function AppShell() {
       "/progression",
       "/import",
       "/upgrade",
+      "/privacy",
     ].includes(location.pathname) ||
     location.pathname.startsWith("/session/") ||
     location.pathname.startsWith("/exercise/");
@@ -191,6 +193,7 @@ function AppShell() {
             />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
+            <Route path="/privacy" element={<PrivacyPolicyPage />} />
             <Route
               path="/progression"
               element={
