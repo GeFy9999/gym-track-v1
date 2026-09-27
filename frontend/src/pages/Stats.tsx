@@ -57,7 +57,7 @@ export default function StatsPage() {
           {t("stats.oneRepMax")}
         </h2>
         <ProGateOrContent isPro={isPro} goProLabel={t("upgrade.goPro")}>
-          <EstimatedOneRepMax />
+          <EstimatedOneRepMax isPro={isPro} />
         </ProGateOrContent>
       </section>
 
@@ -73,7 +73,7 @@ export default function StatsPage() {
           {t("stats.muscleVolume")}
         </h2>
         <ProGateOrContent isPro={isPro} goProLabel={t("upgrade.goPro")}>
-          <MuscleVolume />
+          <MuscleVolume isPro={isPro} />
         </ProGateOrContent>
       </section>
 
