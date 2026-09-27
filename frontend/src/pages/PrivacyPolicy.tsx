@@ -100,7 +100,11 @@ function PrivacyContentFr() {
         <p>
           Tu peux supprimer ton compte et toutes les données associées à tout
           moment, directement dans l'application (Profil → Zone de danger →
-          Supprimer le compte). Cette action est définitive et immédiate.
+          Supprimer le compte), ou sans installer l'application via{" "}
+          <Link to="/account-deletion" className="text-[#c9552c] font-bold">
+            cette page web
+          </Link>
+          . Cette action est définitive et immédiate.
         </p>
       </section>
 
@@ -186,8 +190,12 @@ function PrivacyContentEn() {
         <h2 className="font-bold text-gray-900 mb-1">Deleting your account</h2>
         <p>
           You can delete your account and all associated data at any time,
-          directly in the app (Profile → Danger Zone → Delete account). This
-          action is immediate and permanent.
+          directly in the app (Profile → Danger Zone → Delete account), or
+          without installing the app via{" "}
+          <Link to="/account-deletion" className="text-[#c9552c] font-bold">
+            this web page
+          </Link>
+          . This action is immediate and permanent.
         </p>
       </section>
 
