@@ -153,7 +153,10 @@ export default function DashboardPage() {
 
         await Promise.all(
           toDelete.map((id) =>
-            fetch(`${API_URL}/sessions/${id}`, { method: "DELETE" }),
+            fetch(`${API_URL}/sessions/${id}`, {
+              method: "DELETE",
+              headers: { Authorization: `Bearer ${token}` },
+            }),
           ),
         );
 
