@@ -12,6 +12,39 @@ import { computeLoyaltyDiscountCents } from "../utils/loyalty.js";
 const resend = new Resend(process.env.RESEND_API_KEY);
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
+const toPublicUser = (user: {
+  id: string;
+  email: string;
+  name: string;
+  recoveryEmail: string | null;
+  weightUnit: string;
+  restTimerSeconds: number;
+  restTimerEnabled: boolean;
+  barbellModeEnabled: boolean;
+  language: string;
+  authProvider: string;
+  isPro: boolean;
+  proCurrentPeriodEnd: Date | null;
+  proInterval: string | null;
+  loyaltyPeriodsPaid: number;
+}) => ({
+  id: user.id,
+  email: user.email,
+  name: user.name,
+  recoveryEmail: user.recoveryEmail,
+  weightUnit: user.weightUnit,
+  restTimerSeconds: user.restTimerSeconds,
+  restTimerEnabled: user.restTimerEnabled,
+  barbellModeEnabled: user.barbellModeEnabled,
+  language: user.language,
+  authProvider: user.authProvider,
+  isPro: user.isPro,
+  proCurrentPeriodEnd: user.proCurrentPeriodEnd,
+  proInterval: user.proInterval,
+  loyaltyPeriodsPaid: user.loyaltyPeriodsPaid,
+  loyaltyDiscountCents: computeLoyaltyDiscountCents(user.loyaltyPeriodsPaid),
+});
+
 export const register = async (payload: {
   email: string;
   password: string;
@@ -37,23 +70,7 @@ export const register = async (payload: {
 
   return {
     token,
-    user: {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      recoveryEmail: user.recoveryEmail,
-      weightUnit: user.weightUnit,
-      restTimerSeconds: user.restTimerSeconds,
-      restTimerEnabled: user.restTimerEnabled,
-      barbellModeEnabled: user.barbellModeEnabled,
-      language: user.language,
-      authProvider: user.authProvider,
-      isPro: user.isPro,
-      proCurrentPeriodEnd: user.proCurrentPeriodEnd,
-      proInterval: user.proInterval,
-      loyaltyPeriodsPaid: user.loyaltyPeriodsPaid,
-      loyaltyDiscountCents: computeLoyaltyDiscountCents(user.loyaltyPeriodsPaid),
-    },
+    user: toPublicUser(user),
   };
 };
 
@@ -70,23 +87,7 @@ export const login = async (payload: { email: string; password: string }) => {
 
   return {
     token,
-    user: {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      recoveryEmail: user.recoveryEmail,
-      weightUnit: user.weightUnit,
-      restTimerSeconds: user.restTimerSeconds,
-      restTimerEnabled: user.restTimerEnabled,
-      barbellModeEnabled: user.barbellModeEnabled,
-      language: user.language,
-      authProvider: user.authProvider,
-      isPro: user.isPro,
-      proCurrentPeriodEnd: user.proCurrentPeriodEnd,
-      proInterval: user.proInterval,
-      loyaltyPeriodsPaid: user.loyaltyPeriodsPaid,
-      loyaltyDiscountCents: computeLoyaltyDiscountCents(user.loyaltyPeriodsPaid),
-    },
+    user: toPublicUser(user),
   };
 };
 
@@ -128,23 +129,7 @@ export const googleLogin = async (credential: string, language?: string) => {
   return {
     token,
     isNewUser,
-    user: {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      recoveryEmail: user.recoveryEmail,
-      weightUnit: user.weightUnit,
-      restTimerSeconds: user.restTimerSeconds,
-      restTimerEnabled: user.restTimerEnabled,
-      barbellModeEnabled: user.barbellModeEnabled,
-      language: user.language,
-      authProvider: user.authProvider,
-      isPro: user.isPro,
-      proCurrentPeriodEnd: user.proCurrentPeriodEnd,
-      proInterval: user.proInterval,
-      loyaltyPeriodsPaid: user.loyaltyPeriodsPaid,
-      loyaltyDiscountCents: computeLoyaltyDiscountCents(user.loyaltyPeriodsPaid),
-    },
+    user: toPublicUser(user),
   };
 };
 
@@ -272,23 +257,7 @@ export const getMe = async (userId: string) => {
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user) throw new Error("Utilisateur introuvable");
 
-  return {
-    id: user.id,
-    email: user.email,
-    name: user.name,
-    recoveryEmail: user.recoveryEmail,
-    weightUnit: user.weightUnit,
-    restTimerSeconds: user.restTimerSeconds,
-    restTimerEnabled: user.restTimerEnabled,
-    barbellModeEnabled: user.barbellModeEnabled,
-    language: user.language,
-    authProvider: user.authProvider,
-    isPro: user.isPro,
-    proCurrentPeriodEnd: user.proCurrentPeriodEnd,
-    proInterval: user.proInterval,
-    loyaltyPeriodsPaid: user.loyaltyPeriodsPaid,
-    loyaltyDiscountCents: computeLoyaltyDiscountCents(user.loyaltyPeriodsPaid),
-  };
+  return toPublicUser(user);
 };
 
 export const forgotPassword = async (email: string) => {

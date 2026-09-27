@@ -212,10 +212,10 @@ sessionsRouter.get(
       const sessionId = req.params.sessionId as string;
       const ownerId = await getSessionOwnerId(sessionId);
       if (ownerId !== req.userId!) {
-        return res.status(404).json({ error: "Session not found" });
+        return res.status(404).json({ error: "Session introuvable" });
       }
       const session = await getSession(sessionId);
-      if (!session) return res.status(404).json({ error: "Session not found" });
+      if (!session) return res.status(404).json({ error: "Session introuvable" });
       return res.status(200).json(session);
     } catch (error) {
       return sendServerError(res, error);
@@ -228,7 +228,7 @@ sessionsRouter.post("/", authMiddleware, async (req: AuthRequest, res) => {
   try {
     const payload = req.body;
     if (!payload.muscleGroup)
-      return res.status(400).json({ error: "muscleGroup not provided" });
+      return res.status(400).json({ error: "Groupe musculaire requis" });
     const session = await createSession({
       ...payload,
       userId: req.userId!,

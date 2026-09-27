@@ -41,13 +41,13 @@ setsRouter.post("", authMiddleware, async (req: AuthRequest, res) => {
   try {
     const payload = req.body;
     if (!payload.sessionExerciseId) {
-      return res.status(400).json("sessionExerciseId not provided");
+      return res.status(400).json({ error: "sessionExerciseId requis" });
     }
     if (payload.weight === undefined) {
-      return res.status(400).json("weight not provided");
+      return res.status(400).json({ error: "weight requis" });
     }
     if (payload.reps === undefined) {
-      return res.status(400).json("reps not provided");
+      return res.status(400).json({ error: "reps requis" });
     }
     const ownerId = await getSessionExerciseOwnerId(payload.sessionExerciseId);
     if (ownerId !== req.userId!) {

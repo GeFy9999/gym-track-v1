@@ -16,7 +16,7 @@ export const scheduleRouter = express.Router();
 scheduleRouter.get("/me", authMiddleware, async (req: AuthRequest, res) => {
   try {
     const schedule = await getSchedule(req.userId!);
-    if (!schedule) return res.status(404).json({ error: "Schedule not found" });
+    if (!schedule) return res.status(404).json({ error: "Horaire introuvable" });
     return res.status(200).json(schedule);
   } catch (error) {
     return sendServerError(res, error);
@@ -28,9 +28,9 @@ scheduleRouter.post("/", authMiddleware, async (req: AuthRequest, res) => {
   try {
     const payload = req.body;
     if (!payload.frequency)
-      return res.status(400).json({ error: "frequency not provided" });
+      return res.status(400).json({ error: "Fréquence requise" });
     if (!payload.days)
-      return res.status(400).json({ error: "days not provided" });
+      return res.status(400).json({ error: "Jours requis" });
     const schedule = await createSchedule({ ...payload, userId: req.userId! });
     return res.status(201).json(schedule);
   } catch (error) {
