@@ -10,6 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/app": "^8.1.1",
+    "@capacitor/browser": "^8.0.4",
+    "@capacitor/core": "^8.5.2",
     "@hookform/resolvers": "^5.7.1",
     "@tailwindcss/vite": "^4.3.1",
     "i18next": "^26.4.2",
@@ -25,6 +29,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.5.2",
     "@eslint/js": "^9.39.4",
     "@types/papaparse": "^5.5.2",
     "@types/react": "^19.2.17",

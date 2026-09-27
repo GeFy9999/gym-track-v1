@@ -1,10 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { Capacitor } from "@capacitor/core";
+import { App as CapacitorApp } from "@capacitor/app";
 import { ArrowLeft, Check, Crown, RefreshCw, TrendingDown } from "lucide-react";
 import { API_URL } from "../lib/api";
 import { getDateLocale } from "../i18n";
 import { useIsPro } from "../hooks/useIsPro";
+import { openExternalUrl } from "../lib/openExternal";
 
 type Plan = "monthly" | "annual" | "lifetime";
 
@@ -70,7 +73,8 @@ export default function UpgradePage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || t("upgrade.errorGeneric"));
-      window.location.href = data.url;
+      await openExternalUrl(data.url);
+      setPortalLoading(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : t("upgrade.errorGeneric"));
       setPortalLoading(false);
@@ -93,7 +97,8 @@ export default function UpgradePage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || t("upgrade.errorGeneric"));
       if (data.url) {
-        window.location.href = data.url;
+        await openExternalUrl(data.url);
+        setLoading(false);
         return;
       }
       // Switching between monthly/annual updates the existing subscription
@@ -148,12 +153,28 @@ export default function UpgradePage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || t("upgrade.errorGeneric"));
-      window.location.href = data.url;
+      await openExternalUrl(data.url);
+      setLoading(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : t("upgrade.errorGeneric"));
       setLoading(false);
     }
   };
+
+  // On native, Checkout/Portal open in the system browser with no deep link
+  // back — so the app can't know a checkout finished via the ?session_id
+  // polling below. Re-check Pro status whenever the app regains focus,
+  // covering "user finished paying, then switched back to the app".
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return;
+    const listener = CapacitorApp.addListener("resume", () => {
+      refreshProStatus();
+    });
+    return () => {
+      listener.then((l) => l.remove());
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (sessionId && (activating || isPro || activationTimedOut)) {
     return (
