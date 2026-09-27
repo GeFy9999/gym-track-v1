@@ -58,6 +58,17 @@ export function useProfileSettings() {
   const tourRefPro = useRef<HTMLDivElement>(null);
 
   const profileTourSteps = [
+    // Shown only to non-Pro users — the upsell banner renders first on the
+    // page (right under the header), so its tour step leads too.
+    ...(!isPro
+      ? [
+          {
+            title: t("profile.tour.pro.title"),
+            description: t("profile.tour.pro.description"),
+            refIndex: 5,
+          },
+        ]
+      : []),
     {
       title: t("profile.tour.progressPhotos.title"),
       description: t("profile.tour.progressPhotos.description"),
@@ -85,17 +96,6 @@ export function useProfileSettings() {
       refIndex: 4,
       tooltipPosition: "above" as const,
     },
-    // Closing step, shown only to non-Pro users — ends the tour on the
-    // upsell banner instead of the danger zone.
-    ...(!isPro
-      ? [
-          {
-            title: t("profile.tour.pro.title"),
-            description: t("profile.tour.pro.description"),
-            refIndex: 5,
-          },
-        ]
-      : []),
   ];
 
   const handleLogout = () => {
