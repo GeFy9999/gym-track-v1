@@ -148,7 +148,7 @@ export default function ProfilePage() {
         <div ref={tourRefPro} className="mb-6">
           <button
             onClick={() => navigate("/upgrade")}
-            className="w-full rounded-2xl shadow-sm overflow-hidden text-left animate-glow-pulse"
+            className="w-full rounded-2xl shadow-sm overflow-hidden text-left"
           >
             <div
               className="px-4 py-4 flex items-center gap-4 relative overflow-hidden"
