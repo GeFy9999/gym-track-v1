@@ -47,6 +47,10 @@
     "or": "or",
     "haveAccount": "Already have an account?",
     "signIn": "Log in",
+    "legalPrefix": "By creating an account, you agree to our",
+    "termsLink": "terms of service",
+    "legalAnd": "and our",
+    "privacyLink": "privacy policy",
     "strength": {
       "weak": "Weak",
       "medium": "Medium",
