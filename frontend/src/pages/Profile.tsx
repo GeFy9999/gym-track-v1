@@ -17,6 +17,7 @@ import {
   Crown,
   Calendar,
   ArrowRight,
+  Sparkles,
 } from "lucide-react";
 import { getDateLocale } from "../i18n";
 import { useProfileSettings } from "../hooks/useProfileSettings";
@@ -69,6 +70,7 @@ export default function ProfilePage() {
     tourRef2,
     tourRef3,
     tourRef4,
+    tourRefPro,
     profileTourSteps,
     handleLogout,
     handleChangePassword,
@@ -143,35 +145,47 @@ export default function ProfilePage() {
           </div>
         </div>
       ) : (
-        <button
-          onClick={() => navigate("/upgrade")}
-          className="w-full rounded-2xl mb-6 shadow-sm overflow-hidden text-left"
-        >
-          <div className="bg-[#3a9e6e] px-4 py-4 flex items-center gap-4">
-            <div className="flex flex-col items-center border-r border-white/25 pr-4 flex-shrink-0">
-              <span className="text-[9px] font-bold text-white/80 uppercase tracking-widest">
-                {t("profile.upTo")}
-              </span>
-              <span className="text-2xl font-black text-white leading-none whitespace-nowrap">
-                -3,00$
-              </span>
+        <div ref={tourRefPro} className="mb-6">
+          <button
+            onClick={() => navigate("/upgrade")}
+            className="w-full rounded-2xl shadow-sm overflow-hidden text-left animate-glow-pulse"
+          >
+            <div
+              className="px-4 py-4 flex items-center gap-4 relative overflow-hidden"
+              style={{
+                background:
+                  "linear-gradient(135deg, #3a9e6e 0%, #2f8a5c 100%)",
+              }}
+            >
+              <Sparkles
+                size={72}
+                className="absolute -right-3 -top-3 text-white/10 rotate-12"
+              />
+              <div className="flex flex-col items-center border-r border-white/25 pr-4 flex-shrink-0">
+                <span className="text-[9px] font-bold text-white/80 uppercase tracking-widest">
+                  {t("profile.upTo")}
+                </span>
+                <span className="text-2xl font-black text-white leading-none whitespace-nowrap">
+                  -3,00$
+                </span>
+              </div>
+              <p className="text-sm font-bold text-white leading-snug relative">
+                {t("profile.proUpsellSavings")}
+              </p>
             </div>
-            <p className="text-sm font-bold text-white leading-snug">
-              {t("profile.proUpsellSavings")}
-            </p>
-          </div>
-          <div className="bg-[#ece7dd] px-4 py-4 flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-[#c9552c]/10 flex items-center justify-center flex-shrink-0">
-              <Crown size={16} className="text-[#c9552c]" />
+            <div className="bg-[#ece7dd] px-4 py-4 flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-[#c9552c]/10 flex items-center justify-center flex-shrink-0">
+                <Crown size={16} className="text-[#c9552c]" />
+              </div>
+              <p className="flex-1 text-sm font-bold text-gray-900 uppercase">
+                {t("profile.proUpsell")}
+              </p>
+              <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "#191714" }}>
+                <ChevronRight size={16} className="text-white" />
+              </div>
             </div>
-            <p className="flex-1 text-sm font-bold text-gray-900 uppercase">
-              {t("profile.proUpsell")}
-            </p>
-            <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "#191714" }}>
-              <ChevronRight size={16} className="text-white" />
-            </div>
-          </div>
-        </button>
+          </button>
+        </div>
       )}
 
       {/* Réduction de fidélité — seulement pertinent pour un abonnement
@@ -860,7 +874,7 @@ export default function ProfilePage() {
       <TourOverlay
         tourKey="profile"
         steps={profileTourSteps}
-        refs={[tourRef0, tourRef1, tourRef2, tourRef3, tourRef4]}
+        refs={[tourRef0, tourRef1, tourRef2, tourRef3, tourRef4, tourRefPro]}
       />
     </div>
   );
