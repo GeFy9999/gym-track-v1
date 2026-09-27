@@ -47,6 +47,10 @@
     "or": "ou",
     "haveAccount": "Déjà un compte ?",
     "signIn": "Se connecter",
+    "legalPrefix": "En créant un compte, tu acceptes nos",
+    "termsLink": "conditions d'utilisation",
+    "legalAnd": "et notre",
+    "privacyLink": "politique de confidentialité",
     "strength": {
       "weak": "Faible",
       "medium": "Moyen",

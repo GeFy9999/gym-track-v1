@@ -301,6 +301,17 @@ export default function RegisterPage() {
           >
             {loading ? t("register.submitting") : t("register.submit")}
           </button>
+
+          <p className="text-xs text-gray-400 text-center leading-relaxed">
+            {t("register.legalPrefix")}{" "}
+            <Link to="/terms" className="text-[#c9552c] underline">
+              {t("register.termsLink")}
+            </Link>{" "}
+            {t("register.legalAnd")}{" "}
+            <Link to="/privacy" className="text-[#c9552c] underline">
+              {t("register.privacyLink")}
+            </Link>
+          </p>
         </form>
 
         <div className="flex items-center gap-3 my-6">
