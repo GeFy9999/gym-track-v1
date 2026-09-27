@@ -3,3 +3,6 @@ node_modules
 .env
 
 /src/generated/prisma
+
+# Throwaway SQLite DB created by the test suite (see vitest.config.ts)
+/prisma/test.db*

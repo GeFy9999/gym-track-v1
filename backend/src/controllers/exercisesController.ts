@@ -25,13 +25,13 @@ exercisesRouter.post("", authMiddleware, async (req, res) => {
   try {
     const payload = req.body;
     if (!payload) {
-      return res.status(400).json("payload not provided");
+      return res.status(400).json({ error: "Payload requis" });
     }
     if (!payload.name) {
-      return res.status(400).json("name not provided");
+      return res.status(400).json({ error: "Nom requis" });
     }
     if (!payload.muscleGroupId) {
-      return res.status(400).json("muscleGroupId not provided");
+      return res.status(400).json({ error: "muscleGroupId requis" });
     }
     const exercise = await createExercise(payload);
     return res.status(201).json(exercise);

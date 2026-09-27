@@ -21,16 +21,16 @@ muscleGroupsRouter.post("", authMiddleware, async (req, res) => {
   try {
     const payload = req.body;
     if (!payload) {
-      return res.status(400).json("payload not provided");
+      return res.status(400).json({ error: "Payload requis" });
     }
     if (!payload.name) {
-      return res.status(400).json("name not provided");
+      return res.status(400).json({ error: "Nom requis" });
     }
     if (!payload.description) {
-      return res.status(400).json("description not provided");
+      return res.status(400).json({ error: "Description requise" });
     }
     if (!payload.image) {
-      return res.status(400).json("image not provided");
+      return res.status(400).json({ error: "Image requise" });
     }
     await createMuscleGroup(payload);
     return res.status(201).json();
