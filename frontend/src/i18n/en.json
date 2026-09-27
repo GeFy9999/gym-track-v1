@@ -641,7 +641,7 @@
     "loyaltyHint": "Your discount grows with every renewal",
     "featureListTitle": "Included with Pro",
     "featureList": {
-      "loyaltyDiscount": "Loyalty discount that grows with every renewal (up to -$1.00)",
+      "loyaltyDiscount": "Loyalty discount that grows with every renewal (up to -$3.00)",
       "unlimitedHistory": "Unlimited history (beyond 90 days)",
       "calendarView": "Calendar view of your history",
       "csvExport": "CSV export of your sessions",

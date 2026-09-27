@@ -22,8 +22,15 @@ import { getDateLocale } from "../i18n";
 import { useProfileSettings } from "../hooks/useProfileSettings";
 import TourOverlay from "../components/TourOverlay";
 
-const LOYALTY_CENTS_PER_PERIOD = 10;
-const LOYALTY_MAX_CENTS = 100;
+// Annual renewals are worth far more than monthly ones, so the loyalty
+// discount scales up accordingly: -$0.10/renewal (max -$1) monthly,
+// -$1/renewal (max -$3) annually. Kept in sync with backend/src/utils/loyalty.ts.
+const LOYALTY_CENTS_PER_PERIOD_MONTHLY = 10;
+const LOYALTY_MAX_CENTS_MONTHLY = 100;
+const LOYALTY_CENTS_PER_PERIOD_YEARLY = 100;
+const LOYALTY_MAX_CENTS_YEARLY = 300;
+const LOYALTY_MAX_PERIODS_MONTHLY = 10;
+const LOYALTY_MAX_PERIODS_YEARLY = 3;
 
 export default function ProfilePage() {
   const navigate = useNavigate();
@@ -146,7 +153,7 @@ export default function ProfilePage() {
                 {t("profile.upTo")}
               </span>
               <span className="text-2xl font-black text-white leading-none whitespace-nowrap">
-                -1,00$
+                -3,00$
               </span>
             </div>
             <p className="text-sm font-bold text-white leading-snug">
@@ -172,10 +179,22 @@ export default function ProfilePage() {
       {isPro &&
         user?.proCurrentPeriodEnd &&
         (() => {
+          const isYearly = user?.proInterval === "year";
+          const loyaltyCentsPerPeriod = isYearly
+            ? LOYALTY_CENTS_PER_PERIOD_YEARLY
+            : LOYALTY_CENTS_PER_PERIOD_MONTHLY;
+          const loyaltyMaxCents = isYearly
+            ? LOYALTY_MAX_CENTS_YEARLY
+            : LOYALTY_MAX_CENTS_MONTHLY;
+          const loyaltyMaxPeriods = isYearly
+            ? LOYALTY_MAX_PERIODS_YEARLY
+            : LOYALTY_MAX_PERIODS_MONTHLY;
+
           const ringRadius = 34;
           const circumference = 2 * Math.PI * ringRadius;
-          const ringOffset = circumference * (1 - loyaltyPeriodsPaid / 10);
-          const atMax = loyaltyDiscountCents >= LOYALTY_MAX_CENTS;
+          const ringOffset =
+            circumference * (1 - loyaltyPeriodsPaid / loyaltyMaxPeriods);
+          const atMax = loyaltyDiscountCents >= loyaltyMaxCents;
           const daysUntilRenewal = Math.max(
             0,
             Math.ceil(
@@ -193,8 +212,8 @@ export default function ProfilePage() {
               ? daysUntilRenewal
               : daysUntilRenewal + billingIntervalDays;
           const nextDiscountCents = Math.min(
-            loyaltyDiscountCents + LOYALTY_CENTS_PER_PERIOD,
-            LOYALTY_MAX_CENTS,
+            loyaltyDiscountCents + loyaltyCentsPerPeriod,
+            loyaltyMaxCents,
           );
 
           return (
@@ -219,7 +238,7 @@ export default function ProfilePage() {
                   <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-[#3a9e6e] border-2 border-[#ece7dd]" />
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
                     <span className="text-base font-black text-gray-900 leading-none">
-                      {loyaltyPeriodsPaid}/10
+                      {loyaltyPeriodsPaid}/{loyaltyMaxPeriods}
                     </span>
                     <span className="text-[8px] font-bold text-gray-400 uppercase tracking-widest mt-1">
                       {t("profile.loyaltyRenewalsShort")}
@@ -242,14 +261,14 @@ export default function ProfilePage() {
                   <p className="text-xs text-gray-500 mt-1">
                     {atMax
                       ? t("profile.loyaltyMaxed", {
-                          amount: (LOYALTY_MAX_CENTS / 100).toFixed(2),
+                          amount: (loyaltyMaxCents / 100).toFixed(2),
                         })
                       : t("profile.loyaltyRemaining", {
                           count: Math.ceil(
-                            (LOYALTY_MAX_CENTS - loyaltyDiscountCents) /
-                              LOYALTY_CENTS_PER_PERIOD,
+                            (loyaltyMaxCents - loyaltyDiscountCents) /
+                              loyaltyCentsPerPeriod,
                           ),
-                          max: (LOYALTY_MAX_CENTS / 100).toFixed(2),
+                          max: (loyaltyMaxCents / 100).toFixed(2),
                         })}
                   </p>
                 </div>
