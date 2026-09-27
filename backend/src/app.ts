@@ -19,6 +19,7 @@ import {
   stripeRouter,
   stripeWebhookHandler,
 } from "./controllers/stripeController.js";
+import { revenueCatRouter } from "./controllers/revenueCatController.js";
 
 export const app = express();
 
@@ -61,3 +62,4 @@ app.use("/api/progress-photos", progressPhotoRouter);
 app.use("/api/exercise-notes", exerciseNoteRouter);
 app.use("/api/import", importRouter);
 app.use("/api/stripe", stripeRouter);
+app.use("/api/revenuecat", revenueCatRouter);
