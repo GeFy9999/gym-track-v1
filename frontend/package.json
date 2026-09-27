@@ -16,6 +16,7 @@
     "@capacitor/core": "^8.5.2",
     "@capawesome/capacitor-google-sign-in": "^0.1.4",
     "@hookform/resolvers": "^5.7.1",
+    "@revenuecat/purchases-capacitor": "^13.6.1",
     "@tailwindcss/vite": "^4.3.1",
     "i18next": "^26.4.2",
     "i18next-browser-languagedetector": "^8.2.1",

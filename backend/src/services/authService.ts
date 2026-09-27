@@ -27,6 +27,7 @@ const toPublicUser = (user: {
   proCurrentPeriodEnd: Date | null;
   proInterval: string | null;
   loyaltyPeriodsPaid: number;
+  billingProvider: string;
 }) => ({
   id: user.id,
   email: user.email,
@@ -42,6 +43,7 @@ const toPublicUser = (user: {
   proCurrentPeriodEnd: user.proCurrentPeriodEnd,
   proInterval: user.proInterval,
   loyaltyPeriodsPaid: user.loyaltyPeriodsPaid,
+  billingProvider: user.billingProvider,
   loyaltyDiscountCents: computeLoyaltyDiscountCents(
     user.loyaltyPeriodsPaid,
     user.proInterval,
