@@ -332,16 +332,3 @@ body {
 .animate-trophy-pop {
   animation: trophy-pop 0.35s ease-out;
 }
-
-@keyframes glow-pulse {
-  0%,
-  100% {
-    box-shadow: 0 0 0 0 rgba(58, 158, 110, 0.45);
-  }
-  50% {
-    box-shadow: 0 0 0 8px rgba(58, 158, 110, 0);
-  }
-}
-.animate-glow-pulse {
-  animation: glow-pulse 2.5s ease-in-out infinite;
-}
