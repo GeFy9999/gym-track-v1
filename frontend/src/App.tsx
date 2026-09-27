@@ -21,6 +21,8 @@ import UpgradePage from "./pages/Upgrade.tsx";
 import { RestTimerProvider, useRestTimerContext } from "./contexts/RestTimerContext";
 import { UiChromeProvider, useUiChrome } from "./contexts/UiChromeContext";
 import RestTimer from "./components/session/RestTimer";
+import { Capacitor } from "@capacitor/core";
+import { App as CapacitorApp } from "@capacitor/app";
 
 function GlobalRestTimer() {
   const { isActive, secondsLeft, totalSeconds, skip, adjustSeconds } =
@@ -103,6 +105,22 @@ function AppShell() {
 
   useEffect(() => {
     getApiHealth();
+  }, []);
+
+  // Without this, Android's hardware/gesture back button exits the app
+  // immediately from any screen instead of navigating back within the SPA.
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return;
+    const listener = CapacitorApp.addListener("backButton", ({ canGoBack }) => {
+      if (canGoBack) {
+        window.history.back();
+      } else {
+        CapacitorApp.exitApp();
+      }
+    });
+    return () => {
+      listener.then((l) => l.remove());
+    };
   }, []);
 
   return (

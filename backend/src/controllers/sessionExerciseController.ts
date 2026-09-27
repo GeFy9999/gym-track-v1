@@ -93,10 +93,10 @@ sessionExercisesRouter.post("", authMiddleware, async (req: AuthRequest, res) =>
   try {
     const payload = req.body;
     if (!payload.sessionId) {
-      return res.status(400).json("sessionId not provided");
+      return res.status(400).json({ error: "sessionId requis" });
     }
     if (!payload.exerciseId) {
-      return res.status(400).json("exerciseId not provided");
+      return res.status(400).json({ error: "exerciseId requis" });
     }
     const ownerId = await getSessionOwnerId(payload.sessionId);
     if (ownerId !== req.userId!) {
