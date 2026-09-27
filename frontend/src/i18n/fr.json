@@ -5,7 +5,8 @@
     "notEnoughData": "Pas encore assez de données",
     "skip": "Passer",
     "next": "Suivant",
-    "done": "Terminé"
+    "done": "Terminé",
+    "continueWithGoogle": "Continuer avec Google"
   },
   "nav": {
     "home": "Accueil",
