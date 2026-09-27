@@ -42,7 +42,10 @@ const toPublicUser = (user: {
   proCurrentPeriodEnd: user.proCurrentPeriodEnd,
   proInterval: user.proInterval,
   loyaltyPeriodsPaid: user.loyaltyPeriodsPaid,
-  loyaltyDiscountCents: computeLoyaltyDiscountCents(user.loyaltyPeriodsPaid),
+  loyaltyDiscountCents: computeLoyaltyDiscountCents(
+    user.loyaltyPeriodsPaid,
+    user.proInterval,
+  ),
 });
 
 export const register = async (payload: {

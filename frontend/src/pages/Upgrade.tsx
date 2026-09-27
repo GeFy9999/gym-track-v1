@@ -375,7 +375,7 @@ export default function UpgradePage() {
                 {t("profile.upTo")}
               </span>
               <span className="text-lg font-black text-[#3a9e6e] leading-none whitespace-nowrap">
-                -1,00$
+                -{(plan === "annual" ? 3 : 1).toFixed(2)}$
               </span>
             </div>
           </div>
