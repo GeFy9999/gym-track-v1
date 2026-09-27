@@ -55,6 +55,7 @@ export function useProfileSettings() {
   const tourRef2 = useRef<HTMLDivElement>(null);
   const tourRef3 = useRef<HTMLDivElement>(null);
   const tourRef4 = useRef<HTMLDivElement>(null);
+  const tourRefPro = useRef<HTMLDivElement>(null);
 
   const profileTourSteps = [
     {
@@ -84,6 +85,17 @@ export function useProfileSettings() {
       refIndex: 4,
       tooltipPosition: "above" as const,
     },
+    // Closing step, shown only to non-Pro users — ends the tour on the
+    // upsell banner instead of the danger zone.
+    ...(!isPro
+      ? [
+          {
+            title: t("profile.tour.pro.title"),
+            description: t("profile.tour.pro.description"),
+            refIndex: 5,
+          },
+        ]
+      : []),
   ];
 
   const handleLogout = () => {
@@ -330,6 +342,7 @@ export function useProfileSettings() {
     tourRef2,
     tourRef3,
     tourRef4,
+    tourRefPro,
     profileTourSteps,
     handleLogout,
     handleChangePassword,

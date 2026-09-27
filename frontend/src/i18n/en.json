@@ -412,6 +412,10 @@
       "dangerZone": {
         "title": "Danger zone",
         "description": "Delete your account and all your data. This action cannot be undone."
+      },
+      "pro": {
+        "title": "Go Pro",
+        "description": "Unlock unlimited history, supersets, automatic warmup, barbell mode, progress photos and more — starting at -$3.00 off every renewal."
       }
     },
     "cancelWarning": {

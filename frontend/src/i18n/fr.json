@@ -412,6 +412,10 @@
       "dangerZone": {
         "title": "Zone de danger",
         "description": "Supprime ton compte et toutes tes données. Cette action est irréversible."
+      },
+      "pro": {
+        "title": "Passe Pro",
+        "description": "Débloque l'historique illimité, les supersets, l'échauffement auto, le mode barre, les photos de progression et bien plus — dès -3,00$ à chaque renouvellement."
       }
     },
     "cancelWarning": {
