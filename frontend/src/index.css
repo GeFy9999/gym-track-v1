@@ -336,10 +336,10 @@ body {
 @keyframes glow-pulse {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(201, 85, 44, 0.45);
+    box-shadow: 0 0 0 0 rgba(58, 158, 110, 0.45);
   }
   50% {
-    box-shadow: 0 0 0 8px rgba(201, 85, 44, 0);
+    box-shadow: 0 0 0 8px rgba(58, 158, 110, 0);
   }
 }
 .animate-glow-pulse {
