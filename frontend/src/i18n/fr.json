@@ -641,7 +641,7 @@
     "loyaltyHint": "Ta remise grandit à chaque renouvellement",
     "featureListTitle": "Inclus avec Pro",
     "featureList": {
-      "loyaltyDiscount": "Réduction de fidélité qui augmente à chaque renouvellement (jusqu'à -1,00$)",
+      "loyaltyDiscount": "Réduction de fidélité qui augmente à chaque renouvellement (jusqu'à -3,00$)",
       "unlimitedHistory": "Historique illimité (au-delà de 90 jours)",
       "calendarView": "Vue calendrier de ton historique",
       "csvExport": "Export CSV de tes séances",

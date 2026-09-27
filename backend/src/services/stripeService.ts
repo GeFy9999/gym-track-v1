@@ -145,8 +145,9 @@ export const changePlan = async (
 const getOrCreateLoyaltyCoupon = async (
   client: Stripe,
   cents: number,
+  interval: string | null,
 ): Promise<string> => {
-  const id = loyaltyCouponId(cents);
+  const id = loyaltyCouponId(cents, interval);
   try {
     await client.coupons.retrieve(id);
   } catch {
@@ -301,7 +302,7 @@ export const handleWebhookEvent = async (rawBody: Buffer, signature: string) => 
       if (!user) break;
 
       const periodsPaid = user.loyaltyPeriodsPaid + 1;
-      const discountCents = computeLoyaltyDiscountCents(periodsPaid);
+      const discountCents = computeLoyaltyDiscountCents(periodsPaid, user.proInterval);
 
       await prisma.user.update({
         where: { id: user.id },
@@ -309,7 +310,11 @@ export const handleWebhookEvent = async (rawBody: Buffer, signature: string) => 
       });
 
       if (discountCents > 0) {
-        const couponId = await getOrCreateLoyaltyCoupon(client, discountCents);
+        const couponId = await getOrCreateLoyaltyCoupon(
+          client,
+          discountCents,
+          user.proInterval,
+        );
         // Stripe briefly locks a subscription against updates right around
         // the moment its renewal invoice is issued (most visible with test
         // clocks, but Stripe's own docs note it can happen for real
