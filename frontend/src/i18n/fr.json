@@ -675,6 +675,9 @@
     "checkBackShortly": "Ça prend un peu plus de temps que prévu",
     "checkBackShortlyDesc": "Ton paiement a été reçu, l'activation peut prendre une minute. Réessaie dans un instant.",
     "refresh": "Actualiser",
-    "goPro": "Passer à Pro"
+    "goPro": "Passer à Pro",
+    "restorePurchases": "Restaurer mes achats",
+    "restoring": "Restauration...",
+    "restoreNone": "Aucun achat actif trouvé pour ce compte."
   }
 }

@@ -675,6 +675,9 @@
     "checkBackShortly": "This is taking a bit longer than expected",
     "checkBackShortlyDesc": "Your payment was received — activation can take up to a minute. Try again shortly.",
     "refresh": "Refresh",
-    "goPro": "Go Pro"
+    "goPro": "Go Pro",
+    "restorePurchases": "Restore purchases",
+    "restoring": "Restoring...",
+    "restoreNone": "No active purchase found for this account."
   }
 }

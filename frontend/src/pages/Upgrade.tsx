@@ -8,7 +8,13 @@ import { API_URL } from "../lib/api";
 import { getDateLocale } from "../i18n";
 import { useIsPro } from "../hooks/useIsPro";
 import { openExternalUrl } from "../lib/openExternal";
-import { ensureRevenueCatConfigured, purchasePlan } from "../lib/revenueCat";
+import {
+  ensureRevenueCatConfigured,
+  isEntitledToPro,
+  purchasePlan,
+  PurchaseCancelledError,
+  restorePurchases,
+} from "../lib/revenueCat";
 
 type Plan = "monthly" | "annual" | "lifetime";
 
@@ -60,6 +66,8 @@ export default function UpgradePage() {
   const [portalLoading, setPortalLoading] = useState(false);
   const [showCancelWarning, setShowCancelWarning] = useState(false);
   const [switchSuccess, setSwitchSuccess] = useState(false);
+  const [restoring, setRestoring] = useState(false);
+  const [restoreMessage, setRestoreMessage] = useState<string | null>(null);
   const attemptsRef = useRef(0);
 
   const isCurrentSelection = isPro && plan === currentPlan;
@@ -97,6 +105,24 @@ export default function UpgradePage() {
     setActivationTimedOut(true);
   };
 
+  const handleRestore = async () => {
+    setError(null);
+    setRestoreMessage(null);
+    setRestoring(true);
+    try {
+      const customerInfo = await restorePurchases();
+      if (isEntitledToPro(customerInfo)) {
+        await pollAfterNativePurchase();
+      } else {
+        setRestoreMessage(t("upgrade.restoreNone"));
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("upgrade.errorGeneric"));
+    } finally {
+      setRestoring(false);
+    }
+  };
+
   const handleManageSubscription = async () => {
     if (isGooglePlayBilled) {
       await openExternalUrl(
@@ -131,8 +157,9 @@ export default function UpgradePage() {
         setLoading(false);
         await pollAfterNativePurchase();
       } catch (err) {
-        setError(err instanceof Error ? err.message : t("upgrade.errorGeneric"));
         setLoading(false);
+        if (err instanceof PurchaseCancelledError) return;
+        setError(err instanceof Error ? err.message : t("upgrade.errorGeneric"));
       }
       return;
     }
@@ -201,8 +228,9 @@ export default function UpgradePage() {
         setLoading(false);
         await pollAfterNativePurchase();
       } catch (err) {
-        setError(err instanceof Error ? err.message : t("upgrade.errorGeneric"));
         setLoading(false);
+        if (err instanceof PurchaseCancelledError) return;
+        setError(err instanceof Error ? err.message : t("upgrade.errorGeneric"));
       }
       return;
     }
@@ -332,6 +360,12 @@ export default function UpgradePage() {
         {switchSuccess && (
           <div className="bg-[#3a9e6e] text-white text-sm font-medium px-4 py-3 rounded-2xl text-center">
             {t("upgrade.switchSuccess")}
+          </div>
+        )}
+
+        {restoreMessage && (
+          <div className="bg-[#ece7dd] text-gray-700 text-sm font-medium px-4 py-3 rounded-2xl text-center">
+            {restoreMessage}
           </div>
         )}
 
@@ -487,6 +521,16 @@ export default function UpgradePage() {
             className="w-full text-center text-xs font-semibold text-red-500 py-2"
           >
             {t("upgrade.cancelSubscription")}
+          </button>
+        )}
+
+        {!isPro && Capacitor.isNativePlatform() && (
+          <button
+            onClick={handleRestore}
+            disabled={restoring}
+            className="w-full text-center text-xs font-semibold text-gray-500 py-2 disabled:opacity-50"
+          >
+            {restoring ? t("upgrade.restoring") : t("upgrade.restorePurchases")}
           </button>
         )}
       </div>
