@@ -3,11 +3,12 @@ import { getUserById } from "../repositories/databaseRepository.js";
 
 // Product IDs are ones we chose ourselves when creating the subscriptions in
 // Google Play Console — kept predictable so we can derive the billing
-// interval from them without an extra lookup.
+// interval from them without an extra lookup. Matches both "annual" and
+// "yearly" naming since the RevenueCat product catalog uses "yearly".
 function intervalFromProductId(productId: string | undefined): string | null {
   if (!productId) return null;
-  if (productId.includes("annual")) return "year";
-  if (productId.includes("monthly")) return "month";
+  if (productId.includes("annual") || productId.includes("year")) return "year";
+  if (productId.includes("monthly") || productId.includes("month")) return "month";
   return null; // lifetime (one-time) has no recurring interval
 }
 
