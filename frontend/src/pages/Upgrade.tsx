@@ -68,6 +68,11 @@ export default function UpgradePage() {
   const [switchSuccess, setSwitchSuccess] = useState(false);
   const [restoring, setRestoring] = useState(false);
   const [restoreMessage, setRestoreMessage] = useState<string | null>(null);
+  // Mirrors what `sessionId` does for the web Stripe redirect flow: marks
+  // that a native purchase was just attempted, so the full-screen
+  // activating/activated/timed-out states below know to render even though
+  // there's no session_id in the URL for a direct SDK purchase.
+  const [nativePurchaseFlow, setNativePurchaseFlow] = useState(false);
   const attemptsRef = useRef(0);
 
   const isCurrentSelection = isPro && plan === currentPlan;
@@ -112,6 +117,7 @@ export default function UpgradePage() {
     try {
       const customerInfo = await restorePurchases();
       if (isEntitledToPro(customerInfo)) {
+        setNativePurchaseFlow(true);
         await pollAfterNativePurchase();
       } else {
         setRestoreMessage(t("upgrade.restoreNone"));
@@ -155,6 +161,7 @@ export default function UpgradePage() {
       try {
         await purchasePlan(plan);
         setLoading(false);
+        setNativePurchaseFlow(true);
         await pollAfterNativePurchase();
       } catch (err) {
         setLoading(false);
@@ -226,6 +233,7 @@ export default function UpgradePage() {
       try {
         await purchasePlan(plan);
         setLoading(false);
+        setNativePurchaseFlow(true);
         await pollAfterNativePurchase();
       } catch (err) {
         setLoading(false);
@@ -270,7 +278,7 @@ export default function UpgradePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (sessionId && (activating || isPro || activationTimedOut)) {
+  if ((sessionId || nativePurchaseFlow) && (activating || isPro || activationTimedOut)) {
     return (
       <div className="min-h-screen bg-[#faf6f1] flex flex-col items-center justify-center px-6 text-center">
         {isPro ? (
