@@ -462,16 +462,6 @@ export default function HistoryPage() {
                 <p className="text-sm font-bold text-gray-900 mb-1">
                   {t("history.noSessionThisMonth")}
                 </p>
-                <p className="text-xs text-gray-400 text-center px-8 mb-4">
-                  {t("history.checkCalendarHint")}
-                </p>
-                <button
-                  onClick={() => setViewMode("calendar")}
-                  className="flex items-center gap-1.5 bg-[#ece7dd] text-gray-700 px-4 py-2.5 rounded-full font-bold uppercase tracking-wide text-xs shadow-sm"
-                >
-                  <CalendarIcon size={14} className="text-[#c9552c]" />
-                  {t("history.viewCalendar")}
-                </button>
               </div>
             ) : (
               <div ref={ref0} className="space-y-3">

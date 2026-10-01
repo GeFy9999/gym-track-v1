@@ -87,8 +87,6 @@
   "dashboard": {
     "greeting": "Bonjour,",
     "daysProgress": "{{count}}/7 jours",
-    "weekActive": "Semaine en cours",
-    "startWeek": "Commencer la semaine",
     "muscleGroups": "Groupes musculaires",
     "inProgress": "En cours",
     "lastSession": "Dernière séance",
@@ -101,7 +99,6 @@
     "finish": "Terminer",
     "resume": "Reprendre",
     "tour": {
-      "week": { "title": "Commencer ta semaine", "desc": "Appuie ici pour démarrer ta semaine d'entraînement. Une fois active, tu pourras ajouter des sessions." },
       "muscleGroups": { "title": "Groupes musculaires", "desc": "Clique sur un groupe musculaire pour créer une session et ajouter des exercices. Un badge orange apparaîtra quand une session est en cours." },
       "activity": { "title": "Activité récente", "desc": "Ici tu retrouves tes dernières sessions avec les exercices et sets que tu as faits." },
       "home": { "title": "Accueil", "desc": "C'est ici, ton tableau de bord principal. Tu y verras ta semaine, tes groupes musculaires et ton activité récente." },
@@ -168,8 +165,6 @@
     "noHistoryDesc": "Tes séances apparaîtront ici une fois que tu auras commencé à t'entraîner",
     "startSession": "Commencer une séance",
     "noSessionThisMonth": "Aucune séance ce mois-ci",
-    "checkCalendarHint": "Consulte le calendrier pour retrouver tes séances des mois précédents",
-    "viewCalendar": "Voir le calendrier",
     "sessionsCount_one": "{{count}} séance",
     "sessionsCount_other": "{{count}} séances",
     "setsCount": "{{count}} sets",
@@ -484,7 +479,9 @@
     "set_one": "set",
     "set_other": "sets",
     "fullHistoryPro": "Historique complet avec Pro",
-    "goPro": "Passer à Pro"
+    "goPro": "Passer à Pro",
+    "trackedAdded": "Exercice ajouté au suivi",
+    "trackedRemoved": "Exercice retiré du suivi"
   },
   "exercises": {
     "title": "Exercices",
@@ -498,7 +495,9 @@
     "session_other": "sessions",
     "allExercises": "Tous les exercices",
     "noneFound": "Aucun exercice trouvé",
-    "scrollForMore": "Scroll pour voir plus..."
+    "scrollForMore": "Scroll pour voir plus...",
+    "trackedAdded": "Exercice ajouté au suivi",
+    "trackedRemoved": "Exercice retiré du suivi"
   },
   "import": {
     "title": "Importer des données",
