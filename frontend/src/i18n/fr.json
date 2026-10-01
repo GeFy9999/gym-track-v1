@@ -172,6 +172,7 @@
     "noHistoryDesc": "Tes séances apparaîtront ici une fois que tu auras commencé à t'entraîner",
     "startSession": "Commencer une séance",
     "noSessionThisMonth": "Aucune séance ce mois-ci",
+    "noSessionThisMonthDesc": "Choisis un groupe musculaire pour commencer une nouvelle séance.",
     "sessionsCount_one": "{{count}} séance",
     "sessionsCount_other": "{{count}} séances",
     "setsCount": "{{count}} sets",

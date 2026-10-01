@@ -114,11 +114,11 @@ export default function RecentActivity() {
         <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm animate-pulse">
           <div className="h-4 w-40 bg-gray-200 rounded mb-2" />
           <div className="h-3 w-24 bg-gray-200 rounded mb-4" />
-          <div className="flex items-end gap-1.5 h-10">
-            {[40, 60, 35, 80, 55, 70, 45].map((h, i) => (
+          <div className="flex items-end justify-center gap-2 h-10">
+            {[40, 60, 35, 80, 55].map((h, i) => (
               <div
                 key={i}
-                className="flex-1 bg-gray-200 rounded-sm"
+                className="w-3 flex-shrink-0 bg-gray-200 rounded-full"
                 style={{ height: `${h}%` }}
               />
             ))}
@@ -168,14 +168,14 @@ export default function RecentActivity() {
             )}
           </div>
 
-          <div className="flex items-end gap-1.5 h-10">
+          <div className="flex items-end justify-center gap-2 h-10">
             {sets.map((set, i) => {
               const height =
                 maxWeight > 0 ? (set.weight / maxWeight) * 100 : 50;
               return (
                 <div
                   key={i}
-                  className="flex-1 rounded-full bg-[#c9552c] animate-grow-bar"
+                  className="w-3 flex-shrink-0 rounded-full bg-[#c9552c] animate-grow-bar"
                   style={{
                     height: `${Math.max(height, 15)}%`,
                     animationDelay: `${i * 80}ms`,
