@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Plus, Trash2, Trophy, Link2, Unlink, StickyNote, Flame, Crown } from "lucide-react";
+import { Plus, Trash2, Trophy, Link2, Unlink, StickyNote, Flame, Crown, Info } from "lucide-react";
 import type { SessionExercise, SetData } from "../../types/session";
 import { formatDuration } from "../../utils/units";
 import { formatLastTime, type Delta as DeltaType, type LastTime as LastTimeType } from "../../hooks/useExerciseDeltas";
 import BarbellSelector from "./BarbellSelector";
 import RestTimerPicker from "./RestTimerPicker";
 import SetRow from "./SetRow";
+import ExerciseInfoModal from "./ExerciseInfoModal";
 
 type Delta = DeltaType | undefined;
 type LastTime = LastTimeType | undefined;
@@ -106,6 +107,7 @@ export default function ExerciseCard({
 }: Props) {
   const { t } = useTranslation();
   const [trophyPopping, setTrophyPopping] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
 
   return (
     <div
@@ -229,9 +231,18 @@ export default function ExerciseCard({
           </div>
         </div>
 
-        <h2 className="text-2xl font-black uppercase text-white leading-tight mb-3">
-          {se.exercise.name}
-        </h2>
+        <div className="flex items-center gap-2 mb-3">
+          <h2 className="text-2xl font-black uppercase text-white leading-tight">
+            {se.exercise.name}
+          </h2>
+          <button
+            onClick={() => setShowInfo(true)}
+            aria-label={t("session.exerciseInfo.aria")}
+            className="w-6 h-6 rounded-full bg-white/15 flex items-center justify-center flex-shrink-0 active:bg-white/25 transition-colors"
+          >
+            <Info size={13} className="text-white" />
+          </button>
+        </div>
 
         {!readOnly && (
           <div className="flex items-center gap-2 flex-wrap">
@@ -342,6 +353,15 @@ export default function ExerciseCard({
           </button>
         )}
       </div>
+
+      {showInfo && (
+        <ExerciseInfoModal
+          name={se.exercise.name}
+          image={se.exercise.image}
+          peakImage={se.exercise.peakImage}
+          onClose={() => setShowInfo(false)}
+        />
+      )}
     </div>
   );
 }

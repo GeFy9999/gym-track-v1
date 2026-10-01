@@ -71,7 +71,11 @@ model Exercise {
   muscleGroupId String
   name          String
   image         String?
-  isCustom      Boolean @default(false)  
+  // Second pose for the same exercise (RepDB "peak" position) — shown
+  // alongside `image` ("start" position) in the exercise info modal,
+  // crossfaded to fake an animation without a real licensed GIF.
+  peakImage     String?
+  isCustom      Boolean @default(false)
   muscleGroup   MuscleGroup  @relation(fields: [muscleGroupId], references: [id])  
   sessionExercises SessionExercise[]
   trackedBy TrackedExercise[]
