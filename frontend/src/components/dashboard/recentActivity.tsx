@@ -137,8 +137,6 @@ export default function RecentActivity() {
   );
 
   const sets = firstExercise?.sets || [];
-  const maxWeight =
-    sets.length > 0 ? Math.max(...sets.map((s) => s.weight)) : 0;
 
   return (
     <div className="px-5 mt-7">
@@ -168,21 +166,15 @@ export default function RecentActivity() {
             )}
           </div>
 
-          <div className="flex items-end justify-center gap-2 h-10">
-            {sets.map((set, i) => {
-              const height =
-                maxWeight > 0 ? (set.weight / maxWeight) * 100 : 50;
-              return (
-                <div
-                  key={i}
-                  className="w-3 flex-shrink-0 rounded-full bg-[#c9552c] animate-grow-bar"
-                  style={{
-                    height: `${Math.max(height, 15)}%`,
-                    animationDelay: `${i * 80}ms`,
-                  }}
-                />
-              );
-            })}
+          <div className="flex flex-wrap gap-1.5">
+            {sets.map((set, i) => (
+              <span
+                key={i}
+                className="text-xs font-bold text-[#c9552c] bg-white px-2.5 py-1 rounded-full"
+              >
+                {set.weight} {set.unit} × {set.reps}
+              </span>
+            ))}
           </div>
         </div>
       ) : (
