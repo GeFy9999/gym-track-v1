@@ -172,6 +172,7 @@
     "noHistoryDesc": "Your sessions will show up here once you start training",
     "startSession": "Start a session",
     "noSessionThisMonth": "No session this month",
+    "noSessionThisMonthDesc": "Pick a muscle group to start a new session.",
     "sessionsCount_one": "{{count}} session",
     "sessionsCount_other": "{{count}} sessions",
     "setsCount": "{{count}} sets",
