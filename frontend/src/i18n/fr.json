@@ -230,8 +230,7 @@
     "trackedRemoved": "Exercice retiré du suivi",
     "exerciseDeleted": "Exercice supprimé",
     "exerciseInfo": {
-      "aria": "Voir les images de l'exercice",
-      "attribution": "Images d'exercice par RepDB (repdb.co)"
+      "aria": "Voir une démonstration de l'exercice"
     },
     "card": {
       "supersetLabel": "Superset {{position}}/{{length}}",
