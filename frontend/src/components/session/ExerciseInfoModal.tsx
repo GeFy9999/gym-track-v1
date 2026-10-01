@@ -1,37 +1,19 @@
-import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { useTranslation } from "react-i18next";
 import { X, Dumbbell } from "lucide-react";
 
 type Props = {
   name: string;
   image: string | null;
-  peakImage: string | null;
+  videoUrl: string | null;
   onClose: () => void;
 };
-
-// Crossfades the two static poses (RepDB "start"/"peak") to fake an
-// animation — a real licensed GIF isn't available for free, see the
-// enrich-exercises-repdb script for context.
-const CROSSFADE_INTERVAL_MS = 1200;
 
 export default function ExerciseInfoModal({
   name,
   image,
-  peakImage,
+  videoUrl,
   onClose,
 }: Props) {
-  const { t } = useTranslation();
-  const [showPeak, setShowPeak] = useState(false);
-
-  useEffect(() => {
-    if (!peakImage) return;
-    const interval = setInterval(() => {
-      setShowPeak((prev) => !prev);
-    }, CROSSFADE_INTERVAL_MS);
-    return () => clearInterval(interval);
-  }, [peakImage]);
-
   // Rendered via a portal: ExerciseCard's slide-in animation leaves a
   // `transform` on the card (fill-mode "both"), which would otherwise turn
   // this `position: fixed` modal into one positioned relative to the card
@@ -49,33 +31,25 @@ export default function ExerciseInfoModal({
         </div>
 
         <div className="relative w-full aspect-square rounded-2xl bg-[#faf6f1] overflow-hidden flex items-center justify-center">
-          {image ? (
-            <>
-              <img
-                src={image}
-                alt={name}
-                className="absolute inset-0 w-full h-full object-contain p-4 transition-opacity duration-500"
-                style={{ opacity: showPeak ? 0 : 1 }}
-              />
-              {peakImage && (
-                <img
-                  src={peakImage}
-                  alt={name}
-                  className="absolute inset-0 w-full h-full object-contain p-4 transition-opacity duration-500"
-                  style={{ opacity: showPeak ? 1 : 0 }}
-                />
-              )}
-            </>
+          {videoUrl ? (
+            <video
+              src={videoUrl}
+              className="absolute inset-0 w-full h-full object-contain"
+              autoPlay
+              loop
+              muted
+              playsInline
+            />
+          ) : image ? (
+            <img
+              src={image}
+              alt={name}
+              className="absolute inset-0 w-full h-full object-contain p-4"
+            />
           ) : (
             <Dumbbell size={40} className="text-gray-300" />
           )}
         </div>
-
-        {peakImage && (
-          <p className="text-[10px] text-gray-400 text-center mt-3">
-            {t("session.exerciseInfo.attribution")}
-          </p>
-        )}
       </div>
     </div>,
     document.body,

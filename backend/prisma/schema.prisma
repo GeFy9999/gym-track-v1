@@ -71,10 +71,10 @@ model Exercise {
   muscleGroupId String
   name          String
   image         String?
-  // Second pose for the same exercise (RepDB "peak" position) — shown
-  // alongside `image` ("start" position) in the exercise info modal,
-  // crossfaded to fake an animation without a real licensed GIF.
-  peakImage     String?
+  // Real exercise demonstration video (VitalAnimations free pack, licensed
+  // for commercial in-app use) — shown in the exercise info modal when
+  // available, falling back to the static `image` otherwise.
+  videoUrl      String?
   isCustom      Boolean @default(false)
   muscleGroup   MuscleGroup  @relation(fields: [muscleGroupId], references: [id])  
   sessionExercises SessionExercise[]

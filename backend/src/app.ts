@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
+import path from "path";
 import { calendarRouter } from "./controllers/calendarController.js";
 import { metaRouter } from "./controllers/metaController.js";
 import { exercisesRouter } from "./controllers/exercisesController.js";
@@ -46,6 +47,19 @@ app.post(
 );
 
 app.use(express.json({ limit: "10mb" }));
+
+// Exercise demonstration videos (VitalAnimations) — served directly as
+// static files. helmet's default Cross-Origin-Resource-Policy would block
+// the frontend (a different origin) from loading these, so it's relaxed
+// just for this one route.
+app.use(
+  "/static/exercise-videos",
+  (req, res, next) => {
+    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+    next();
+  },
+  express.static(path.join(process.cwd(), "public/exercise-videos")),
+);
 
 app.use("/api/calendar", calendarRouter);
 app.use("/api", metaRouter);
