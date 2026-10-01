@@ -1,8 +1,53 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Capacitor } from "@capacitor/core";
+import { LocalNotifications } from "@capacitor/local-notifications";
 import i18n from "../i18n";
 
 const NOTIFICATION_ICON = "/icon192_maskable.png";
 const VIBRATION_PATTERN = [200, 100, 200];
+// Fixed id so scheduling a new rest timer always replaces any pending one
+// instead of stacking duplicate notifications.
+const REST_TIMER_NOTIFICATION_ID = 78210;
+
+let nativePermissionChecked = false;
+
+// Android throttles/suspends the page's setInterval once the app is
+// backgrounded (screen off, user switched apps), so the in-app timer alone
+// can't be trusted to fire on time — scheduling a real OS-level local
+// notification is what actually survives that.
+async function scheduleNativeRestOverNotification(seconds: number) {
+  if (!Capacitor.isNativePlatform()) return;
+
+  try {
+    if (!nativePermissionChecked) {
+      nativePermissionChecked = true;
+      const { display } = await LocalNotifications.checkPermissions();
+      if (display !== "granted") {
+        await LocalNotifications.requestPermissions();
+      }
+    }
+
+    await LocalNotifications.schedule({
+      notifications: [
+        {
+          id: REST_TIMER_NOTIFICATION_ID,
+          title: i18n.t("session.restOverNotification.title"),
+          body: i18n.t("session.restOverNotification.body"),
+          schedule: { at: new Date(Date.now() + seconds * 1000) },
+        },
+      ],
+    });
+  } catch {
+    // Scheduling is a best-effort enhancement — never let it break the timer.
+  }
+}
+
+function cancelNativeRestOverNotification() {
+  if (!Capacitor.isNativePlatform()) return;
+  LocalNotifications.cancel({
+    notifications: [{ id: REST_TIMER_NOTIFICATION_ID }],
+  }).catch(() => {});
+}
 
 function playBeep(ctx: AudioContext) {
   try {
@@ -62,6 +107,7 @@ export function useRestTimer(defaultSeconds: number) {
     clearTimer();
     setIsActive(false);
     setSecondsLeft(0);
+    cancelNativeRestOverNotification();
   }, [clearTimer]);
 
   const handleTimerEnd = useCallback(() => {
@@ -71,7 +117,12 @@ export function useRestTimer(defaultSeconds: number) {
     if (audioCtxRef.current) {
       playBeep(audioCtxRef.current);
     }
-    notifyRestOver();
+    // On native, the OS-scheduled local notification (set up in `start`) is
+    // the reliable signal — the Web Notification API isn't trustworthy
+    // inside an Android WebView and would just duplicate it.
+    if (!Capacitor.isNativePlatform()) {
+      notifyRestOver();
+    }
   }, []);
 
   const start = useCallback(
@@ -106,6 +157,7 @@ export function useRestTimer(defaultSeconds: number) {
       setSecondsLeft(total);
       setTotalSeconds(total);
       setIsActive(true);
+      scheduleNativeRestOverNotification(total);
 
       intervalRef.current = setInterval(() => {
         setSecondsLeft((prev) => {
@@ -131,6 +183,9 @@ export function useRestTimer(defaultSeconds: number) {
           clearTimer();
           setIsActive(false);
           handleTimerEnd();
+          cancelNativeRestOverNotification();
+        } else {
+          scheduleNativeRestOverNotification(next);
         }
         setTotalSeconds((total) => Math.max(total, next));
         return next;
