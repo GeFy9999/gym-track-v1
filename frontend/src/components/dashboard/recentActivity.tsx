@@ -148,16 +148,16 @@ export default function RecentActivity() {
         <div className="bg-[#ece7dd] rounded-2xl p-4 shadow-sm">
           <div className="flex justify-between items-start mb-3">
             <div>
-              <p className="text-sm font-bold text-gray-900">
+              <p className="text-sm font-black text-gray-900 uppercase tracking-wide">
                 {firstExercise.exercise.name}
               </p>
-              <p className="text-xs text-gray-500 mt-0.5">
+              <p className="text-xs text-gray-500 uppercase tracking-wide mt-0.5">
                 {bestSet.weight} {bestSet.unit} × {bestSet.reps}{" "}
                 {t("dashboard.reps")}
               </p>
             </div>
             {delta && (
-              <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-white text-[#c9552c]">
+              <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-white text-[#c9552c] flex-shrink-0">
                 <span className="text-xs font-bold">
                   {delta.value > 0 ? "↑" : "↓"} {delta.value > 0 ? "+" : ""}
                   {delta.value} {delta.unit}
@@ -166,14 +166,21 @@ export default function RecentActivity() {
             )}
           </div>
 
-          <div className="flex flex-wrap gap-1.5">
+          <div className="grid grid-cols-3 gap-2">
             {sets.map((set, i) => (
-              <span
+              <div
                 key={i}
-                className="text-xs font-bold text-[#c9552c] bg-white px-2.5 py-1 rounded-full"
+                className="bg-white rounded-xl py-2 text-center"
               >
-                {set.weight} {set.unit} × {set.reps}
-              </span>
+                <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+                  {t("dashboard.setLabel", { number: i + 1 })}
+                </p>
+                <p className="text-sm font-black text-gray-900">
+                  {set.weight}
+                  {set.unit}{" "}
+                  <span className="text-[#c9552c]">×{set.reps}</span>
+                </p>
+              </div>
             ))}
           </div>
         </div>
