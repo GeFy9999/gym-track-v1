@@ -4,6 +4,8 @@ import { useTranslation } from "react-i18next";
 import { Search, Dumbbell, Trophy, ChevronDown } from "lucide-react";
 import { API_URL } from "../lib/api";
 import { useTrackedExercises } from "../hooks/useTrackedExercises";
+import { useToast } from "../hooks/useToast";
+import Toast from "../components/Toast";
 
 type Exercise = {
   id: string;
@@ -23,6 +25,7 @@ export default function ExercisesPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { isTracked, fetchTracked, toggleTracked, tracked } = useTrackedExercises();
+  const { toast, closingToast, showToast } = useToast();
 
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [muscleGroups, setMuscleGroups] = useState<MuscleGroup[]>([]);
@@ -165,15 +168,21 @@ export default function ExercisesPage() {
           <span
             onClick={(e) => {
               e.stopPropagation();
+              const wasTracked = isTracked(ex.id);
               toggleTracked(ex.id);
               setPoppingId(ex.id);
+              showToast(
+                wasTracked
+                  ? t("exercises.trackedRemoved")
+                  : t("exercises.trackedAdded"),
+              );
             }}
             onAnimationEnd={() =>
               setPoppingId((current) => (current === ex.id ? null : current))
             }
             role="button"
             aria-label={t("exercises.trackAria")}
-            className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors ${
+            className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
               tracked ? "bg-[#c9552c] text-white" : "bg-white text-gray-400"
             }`}
           >
@@ -309,6 +318,8 @@ export default function ExercisesPage() {
           </div>
         </div>
       </div>
+
+      {toast && <Toast message={toast} closing={closingToast} />}
     </div>
   );
 }

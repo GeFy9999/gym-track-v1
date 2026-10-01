@@ -132,7 +132,12 @@ function PrivacyContentFr() {
         </p>
       </section>
 
-      <p className="text-xs text-gray-400 pt-4">© 2026 GymsTrack</p>
+      <p className="text-xs text-gray-400 pt-4">
+        © 2026 GymsTrack ·{" "}
+        <Link to="/legal" className="underline">
+          Mentions légales
+        </Link>
+      </p>
     </div>
   );
 }
@@ -218,7 +223,12 @@ function PrivacyContentEn() {
         </p>
       </section>
 
-      <p className="text-xs text-gray-400 pt-4">© 2026 GymsTrack</p>
+      <p className="text-xs text-gray-400 pt-4">
+        © 2026 GymsTrack ·{" "}
+        <Link to="/legal" className="underline">
+          Legal notice
+        </Link>
+      </p>
     </div>
   );
 }

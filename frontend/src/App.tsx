@@ -21,6 +21,7 @@ import UpgradePage from "./pages/Upgrade.tsx";
 import PrivacyPolicyPage from "./pages/PrivacyPolicy.tsx";
 import TermsOfServicePage from "./pages/TermsOfService.tsx";
 import AccountDeletionPage from "./pages/AccountDeletion.tsx";
+import LegalNoticePage from "./pages/LegalNotice.tsx";
 import { RestTimerProvider, useRestTimerContext } from "./contexts/RestTimerContext";
 import { UiChromeProvider, useUiChrome } from "./contexts/UiChromeContext";
 import RestTimer from "./components/session/RestTimer";
@@ -93,6 +94,7 @@ function AppShell() {
       "/privacy",
       "/terms",
       "/account-deletion",
+      "/legal",
     ].includes(location.pathname) ||
     location.pathname.startsWith("/session/") ||
     location.pathname.startsWith("/exercise/");
@@ -202,6 +204,7 @@ function AppShell() {
             <Route path="/privacy" element={<PrivacyPolicyPage />} />
             <Route path="/terms" element={<TermsOfServicePage />} />
             <Route path="/account-deletion" element={<AccountDeletionPage />} />
+            <Route path="/legal" element={<LegalNoticePage />} />
             <Route
               path="/progression"
               element={

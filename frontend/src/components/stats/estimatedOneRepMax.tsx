@@ -95,7 +95,12 @@ export default function EstimatedOneRepMax({ isPro }: { isPro: boolean }) {
     return (
       <div className="grid grid-cols-2 gap-3">
         {withData.map((ex) => (
-          <OneRepMaxCard key={ex.exerciseId} name={ex.name} points={ex.points} />
+          <OneRepMaxCard
+            key={ex.exerciseId}
+            name={ex.name}
+            points={ex.points}
+            showChart={false}
+          />
         ))}
       </div>
     );
@@ -138,9 +143,11 @@ export default function EstimatedOneRepMax({ isPro }: { isPro: boolean }) {
 function OneRepMaxCard({
   name,
   points,
+  showChart = true,
 }: {
   name: string;
   points: ProgressPoint[];
+  showChart?: boolean;
 }) {
   const unit = getWeightUnit();
   const current = points[points.length - 1].oneRepMax;
@@ -178,13 +185,15 @@ function OneRepMaxCard({
           >
             {diff > 0 ? "↑" : diff < 0 ? "↓" : "–"} {Math.abs(diff)} {unit}
           </p>
-          <svg
-            viewBox={`0 0 ${w} ${h}`}
-            className="w-full h-8 mt-1"
-            preserveAspectRatio="none"
-          >
-            <path d={linePath} fill="none" stroke="#c9552c" strokeWidth="2" />
-          </svg>
+          {showChart && (
+            <svg
+              viewBox={`0 0 ${w} ${h}`}
+              className="w-full h-8 mt-1"
+              preserveAspectRatio="none"
+            >
+              <path d={linePath} fill="none" stroke="#c9552c" strokeWidth="2" />
+            </svg>
+          )}
         </>
       )}
     </div>
