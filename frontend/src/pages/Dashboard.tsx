@@ -1,5 +1,6 @@
 import HeaderDashboard from "../components/dashboard/header";
 import MuscleGroupsCards from "../components/dashboard/muscleGroupGrid";
+import WeekSummaryCard from "../components/dashboard/weekSummaryCard";
 import RecentActivity from "../components/dashboard/recentActivity";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
@@ -52,6 +53,7 @@ export default function DashboardPage() {
   const userId = user?.id || "";
 
   const [hasActiveSession, setHasActiveSession] = useState(false);
+  const [weekSummary, setWeekSummary] = useState({ completed: 0, total: 0 });
   const [showEndConfirm, setShowEndConfirm] = useState(false);
   const [showWeightPrompt, setShowWeightPrompt] = useState(false);
   const [bodyWeight, setBodyWeight] = useState("");
@@ -568,10 +570,17 @@ export default function DashboardPage() {
   return (
     <div className="pb-28 bg-[#faf6f1] min-h-screen">
       <HeaderDashboard />
+      <WeekSummaryCard
+        completed={weekSummary.completed}
+        total={weekSummary.total}
+      />
       <div ref={tourRef0}>
         <MuscleGroupsCards
           refreshKey={refreshKey}
           onActiveCountChange={(count) => setHasActiveSession(count > 0)}
+          onWeekSummaryChange={(completed, total) =>
+            setWeekSummary({ completed, total })
+          }
         />
       </div>
       <div ref={tourRef1}>
