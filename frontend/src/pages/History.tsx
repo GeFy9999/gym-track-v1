@@ -459,9 +459,22 @@ export default function HistoryPage() {
           {viewMode === "list" ? (
             currentMonthWeeks.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16">
-                <p className="text-sm font-bold text-gray-900 mb-1">
+                <div className="w-14 h-14 rounded-full bg-[#ece7dd] shadow-sm flex items-center justify-center mb-4">
+                  <History size={24} className="text-[#c9552c]" />
+                </div>
+                <p className="text-base font-bold text-gray-900 mb-1">
                   {t("history.noSessionThisMonth")}
                 </p>
+                <p className="text-sm text-gray-400 text-center px-8 mb-6">
+                  {t("history.noSessionThisMonthDesc")}
+                </p>
+                <button
+                  onClick={() => navigate("/dashboard")}
+                  className="bg-[#c9552c] text-white px-6 py-3 rounded-2xl font-semibold text-sm flex items-center gap-2 shadow-md active:scale-[0.98] transition-all"
+                >
+                  <Plus size={16} />
+                  {t("history.startSession")}
+                </button>
               </div>
             ) : (
               <div ref={ref0} className="space-y-3">
