@@ -22,5 +22,8 @@ npx prisma migrate deploy
 echo "==> Seeding reference data (idempotent)"
 npx tsx prisma/seed.js
 
+echo "==> Enriching exercises with RepDB images (idempotent)"
+npx tsx scripts/enrich-exercises-repdb.ts
+
 echo "==> Starting server"
 exec "$@"
