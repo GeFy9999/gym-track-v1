@@ -229,6 +229,10 @@
     "trackedAdded": "Exercice ajouté au suivi",
     "trackedRemoved": "Exercice retiré du suivi",
     "exerciseDeleted": "Exercice supprimé",
+    "exerciseInfo": {
+      "aria": "Voir les images de l'exercice",
+      "attribution": "Images d'exercice par RepDB (repdb.co)"
+    },
     "card": {
       "supersetLabel": "Superset {{position}}/{{length}}",
       "exerciseLabel": "Exercice {{index}} / {{total}}",
