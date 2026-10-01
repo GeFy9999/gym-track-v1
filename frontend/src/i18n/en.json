@@ -87,8 +87,6 @@
   "dashboard": {
     "greeting": "Hi,",
     "daysProgress": "{{count}}/7 days",
-    "weekActive": "Week in progress",
-    "startWeek": "Start the week",
     "muscleGroups": "Muscle groups",
     "inProgress": "In progress",
     "lastSession": "Last session",
@@ -101,7 +99,6 @@
     "finish": "Finish",
     "resume": "Resume",
     "tour": {
-      "week": { "title": "Start your week", "desc": "Tap here to start your training week. Once active, you'll be able to add sessions." },
       "muscleGroups": { "title": "Muscle groups", "desc": "Tap a muscle group to create a session and add exercises. An orange badge appears while a session is in progress." },
       "activity": { "title": "Recent activity", "desc": "Here you'll find your latest sessions with the exercises and sets you did." },
       "home": { "title": "Home", "desc": "This is your main dashboard. You'll see your week, your muscle groups, and your recent activity here." },
@@ -168,8 +165,6 @@
     "noHistoryDesc": "Your sessions will show up here once you start training",
     "startSession": "Start a session",
     "noSessionThisMonth": "No session this month",
-    "checkCalendarHint": "Check the calendar to find your sessions from previous months",
-    "viewCalendar": "View calendar",
     "sessionsCount_one": "{{count}} session",
     "sessionsCount_other": "{{count}} sessions",
     "setsCount": "{{count}} sets",
@@ -484,7 +479,9 @@
     "set_one": "set",
     "set_other": "sets",
     "fullHistoryPro": "Full history with Pro",
-    "goPro": "Go Pro"
+    "goPro": "Go Pro",
+    "trackedAdded": "Exercise added to tracking",
+    "trackedRemoved": "Exercise removed from tracking"
   },
   "exercises": {
     "title": "Exercises",
@@ -498,7 +495,9 @@
     "session_other": "sessions",
     "allExercises": "All exercises",
     "noneFound": "No exercises found",
-    "scrollForMore": "Scroll for more..."
+    "scrollForMore": "Scroll for more...",
+    "trackedAdded": "Exercise added to tracking",
+    "trackedRemoved": "Exercise removed from tracking"
   },
   "import": {
     "title": "Import data",

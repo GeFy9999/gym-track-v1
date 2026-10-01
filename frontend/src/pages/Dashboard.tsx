@@ -1,5 +1,4 @@
 import HeaderDashboard from "../components/dashboard/header";
-import WeekProgress from "../components/dashboard/weekProgressCard";
 import MuscleGroupsCards from "../components/dashboard/muscleGroupGrid";
 import RecentActivity from "../components/dashboard/recentActivity";
 import { useState, useEffect, useRef } from "react";
@@ -52,9 +51,7 @@ export default function DashboardPage() {
   const userName = user?.name || "";
   const userId = user?.id || "";
 
-  const [weekActive, setWeekActive] = useState<boolean>(() => {
-    return localStorage.getItem(`weekActive_${userId}`) === "true";
-  });
+  const [hasActiveSession, setHasActiveSession] = useState(false);
   const [showEndConfirm, setShowEndConfirm] = useState(false);
   const [showWeightPrompt, setShowWeightPrompt] = useState(false);
   const [bodyWeight, setBodyWeight] = useState("");
@@ -78,39 +75,6 @@ export default function DashboardPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showWelcome]);
   const [showTour, setShowTour] = useState(false);
-
-  const handleSetWeekActive = (val: boolean) => {
-    setWeekActive(val);
-    localStorage.setItem(`weekActive_${userId}`, String(val));
-  };
-
-  // Always check weekActive on mount/return
-  useEffect(() => {
-    const checkWeek = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) return;
-
-      const now = new Date();
-      const day = now.getDay();
-      const diff = day === 0 ? 6 : day - 1;
-      const monday = new Date(now);
-      monday.setDate(now.getDate() - diff);
-      monday.setHours(0, 0, 0, 0);
-
-      try {
-        const res = await fetch(
-          `${API_URL}/sessions/me?start=${monday.toISOString()}&end=${now.toISOString()}`,
-          { headers: { Authorization: `Bearer ${token}` } },
-        );
-        if (!res.ok) return;
-        const sessions = await res.json();
-        if (sessions.length > 0) handleSetWeekActive(true);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    checkWeek();
-  }, []);
 
   // Detect sessions left unfinished on a previous day
   useEffect(() => {
@@ -272,23 +236,17 @@ export default function DashboardPage() {
   // Tour refs
   const tourRef0 = useRef<HTMLDivElement>(null);
   const tourRef1 = useRef<HTMLDivElement>(null);
-  const tourRef2 = useRef<HTMLDivElement>(null);
 
   const dashboardTourSteps = [
     {
-      title: t("dashboard.tour.week.title"),
-      description: t("dashboard.tour.week.desc"),
-      refIndex: 0,
-    },
-    {
       title: t("dashboard.tour.muscleGroups.title"),
       description: t("dashboard.tour.muscleGroups.desc"),
-      refIndex: 1,
+      refIndex: 0,
     },
     {
       title: t("dashboard.tour.activity.title"),
       description: t("dashboard.tour.activity.desc"),
-      refIndex: 2,
+      refIndex: 1,
     },
     {
       title: t("dashboard.tour.home.title"),
@@ -611,19 +569,16 @@ export default function DashboardPage() {
     <div className="pb-28 bg-[#faf6f1] min-h-screen">
       <HeaderDashboard />
       <div ref={tourRef0}>
-        <WeekProgress
-          weekActive={weekActive}
-          setWeekActive={handleSetWeekActive}
+        <MuscleGroupsCards
+          refreshKey={refreshKey}
+          onActiveCountChange={(count) => setHasActiveSession(count > 0)}
         />
       </div>
       <div ref={tourRef1}>
-        <MuscleGroupsCards weekActive={weekActive} refreshKey={refreshKey} />
-      </div>
-      <div ref={tourRef2}>
         <RecentActivity />
       </div>
 
-      {weekActive && (
+      {hasActiveSession && (
         <div className="px-5 mt-6">
           <button
             onClick={() => setShowEndConfirm(true)}
@@ -868,7 +823,7 @@ export default function DashboardPage() {
         <TourOverlay
           tourKey={`dashboard_${userId}`}
           steps={dashboardTourSteps}
-          refs={[tourRef0, tourRef1, tourRef2]}
+          refs={[tourRef0, tourRef1]}
         />
       )}
 

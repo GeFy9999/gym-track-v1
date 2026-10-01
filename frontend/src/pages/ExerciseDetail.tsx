@@ -16,6 +16,8 @@ import { getWeightUnit, convertWeight, roundWeight } from "../utils/units";
 import { getDateLocale } from "../i18n";
 import ProgressLineChart from "../components/charts/ProgressLineChart";
 import { ProGateOrContent } from "../components/ProGate";
+import { useToast } from "../hooks/useToast";
+import Toast from "../components/Toast";
 
 type Exercise = {
   id: string;
@@ -128,6 +130,7 @@ export default function ExerciseDetailPage() {
   const navigate = useNavigate();
   const { isTracked, fetchTracked, toggleTracked } = useTrackedExercises();
   const { isPro } = useIsPro();
+  const { toast, closingToast, showToast } = useToast();
 
   const [exercise, setExercise] = useState<Exercise | null>(null);
   const [note, setNote] = useState<string>("");
@@ -268,8 +271,14 @@ export default function ExerciseDetailPage() {
         </div>
         <button
           onClick={() => {
+            const wasTracked = isTracked(exercise.id);
             toggleTracked(exercise.id);
             setTrophyPopping(true);
+            showToast(
+              wasTracked
+                ? t("exerciseDetail.trackedRemoved")
+                : t("exerciseDetail.trackedAdded"),
+            );
           }}
           onAnimationEnd={() => setTrophyPopping(false)}
           aria-label={t("exerciseDetail.trackAria")}
@@ -482,6 +491,8 @@ export default function ExerciseDetailPage() {
           )}
         </div>
       </div>
+
+      {toast && <Toast message={toast} closing={closingToast} />}
     </div>
   );
 }

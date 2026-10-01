@@ -10,11 +10,14 @@ type MuscleGroup = {
 };
 
 type Props = {
-  weekActive: boolean;
   refreshKey?: number;
+  onActiveCountChange?: (count: number) => void;
 };
 
-export default function MuscleGroupsCards({ weekActive, refreshKey }: Props) {
+export default function MuscleGroupsCards({
+  refreshKey,
+  onActiveCountChange,
+}: Props) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [groups, setGroups] = useState<MuscleGroup[]>([]);
@@ -61,8 +64,6 @@ export default function MuscleGroupsCards({ weekActive, refreshKey }: Props) {
   }, []);
 
   useEffect(() => {
-    if (!weekActive) return;
-
     const fetchCompleted = async () => {
       const token = localStorage.getItem("token");
       if (!token) return;
@@ -105,16 +106,16 @@ export default function MuscleGroupsCards({ weekActive, refreshKey }: Props) {
             .map((s) => s.muscleGroup),
         );
         setActiveGroups(inProgress);
+        onActiveCountChange?.(inProgress.size);
       } catch (err) {
         console.error(err);
       }
     };
     fetchCompleted();
-  }, [weekActive, refreshKey]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refreshKey]);
 
   const handleClick = async (group: MuscleGroup) => {
-    if (!weekActive) return;
-
     const token = localStorage.getItem("token");
     if (!token) return;
 
@@ -215,13 +216,10 @@ export default function MuscleGroupsCards({ weekActive, refreshKey }: Props) {
             <button
               key={group.id}
               onClick={() => handleClick(group)}
-              disabled={!weekActive}
               className={`relative flex-shrink-0 w-36 rounded-2xl pt-6 pb-3 flex flex-col items-center transition-all shadow-sm ${
-                weekActive
-                  ? isActive
-                    ? "bg-[#ece7dd] border-2 border-[#c9552c] active:scale-[0.97]"
-                    : "bg-[#ece7dd] active:scale-[0.97]"
-                  : "bg-[#ece7dd]/50 opacity-50 shadow-none"
+                isActive
+                  ? "bg-[#ece7dd] border-2 border-[#c9552c] active:scale-[0.97]"
+                  : "bg-[#ece7dd] active:scale-[0.97]"
               }`}
             >
               {isDone && (
