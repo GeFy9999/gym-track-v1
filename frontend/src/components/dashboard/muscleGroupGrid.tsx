@@ -12,11 +12,13 @@ type MuscleGroup = {
 type Props = {
   refreshKey?: number;
   onActiveCountChange?: (count: number) => void;
+  onWeekSummaryChange?: (completed: number, total: number) => void;
 };
 
 export default function MuscleGroupsCards({
   refreshKey,
   onActiveCountChange,
+  onWeekSummaryChange,
 }: Props) {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -114,6 +116,12 @@ export default function MuscleGroupsCards({
     fetchCompleted();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshKey]);
+
+  useEffect(() => {
+    if (groups.length === 0) return;
+    onWeekSummaryChange?.(completedGroups.size, groups.length);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [completedGroups, groups]);
 
   const handleClick = async (group: MuscleGroup) => {
     const token = localStorage.getItem("token");

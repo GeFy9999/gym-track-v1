@@ -88,6 +88,13 @@
     "greeting": "Bonjour,",
     "daysProgress": "{{count}}/7 jours",
     "muscleGroups": "Groupes musculaires",
+    "weekSummary": {
+      "label": "Cette semaine",
+      "titleStart": "Prêt à commencer ?",
+      "titleProgress": "Continue comme ça !",
+      "titleDone": "Semaine complète !",
+      "desc": "{{completed}} sur {{total}} groupes musculaires travaillés"
+    },
     "inProgress": "En cours",
     "lastSession": "Dernière séance",
     "noSessionLastWeek": "Aucune séance la semaine dernière",
