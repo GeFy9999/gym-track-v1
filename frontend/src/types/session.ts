@@ -9,7 +9,12 @@ export type SetData = {
 
 export type SessionExercise = {
   id: string;
-  exercise: { id: string; name: string; image: string | null };
+  exercise: {
+    id: string;
+    name: string;
+    image: string | null;
+    peakImage: string | null;
+  };
   sets: SetData[];
   supersetId: string | null;
 };
