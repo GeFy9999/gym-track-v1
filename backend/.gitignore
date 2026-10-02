@@ -14,3 +14,8 @@ dev.db.bak-*
 # src/services/workoutXGifService.ts) — a runtime cache that grows as users
 # view exercises, not source to commit.
 /public/exercise-gifs/
+
+# Static thumbnail stills generated locally from the cached GIFs above —
+# also a runtime cache, regenerable any time via
+# scripts/generate-exercise-thumbnails.ts.
+/public/exercise-thumbnails/
