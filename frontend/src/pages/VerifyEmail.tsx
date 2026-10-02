@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { CheckCircle2, XCircle } from "lucide-react";
 import { API_URL } from "../lib/api";
+import { consumePendingPlan } from "../utils/pendingPlan";
 
 export default function VerifyEmailPage() {
   const { t } = useTranslation();
@@ -41,7 +42,8 @@ export default function VerifyEmailPage() {
         localStorage.setItem("token", result.token);
         localStorage.setItem("user", JSON.stringify(result.user));
         setStatus("success");
-        setTimeout(() => navigate("/dashboard"), 1500);
+        const plan = consumePendingPlan();
+        setTimeout(() => navigate(plan ? `/upgrade?plan=${plan}` : "/dashboard"), 1500);
       } catch (err) {
         setStatus("error");
         setErrorMessage(err instanceof Error ? err.message : t("verifyEmail.errorGeneric"));

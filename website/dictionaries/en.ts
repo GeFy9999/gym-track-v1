@@ -87,6 +87,7 @@ const en: Dictionary = {
     proLabel: "PRO",
     plans: [
       {
+        key: "monthly",
         name: "Monthly",
         price: "$4.99",
         period: "/mo",
@@ -95,6 +96,7 @@ const en: Dictionary = {
         highlight: false,
       },
       {
+        key: "annual",
         name: "Annual",
         price: "$29.99",
         period: "/yr",
@@ -103,6 +105,7 @@ const en: Dictionary = {
         highlight: true,
       },
       {
+        key: "lifetime",
         name: "Lifetime",
         price: "$79.99",
         period: " one-time",

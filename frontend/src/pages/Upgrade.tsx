@@ -8,6 +8,7 @@ import { API_URL } from "../lib/api";
 import { getDateLocale } from "../i18n";
 import { useIsPro } from "../hooks/useIsPro";
 import { openExternalUrl } from "../lib/openExternal";
+import { isValidPlan } from "../utils/pendingPlan";
 import {
   ensureRevenueCatConfigured,
   isEntitledToPro,
@@ -58,7 +59,14 @@ export default function UpgradePage() {
         : "monthly"
       : "lifetime";
 
-  const [plan, setPlan] = useState<Plan>(currentPlan ?? "annual");
+  // A visitor who picked a plan on the marketing site arrives here with
+  // "?plan=" still in the URL (carried through signup/verification via
+  // pendingPlan) — honor it over the usual "annual" default, but never over
+  // a plan the user is already actually subscribed to.
+  const requestedPlan = searchParams.get("plan");
+  const initialPlan =
+    currentPlan ?? (isValidPlan(requestedPlan) ? requestedPlan : "annual");
+  const [plan, setPlan] = useState<Plan>(initialPlan);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [activating, setActivating] = useState(Boolean(sessionId));

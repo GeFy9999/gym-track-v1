@@ -8,13 +8,15 @@ type Props = {
   dict: Dictionary["pricing"];
 };
 
-// Purely a visual plan picker for now — selecting a plan doesn't create a
-// Stripe Checkout session yet. See conversation notes: wiring real payment
-// here means deciding how an anonymous marketing-site visitor (no GymsTrack
-// account yet) ends up with a paid subscription attached to one.
+// A marketing-site visitor has no GymsTrack account yet, and Stripe
+// Checkout here is only ever created for an authenticated user — so
+// "Commencer" sends them to create an account first (plan remembered via
+// the query param), and the account app itself takes them into Checkout
+// once they're verified. See Register.tsx / VerifyEmail(Pending).tsx.
 export default function PlanSelector({ dict }: Props) {
   const defaultIndex = dict.plans.findIndex((p) => p.highlight);
   const [selected, setSelected] = useState(defaultIndex >= 0 ? defaultIndex : 0);
+  const selectedPlan = dict.plans[selected];
 
   return (
     <div>
@@ -23,7 +25,7 @@ export default function PlanSelector({ dict }: Props) {
           const isSelected = i === selected;
           return (
             <button
-              key={plan.name}
+              key={plan.key}
               type="button"
               onClick={() => setSelected(i)}
               className={`w-full text-left rounded-2xl p-5 border transition-colors ${
@@ -66,7 +68,7 @@ export default function PlanSelector({ dict }: Props) {
       </div>
 
       <a
-        href="#telecharger"
+        href={`https://gymstrack.com/register?plan=${selectedPlan?.key}`}
         className="block text-center mt-5 bg-[#c9552c] text-white text-sm font-bold uppercase tracking-wide py-4 rounded-full shadow-sm hover:opacity-90 active:scale-[0.98] transition-all"
       >
         {dict.cta}

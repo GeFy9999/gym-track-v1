@@ -35,6 +35,7 @@ export type Dictionary = {
   pricing: {
     proLabel: string;
     plans: {
+      key: "monthly" | "annual" | "lifetime";
       name: string;
       price: string;
       period: string;
