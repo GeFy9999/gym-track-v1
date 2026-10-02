@@ -3,7 +3,6 @@ export type Dictionary = {
     features: string;
     pricing: string;
     faq: string;
-    download: string;
   };
   hero: {
     title: [string, string];
@@ -47,6 +46,12 @@ export type Dictionary = {
     mostPopular: string;
     includedTitle: string;
     includedFeatures: string[];
+    loyalty: {
+      title: string;
+      subtitle: string;
+      monthly: string;
+      annual: string;
+    };
   };
   faq: {
     eyebrow: string;

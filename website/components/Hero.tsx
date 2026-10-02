@@ -12,7 +12,7 @@ export default function Hero({ dict, locale }: Props) {
     locale === "fr" ? "/google-play-badge-fr.png" : "/google-play-badge-en.png";
 
   return (
-    <section className="relative min-h-[calc(100vh-4rem)] flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-[calc(100vh-5rem)] flex items-center justify-center overflow-hidden">
       <Image
         src="/hero-bg.jpg"
         alt=""
@@ -33,19 +33,16 @@ export default function Hero({ dict, locale }: Props) {
           {dict.subtitle}
         </p>
 
-        <div id="telecharger" className="flex flex-wrap items-center justify-center gap-3 mt-9">
-          {/* Real store links will replace "#" once GymsTrack is actually published. */}
+        <div id="telecharger" className="flex flex-wrap items-center justify-center gap-4 mt-9">
+          {/* Real store links will replace "#" once GymsTrack is actually published.
+              Apple's badge SVG and Google's PNG have different native aspect ratios
+              (and Google's reads visually smaller at an equal height), so these use
+              independently tuned heights rather than one shared height/width. */}
           <a href="#" className="block opacity-90 hover:opacity-100 transition-opacity">
-            <Image src={appStoreBadge} alt="App Store" width={160} height={54} />
+            <Image src={appStoreBadge} alt="App Store" width={144} height={48} />
           </a>
           <a href="#" className="block opacity-90 hover:opacity-100 transition-opacity">
-            <Image
-              src={googlePlayBadge}
-              alt="Google Play"
-              width={180}
-              height={54}
-              className="h-[54px] w-auto"
-            />
+            <Image src={googlePlayBadge} alt="Google Play" width={160} height={62} />
           </a>
         </div>
       </div>

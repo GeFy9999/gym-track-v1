@@ -5,7 +5,6 @@ const fr: Dictionary = {
     features: "Fonctionnalités",
     pricing: "Tarifs",
     faq: "FAQ",
-    download: "Télécharger",
   },
   hero: {
     title: ["Soulève plus.", "Devine moins."],
@@ -123,6 +122,13 @@ const fr: Dictionary = {
       "Mode barre et calculateur de plaques",
       "Photos de progression illimitées",
     ],
+    loyalty: {
+      title: "Plus tu restes, plus tu économises",
+      subtitle:
+        "Chaque renouvellement de ton abonnement Pro fait baisser le prix du suivant — automatiquement, sans rien faire.",
+      monthly: "Mensuel : -0,10 $ par renouvellement, jusqu'à -1,00 $",
+      annual: "Annuel : -1,00 $ par renouvellement, jusqu'à -3,00 $",
+    },
   },
   faq: {
     eyebrow: "FAQ",
