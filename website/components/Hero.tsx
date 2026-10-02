@@ -1,54 +1,52 @@
-import { Apple, Play } from "lucide-react";
-import PhoneMockup from "./PhoneMockup";
-import type { Dictionary } from "@/dictionaries";
+import Image from "next/image";
+import type { Dictionary, Locale } from "@/dictionaries";
 
 type Props = {
   dict: Dictionary["hero"];
-  phoneDict: Dictionary["phoneMock"];
+  locale: Locale;
 };
 
-export default function Hero({ dict, phoneDict }: Props) {
+export default function Hero({ dict, locale }: Props) {
+  const appStoreBadge = locale === "fr" ? "/app-store-badge-fr.svg" : "/app-store-badge-en.svg";
+  const googlePlayBadge =
+    locale === "fr" ? "/google-play-badge-fr.png" : "/google-play-badge-en.png";
+
   return (
-    <section className="max-w-6xl mx-auto px-6 pt-14 pb-20 md:pt-20 md:pb-28">
-      <div className="grid md:grid-cols-2 gap-12 items-center">
-        <div>
-          <p className="inline-block text-xs font-bold uppercase tracking-widest text-[#c9552c] bg-[#c9552c]/10 px-3 py-1.5 rounded-full mb-5">
-            {dict.badge}
-          </p>
-          <h1 className="text-4xl sm:text-5xl font-black text-[#191714] leading-[1.1] tracking-tight">
-            {dict.title[0]}
-            <br />
-            {dict.title[1]}
-          </h1>
-          <p className="text-base sm:text-lg text-[#191714]/60 mt-5 max-w-md leading-relaxed">
-            {dict.subtitle}
-          </p>
+    <section className="relative min-h-[calc(100vh-4rem)] flex items-center justify-center overflow-hidden">
+      <Image
+        src="/hero-bg.jpg"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover"
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80" />
 
-          <div id="telecharger" className="flex flex-wrap gap-3 mt-8">
-            <div className="flex items-center gap-2.5 bg-[#191714] text-white px-5 py-3 rounded-2xl opacity-60 cursor-not-allowed select-none">
-              <Apple size={22} />
-              <div className="text-left leading-tight">
-                <p className="text-[10px] uppercase tracking-wide text-white/60">
-                  {dict.comingSoon}
-                </p>
-                <p className="text-sm font-bold">{dict.appStore}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2.5 bg-[#191714] text-white px-5 py-3 rounded-2xl opacity-60 cursor-not-allowed select-none">
-              <Play size={20} />
-              <div className="text-left leading-tight">
-                <p className="text-[10px] uppercase tracking-wide text-white/60">
-                  {dict.comingSoon}
-                </p>
-                <p className="text-sm font-bold">{dict.googlePlay}</p>
-              </div>
-            </div>
-          </div>
-          <p className="text-xs text-[#191714]/40 mt-3">{dict.releaseNote}</p>
-        </div>
+      <div className="relative z-10 text-center px-6 max-w-3xl">
+        <h1 className="text-5xl sm:text-7xl font-black text-white leading-[1.05] tracking-tight">
+          {dict.title[0]}
+          <br />
+          {dict.title[1]}
+        </h1>
+        <p className="text-base sm:text-lg text-white/70 mt-6 max-w-lg mx-auto leading-relaxed">
+          {dict.subtitle}
+        </p>
 
-        <div className="order-first md:order-last">
-          <PhoneMockup dict={phoneDict} />
+        <div id="telecharger" className="flex flex-wrap items-center justify-center gap-3 mt-9">
+          {/* Real store links will replace "#" once GymsTrack is actually published. */}
+          <a href="#" className="block opacity-90 hover:opacity-100 transition-opacity">
+            <Image src={appStoreBadge} alt="App Store" width={160} height={54} />
+          </a>
+          <a href="#" className="block opacity-90 hover:opacity-100 transition-opacity">
+            <Image
+              src={googlePlayBadge}
+              alt="Google Play"
+              width={180}
+              height={54}
+              className="h-[54px] w-auto"
+            />
+          </a>
         </div>
       </div>
     </section>

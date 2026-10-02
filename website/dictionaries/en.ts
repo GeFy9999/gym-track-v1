@@ -8,14 +8,23 @@ const en: Dictionary = {
     download: "Download",
   },
   hero: {
-    badge: "Free to get started",
-    title: ["Track your workouts.", "Progress every week."],
+    title: ["Lift more.", "Guess less."],
     subtitle:
       "GymsTrack is the strength-training app that keeps your weights, reps, and records in one place — so you can actually see your progress, workout after workout.",
-    comingSoon: "Coming soon to",
-    appStore: "App Store",
-    googlePlay: "Google Play",
-    releaseNote: "Launching soon — stay tuned.",
+  },
+  demos: {
+    eyebrow: "In action",
+    title: "See GymsTrack in action",
+    subtitle: "From basic tracking to Pro's advanced tools.",
+    free: {
+      label: "Free version",
+      description: "Workout, exercise, weight, and rep tracking",
+    },
+    pro: {
+      label: "Pro version",
+      description: "Advanced charts, barbell mode, unlimited history",
+    },
+    comingSoon: "Video coming soon",
   },
   phoneMock: {
     thisWeek: "This week",

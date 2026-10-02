@@ -16,11 +16,11 @@ export default function LanguageSwitcher({ locale }: Props) {
   };
 
   return (
-    <div className="flex items-center text-xs font-bold text-[#191714]/40">
+    <div className="flex items-center text-xs font-bold text-white/40">
       <Link
         href="/fr"
         onClick={() => remember("fr")}
-        className={locale === "fr" ? "text-[#191714]" : "hover:text-[#191714] transition-colors"}
+        className={locale === "fr" ? "text-white" : "hover:text-white transition-colors"}
       >
         FR
       </Link>
@@ -28,7 +28,7 @@ export default function LanguageSwitcher({ locale }: Props) {
       <Link
         href="/en"
         onClick={() => remember("en")}
-        className={locale === "en" ? "text-[#191714]" : "hover:text-[#191714] transition-colors"}
+        className={locale === "en" ? "text-white" : "hover:text-white transition-colors"}
       >
         EN
       </Link>
