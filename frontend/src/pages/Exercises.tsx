@@ -11,11 +11,37 @@ type Exercise = {
   id: string;
   name: string;
   image: string | null;
-  videoUrl: string | null;
   muscleGroup: { id: string; name: string };
 };
 
 type MuscleGroup = { id: string; name: string };
+
+// List thumbnails intentionally use only the free static `image`, never the
+// on-demand WorkoutX GIF endpoint: this list renders many rows (and more on
+// scroll), so wiring a live-fetch src here would fire a WorkoutX request per
+// visible card just from scrolling the catalog — the opposite of "on demand".
+// The GIF endpoint stays reserved for ExerciseDetail/ExerciseInfoModal, where
+// a request means the user actually opened that one exercise.
+function ExerciseThumb({ image, tracked }: { image: string | null; tracked: boolean }) {
+  if (image) {
+    return (
+      <img
+        src={image}
+        alt=""
+        className="w-12 h-12 rounded-xl object-cover flex-shrink-0"
+      />
+    );
+  }
+  return (
+    <div
+      className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
+        tracked ? "bg-white/10" : "bg-white/60"
+      }`}
+    >
+      <Dumbbell size={18} className={tracked ? "text-white/40" : "text-gray-400"} />
+    </div>
+  );
+}
 
 type ExerciseStat = { exerciseId: string; sessionCount: number; lastDate: string };
 
@@ -123,33 +149,7 @@ export default function ExercisesPage() {
         }`}
         style={tracked ? { background: "#191714" } : undefined}
       >
-        {ex.videoUrl ? (
-          <video
-            src={ex.videoUrl}
-            className="w-12 h-12 rounded-xl object-cover flex-shrink-0"
-            autoPlay
-            loop
-            muted
-            playsInline
-          />
-        ) : ex.image ? (
-          <img
-            src={ex.image}
-            alt=""
-            className="w-12 h-12 rounded-xl object-cover flex-shrink-0"
-          />
-        ) : (
-          <div
-            className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
-              tracked ? "bg-white/10" : "bg-white/60"
-            }`}
-          >
-            <Dumbbell
-              size={18}
-              className={tracked ? "text-white/40" : "text-gray-400"}
-            />
-          </div>
-        )}
+        <ExerciseThumb image={ex.image} tracked={tracked} />
 
         <div className="flex-1 min-w-0 text-left">
           <p

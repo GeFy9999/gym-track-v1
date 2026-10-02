@@ -1,19 +1,22 @@
+import { useState } from "react";
 import { createPortal } from "react-dom";
 import { X, Dumbbell } from "lucide-react";
+import { API_URL } from "../../lib/api";
 
 type Props = {
+  exerciseId: string;
   name: string;
   image: string | null;
-  videoUrl: string | null;
   onClose: () => void;
 };
 
 export default function ExerciseInfoModal({
+  exerciseId,
   name,
   image,
-  videoUrl,
   onClose,
 }: Props) {
+  const [gifFailed, setGifFailed] = useState(false);
   // Rendered via a portal: ExerciseCard's slide-in animation leaves a
   // `transform` on the card (fill-mode "both"), which would otherwise turn
   // this `position: fixed` modal into one positioned relative to the card
@@ -31,14 +34,12 @@ export default function ExerciseInfoModal({
         </div>
 
         <div className="relative w-full aspect-square rounded-2xl bg-[#faf6f1] overflow-hidden flex items-center justify-center">
-          {videoUrl ? (
-            <video
-              src={videoUrl}
+          {!gifFailed ? (
+            <img
+              src={`${API_URL}/exercises/${exerciseId}/gif`}
+              alt={name}
+              onError={() => setGifFailed(true)}
               className="absolute inset-0 w-full h-full object-contain"
-              autoPlay
-              loop
-              muted
-              playsInline
             />
           ) : image ? (
             <img
