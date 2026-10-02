@@ -300,7 +300,7 @@ export default function ExerciseDetailPage() {
         {exercise.videoUrl ? (
           <video
             src={exercise.videoUrl}
-            className="w-full h-48 object-cover rounded-2xl"
+            className="w-full h-80 object-contain rounded-2xl bg-[#faf6f1]"
             autoPlay
             loop
             muted
