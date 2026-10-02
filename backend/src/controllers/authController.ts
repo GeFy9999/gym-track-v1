@@ -14,6 +14,8 @@ import {
   forgotPassword,
   resetPassword,
   getMe,
+  verifyEmail,
+  resendVerificationEmail,
 } from "../services/authService.js";
 import {
   authMiddleware,
@@ -301,3 +303,34 @@ authRouter.post("/reset-password", passwordResetLimiter, async (req, res) => {
     return res.status(400).json({ error: message });
   }
 });
+
+// POST /api/auth/verify-email
+authRouter.post("/verify-email", async (req, res) => {
+  try {
+    const { token } = req.body;
+    if (!token) return res.status(400).json({ error: "Token requis" });
+
+    const result = await verifyEmail(token);
+    return res.status(200).json(result);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return res.status(400).json({ error: message });
+  }
+});
+
+// POST /api/auth/resend-verification
+authRouter.post(
+  "/resend-verification",
+  passwordResetLimiter,
+  authMiddleware,
+  async (req: AuthRequest, res) => {
+    try {
+      const userId = req.userId!;
+      await resendVerificationEmail(userId);
+      return res.status(200).json({ message: "Courriel envoyé" });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      return res.status(400).json({ error: message });
+    }
+  },
+);

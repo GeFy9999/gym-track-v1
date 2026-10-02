@@ -354,6 +354,9 @@ export async function insertUser(user: {
   name: string;
   authProvider?: string;
   language?: string;
+  emailVerified?: boolean;
+  verificationToken?: string;
+  verificationTokenExpiry?: Date;
 }) {
   return await prisma.user.create({
     data: user,

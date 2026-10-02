@@ -13,6 +13,8 @@ import ProfilePage from "./pages/Profile.tsx";
 import { API_URL } from "./lib/api";
 import ForgotPasswordPage from "./pages/ForgotPassword.tsx";
 import ResetPasswordPage from "./pages/ResetPassword.tsx";
+import VerifyEmailPendingPage from "./pages/VerifyEmailPending.tsx";
+import VerifyEmailPage from "./pages/VerifyEmail.tsx";
 import ProgressPhotosPage from "./pages/ProgressPhotos.tsx";
 import ImportPage from "./pages/Import.tsx";
 import ExercisesPage from "./pages/Exercises.tsx";
@@ -46,6 +48,7 @@ function GlobalRestTimer() {
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const [checking, setChecking] = useState(true);
   const [valid, setValid] = useState(false);
+  const [needsVerification, setNeedsVerification] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -60,6 +63,13 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
       .then((res) => {
         if (res.ok) {
           setValid(true);
+          // A stored user predating this check (or one that hasn't verified
+          // yet) might not have this flag cached — read it fresh here
+          // rather than trusting a possibly-stale localStorage snapshot.
+          const stored = localStorage.getItem("user");
+          if (stored && JSON.parse(stored).emailVerified === false) {
+            setNeedsVerification(true);
+          }
         } else {
           localStorage.clear();
         }
@@ -73,6 +83,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   if (checking) return null;
   if (!valid) return <Navigate to="/login" replace />;
+  if (needsVerification) return <Navigate to="/verify-email-pending" replace />;
   return <>{children}</>;
 }
 
@@ -88,6 +99,8 @@ function AppShell() {
       "/register",
       "/forgot-password",
       "/reset-password",
+      "/verify-email-pending",
+      "/verify-email",
       "/progression",
       "/import",
       "/upgrade",
@@ -201,6 +214,8 @@ function AppShell() {
             />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
+            <Route path="/verify-email-pending" element={<VerifyEmailPendingPage />} />
+            <Route path="/verify-email" element={<VerifyEmailPage />} />
             <Route path="/privacy" element={<PrivacyPolicyPage />} />
             <Route path="/terms" element={<TermsOfServicePage />} />
             <Route path="/account-deletion" element={<AccountDeletionPage />} />
