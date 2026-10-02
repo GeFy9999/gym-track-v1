@@ -356,9 +356,9 @@ export default function ExerciseCard({
 
       {showInfo && (
         <ExerciseInfoModal
+          exerciseId={se.exercise.id}
           name={se.exercise.name}
           image={se.exercise.image}
-          videoUrl={se.exercise.videoUrl}
           onClose={() => setShowInfo(false)}
         />
       )}

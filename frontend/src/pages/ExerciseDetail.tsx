@@ -23,7 +23,6 @@ type Exercise = {
   id: string;
   name: string;
   image: string | null;
-  videoUrl: string | null;
   muscleGroup: { id: string; name: string };
 };
 
@@ -138,6 +137,11 @@ export default function ExerciseDetailPage() {
   const [data, setData] = useState<ExerciseHistoryResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [trophyPopping, setTrophyPopping] = useState(false);
+  const [gifFailed, setGifFailed] = useState(false);
+
+  useEffect(() => {
+    setGifFailed(false);
+  }, [exerciseId]);
 
   useEffect(() => {
     if (!exerciseId) return;
@@ -297,14 +301,12 @@ export default function ExerciseDetailPage() {
       </div>
 
       <div className="px-5 space-y-4">
-        {exercise.videoUrl ? (
-          <video
-            src={exercise.videoUrl}
+        {!gifFailed ? (
+          <img
+            src={`${API_URL}/exercises/${exercise.id}/gif`}
+            alt=""
+            onError={() => setGifFailed(true)}
             className="w-full h-80 object-contain rounded-2xl bg-[#faf6f1]"
-            autoPlay
-            loop
-            muted
-            playsInline
           />
         ) : exercise.image ? (
           <img
