@@ -112,16 +112,6 @@ const en: Dictionary = {
       },
     ],
     mostPopular: "Most popular",
-    includedTitle: "Included with Pro",
-    includedFeatures: [
-      "Unlimited history (beyond 90 days)",
-      "Calendar view of your history",
-      "CSV export of your workouts",
-      "Advanced charts: volume, 1RM, rep-range records",
-      "Supersets and automatic warmup sets",
-      "Barbell mode and plate calculator",
-      "Unlimited progress photos",
-    ],
     loyalty: {
       title: "The longer you stay, the more you save",
       subtitle:
@@ -129,6 +119,26 @@ const en: Dictionary = {
       monthly: "Monthly: -$0.10 per renewal, up to -$1.00",
       annual: "Annual: -$1.00 per renewal, up to -$3.00",
     },
+  },
+  comparison: {
+    badge: "PRO",
+    title: "Take your training to the next level",
+    columns: { free: "Free", pro: "Pro", lifetime: "Lifetime" },
+    rows: [
+      { label: "Workout and exercise tracking", free: true, pro: true, lifetime: true },
+      { label: "CSV import", free: true, pro: true, lifetime: true },
+      { label: "Rest timer", free: true, pro: true, lifetime: true },
+      { label: "Per-exercise rest timer", free: false, pro: true, lifetime: true },
+      { label: "History", free: "90 days", pro: true, lifetime: true },
+      { label: "Calendar view", free: false, pro: true, lifetime: true },
+      { label: "CSV export", free: false, pro: true, lifetime: true },
+      { label: "Advanced charts (volume, 1RM, records)", free: false, pro: true, lifetime: true },
+      { label: "Supersets", free: false, pro: true, lifetime: true },
+      { label: "Automatic warmup sets", free: false, pro: true, lifetime: true },
+      { label: "Barbell mode and plate calculator", free: false, pro: true, lifetime: true },
+      { label: "Progress photos", free: false, pro: true, lifetime: true },
+      { label: "Drag-and-drop reorder", free: false, pro: true, lifetime: true },
+    ],
   },
   faq: {
     eyebrow: "FAQ",

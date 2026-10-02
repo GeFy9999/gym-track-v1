@@ -12,7 +12,7 @@ export default function Hero({ dict, locale }: Props) {
     locale === "fr" ? "/google-play-badge-fr.png" : "/google-play-badge-en.png";
 
   return (
-    <section className="relative min-h-[calc(100vh-5rem)] flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-[calc(100vh-6rem)] flex items-center justify-center overflow-hidden">
       <Image
         src="/hero-bg.jpg"
         alt=""
