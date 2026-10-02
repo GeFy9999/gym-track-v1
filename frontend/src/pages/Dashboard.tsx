@@ -214,6 +214,25 @@ export default function DashboardPage() {
     if (!token || !bodyWeight) return;
 
     try {
+      if (promptUnit !== getWeightUnit()) {
+        const unitRes = await fetch(`${API_URL}/auth/weight-unit`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ weightUnit: promptUnit }),
+        });
+        if (unitRes.ok) {
+          const stored = localStorage.getItem("user");
+          if (stored) {
+            const u = JSON.parse(stored);
+            u.weightUnit = promptUnit;
+            localStorage.setItem("user", JSON.stringify(u));
+          }
+        }
+      }
+
       await fetch(`${API_URL}/body-weight`, {
         method: "POST",
         headers: {
@@ -789,22 +808,42 @@ export default function DashboardPage() {
             </div>
 
             <div className="px-5 pt-5 pb-6">
-              <div className="flex items-center justify-center gap-2 bg-[#ece7dd] rounded-full px-5 py-3 mb-5">
+              <div className="flex items-center justify-between bg-[#ece7dd] rounded-full pl-5 pr-1.5 py-1.5 mb-5">
                 <input
                   type="number"
                   value={bodyWeight}
                   onChange={(e) => setBodyWeight(e.target.value)}
                   placeholder="0"
                   autoFocus
-                  className="w-20 bg-transparent text-4xl font-black text-gray-900 placeholder-gray-300 focus:outline-none text-center"
+                  className="w-20 bg-transparent text-4xl font-black text-gray-900 placeholder-gray-300 focus:outline-none"
                 />
-                <span className="text-sm font-bold uppercase text-gray-500">
-                  {(() => {
-                    const stored = localStorage.getItem("user");
-                    if (!stored) return "lb";
-                    return JSON.parse(stored).weightUnit || "lb";
-                  })()}
-                </span>
+                <div className="relative flex w-28 bg-gray-300 rounded-full p-1">
+                  <div
+                    className="absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] rounded-full bg-[#191714] transition-transform duration-200 ease-out"
+                    style={{
+                      transform:
+                        promptUnit === "kg" ? "translateX(100%)" : "translateX(0)",
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setPromptUnit("lb")}
+                    className={`relative z-10 flex-1 py-2 rounded-full text-xs font-bold uppercase transition-colors ${
+                      promptUnit === "lb" ? "text-white" : "text-gray-500"
+                    }`}
+                  >
+                    Lb
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPromptUnit("kg")}
+                    className={`relative z-10 flex-1 py-2 rounded-full text-xs font-bold uppercase transition-colors ${
+                      promptUnit === "kg" ? "text-white" : "text-gray-500"
+                    }`}
+                  >
+                    Kg
+                  </button>
+                </div>
               </div>
 
               <div className="flex gap-3">
