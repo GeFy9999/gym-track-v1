@@ -16,6 +16,7 @@ import { getWeightUnit, convertWeight, roundWeight } from "../utils/units";
 import { getDateLocale } from "../i18n";
 import ProgressLineChart from "../components/charts/ProgressLineChart";
 import { ProGateOrContent } from "../components/ProGate";
+import { getMuscleGroupLabel } from "../utils/muscleGroupLabel";
 import { useToast } from "../hooks/useToast";
 import Toast from "../components/Toast";
 
@@ -320,7 +321,7 @@ export default function ExerciseDetailPage() {
 
         <div className="flex items-center gap-2">
           <span className="text-xs font-semibold px-3 py-1.5 rounded-full bg-white border border-gray-200 text-gray-700">
-            {exercise.muscleGroup.name}
+            {getMuscleGroupLabel(exercise.muscleGroup.name, t)}
           </span>
         </div>
 

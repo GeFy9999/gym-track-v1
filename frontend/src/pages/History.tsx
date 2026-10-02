@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { API_URL } from "../lib/api";
 import { getDateLocale } from "../i18n";
+import { getMuscleGroupLabel } from "../utils/muscleGroupLabel";
 import TourOverlay from "../components/TourOverlay";
 import Toast from "../components/Toast";
 import { useToast } from "../hooks/useToast";
@@ -300,7 +301,7 @@ export default function HistoryPage() {
             rows.push(
               [
                 dateStr,
-                session.muscleGroup,
+                getMuscleGroupLabel(session.muscleGroup, t),
                 se.exercise.name,
                 i + 1,
                 SET_TYPE_CSV_LABELS[set.type] ?? t("history.setTypes.normal"),
@@ -587,7 +588,7 @@ export default function HistoryPage() {
                                   </div>
                                   <div className="text-left flex-1 min-w-0">
                                     <p className="text-sm font-bold text-gray-900 uppercase truncate">
-                                      {session.muscleGroup}
+                                      {getMuscleGroupLabel(session.muscleGroup, t)}
                                     </p>
                                     <p className="text-xs font-semibold text-gray-400 mt-0.5 uppercase">
                                       {fullDateStr} ·{" "}
@@ -740,7 +741,9 @@ export default function HistoryPage() {
                   <p className="text-base font-black text-white uppercase mt-0.5 truncate">
                     {[
                       ...new Set(
-                        displayedDay.sessions.map((s) => s.muscleGroup),
+                        displayedDay.sessions.map((s) =>
+                          getMuscleGroupLabel(s.muscleGroup, t),
+                        ),
                       ),
                     ].join(" · ")}
                   </p>

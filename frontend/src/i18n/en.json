@@ -511,6 +511,17 @@
     "trackedAdded": "Exercise added to tracking",
     "trackedRemoved": "Exercise removed from tracking"
   },
+  "muscleGroups": {
+    "chest": "Chest",
+    "back": "Back",
+    "biceps": "Biceps",
+    "triceps": "Triceps",
+    "shoulders": "Shoulders",
+    "forearms": "Forearms",
+    "traps": "Traps",
+    "legs": "Legs",
+    "abs": "Abs"
+  },
   "import": {
     "title": "Import data",
     "subtitle": "From a CSV file",
