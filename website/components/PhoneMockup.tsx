@@ -1,9 +1,14 @@
 import { Flame, Dumbbell, TrendingUp, Check } from "lucide-react";
+import type { Dictionary } from "@/dictionaries";
+
+type Props = {
+  dict: Dictionary["phoneMock"];
+};
 
 // A stylized, illustrative mock of the app's dashboard — not a literal
 // screenshot — built from the same colors/shapes as the real UI so it reads
 // as authentic without depending on an exported image asset.
-export default function PhoneMockup() {
+export default function PhoneMockup({ dict }: Props) {
   return (
     <div className="relative mx-auto w-[280px] sm:w-[320px]">
       <div className="relative rounded-[2.5rem] border-[8px] border-[#191714] bg-[#191714] shadow-2xl overflow-hidden">
@@ -11,12 +16,12 @@ export default function PhoneMockup() {
         <div className="bg-[#faf6f1] rounded-[2rem] overflow-hidden">
           <div className="bg-[#191714] px-5 pt-9 pb-7">
             <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">
-              Cette semaine
+              {dict.thisWeek}
             </p>
             <div className="flex items-end gap-2 mt-1">
               <span className="text-3xl font-black text-white">4/5</span>
               <span className="text-xs font-bold text-[#f0994a] mb-1">
-                séances complétées
+                {dict.completed}
               </span>
             </div>
             <div className="flex gap-1.5 mt-4">
@@ -36,9 +41,9 @@ export default function PhoneMockup() {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-bold text-[#191714] uppercase truncate">
-                  Dos &amp; Biceps
+                  {dict.backBiceps}
                 </p>
-                <p className="text-[10px] text-gray-400">6 exercices</p>
+                <p className="text-[10px] text-gray-400">{dict.exercises}</p>
               </div>
               <Check size={14} className="text-[#3a9e6e] flex-shrink-0" />
             </div>
@@ -49,10 +54,10 @@ export default function PhoneMockup() {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-bold text-[#191714] uppercase truncate">
-                  Développé couché
+                  {dict.benchPress}
                 </p>
                 <p className="text-[10px] text-[#3a9e6e] font-semibold">
-                  +5 lb cette semaine
+                  {dict.weeklyGain}
                 </p>
               </div>
             </div>
@@ -63,9 +68,9 @@ export default function PhoneMockup() {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-bold text-[#191714] uppercase truncate">
-                  Série en cours
+                  {dict.currentStreak}
                 </p>
-                <p className="text-[10px] text-gray-400">12 semaines d&apos;affilée</p>
+                <p className="text-[10px] text-gray-400">{dict.streakWeeks}</p>
               </div>
             </div>
           </div>
