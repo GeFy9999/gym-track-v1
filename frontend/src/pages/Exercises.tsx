@@ -11,6 +11,7 @@ type Exercise = {
   id: string;
   name: string;
   image: string | null;
+  videoUrl: string | null;
   muscleGroup: { id: string; name: string };
 };
 
@@ -122,7 +123,16 @@ export default function ExercisesPage() {
         }`}
         style={tracked ? { background: "#191714" } : undefined}
       >
-        {ex.image ? (
+        {ex.videoUrl ? (
+          <video
+            src={ex.videoUrl}
+            className="w-12 h-12 rounded-xl object-cover flex-shrink-0"
+            autoPlay
+            loop
+            muted
+            playsInline
+          />
+        ) : ex.image ? (
           <img
             src={ex.image}
             alt=""
