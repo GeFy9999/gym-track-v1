@@ -84,12 +84,14 @@ const en: Dictionary = {
     ],
   },
   pricing: {
+    proLabel: "PRO",
     plans: [
       {
         name: "Monthly",
         price: "$4.99",
         period: "/mo",
         note: "7-day free trial",
+        billing: "Billed monthly",
         highlight: false,
       },
       {
@@ -97,6 +99,7 @@ const en: Dictionary = {
         price: "$29.99",
         period: "/yr",
         note: "Save 50% vs monthly",
+        billing: "Billed annually",
         highlight: true,
       },
       {
@@ -104,11 +107,14 @@ const en: Dictionary = {
         price: "$79.99",
         period: " one-time",
         note: "One payment, no subscription",
+        billing: "Pay once",
         highlight: false,
       },
     ],
     mostPopular: "Most popular",
-    cta: "Start free trial",
+    cta: "Get started",
+    legalNote:
+      "Cancel anytime from your profile. Subscriptions renew automatically unless cancelled before the end of the current period.",
     loyalty: {
       title: "The longer you stay, the more you save",
       subtitle:

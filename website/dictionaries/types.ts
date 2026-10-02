@@ -33,15 +33,18 @@ export type Dictionary = {
     items: { title: string; description: string }[];
   };
   pricing: {
+    proLabel: string;
     plans: {
       name: string;
       price: string;
       period: string;
       note: string;
+      billing: string;
       highlight: boolean;
     }[];
     mostPopular: string;
     cta: string;
+    legalNote: string;
     loyalty: {
       title: string;
       subtitle: string;

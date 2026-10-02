@@ -84,12 +84,14 @@ const fr: Dictionary = {
     ],
   },
   pricing: {
+    proLabel: "PRO",
     plans: [
       {
         name: "Mensuel",
         price: "4,99 $",
         period: "/mois",
         note: "Essai gratuit de 7 jours",
+        billing: "Facturé mensuellement",
         highlight: false,
       },
       {
@@ -97,6 +99,7 @@ const fr: Dictionary = {
         price: "29,99 $",
         period: "/an",
         note: "Économise 50 % vs mensuel",
+        billing: "Facturé annuellement",
         highlight: true,
       },
       {
@@ -104,11 +107,14 @@ const fr: Dictionary = {
         price: "79,99 $",
         period: " une fois",
         note: "Paiement unique, aucun abonnement",
+        billing: "Payer une fois",
         highlight: false,
       },
     ],
     mostPopular: "Le plus populaire",
-    cta: "Commencer l'essai gratuit",
+    cta: "Commencer",
+    legalNote:
+      "Annule à tout moment depuis ton profil. Les abonnements se renouvellent automatiquement sauf annulation avant la fin de la période en cours.",
     loyalty: {
       title: "Plus tu restes, plus tu économises",
       subtitle:
