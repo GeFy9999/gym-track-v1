@@ -11,9 +11,9 @@ type Props = {
 export default function Nav({ dict, locale }: Props) {
   return (
     <header className="sticky top-0 z-50 bg-[#191714]">
-      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
         <Link href={`/${locale}`}>
-          <Image src="/logo.webp" alt="GymsTrack" width={40} height={40} className="rounded-lg" />
+          <Image src="/logo.webp" alt="GymsTrack" width={52} height={52} className="rounded-xl" />
         </Link>
 
         <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-white/70">
@@ -28,16 +28,7 @@ export default function Nav({ dict, locale }: Props) {
           </a>
         </nav>
 
-        <div className="flex items-center gap-4">
-          <LanguageSwitcher locale={locale} />
-
-          <a
-            href="#telecharger"
-            className="bg-[#c9552c] text-white text-sm font-bold uppercase tracking-wide px-5 py-2.5 rounded-full shadow-sm hover:opacity-90 active:scale-[0.98] transition-all"
-          >
-            {dict.download}
-          </a>
-        </div>
+        <LanguageSwitcher locale={locale} />
       </div>
     </header>
   );

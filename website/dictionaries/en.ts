@@ -5,7 +5,6 @@ const en: Dictionary = {
     features: "Features",
     pricing: "Pricing",
     faq: "FAQ",
-    download: "Download",
   },
   hero: {
     title: ["Lift more.", "Guess less."],
@@ -123,6 +122,13 @@ const en: Dictionary = {
       "Barbell mode and plate calculator",
       "Unlimited progress photos",
     ],
+    loyalty: {
+      title: "The longer you stay, the more you save",
+      subtitle:
+        "Every Pro renewal lowers the price of the next one — automatically, no action needed.",
+      monthly: "Monthly: -$0.10 per renewal, up to -$1.00",
+      annual: "Annual: -$1.00 per renewal, up to -$3.00",
+    },
   },
   faq: {
     eyebrow: "FAQ",

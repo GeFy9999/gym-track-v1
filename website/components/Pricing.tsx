@@ -1,4 +1,4 @@
-import { Check } from "lucide-react";
+import { Check, Sparkles } from "lucide-react";
 import type { Dictionary } from "@/dictionaries";
 
 type Props = {
@@ -58,6 +58,20 @@ export default function Pricing({ dict }: Props) {
               </p>
             </div>
           ))}
+        </div>
+
+        <div className="max-w-2xl mx-auto bg-white/5 border border-white/10 rounded-3xl p-6 mb-12 flex gap-4">
+          <div className="w-10 h-10 rounded-xl bg-[#f0994a]/15 flex items-center justify-center flex-shrink-0">
+            <Sparkles size={18} className="text-[#f0994a]" />
+          </div>
+          <div>
+            <h3 className="font-bold text-white mb-1">{dict.loyalty.title}</h3>
+            <p className="text-sm text-white/50 mb-3">{dict.loyalty.subtitle}</p>
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-6 text-sm text-white/70">
+              <span>{dict.loyalty.monthly}</span>
+              <span>{dict.loyalty.annual}</span>
+            </div>
+          </div>
         </div>
 
         <div className="max-w-2xl mx-auto">
