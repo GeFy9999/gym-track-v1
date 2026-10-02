@@ -23,6 +23,7 @@ type Exercise = {
   id: string;
   name: string;
   image: string | null;
+  videoUrl: string | null;
   muscleGroup: { id: string; name: string };
 };
 
@@ -296,7 +297,16 @@ export default function ExerciseDetailPage() {
       </div>
 
       <div className="px-5 space-y-4">
-        {exercise.image ? (
+        {exercise.videoUrl ? (
+          <video
+            src={exercise.videoUrl}
+            className="w-full h-48 object-cover rounded-2xl"
+            autoPlay
+            loop
+            muted
+            playsInline
+          />
+        ) : exercise.image ? (
           <img
             src={exercise.image}
             alt=""
