@@ -2,6 +2,7 @@ import { Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import type { AvailableExercise, LastWeight } from "../../types/session";
+import { getMuscleGroupLabel } from "../../utils/muscleGroupLabel";
 
 type Props = {
   muscleGroup: string;
@@ -25,7 +26,7 @@ export default function ExerciseSuggestions({
     <div className="px-5 mt-6">
       <div className="flex items-center justify-between mb-3">
         <p className="text-xs font-bold text-gray-900 uppercase tracking-widest">
-          {t("session.suggestionsFor", { group: muscleGroup })}
+          {t("session.suggestionsFor", { group: getMuscleGroupLabel(muscleGroup, t) })}
         </p>
         <button
           onClick={() => navigate("/exercises", { state: { group: muscleGroup } })}

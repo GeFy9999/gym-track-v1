@@ -13,6 +13,7 @@ import WorkoutSummary from "../components/session/WorkoutSummary";
 import { getWeightUnit } from "../utils/units";
 import { useUiChrome } from "../contexts/UiChromeContext";
 import { getDateLocale } from "../i18n";
+import { getMuscleGroupLabel } from "../utils/muscleGroupLabel";
 
 type AbandonedSession = {
   id: string;
@@ -639,12 +640,12 @@ export default function DashboardPage() {
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
             <p className="text-base font-semibold text-gray-900 text-center mb-2">
               {t("dashboard.abandoned.title", {
-                group: abandonedQueue[0].muscleGroup,
+                group: getMuscleGroupLabel(abandonedQueue[0].muscleGroup, t),
               })}
             </p>
             <p className="text-sm text-gray-400 text-center mb-6">
               {t("dashboard.abandoned.body", {
-                group: abandonedQueue[0].muscleGroup,
+                group: getMuscleGroupLabel(abandonedQueue[0].muscleGroup, t),
                 date: formatAbandonedDate(abandonedQueue[0].date),
               })}
             </p>

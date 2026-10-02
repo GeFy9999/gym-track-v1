@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { getMuscleGroupLabel } from "../utils/muscleGroupLabel";
 import { Search, Dumbbell, Trophy, ChevronDown } from "lucide-react";
 import { API_URL } from "../lib/api";
 import { useTrackedExercises } from "../hooks/useTrackedExercises";
@@ -164,7 +165,7 @@ export default function ExercisesPage() {
               tracked ? "text-[#c9552c]" : "text-[#c9552c]/80"
             }`}
           >
-            {ex.muscleGroup.name}
+            {getMuscleGroupLabel(ex.muscleGroup.name, t)}
             {tracked ? ` · ${t("exercises.trackedSuffix")}` : ""}
           </p>
         </div>
@@ -270,7 +271,7 @@ export default function ExercisesPage() {
                   : "bg-[#ece7dd] text-gray-700"
               }`}
             >
-              {mg.name}
+              {getMuscleGroupLabel(mg.name, t)}
             </button>
           ))}
         </div>

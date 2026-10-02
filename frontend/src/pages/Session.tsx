@@ -31,6 +31,7 @@ import NoteModal from "../components/session/NoteModal";
 import DeleteExerciseModal from "../components/session/DeleteExerciseModal";
 import WarmupModal from "../components/session/WarmupModal";
 import { POPULAR_EXERCISES_BY_MUSCLE_GROUP } from "../utils/popularExercises";
+import { getMuscleGroupLabel } from "../utils/muscleGroupLabel";
 import { offlineAwareFetch } from "../lib/offlineFetch";
 import { getOfflineDb } from "../lib/offlineDb";
 import { onSyncQueueChange } from "../lib/syncQueue";
@@ -765,7 +766,7 @@ export default function SessionPage() {
           </button>
           <div className="min-w-0">
             <h1 className="text-xl font-black text-white uppercase tracking-wide leading-tight truncate">
-              {session.muscleGroup}
+              {getMuscleGroupLabel(session.muscleGroup, t)}
             </h1>
             <p className="text-xs font-bold text-white/50 uppercase tracking-widest mt-0.5">
               {capitalizedDate}

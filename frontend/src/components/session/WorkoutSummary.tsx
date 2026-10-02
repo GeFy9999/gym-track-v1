@@ -8,6 +8,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { getDateLocale } from "../../i18n";
+import { getMuscleGroupLabel } from "../../utils/muscleGroupLabel";
 
 type PR = {
   exerciseName: string;
@@ -82,7 +83,7 @@ export default function WorkoutSummary({
           </h2>
           {muscleGroups.length > 0 && (
             <p className="text-[13px] font-semibold text-white/50 uppercase tracking-widest mt-1">
-              {muscleGroups.join(" · ")}
+              {muscleGroups.map((g) => getMuscleGroupLabel(g, t)).join(" · ")}
             </p>
           )}
           <div className="inline-block mt-3 px-4 py-1 rounded-full bg-[#3d271a] text-[#f0994a] text-[11px] font-bold uppercase tracking-wider">
