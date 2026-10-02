@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Mail, LogOut } from "lucide-react";
 import { API_URL } from "../lib/api";
+import { consumePendingPlan } from "../utils/pendingPlan";
 
 const COOLDOWN_SECONDS = 300;
 
@@ -73,7 +74,8 @@ export default function VerifyEmailPendingPage() {
       localStorage.setItem("user", JSON.stringify(user));
 
       if (user.emailVerified) {
-        navigate("/dashboard");
+        const plan = consumePendingPlan();
+        navigate(plan ? `/upgrade?plan=${plan}` : "/dashboard");
       } else {
         setServerError(t("verifyEmailPending.stillNotVerified"));
       }
