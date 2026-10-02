@@ -33,9 +33,6 @@ export type Dictionary = {
     items: { title: string; description: string }[];
   };
   pricing: {
-    eyebrow: string;
-    title: string;
-    subtitle: string;
     plans: {
       name: string;
       price: string;
@@ -44,6 +41,7 @@ export type Dictionary = {
       highlight: boolean;
     }[];
     mostPopular: string;
+    cta: string;
     loyalty: {
       title: string;
       subtitle: string;
