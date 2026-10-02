@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { CheckCircle2, XCircle } from "lucide-react";
@@ -12,8 +12,16 @@ export default function VerifyEmailPage() {
 
   const [status, setStatus] = useState<"verifying" | "success" | "error">("verifying");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  // The verification token is single-use, so this effect must fire the
+  // request exactly once — StrictMode's dev-only double-invoke would
+  // otherwise send it twice, and the second call always fails with "link
+  // expired" since the first one already consumed the token.
+  const requested = useRef(false);
 
   useEffect(() => {
+    if (requested.current) return;
+    requested.current = true;
+
     if (!token) {
       setStatus("error");
       setErrorMessage(t("verifyEmail.invalidLink"));
