@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Nav from "@/components/Nav";
 import Hero from "@/components/Hero";
 import Features from "@/components/Features";
+import Demos from "@/components/Demos";
 import Pricing from "@/components/Pricing";
 import Faq from "@/components/Faq";
 import Footer from "@/components/Footer";
@@ -18,8 +19,9 @@ export default async function Home({
     <>
       <Nav dict={dict.nav} locale={locale as Locale} />
       <main className="flex-1">
-        <Hero dict={dict.hero} phoneDict={dict.phoneMock} />
+        <Hero dict={dict.hero} locale={locale as Locale} />
         <Features dict={dict.features} />
+        <Demos dict={dict.demos} phoneDict={dict.phoneMock} />
         <Pricing dict={dict.pricing} />
         <Faq dict={dict.faq} />
       </main>
