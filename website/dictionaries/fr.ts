@@ -8,14 +8,23 @@ const fr: Dictionary = {
     download: "Télécharger",
   },
   hero: {
-    badge: "Gratuit pour commencer",
-    title: ["Suis tes séances.", "Progresse chaque semaine."],
+    title: ["Soulève plus.", "Devine moins."],
     subtitle:
       "GymsTrack est l'app de suivi de musculation qui garde tes poids, tes répétitions et tes records en un seul endroit — pour que tu voies vraiment ta progression, séance après séance.",
-    comingSoon: "Bientôt sur",
-    appStore: "App Store",
-    googlePlay: "Google Play",
-    releaseNote: "Sortie prévue prochainement — reste à l'affût.",
+  },
+  demos: {
+    eyebrow: "En action",
+    title: "Vois GymsTrack en action",
+    subtitle: "Du suivi de base aux outils avancés de Pro.",
+    free: {
+      label: "Version gratuite",
+      description: "Suivi de séances, exercices, poids et répétitions",
+    },
+    pro: {
+      label: "Version Pro",
+      description: "Graphiques avancés, mode barre, historique illimité",
+    },
+    comingSoon: "Vidéo à venir",
   },
   phoneMock: {
     thisWeek: "Cette semaine",

@@ -10,20 +10,20 @@ type Props = {
 
 export default function Nav({ dict, locale }: Props) {
   return (
-    <header className="sticky top-0 z-50 bg-[#faf6f1]/90 backdrop-blur-sm border-b border-black/5">
+    <header className="sticky top-0 z-50 bg-[#191714]">
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         <Link href={`/${locale}`}>
           <Image src="/logo.webp" alt="GymsTrack" width={40} height={40} className="rounded-lg" />
         </Link>
 
-        <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-[#191714]/70">
-          <a href="#fonctionnalites" className="hover:text-[#191714] transition-colors">
+        <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-white/70">
+          <a href="#fonctionnalites" className="hover:text-white transition-colors">
             {dict.features}
           </a>
-          <a href="#tarifs" className="hover:text-[#191714] transition-colors">
+          <a href="#tarifs" className="hover:text-white transition-colors">
             {dict.pricing}
           </a>
-          <a href="#faq" className="hover:text-[#191714] transition-colors">
+          <a href="#faq" className="hover:text-white transition-colors">
             {dict.faq}
           </a>
         </nav>

@@ -31,7 +31,9 @@ export function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Skip static files, images, and Next internals.
-    "/((?!_next|favicon.ico|icon.png|apple-icon.png|logo.webp).*)",
+    // Skip Next internals and any request for a file (has an extension) —
+    // every public/ asset (images, badges, etc.) falls under the latter, so
+    // this doesn't need to list each filename individually.
+    "/((?!_next|.*\\..*).*)",
   ],
 };

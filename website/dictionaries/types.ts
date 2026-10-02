@@ -6,13 +6,16 @@ export type Dictionary = {
     download: string;
   };
   hero: {
-    badge: string;
     title: [string, string];
     subtitle: string;
+  };
+  demos: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    free: { label: string; description: string };
+    pro: { label: string; description: string };
     comingSoon: string;
-    appStore: string;
-    googlePlay: string;
-    releaseNote: string;
   };
   phoneMock: {
     thisWeek: string;
