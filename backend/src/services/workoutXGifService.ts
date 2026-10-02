@@ -1,9 +1,11 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
+import sharp from "sharp";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const GIFS_DIR = join(__dirname, "../../public/exercise-gifs");
+const THUMBS_DIR = join(__dirname, "../../public/exercise-thumbnails");
 const CATALOG_PATH = join(__dirname, "../../prisma/workoutx-exercises.json");
 
 type WorkoutXCatalogEntry = { id: string; name: string };
@@ -56,5 +58,24 @@ export async function getOrFetchGifPath(wxId: string): Promise<string | null> {
 
   const buffer = Buffer.from(await res.arrayBuffer());
   writeFileSync(filePath, buffer);
+  await generateThumbnail(wxId, filePath);
   return filePath;
+}
+
+// A static JPEG still (sharp reads just the first frame of a GIF by
+// default) for list thumbnails — those render many rows at once, so they
+// must never themselves call the live API (see getOrFetchGifPath above).
+// Generated once per GIF, opportunistically right after it's fetched here,
+// and backfillable for already-cached GIFs via
+// scripts/generate-exercise-thumbnails.ts — either way, zero extra requests.
+async function generateThumbnail(wxId: string, gifPath: string): Promise<void> {
+  mkdirSync(THUMBS_DIR, { recursive: true });
+  const thumbPath = join(THUMBS_DIR, `${wxId}.jpg`);
+  if (existsSync(thumbPath)) return;
+  await sharp(gifPath).jpeg({ quality: 80 }).toFile(thumbPath);
+}
+
+export function getThumbnailPath(wxId: string): string | null {
+  const thumbPath = join(THUMBS_DIR, `${wxId}.jpg`);
+  return existsSync(thumbPath) ? thumbPath : null;
 }

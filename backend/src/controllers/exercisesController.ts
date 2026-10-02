@@ -2,6 +2,7 @@ import express from "express";
 import {
   createExercise,
   getExerciseGifPath,
+  getExerciseThumbnailPath,
   getExercises,
   getExercisesForMuscleGroup,
 } from "../services/exercisesService.js";
@@ -31,6 +32,20 @@ exercisesRouter.get("/:id/gif", async (req, res) => {
     res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
     res.setHeader("Cache-Control", "public, max-age=604800, immutable");
     return res.sendFile(gifPath);
+  } catch (error) {
+    return sendServerError(res, error);
+  }
+});
+
+exercisesRouter.get("/:id/thumbnail", async (req, res) => {
+  try {
+    const thumbPath = await getExerciseThumbnailPath(req.params.id);
+    if (!thumbPath) {
+      return res.status(404).json({ error: "Aucune miniature disponible pour cet exercice" });
+    }
+    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+    res.setHeader("Cache-Control", "public, max-age=604800, immutable");
+    return res.sendFile(thumbPath);
   } catch (error) {
     return sendServerError(res, error);
   }

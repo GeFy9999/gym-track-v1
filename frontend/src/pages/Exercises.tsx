@@ -17,13 +17,33 @@ type Exercise = {
 
 type MuscleGroup = { id: string; name: string };
 
-// List thumbnails intentionally use only the free static `image`, never the
-// on-demand WorkoutX GIF endpoint: this list renders many rows (and more on
-// scroll), so wiring a live-fetch src here would fire a WorkoutX request per
-// visible card just from scrolling the catalog — the opposite of "on demand".
-// The GIF endpoint stays reserved for ExerciseDetail/ExerciseInfoModal, where
-// a request means the user actually opened that one exercise.
-function ExerciseThumb({ image, tracked }: { image: string | null; tracked: boolean }) {
+// List thumbnails use a pre-generated static JPEG still of the WorkoutX GIF
+// (see backend/src/services/workoutXGifService.ts), never the live GIF
+// endpoint — this list renders many rows at once (and more on scroll), and
+// the thumbnail route only ever reads what's already on disk, so it can
+// never trigger a WorkoutX request no matter how many rows render. Falls
+// back to the free static `image` for exercises with no thumbnail yet.
+function ExerciseThumb({
+  exerciseId,
+  image,
+  tracked,
+}: {
+  exerciseId: string;
+  image: string | null;
+  tracked: boolean;
+}) {
+  const [thumbFailed, setThumbFailed] = useState(false);
+
+  if (!thumbFailed) {
+    return (
+      <img
+        src={`${API_URL}/exercises/${exerciseId}/thumbnail`}
+        alt=""
+        onError={() => setThumbFailed(true)}
+        className="w-12 h-12 rounded-xl object-cover flex-shrink-0"
+      />
+    );
+  }
   if (image) {
     return (
       <img
@@ -150,7 +170,7 @@ export default function ExercisesPage() {
         }`}
         style={tracked ? { background: "#191714" } : undefined}
       >
-        <ExerciseThumb image={ex.image} tracked={tracked} />
+        <ExerciseThumb exerciseId={ex.id} image={ex.image} tracked={tracked} />
 
         <div className="flex-1 min-w-0 text-left">
           <p

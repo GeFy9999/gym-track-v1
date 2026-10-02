@@ -4,7 +4,11 @@ import {
   getExercisesByMuscleGroup,
   insertExercise,
 } from "../repositories/databaseRepository.js";
-import { findWorkoutXMatch, getOrFetchGifPath } from "./workoutXGifService.js";
+import {
+  findWorkoutXMatch,
+  getOrFetchGifPath,
+  getThumbnailPath,
+} from "./workoutXGifService.js";
 
 export async function getExercises() {
   return await getAllExercises();
@@ -21,6 +25,19 @@ export async function getExerciseGifPath(exerciseId: string): Promise<string | n
   if (!match) return null;
 
   return await getOrFetchGifPath(match.id);
+}
+
+// Thumbnails are pre-generated stills (see workoutXGifService.ts) — this
+// only ever reads what's already on disk, never triggers a live fetch, so
+// it's safe to call for every row of a list without any quota risk.
+export async function getExerciseThumbnailPath(exerciseId: string): Promise<string | null> {
+  const exercise = await getExerciseById(exerciseId);
+  if (!exercise) return null;
+
+  const match = findWorkoutXMatch(exercise.name);
+  if (!match) return null;
+
+  return getThumbnailPath(match.id);
 }
 
 export async function getExercisesForMuscleGroup(muscleGroupId: string) {
