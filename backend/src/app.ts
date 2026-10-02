@@ -48,17 +48,18 @@ app.post(
 
 app.use(express.json({ limit: "10mb" }));
 
-// Exercise demonstration videos (VitalAnimations) — served directly as
-// static files. helmet's default Cross-Origin-Resource-Policy would block
-// the frontend (a different origin) from loading these, so it's relaxed
-// just for this one route.
+// Exercise demonstration GIFs, fetched from WorkoutX on demand (the first
+// time each one is requested, see services/workoutXGifService.ts) and cached
+// here afterwards — served directly as static files on repeat requests.
+// helmet's default Cross-Origin-Resource-Policy would block the frontend
+// (a different origin) from loading these, so it's relaxed for this route.
 app.use(
-  "/static/exercise-videos",
+  "/static/exercise-gifs",
   (req, res, next) => {
     res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
     next();
   },
-  express.static(path.join(process.cwd(), "public/exercise-videos")),
+  express.static(path.join(process.cwd(), "public/exercise-gifs")),
 );
 
 app.use("/api/calendar", calendarRouter);

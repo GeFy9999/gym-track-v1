@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Check } from "lucide-react";
 import { API_URL } from "../../lib/api";
+import { getMuscleGroupLabel } from "../../utils/muscleGroupLabel";
 
 type MuscleGroup = {
   id: string;
@@ -257,7 +258,7 @@ export default function MuscleGroupsCards({
               </div>
 
               <span className="text-xs font-bold text-gray-900 uppercase tracking-wide text-center px-2">
-                {group.name}
+                {getMuscleGroupLabel(group.name, t)}
               </span>
             </button>
           );

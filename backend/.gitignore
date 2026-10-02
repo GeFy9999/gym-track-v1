@@ -2,7 +2,20 @@ node_modules
 # Keep environment variables out of version control
 .env
 
+# Ad-hoc local DB backups taken before a risky migration/script
+dev.db.bak-*
+
 /src/generated/prisma
 
 # Throwaway SQLite DB created by the test suite (see vitest.config.ts)
 /prisma/test.db*
+
+# Exercise GIFs fetched on demand from WorkoutX and cached locally (see
+# src/services/workoutXGifService.ts) — a runtime cache that grows as users
+# view exercises, not source to commit.
+/public/exercise-gifs/
+
+# Static thumbnail stills generated locally from the cached GIFs above —
+# also a runtime cache, regenerable any time via
+# scripts/generate-exercise-thumbnails.ts.
+/public/exercise-thumbnails/

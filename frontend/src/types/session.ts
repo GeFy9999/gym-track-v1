@@ -13,7 +13,6 @@ export type SessionExercise = {
     id: string;
     name: string;
     image: string | null;
-    videoUrl: string | null;
   };
   sets: SetData[];
   supersetId: string | null;

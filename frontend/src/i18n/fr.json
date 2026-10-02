@@ -511,6 +511,17 @@
     "trackedAdded": "Exercice ajouté au suivi",
     "trackedRemoved": "Exercice retiré du suivi"
   },
+  "muscleGroups": {
+    "chest": "Pectoraux",
+    "back": "Dos",
+    "biceps": "Biceps",
+    "triceps": "Triceps",
+    "shoulders": "Épaules",
+    "forearms": "Avant-bras",
+    "traps": "Trapèze",
+    "legs": "Jambes",
+    "abs": "Abdominaux"
+  },
   "import": {
     "title": "Importer des données",
     "subtitle": "Depuis un fichier CSV",
@@ -640,6 +651,28 @@
     "confirm": "Confirmer",
     "resetting": "Réinitialisation...",
     "resetAction": "Réinitialiser"
+  },
+  "verifyEmailPending": {
+    "title": "Confirme ton courriel",
+    "subtitle": "On a envoyé un lien de confirmation à {{email}}. Clique sur le lien pour activer ton compte.",
+    "iVerified": "J'ai confirmé, continuer",
+    "checking": "Vérification...",
+    "stillNotVerified": "Ton courriel n'est pas encore confirmé.",
+    "resendSuccess": "Courriel renvoyé avec succès",
+    "noEmailReceived": "Tu ne reçois rien ? Vérifie tes indésirables ou",
+    "retryIn": "Réessayer dans {{time}}",
+    "sending": "Envoi...",
+    "retry": "réessaie",
+    "logout": "Se déconnecter",
+    "errorGeneric": "Erreur"
+  },
+  "verifyEmail": {
+    "verifying": "Confirmation de ton courriel...",
+    "success": "Courriel confirmé !",
+    "redirecting": "Redirection...",
+    "invalidLink": "Lien invalide",
+    "errorGeneric": "Erreur",
+    "backToLogin": "Retour à la connexion"
   },
   "upgrade": {
     "title": "GymsTrack Pro",

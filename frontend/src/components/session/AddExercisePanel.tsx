@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Plus, ChevronDown, Search } from "lucide-react";
 import type { AvailableExercise } from "../../types/session";
+import { getMuscleGroupLabel } from "../../utils/muscleGroupLabel";
 
 type Props = {
   muscleGroup: string;
@@ -79,7 +80,9 @@ export default function AddExercisePanel({
             {filtered.length === 0 && (
               <p className="text-xs text-gray-500 text-center py-3">
                 {availableExercises.length === 0
-                  ? t("session.noExerciseForGroup", { group: muscleGroup })
+                  ? t("session.noExerciseForGroup", {
+                      group: getMuscleGroupLabel(muscleGroup, t),
+                    })
                   : t("session.noResults")}
               </p>
             )}

@@ -35,6 +35,11 @@ export default function TourOverlay({ tourKey, steps, refs }: Props) {
     initialized.current = true;
     const done = localStorage.getItem(storageKey);
     if (!done) {
+      // Marked seen as soon as it starts, not only once finish()/skip() is
+      // clicked — otherwise navigating away, logging out, or refreshing
+      // mid-tour never persists anything, and it restarts from step 0 on
+      // every later visit even though the user already saw it once.
+      localStorage.setItem(storageKey, "true");
       setTimeout(() => setStep(0), 400);
     }
   }, [storageKey]);

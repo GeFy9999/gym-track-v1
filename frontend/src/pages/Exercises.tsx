@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { getMuscleGroupLabel } from "../utils/muscleGroupLabel";
 import { Search, Dumbbell, Trophy, ChevronDown } from "lucide-react";
 import { API_URL } from "../lib/api";
 import { useTrackedExercises } from "../hooks/useTrackedExercises";
@@ -11,11 +12,57 @@ type Exercise = {
   id: string;
   name: string;
   image: string | null;
-  videoUrl: string | null;
   muscleGroup: { id: string; name: string };
 };
 
 type MuscleGroup = { id: string; name: string };
+
+// List thumbnails use a pre-generated static JPEG still of the WorkoutX GIF
+// (see backend/src/services/workoutXGifService.ts), never the live GIF
+// endpoint — this list renders many rows at once (and more on scroll), and
+// the thumbnail route only ever reads what's already on disk, so it can
+// never trigger a WorkoutX request no matter how many rows render. Falls
+// back to the free static `image` for exercises with no thumbnail yet.
+function ExerciseThumb({
+  exerciseId,
+  image,
+  tracked,
+}: {
+  exerciseId: string;
+  image: string | null;
+  tracked: boolean;
+}) {
+  const [thumbFailed, setThumbFailed] = useState(false);
+
+  if (!thumbFailed) {
+    return (
+      <img
+        src={`${API_URL}/exercises/${exerciseId}/thumbnail`}
+        alt=""
+        onError={() => setThumbFailed(true)}
+        className="w-12 h-12 rounded-xl object-cover flex-shrink-0"
+      />
+    );
+  }
+  if (image) {
+    return (
+      <img
+        src={image}
+        alt=""
+        className="w-12 h-12 rounded-xl object-cover flex-shrink-0"
+      />
+    );
+  }
+  return (
+    <div
+      className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
+        tracked ? "bg-white/10" : "bg-white/60"
+      }`}
+    >
+      <Dumbbell size={18} className={tracked ? "text-white/40" : "text-gray-400"} />
+    </div>
+  );
+}
 
 type ExerciseStat = { exerciseId: string; sessionCount: number; lastDate: string };
 
@@ -123,33 +170,7 @@ export default function ExercisesPage() {
         }`}
         style={tracked ? { background: "#191714" } : undefined}
       >
-        {ex.videoUrl ? (
-          <video
-            src={ex.videoUrl}
-            className="w-12 h-12 rounded-xl object-cover flex-shrink-0"
-            autoPlay
-            loop
-            muted
-            playsInline
-          />
-        ) : ex.image ? (
-          <img
-            src={ex.image}
-            alt=""
-            className="w-12 h-12 rounded-xl object-cover flex-shrink-0"
-          />
-        ) : (
-          <div
-            className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
-              tracked ? "bg-white/10" : "bg-white/60"
-            }`}
-          >
-            <Dumbbell
-              size={18}
-              className={tracked ? "text-white/40" : "text-gray-400"}
-            />
-          </div>
-        )}
+        <ExerciseThumb exerciseId={ex.id} image={ex.image} tracked={tracked} />
 
         <div className="flex-1 min-w-0 text-left">
           <p
@@ -164,7 +185,7 @@ export default function ExercisesPage() {
               tracked ? "text-[#c9552c]" : "text-[#c9552c]/80"
             }`}
           >
-            {ex.muscleGroup.name}
+            {getMuscleGroupLabel(ex.muscleGroup.name, t)}
             {tracked ? ` · ${t("exercises.trackedSuffix")}` : ""}
           </p>
         </div>
@@ -270,7 +291,7 @@ export default function ExercisesPage() {
                   : "bg-[#ece7dd] text-gray-700"
               }`}
             >
-              {mg.name}
+              {getMuscleGroupLabel(mg.name, t)}
             </button>
           ))}
         </div>

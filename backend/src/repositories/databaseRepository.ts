@@ -32,6 +32,10 @@ export async function getAllExercises() {
   });
 }
 
+export async function getExerciseById(id: string) {
+  return await prisma.exercise.findUnique({ where: { id } });
+}
+
 export async function insertExercise(exercise: {
   name: string;
   muscleGroupId: string;
@@ -354,6 +358,9 @@ export async function insertUser(user: {
   name: string;
   authProvider?: string;
   language?: string;
+  emailVerified?: boolean;
+  verificationToken?: string;
+  verificationTokenExpiry?: Date;
 }) {
   return await prisma.user.create({
     data: user,

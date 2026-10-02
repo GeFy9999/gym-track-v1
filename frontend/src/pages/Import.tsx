@@ -12,6 +12,7 @@ import {
 import { API_URL } from "../lib/api";
 import { getWeightUnit } from "../utils/units";
 import { getDateLocale } from "../i18n";
+import { getMuscleGroupLabel } from "../utils/muscleGroupLabel";
 import {
   parseStrongCsv,
   getUniqueExerciseNames,
@@ -670,7 +671,7 @@ function ExerciseMappingCard({
                     className="w-full text-left text-sm px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700"
                   >
                     {e.name}{" "}
-                    <span className="text-gray-400">({e.muscleGroup.name})</span>
+                    <span className="text-gray-400">({getMuscleGroupLabel(e.muscleGroup.name, t)})</span>
                   </button>
                 ))}
                 {filtered.length === 0 && (
@@ -702,7 +703,7 @@ function ExerciseMappingCard({
           >
             {muscleGroups.map((mg) => (
               <option key={mg.id} value={mg.id}>
-                {mg.name}
+                {getMuscleGroupLabel(mg.name, t)}
               </option>
             ))}
           </select>

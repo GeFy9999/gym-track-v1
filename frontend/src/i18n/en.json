@@ -511,6 +511,17 @@
     "trackedAdded": "Exercise added to tracking",
     "trackedRemoved": "Exercise removed from tracking"
   },
+  "muscleGroups": {
+    "chest": "Chest",
+    "back": "Back",
+    "biceps": "Biceps",
+    "triceps": "Triceps",
+    "shoulders": "Shoulders",
+    "forearms": "Forearms",
+    "traps": "Traps",
+    "legs": "Legs",
+    "abs": "Abs"
+  },
   "import": {
     "title": "Import data",
     "subtitle": "From a CSV file",
@@ -640,6 +651,28 @@
     "confirm": "Confirm",
     "resetting": "Resetting...",
     "resetAction": "Reset"
+  },
+  "verifyEmailPending": {
+    "title": "Confirm your email",
+    "subtitle": "We sent a confirmation link to {{email}}. Click the link to activate your account.",
+    "iVerified": "I confirmed, continue",
+    "checking": "Checking...",
+    "stillNotVerified": "Your email isn't confirmed yet.",
+    "resendSuccess": "Email resent successfully",
+    "noEmailReceived": "Didn't get anything? Check your spam or",
+    "retryIn": "Retry in {{time}}",
+    "sending": "Sending...",
+    "retry": "retry",
+    "logout": "Log out",
+    "errorGeneric": "Error"
+  },
+  "verifyEmail": {
+    "verifying": "Confirming your email...",
+    "success": "Email confirmed!",
+    "redirecting": "Redirecting...",
+    "invalidLink": "Invalid link",
+    "errorGeneric": "Error",
+    "backToLogin": "Back to login"
   },
   "upgrade": {
     "title": "GymsTrack Pro",
