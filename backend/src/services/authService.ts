@@ -265,6 +265,28 @@ export const getMe = async (userId: string) => {
   return toPublicUser(user);
 };
 
+// There's no HTTP request context for this email (it's sent from an async
+// background flow, not a page render), so the language can't come from a
+// browser header — it has to come from the user's saved DB preference.
+const RESET_EMAIL_CONTENT = {
+  fr: {
+    subject: "Réinitialiser ton mot de passe — GymsTrack",
+    heading: "Réinitialisation du mot de passe",
+    body: "Clique sur le lien ci-dessous pour réinitialiser ton mot de passe :",
+    button: "Réinitialiser mon mot de passe",
+    expiry: "Ce lien expire dans 1 heure.",
+    ignore: "Si tu n'as pas demandé cette réinitialisation, ignore ce courriel.",
+  },
+  en: {
+    subject: "Reset your password — GymsTrack",
+    heading: "Password reset",
+    body: "Click the link below to reset your password:",
+    button: "Reset my password",
+    expiry: "This link expires in 1 hour.",
+    ignore: "If you didn't request this reset, just ignore this email.",
+  },
+} as const;
+
 export const forgotPassword = async (email: string) => {
   const user = await getUserByEmail(email);
   // Deliberately silent no-op for an unknown email — responding differently
@@ -280,19 +302,20 @@ export const forgotPassword = async (email: string) => {
   });
 
   const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+  const content = RESET_EMAIL_CONTENT[user.language === "en" ? "en" : "fr"];
 
   await resend.emails.send({
     from: "GymsTrack <noreply@gymstrack.com>",
     to: email,
-    subject: "Réinitialiser ton mot de passe — GymsTrack",
+    subject: content.subject,
     html: `
-      <h2>Réinitialisation du mot de passe</h2>
-      <p>Clique sur le lien ci-dessous pour réinitialiser ton mot de passe :</p>
+      <h2>${content.heading}</h2>
+      <p>${content.body}</p>
       <a href="${resetUrl}" style="display:inline-block;background:#f97316;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;">
-        Réinitialiser mon mot de passe
+        ${content.button}
       </a>
-      <p style="color:#888;margin-top:16px;">Ce lien expire dans 1 heure.</p>
-      <p style="color:#888;">Si tu n'as pas demandé cette réinitialisation, ignore ce courriel.</p>
+      <p style="color:#888;margin-top:16px;">${content.expiry}</p>
+      <p style="color:#888;">${content.ignore}</p>
     `,
   });
 };
