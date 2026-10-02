@@ -33,6 +33,13 @@ datasource db {
   authProvider  String   @default("email")
   resetToken    String?
   resetTokenExpiry DateTime?
+  // Defaults to true at the DB level so this migration doesn't retroactively
+  // lock out every existing account — register()/googleLogin() explicitly
+  // override this to false for a brand-new email/password signup, since
+  // Google sign-ins already have a provider-verified email.
+  emailVerified Boolean @default(true)
+  verificationToken       String?
+  verificationTokenExpiry DateTime?
   isPro                Boolean   @default(false)
   stripeCustomerId     String?   @unique
   stripeSubscriptionId String?

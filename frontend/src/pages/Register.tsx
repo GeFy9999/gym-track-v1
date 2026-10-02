@@ -108,7 +108,7 @@ export default function RegisterPage() {
 
       localStorage.setItem("token", result.token);
       localStorage.setItem("user", JSON.stringify(result.user));
-      navigate("/dashboard");
+      navigate("/verify-email-pending");
     } catch (err) {
       setServerError(
         err instanceof Error ? err.message : t("register.errors.unknown"),

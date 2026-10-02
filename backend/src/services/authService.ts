@@ -28,6 +28,7 @@ const toPublicUser = (user: {
   proInterval: string | null;
   loyaltyPeriodsPaid: number;
   billingProvider: string;
+  emailVerified: boolean;
 }) => ({
   id: user.id,
   email: user.email,
@@ -44,6 +45,7 @@ const toPublicUser = (user: {
   proInterval: user.proInterval,
   loyaltyPeriodsPaid: user.loyaltyPeriodsPaid,
   billingProvider: user.billingProvider,
+  emailVerified: user.emailVerified,
   loyaltyDiscountCents: computeLoyaltyDiscountCents(
     user.loyaltyPeriodsPaid,
     user.proInterval,
@@ -60,14 +62,23 @@ export const register = async (payload: {
   if (existing) throw new Error("Email déjà utilisé");
 
   const hashed = await bcrypt.hash(payload.password, 10);
+  const language = payload.language === "en" ? "en" : "fr";
+  const verificationToken = crypto.randomUUID();
+  const verificationTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
   const user = await insertUser({
     email: payload.email,
     password: hashed,
     name: payload.name,
     // The client detects the browser's locale and passes it along so a new
     // account starts in the visitor's language instead of always "fr".
-    language: payload.language === "en" ? "en" : "fr",
+    language,
+    emailVerified: false,
+    verificationToken,
+    verificationTokenExpiry,
   });
+
+  await sendVerificationEmail(user.email, language, verificationToken);
 
   const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, {
     expiresIn: "7d",
@@ -124,6 +135,9 @@ export const googleLogin = async (credential: string, language?: string) => {
       name,
       authProvider: "google",
       language: language === "en" ? "en" : "fr",
+      // Google has already verified this address, so skip our own
+      // verification email entirely for this signup path.
+      emailVerified: true,
     });
   }
 
@@ -344,4 +358,92 @@ export const resetPassword = async (token: string, newPassword: string) => {
       resetTokenExpiry: null,
     },
   });
+};
+
+const VERIFICATION_EMAIL_CONTENT = {
+  fr: {
+    subject: "Confirme ton adresse courriel — GymsTrack",
+    heading: "Bienvenue sur GymsTrack !",
+    body: "Clique sur le bouton ci-dessous pour confirmer ton adresse courriel et activer ton compte :",
+    button: "Confirmer mon courriel",
+    expiry: "Ce lien expire dans 24 heures.",
+    ignore: "Si tu n'as pas créé de compte GymsTrack, ignore ce courriel.",
+  },
+  en: {
+    subject: "Confirm your email — GymsTrack",
+    heading: "Welcome to GymsTrack!",
+    body: "Click the button below to confirm your email address and activate your account:",
+    button: "Confirm my email",
+    expiry: "This link expires in 24 hours.",
+    ignore: "If you didn't create a GymsTrack account, just ignore this email.",
+  },
+} as const;
+
+const sendVerificationEmail = async (
+  email: string,
+  language: string,
+  verificationToken: string,
+) => {
+  const verifyUrl = `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`;
+  const content = VERIFICATION_EMAIL_CONTENT[language === "en" ? "en" : "fr"];
+
+  await resend.emails.send({
+    from: "GymsTrack <noreply@gymstrack.com>",
+    to: email,
+    subject: content.subject,
+    html: `
+      <h2>${content.heading}</h2>
+      <p>${content.body}</p>
+      <a href="${verifyUrl}" style="display:inline-block;background:#f97316;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;">
+        ${content.button}
+      </a>
+      <p style="color:#888;margin-top:16px;">${content.expiry}</p>
+      <p style="color:#888;">${content.ignore}</p>
+    `,
+  });
+};
+
+export const verifyEmail = async (token: string) => {
+  const user = await prisma.user.findFirst({
+    where: {
+      verificationToken: token,
+      verificationTokenExpiry: { gt: new Date() },
+    },
+  });
+
+  if (!user) throw new Error("Lien expiré ou invalide");
+
+  const updated = await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      emailVerified: true,
+      verificationToken: null,
+      verificationTokenExpiry: null,
+    },
+  });
+
+  const jwtToken = jwt.sign({ userId: updated.id }, process.env.JWT_SECRET!, {
+    expiresIn: "7d",
+  });
+
+  return {
+    token: jwtToken,
+    user: toPublicUser(updated),
+  };
+};
+
+export const resendVerificationEmail = async (userId: string) => {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw new Error("Utilisateur introuvable");
+  if (user.emailVerified) return;
+
+  const verificationToken = crypto.randomUUID();
+  const verificationTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { verificationToken, verificationTokenExpiry },
+  });
+
+  await sendVerificationEmail(user.email, user.language, verificationToken);
 };
