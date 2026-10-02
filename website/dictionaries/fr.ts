@@ -84,10 +84,6 @@ const fr: Dictionary = {
     ],
   },
   pricing: {
-    eyebrow: "Tarifs",
-    title: "Gratuit pour commencer, Pro quand tu es prêt",
-    subtitle:
-      "L'essentiel du suivi d'entraînement est gratuit. Pro débloque les outils avancés pour les séances sérieuses.",
     plans: [
       {
         name: "Mensuel",
@@ -112,6 +108,7 @@ const fr: Dictionary = {
       },
     ],
     mostPopular: "Le plus populaire",
+    cta: "Commencer l'essai gratuit",
     loyalty: {
       title: "Plus tu restes, plus tu économises",
       subtitle:

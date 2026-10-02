@@ -84,10 +84,6 @@ const en: Dictionary = {
     ],
   },
   pricing: {
-    eyebrow: "Pricing",
-    title: "Free to start, Pro when you're ready",
-    subtitle:
-      "The essentials of workout tracking are free. Pro unlocks the advanced tools for serious training.",
     plans: [
       {
         name: "Monthly",
@@ -112,6 +108,7 @@ const en: Dictionary = {
       },
     ],
     mostPopular: "Most popular",
+    cta: "Start free trial",
     loyalty: {
       title: "The longer you stay, the more you save",
       subtitle:
