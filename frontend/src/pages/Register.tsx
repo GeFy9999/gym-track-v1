@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { Eye, EyeOff, User, Mail, Lock } from "lucide-react";
 import GoogleLoginButton from "../components/GoogleLoginButton";
 import { API_URL } from "../lib/api";
+import { capturePendingPlan } from "../utils/pendingPlan";
 
 const PASSWORD_RULES = [
   /.{8,}/,
@@ -32,8 +33,16 @@ type RegisterForm = {
 
 export default function RegisterPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { t, i18n } = useTranslation();
   const [serverError, setServerError] = useState<string | null>(null);
+
+  // A visitor arriving from the marketing site's plan picker (gymstrack.app)
+  // has "?plan=" in the URL — remembered now so the post-verification
+  // redirect can send them straight into Checkout for that plan.
+  useEffect(() => {
+    capturePendingPlan(searchParams.get("plan"));
+  }, [searchParams]);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
