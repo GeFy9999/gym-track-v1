@@ -1,4 +1,4 @@
-import { Check, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import type { Dictionary } from "@/dictionaries";
 
 type Props = {
@@ -71,22 +71,6 @@ export default function Pricing({ dict }: Props) {
               <span>{dict.loyalty.monthly}</span>
               <span>{dict.loyalty.annual}</span>
             </div>
-          </div>
-        </div>
-
-        <div className="max-w-2xl mx-auto">
-          <p className="text-center text-sm font-bold uppercase tracking-widest text-white/40 mb-5">
-            {dict.includedTitle}
-          </p>
-          <div className="grid sm:grid-cols-2 gap-3">
-            {dict.includedFeatures.map((f) => (
-              <div key={f} className="flex items-start gap-2.5">
-                <div className="w-5 h-5 rounded-full bg-[#3a9e6e]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <Check size={12} className="text-[#3a9e6e]" strokeWidth={3} />
-                </div>
-                <span className="text-sm text-white/70">{f}</span>
-              </div>
-            ))}
           </div>
         </div>
       </div>

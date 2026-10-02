@@ -3,6 +3,7 @@ import Nav from "@/components/Nav";
 import Hero from "@/components/Hero";
 import Features from "@/components/Features";
 import Demos from "@/components/Demos";
+import FeatureComparison from "@/components/FeatureComparison";
 import Pricing from "@/components/Pricing";
 import Faq from "@/components/Faq";
 import Footer from "@/components/Footer";
@@ -22,6 +23,7 @@ export default async function Home({
         <Hero dict={dict.hero} locale={locale as Locale} />
         <Features dict={dict.features} />
         <Demos dict={dict.demos} phoneDict={dict.phoneMock} />
+        <FeatureComparison dict={dict.comparison} />
         <Pricing dict={dict.pricing} />
         <Faq dict={dict.faq} />
       </main>

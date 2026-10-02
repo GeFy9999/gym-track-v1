@@ -44,14 +44,18 @@ export type Dictionary = {
       highlight: boolean;
     }[];
     mostPopular: string;
-    includedTitle: string;
-    includedFeatures: string[];
     loyalty: {
       title: string;
       subtitle: string;
       monthly: string;
       annual: string;
     };
+  };
+  comparison: {
+    badge: string;
+    title: string;
+    columns: { free: string; pro: string; lifetime: string };
+    rows: { label: string; free: string | boolean; pro: boolean; lifetime: boolean }[];
   };
   faq: {
     eyebrow: string;

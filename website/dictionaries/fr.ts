@@ -112,16 +112,6 @@ const fr: Dictionary = {
       },
     ],
     mostPopular: "Le plus populaire",
-    includedTitle: "Inclus avec Pro",
-    includedFeatures: [
-      "Historique illimité (au-delà de 90 jours)",
-      "Vue calendrier de ton historique",
-      "Export CSV de tes séances",
-      "Graphiques avancés : volume, 1RM, records par répétitions",
-      "Supersets et échauffement automatique",
-      "Mode barre et calculateur de plaques",
-      "Photos de progression illimitées",
-    ],
     loyalty: {
       title: "Plus tu restes, plus tu économises",
       subtitle:
@@ -129,6 +119,26 @@ const fr: Dictionary = {
       monthly: "Mensuel : -0,10 $ par renouvellement, jusqu'à -1,00 $",
       annual: "Annuel : -1,00 $ par renouvellement, jusqu'à -3,00 $",
     },
+  },
+  comparison: {
+    badge: "PRO",
+    title: "Fais passer tes séances au niveau supérieur",
+    columns: { free: "Gratuit", pro: "Pro", lifetime: "À vie" },
+    rows: [
+      { label: "Suivi des séances et exercices", free: true, pro: true, lifetime: true },
+      { label: "Import CSV", free: true, pro: true, lifetime: true },
+      { label: "Minuteur de repos", free: true, pro: true, lifetime: true },
+      { label: "Minuteur par exercice", free: false, pro: true, lifetime: true },
+      { label: "Historique", free: "90 jours", pro: true, lifetime: true },
+      { label: "Vue calendrier", free: false, pro: true, lifetime: true },
+      { label: "Export CSV", free: false, pro: true, lifetime: true },
+      { label: "Graphiques avancés (volume, 1RM, records)", free: false, pro: true, lifetime: true },
+      { label: "Supersets", free: false, pro: true, lifetime: true },
+      { label: "Échauffement automatique", free: false, pro: true, lifetime: true },
+      { label: "Mode barre et calculateur de plaques", free: false, pro: true, lifetime: true },
+      { label: "Photos de progression", free: false, pro: true, lifetime: true },
+      { label: "Réorganisation par glisser-déposer", free: false, pro: true, lifetime: true },
+    ],
   },
   faq: {
     eyebrow: "FAQ",
