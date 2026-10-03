@@ -85,7 +85,7 @@ const fr: Dictionary = {
     ],
   },
   about: {
-    eyebrow: "Notre approche",
+    eyebrow: "Comment nous fonctionnons",
     title: "Des séances, pas des routines figées",
     body: "La plupart des apps comme Strong ou Hevy te demandent de construire une routine d'avance, exercice par exercice, avant même de commencer à t'entraîner. GymsTrack fonctionne différemment : tu choisis un groupe musculaire, tu démarres ta séance, et tu ajoutes tes exercices au fur et à mesure — exactement comme tu t'entraînes vraiment.",
     points: [
