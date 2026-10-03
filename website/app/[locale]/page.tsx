@@ -22,7 +22,7 @@ export default async function Home({
       <main className="flex-1">
         <Hero dict={dict.hero} locale={locale as Locale} />
         <Features dict={dict.features} />
-        <About dict={dict.about} />
+        <About dict={dict.about} phoneDict={dict.phoneMock} />
         <Demos dict={dict.demos} phoneDict={dict.phoneMock} />
         <FeatureComparison
           dict={dict.comparison}
