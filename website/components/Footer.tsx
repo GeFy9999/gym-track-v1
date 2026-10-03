@@ -9,7 +9,7 @@ export default function Footer({ dict }: Props) {
   return (
     <footer className="border-t border-black/5 mt-auto">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 flex flex-col sm:flex-row items-center justify-between gap-6">
-        <Image src="/icon-mark.png" alt="GymsTrack" width={28} height={28} />
+        <Image src="/logo.webp" alt="GymsTrack" width={74} height={28} />
 
         <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm text-[#191714]/50">
           <a
