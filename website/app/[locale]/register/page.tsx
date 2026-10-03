@@ -247,13 +247,13 @@ function RegisterInner() {
 
           <p className="text-xs text-gray-400 text-center leading-relaxed">
             {t.legalPrefix}{" "}
-            <a href="https://gymstrack.com/terms" className="text-[#c9552c] underline">
+            <Link href={`/${locale}/terms`} className="text-[#c9552c] underline">
               {t.termsLink}
-            </a>{" "}
+            </Link>{" "}
             {t.legalAnd}{" "}
-            <a href="https://gymstrack.com/privacy" className="text-[#c9552c] underline">
+            <Link href={`/${locale}/privacy`} className="text-[#c9552c] underline">
               {t.privacyLink}
-            </a>
+            </Link>
           </p>
         </form>
 
