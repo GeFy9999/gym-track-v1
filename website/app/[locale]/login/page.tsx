@@ -69,9 +69,9 @@ export default function LoginPage() {
           <Image
             src="/logo.webp"
             alt="GymsTrack"
-            width={64}
+            width={169}
             height={64}
-            className="mx-auto mb-3 rounded-xl"
+            className="mx-auto mb-3"
           />
         </Link>
         <p className="text-xs font-bold text-white/60 uppercase tracking-widest">
