@@ -54,7 +54,31 @@ const PRICE_BY_PLAN: Record<Plan, string | undefined> = {
   lifetime: process.env.STRIPE_PRICE_LIFETIME,
 };
 
-export const createCheckoutSession = async (userId: string, plan: Plan) => {
+// Checkout can be started from the app's own Upgrade page OR from the
+// marketing site's plan picker (gymstrack.app has no account session of its
+// own to return to, and a user there should never land back on the web
+// app). The caller may ask for a different return origin, but only one of
+// these two known, trusted origins is ever actually used — otherwise
+// success_url/cancel_url would be an open redirect through Stripe.
+const ALLOWED_RETURN_ORIGINS = [process.env.FRONTEND_URL, process.env.MARKETING_SITE_URL].filter(
+  (v): v is string => !!v,
+);
+
+function resolveReturnUrl(candidate: string | undefined, fallback: string): string {
+  if (!candidate) return fallback;
+  try {
+    if (ALLOWED_RETURN_ORIGINS.includes(new URL(candidate).origin)) return candidate;
+  } catch {
+    // Not a valid absolute URL — ignore and use the fallback.
+  }
+  return fallback;
+}
+
+export const createCheckoutSession = async (
+  userId: string,
+  plan: Plan,
+  returnTo?: { success?: string; cancel?: string },
+) => {
   const priceId = PRICE_BY_PLAN[plan];
   if (!priceId) throw new Error("Plan invalide");
 
@@ -76,6 +100,10 @@ export const createCheckoutSession = async (userId: string, plan: Plan) => {
     });
   }
 
+  const successBase = resolveReturnUrl(returnTo?.success, `${process.env.FRONTEND_URL}/upgrade`);
+  const cancelUrl = resolveReturnUrl(returnTo?.cancel, `${process.env.FRONTEND_URL}/upgrade`);
+  const successUrl = `${successBase}${successBase.includes("?") ? "&" : "?"}session_id={CHECKOUT_SESSION_ID}`;
+
   // Managed Payments (Stripe's automatic tax handling) is on by default for
   // new accounts and requires a tax_code on every product — we don't want
   // that complexity yet, so opt every session out of it explicitly.
@@ -89,8 +117,8 @@ export const createCheckoutSession = async (userId: string, plan: Plan) => {
           customer: customerId,
           line_items: [{ price: priceId, quantity: 1 }],
           managed_payments: { enabled: false },
-          success_url: `${process.env.FRONTEND_URL}/upgrade?session_id={CHECKOUT_SESSION_ID}`,
-          cancel_url: `${process.env.FRONTEND_URL}/upgrade`,
+          success_url: successUrl,
+          cancel_url: cancelUrl,
         })
       : await client.checkout.sessions.create({
           mode: "subscription",
@@ -98,8 +126,8 @@ export const createCheckoutSession = async (userId: string, plan: Plan) => {
           line_items: [{ price: priceId, quantity: 1 }],
           subscription_data: { trial_period_days: 7 },
           managed_payments: { enabled: false },
-          success_url: `${process.env.FRONTEND_URL}/upgrade?session_id={CHECKOUT_SESSION_ID}`,
-          cancel_url: `${process.env.FRONTEND_URL}/upgrade`,
+          success_url: successUrl,
+          cancel_url: cancelUrl,
         });
 
   if (!session.url) throw new Error("Impossible de créer la session de paiement");
