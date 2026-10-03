@@ -22,11 +22,20 @@ try {
 initSyncQueue();
 
 if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js").catch((err) => {
-      console.error("Service worker registration failed:", err);
+  if (import.meta.env.PROD) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("/sw.js").catch((err) => {
+        console.error("Service worker registration failed:", err);
+      });
     });
-  });
+  } else {
+    // A service worker left over from a previous production build/preview
+    // intercepts Vite's own dev requests (HMR, module fetches), breaking
+    // live reload and serving stale code — so dev mode always sheds it.
+    navigator.serviceWorker.getRegistrations().then((regs) => {
+      regs.forEach((reg) => reg.unregister());
+    });
+  }
 }
 
 createRoot(document.getElementById("root")!).render(

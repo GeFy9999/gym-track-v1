@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Mail, LogOut } from "lucide-react";
 import { API_URL } from "../lib/api";
 import { consumePendingPlan } from "../utils/pendingPlan";
+import { useRestTimerContext } from "../contexts/RestTimerContext";
 
 const COOLDOWN_SECONDS = 300;
 
@@ -16,6 +17,7 @@ export default function VerifyEmailPendingPage() {
   const [checking, setChecking] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const { skip: stopRestTimer } = useRestTimerContext();
 
   useEffect(() => {
     const stored = localStorage.getItem("user");
@@ -87,6 +89,7 @@ export default function VerifyEmailPendingPage() {
   };
 
   const handleLogout = () => {
+    stopRestTimer();
     localStorage.clear();
     navigate("/login");
   };

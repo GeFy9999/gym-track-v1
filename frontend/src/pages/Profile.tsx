@@ -117,7 +117,7 @@ export default function ProfilePage() {
       {isPro ? (
         <div className="bg-[#ece7dd] rounded-2xl mb-6 shadow-sm px-4 py-4">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-[#c9552c]/10 flex items-center justify-center flex-shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
               <Crown size={16} className="text-[#c9552c]" />
             </div>
             <div className="flex-1 min-w-0">
@@ -174,7 +174,7 @@ export default function ProfilePage() {
               </p>
             </div>
             <div className="bg-[#ece7dd] px-4 py-4 flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-[#c9552c]/10 flex items-center justify-center flex-shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
                 <Crown size={16} className="text-[#c9552c]" />
               </div>
               <p className="flex-1 text-sm font-bold text-gray-900 uppercase">
@@ -596,7 +596,7 @@ export default function ProfilePage() {
           }}
           className="w-full flex items-center gap-3 px-4 py-4"
         >
-          <div className="w-9 h-9 rounded-xl bg-[#dc2626]/10 flex items-center justify-center flex-shrink-0">
+          <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <Trash2 size={16} className="text-[#dc2626]" />
           </div>
           <div className="flex-1 text-left">

@@ -273,6 +273,93 @@ body {
   animation: timer-urgent-pulse 0.6s ease-in-out infinite;
 }
 
+@keyframes sheet-slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+.animate-sheet-slide-up {
+  /* No forwards/both fill-mode: once this ends, `transform` must fall back
+     to the element's inline style (drag offset) instead of the animation
+     permanently pinning it to translateY(0), which silently blocked every
+     drag update after the entrance animation finished. */
+  animation: sheet-slide-up 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes bar-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-bar-slide-up {
+  animation: bar-slide-up 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes sheet-slide-down {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+.animate-sheet-slide-down {
+  /* Forwards fill is fine here (unlike the entrance animation): the
+     component unmounts right after this plays, so there's no lingering
+     element left around for the lock-in to break later drags on. */
+  animation: sheet-slide-down 0.3s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+@keyframes bar-slide-down {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+}
+.animate-bar-slide-down {
+  animation: bar-slide-down 0.3s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+@keyframes weight-gain-pop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 4px) scale(0.6);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1.1);
+  }
+  30% {
+    transform: translate(-50%, 0) scale(1);
+  }
+  75% {
+    opacity: 1;
+    transform: translate(-50%, -2px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -20px) scale(1);
+  }
+}
+.animate-weight-gain-pop {
+  /* The badge unmounts right after this plays (React state clears it), so
+     forwards fill is safe — no lingering element left to lock a property
+     the way the rest-timer entrance animation once did. */
+  animation: weight-gain-pop 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
 @keyframes set-check-pop {
   0% {
     transform: scale(1);
