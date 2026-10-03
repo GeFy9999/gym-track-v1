@@ -57,6 +57,10 @@ captures/
 *.keystore
 keystore.properties
 
+# Google Play service account key (reconstructed from a secret in CI) —
+# must never be committed.
+play-store-key.json
+
 # External native build folder generated in Android Studio 2.2 and later
 .externalNativeBuild
 .cxx/

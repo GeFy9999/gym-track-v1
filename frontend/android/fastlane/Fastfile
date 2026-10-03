@@ -1,0 +1,27 @@
+default_platform(:android)
+
+platform :android do
+  desc "Build the release AAB and upload it to a Google Play track"
+  desc "Usage: bundle exec fastlane deploy track:internal"
+  lane :deploy do |options|
+    track = options[:track] || "internal"
+
+    gradle(
+      task: "bundle",
+      build_type: "Release",
+      project_dir: "."
+    )
+
+    upload_to_play_store(
+      track: track,
+      aab: "./app/build/outputs/bundle/release/app-release.aab",
+      json_key: ENV["PLAY_STORE_JSON_KEY_PATH"],
+      # This pipeline only ever ships the binary — the store listing
+      # (description, screenshots, etc.) is managed by hand in the Play
+      # Console, and letting supply touch it risks silently wiping it out.
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+end
