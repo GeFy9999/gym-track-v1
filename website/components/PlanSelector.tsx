@@ -29,13 +29,13 @@ export default function PlanSelector({ dict, locale }: Props) {
               key={plan.key}
               type="button"
               onClick={() => setSelected(i)}
-              className={`w-full text-left rounded-2xl p-5 border transition-colors ${
+              className={`w-full text-left rounded-2xl p-4 sm:p-5 border transition-colors ${
                 isSelected
                   ? "border-[#c9552c] bg-[#c9552c]/10"
                   : "border-white/10 hover:border-white/20"
               }`}
             >
-              <div className="flex items-center justify-between gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
                 <div className="flex items-center gap-3">
                   <span
                     className={`w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${
@@ -59,7 +59,7 @@ export default function PlanSelector({ dict, locale }: Props) {
                     </p>
                   </div>
                 </div>
-                <p className="text-xs text-white/40 text-right flex-shrink-0">
+                <p className="text-xs text-white/40 pl-8 sm:pl-0 sm:text-right flex-shrink-0">
                   {plan.billing}
                 </p>
               </div>

@@ -23,8 +23,8 @@ export default function Hero({ dict, locale }: Props) {
       />
       <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80" />
 
-      <div className="relative z-10 text-center px-6 max-w-3xl">
-        <h1 className="text-5xl sm:text-7xl font-black text-white leading-[1.05] tracking-tight">
+      <div className="relative z-10 text-center px-4 sm:px-6 max-w-3xl">
+        <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-white leading-[1.05] tracking-tight">
           {dict.title[0]}
           <br />
           {dict.title[1]}
