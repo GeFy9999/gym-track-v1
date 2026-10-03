@@ -84,6 +84,28 @@ const fr: Dictionary = {
       },
     ],
   },
+  about: {
+    eyebrow: "Notre approche",
+    title: "Des séances, pas des routines figées",
+    body: "La plupart des apps comme Strong ou Hevy te demandent de construire une routine d'avance, exercice par exercice, avant même de commencer à t'entraîner. GymsTrack fonctionne différemment : tu choisis un groupe musculaire, tu démarres ta séance, et tu ajoutes tes exercices au fur et à mesure — exactement comme tu t'entraînes vraiment.",
+    points: [
+      {
+        title: "Par séance, pas par exercice",
+        description:
+          "Organise-toi autour de tes journées d'entraînement (Dos, Jambes, Push...) plutôt que de routines rigides à préparer d'avance.",
+      },
+      {
+        title: "Flexible dès le départ",
+        description:
+          "Improvise ta séance en temps réel — ajoute, retire ou réordonne tes exercices sans jamais être bloqué par un plan figé.",
+      },
+      {
+        title: "Le suivi suit, sans friction",
+        description:
+          "Poids, répétitions et progression sont enregistrés automatiquement, peu importe comment ta séance évolue.",
+      },
+    ],
+  },
   pricing: {
     proLabel: "PRO",
     plans: [
@@ -130,21 +152,21 @@ const fr: Dictionary = {
   comparison: {
     badge: "PRO",
     title: "Fais passer tes séances au niveau supérieur",
-    columns: { free: "Gratuit", pro: "Pro", lifetime: "À vie" },
+    columns: { free: "Gratuit", pro: "Pro" },
     rows: [
-      { label: "Suivi des séances et exercices", free: true, pro: true, lifetime: true },
-      { label: "Import CSV", free: true, pro: true, lifetime: true },
-      { label: "Minuteur de repos", free: true, pro: true, lifetime: true },
-      { label: "Minuteur par exercice", free: false, pro: true, lifetime: true },
-      { label: "Historique", free: "90 jours", pro: true, lifetime: true },
-      { label: "Vue calendrier", free: false, pro: true, lifetime: true },
-      { label: "Export CSV", free: false, pro: true, lifetime: true },
-      { label: "Graphiques avancés (volume, 1RM, records)", free: false, pro: true, lifetime: true },
-      { label: "Supersets", free: false, pro: true, lifetime: true },
-      { label: "Échauffement automatique", free: false, pro: true, lifetime: true },
-      { label: "Mode barre et calculateur de plaques", free: false, pro: true, lifetime: true },
-      { label: "Photos de progression", free: false, pro: true, lifetime: true },
-      { label: "Réorganisation par glisser-déposer", free: false, pro: true, lifetime: true },
+      { label: "Suivi des séances et exercices", free: true, pro: true },
+      { label: "Import CSV", free: true, pro: true },
+      { label: "Minuteur de repos", free: true, pro: true },
+      { label: "Minuteur par exercice", free: false, pro: true },
+      { label: "Historique", free: "90 jours", pro: true },
+      { label: "Vue calendrier", free: false, pro: true },
+      { label: "Export CSV", free: false, pro: true },
+      { label: "Graphiques avancés (volume, 1RM, records)", free: false, pro: true },
+      { label: "Supersets", free: false, pro: true },
+      { label: "Échauffement automatique", free: false, pro: true },
+      { label: "Mode barre et calculateur de plaques", free: false, pro: true },
+      { label: "Photos de progression", free: false, pro: true },
+      { label: "Réorganisation par glisser-déposer", free: false, pro: true },
     ],
   },
   faq: {

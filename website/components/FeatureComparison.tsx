@@ -1,4 +1,4 @@
-import { Check, X } from "lucide-react";
+import { Check } from "lucide-react";
 import PlanSelector from "./PlanSelector";
 import type { Dictionary, Locale } from "@/dictionaries";
 
@@ -16,12 +16,11 @@ function Cell({ value }: { value: string | boolean }) {
       </div>
     );
   }
+  // Not included — a plain dash reads as "not part of this plan" without
+  // the harsher, more negative weight of a visible X mark on every other
+  // row, which made the free column look emptier than it actually is.
   if (value === false) {
-    return (
-      <div className="flex justify-center">
-        <X size={16} className="text-white/20" strokeWidth={2.5} />
-      </div>
-    );
+    return <p className="text-center text-white/15 text-sm select-none">—</p>;
   }
   return <p className="text-center text-sm text-white/40">{value}</p>;
 }
@@ -45,18 +44,15 @@ export default function FeatureComparison({ dict, pricingDict, locale }: Props) 
           </h2>
 
           <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
-            <table className="w-full min-w-[340px] sm:min-w-[420px] border-collapse">
+            <table className="w-full min-w-[300px] border-collapse">
               <thead>
                 <tr className="border-b border-white/10">
                   <th className="text-left pb-3 font-normal" />
-                  <th className="pb-3 w-14 sm:w-24 text-[11px] sm:text-sm font-bold text-white/50 uppercase tracking-wide">
+                  <th className="pb-3 w-20 sm:w-28 text-[11px] sm:text-sm font-bold text-white/50 uppercase tracking-wide">
                     {dict.columns.free}
                   </th>
-                  <th className="pb-3 w-14 sm:w-24 text-[11px] sm:text-sm font-bold text-[#f0994a] uppercase tracking-wide">
+                  <th className="pb-3 w-20 sm:w-28 text-[11px] sm:text-sm font-bold text-[#f0994a] uppercase tracking-wide">
                     {dict.columns.pro}
-                  </th>
-                  <th className="pb-3 w-14 sm:w-24 text-[11px] sm:text-sm font-bold text-white/50 uppercase tracking-wide">
-                    {dict.columns.lifetime}
                   </th>
                 </tr>
               </thead>
@@ -71,9 +67,6 @@ export default function FeatureComparison({ dict, pricingDict, locale }: Props) 
                     </td>
                     <td className="py-3.5">
                       <Cell value={row.pro} />
-                    </td>
-                    <td className="py-3.5">
-                      <Cell value={row.lifetime} />
                     </td>
                   </tr>
                 ))}

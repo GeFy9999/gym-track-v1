@@ -33,6 +33,12 @@ export type Dictionary = {
     subtitle: string;
     items: { title: string; description: string }[];
   };
+  about: {
+    eyebrow: string;
+    title: string;
+    body: string;
+    points: { title: string; description: string }[];
+  };
   pricing: {
     proLabel: string;
     plans: {
@@ -57,8 +63,8 @@ export type Dictionary = {
   comparison: {
     badge: string;
     title: string;
-    columns: { free: string; pro: string; lifetime: string };
-    rows: { label: string; free: string | boolean; pro: boolean; lifetime: boolean }[];
+    columns: { free: string; pro: string };
+    rows: { label: string; free: string | boolean; pro: boolean }[];
   };
   faq: {
     eyebrow: string;
