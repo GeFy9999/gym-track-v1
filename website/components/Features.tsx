@@ -1,25 +1,5 @@
-import {
-  LineChart,
-  Layers,
-  Scale,
-  Camera,
-  Timer,
-  FileSpreadsheet,
-  Languages,
-  Smartphone,
-} from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import type { Dictionary } from "@/dictionaries";
-
-const icons = [
-  LineChart,
-  Layers,
-  Scale,
-  Camera,
-  Timer,
-  FileSpreadsheet,
-  Languages,
-  Smartphone,
-];
 
 type Props = {
   dict: Dictionary["features"];
@@ -27,37 +7,39 @@ type Props = {
 
 export default function Features({ dict }: Props) {
   return (
-    <section id="fonctionnalites" className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20 md:py-28">
-      <div className="text-center max-w-xl mx-auto mb-14">
-        <p className="text-xs font-bold uppercase tracking-widest text-[#c9552c] mb-3">
-          {dict.eyebrow}
-        </p>
+    <section id="fonctionnalites" className="max-w-4xl mx-auto px-4 sm:px-6 py-16 sm:py-20 md:py-28">
+      <div className="mb-10">
+        <div className="flex items-center gap-2.5 mb-3">
+          <span className="w-5 h-px bg-[#c9552c]" />
+          <p className="text-xs font-bold uppercase tracking-widest text-[#c9552c]">
+            {dict.eyebrow}
+          </p>
+        </div>
         <h2 className="text-3xl sm:text-4xl font-black text-[#191714] tracking-tight">
           {dict.title}
         </h2>
-        <p className="text-[#191714]/60 mt-4">{dict.subtitle}</p>
+        <p className="text-[#191714]/60 mt-3 max-w-lg">{dict.subtitle}</p>
       </div>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        {dict.items.map((f, i) => {
-          const Icon = icons[i];
-          return (
-            <div
-              key={f.title}
-              className="bg-[#ece7dd] rounded-3xl p-6 hover:bg-[#e4ddcf] transition-colors"
-            >
-              <div className="w-11 h-11 rounded-2xl bg-[#191714] flex items-center justify-center mb-4">
-                <Icon size={20} className="text-[#f0994a]" />
-              </div>
-              <h3 className="text-sm font-bold text-[#191714] uppercase tracking-wide mb-1.5">
+      <div className="rounded-2xl border border-[#191714]/10 overflow-hidden">
+        {dict.items.map((f, i) => (
+          <div
+            key={f.title}
+            className={`flex items-center justify-between gap-4 px-5 sm:px-6 py-4 sm:py-5 transition-colors hover:bg-[#ece7dd] ${
+              i === 0 ? "bg-[#ece7dd]/70" : "bg-[#faf6f1]"
+            } ${i !== 0 ? "border-t border-[#191714]/10" : ""}`}
+          >
+            <div className="flex items-baseline gap-3 min-w-0">
+              <span className="font-bold text-[#191714] text-sm sm:text-base whitespace-nowrap">
                 {f.title}
-              </h3>
-              <p className="text-sm text-[#191714]/60 leading-relaxed">
+              </span>
+              <span className="text-xs sm:text-sm text-[#191714]/50 truncate">
                 {f.description}
-              </p>
+              </span>
             </div>
-          );
-        })}
+            <ArrowRight size={18} className="text-[#191714]/40 flex-shrink-0" />
+          </div>
+        ))}
       </div>
     </section>
   );
