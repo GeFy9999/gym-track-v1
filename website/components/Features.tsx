@@ -27,7 +27,7 @@ type Props = {
 
 export default function Features({ dict }: Props) {
   return (
-    <section id="fonctionnalites" className="max-w-6xl mx-auto px-6 py-20 md:py-28">
+    <section id="fonctionnalites" className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20 md:py-28">
       <div className="text-center max-w-xl mx-auto mb-14">
         <p className="text-xs font-bold uppercase tracking-widest text-[#c9552c] mb-3">
           {dict.eyebrow}

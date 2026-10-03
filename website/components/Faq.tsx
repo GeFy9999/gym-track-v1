@@ -6,7 +6,7 @@ type Props = {
 
 export default function Faq({ dict }: Props) {
   return (
-    <section id="faq" className="max-w-3xl mx-auto px-6 py-20 md:py-28">
+    <section id="faq" className="max-w-3xl mx-auto px-4 sm:px-6 py-16 sm:py-20 md:py-28">
       <div className="text-center mb-12">
         <p className="text-xs font-bold uppercase tracking-widest text-[#c9552c] mb-3">
           {dict.eyebrow}

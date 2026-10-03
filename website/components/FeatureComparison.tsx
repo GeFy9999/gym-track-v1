@@ -28,8 +28,8 @@ function Cell({ value }: { value: string | boolean }) {
 
 export default function FeatureComparison({ dict, pricingDict, locale }: Props) {
   return (
-    <section id="tarifs" className="bg-[#191714] py-20 md:py-28">
-      <div className="max-w-6xl mx-auto px-6 grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+    <section id="tarifs" className="bg-[#191714] py-16 sm:py-20 md:py-28">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
         <div>
           <div className="flex items-center gap-2.5 mb-6">
             <span className="text-lg font-black tracking-tight text-white">
@@ -44,18 +44,18 @@ export default function FeatureComparison({ dict, pricingDict, locale }: Props) 
             {dict.title}
           </h2>
 
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[420px] border-collapse">
+          <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+            <table className="w-full min-w-[340px] sm:min-w-[420px] border-collapse">
               <thead>
                 <tr className="border-b border-white/10">
                   <th className="text-left pb-3 font-normal" />
-                  <th className="pb-3 w-24 text-sm font-bold text-white/50 uppercase tracking-wide">
+                  <th className="pb-3 w-14 sm:w-24 text-[11px] sm:text-sm font-bold text-white/50 uppercase tracking-wide">
                     {dict.columns.free}
                   </th>
-                  <th className="pb-3 w-24 text-sm font-bold text-[#f0994a] uppercase tracking-wide">
+                  <th className="pb-3 w-14 sm:w-24 text-[11px] sm:text-sm font-bold text-[#f0994a] uppercase tracking-wide">
                     {dict.columns.pro}
                   </th>
-                  <th className="pb-3 w-24 text-sm font-bold text-white/50 uppercase tracking-wide">
+                  <th className="pb-3 w-14 sm:w-24 text-[11px] sm:text-sm font-bold text-white/50 uppercase tracking-wide">
                     {dict.columns.lifetime}
                   </th>
                 </tr>
@@ -63,7 +63,7 @@ export default function FeatureComparison({ dict, pricingDict, locale }: Props) 
               <tbody>
                 {dict.rows.map((row) => (
                   <tr key={row.label} className="border-b border-white/5 last:border-0">
-                    <td className="py-3.5 text-sm font-semibold text-white">
+                    <td className="py-3.5 pr-2 text-[13px] sm:text-sm font-semibold text-white">
                       {row.label}
                     </td>
                     <td className="py-3.5">
