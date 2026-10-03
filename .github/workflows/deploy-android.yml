@@ -1,0 +1,105 @@
+name: Deploy Android to Play Store
+
+# Manual only — publishing to real users (or even internal testers) should
+# never happen as a side effect of an ordinary push.
+on:
+  workflow_dispatch:
+    inputs:
+      track:
+        description: "Play Store track to upload to"
+        required: true
+        default: "internal"
+        type: choice
+        options:
+          - internal
+          - alpha
+          - beta
+          - production
+
+permissions:
+  contents: write # needed to commit the versionCode bump back
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build web assets
+        working-directory: frontend
+        run: npm run build
+
+      - name: Sync Capacitor Android project
+        working-directory: frontend
+        run: npx cap sync android
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: android-actions/setup-android@v3
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2"
+          bundler-cache: true
+          working-directory: frontend/android
+
+      - name: Make gradlew executable
+        working-directory: frontend/android
+        run: chmod +x gradlew
+
+      - name: Restore release keystore
+        working-directory: frontend/android
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > gymstrack-release.jks
+          cat > keystore.properties <<EOF
+          storeFile=../gymstrack-release.jks
+          storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
+          keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
+          EOF
+
+      - name: Restore Play Store service account key
+        working-directory: frontend/android
+        run: echo '${{ secrets.PLAY_STORE_JSON_KEY }}' > play-store-key.json
+
+      - name: Bump versionCode
+        working-directory: frontend/android
+        run: |
+          CURRENT=$(grep -oP 'versionCode \K[0-9]+' app/build.gradle)
+          NEXT=$((CURRENT + 1))
+          sed -i "s/versionCode $CURRENT/versionCode $NEXT/" app/build.gradle
+          echo "Bumped versionCode $CURRENT -> $NEXT"
+          echo "NEW_VERSION_CODE=$NEXT" >> "$GITHUB_ENV"
+
+      - name: Build and upload to Play Store
+        working-directory: frontend/android
+        env:
+          PLAY_STORE_JSON_KEY_PATH: play-store-key.json
+        run: bundle exec fastlane deploy track:${{ github.event.inputs.track }}
+
+      - name: Remove restored secrets from the workspace
+        if: always()
+        working-directory: frontend/android
+        run: rm -f gymstrack-release.jks keystore.properties play-store-key.json
+
+      - name: Commit versionCode bump
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add frontend/android/app/build.gradle
+          git commit -m "chore: bump Android versionCode to ${{ env.NEW_VERSION_CODE }} [skip ci]"
+          git push
