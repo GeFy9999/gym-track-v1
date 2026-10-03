@@ -49,7 +49,11 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - uses: android-actions/setup-android@v3
+      # android-actions/setup-android prompts interactively per license with
+      # no way to auto-answer in CI, so it just hangs. The SDK is already
+      # preinstalled on this runner — just accept its licenses directly.
+      - name: Accept Android SDK licenses
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses || true
 
       - uses: ruby/setup-ruby@v1
         with:
