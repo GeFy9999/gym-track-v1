@@ -80,6 +80,13 @@ jobs:
         working-directory: frontend/android
         run: echo '${{ secrets.PLAY_STORE_JSON_KEY }}' > play-store-key.json
 
+      - name: Diagnose active JDK
+        working-directory: frontend/android
+        run: |
+          echo "JAVA_HOME=$JAVA_HOME"
+          java -version
+          ./gradlew -version
+
       - name: Bump versionCode
         working-directory: frontend/android
         run: |
