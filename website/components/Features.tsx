@@ -15,7 +15,7 @@ export default function Features({ dict }: Props) {
             {dict.eyebrow}
           </p>
         </div>
-        <h2 className="text-3xl sm:text-4xl font-black text-[#191714] tracking-tight">
+        <h2 className="text-4xl sm:text-5xl font-black text-[#191714] tracking-tight">
           {dict.title}
         </h2>
         <p className="text-[#191714]/60 mt-3 max-w-lg">{dict.subtitle}</p>

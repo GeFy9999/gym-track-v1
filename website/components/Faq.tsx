@@ -11,7 +11,7 @@ export default function Faq({ dict }: Props) {
         <p className="text-xs font-bold uppercase tracking-widest text-[#c9552c] mb-3">
           {dict.eyebrow}
         </p>
-        <h2 className="text-3xl sm:text-4xl font-black text-[#191714] tracking-tight">
+        <h2 className="text-4xl sm:text-5xl font-black text-[#191714] tracking-tight">
           {dict.title}
         </h2>
       </div>

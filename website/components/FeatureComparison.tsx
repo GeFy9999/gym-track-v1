@@ -39,7 +39,7 @@ export default function FeatureComparison({ dict, pricingDict, locale }: Props) 
             </span>
           </div>
 
-          <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight mb-8 max-w-md">
+          <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight mb-8 max-w-md">
             {dict.title}
           </h2>
 
