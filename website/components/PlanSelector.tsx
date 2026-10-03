@@ -2,18 +2,19 @@
 
 import { useState } from "react";
 import { Sparkles } from "lucide-react";
-import type { Dictionary } from "@/dictionaries";
+import type { Dictionary, Locale } from "@/dictionaries";
 
 type Props = {
   dict: Dictionary["pricing"];
+  locale: Locale;
 };
 
-// A marketing-site visitor has no GymsTrack account yet, and Stripe
-// Checkout here is only ever created for an authenticated user — so
-// "Commencer" sends them to create an account first (plan remembered via
-// the query param), and the account app itself takes them into Checkout
-// once they're verified. See Register.tsx / VerifyEmail(Pending).tsx.
-export default function PlanSelector({ dict }: Props) {
+// A brand-new visitor has no GymsTrack account yet, and Stripe Checkout is
+// only ever created for an authenticated user — so "Commencer" sends them
+// to create an account first, right here on the site (plan remembered via
+// the query param + pendingPlan), and Checkout opens automatically right
+// after email verification. See register/verify-email(-pending) pages.
+export default function PlanSelector({ dict, locale }: Props) {
   const defaultIndex = dict.plans.findIndex((p) => p.highlight);
   const [selected, setSelected] = useState(defaultIndex >= 0 ? defaultIndex : 0);
   const selectedPlan = dict.plans[selected];
@@ -68,7 +69,7 @@ export default function PlanSelector({ dict }: Props) {
       </div>
 
       <a
-        href={`https://gymstrack.com/register?plan=${selectedPlan?.key}`}
+        href={`/${locale}/register?plan=${selectedPlan?.key}`}
         className="block text-center mt-5 bg-[#c9552c] text-white text-sm font-bold uppercase tracking-wide py-4 rounded-full shadow-sm hover:opacity-90 active:scale-[0.98] transition-all"
       >
         {dict.cta}

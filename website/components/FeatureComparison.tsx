@@ -1,10 +1,11 @@
 import { Check, X } from "lucide-react";
 import PlanSelector from "./PlanSelector";
-import type { Dictionary } from "@/dictionaries";
+import type { Dictionary, Locale } from "@/dictionaries";
 
 type Props = {
   dict: Dictionary["comparison"];
   pricingDict: Dictionary["pricing"];
+  locale: Locale;
 };
 
 function Cell({ value }: { value: string | boolean }) {
@@ -25,7 +26,7 @@ function Cell({ value }: { value: string | boolean }) {
   return <p className="text-center text-sm text-white/40">{value}</p>;
 }
 
-export default function FeatureComparison({ dict, pricingDict }: Props) {
+export default function FeatureComparison({ dict, pricingDict, locale }: Props) {
   return (
     <section id="tarifs" className="bg-[#191714] py-20 md:py-28">
       <div className="max-w-6xl mx-auto px-6 grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
@@ -81,7 +82,7 @@ export default function FeatureComparison({ dict, pricingDict }: Props) {
           </div>
         </div>
 
-        <PlanSelector dict={pricingDict} />
+        <PlanSelector dict={pricingDict} locale={locale} />
       </div>
     </section>
   );

@@ -28,7 +28,15 @@ export default function Nav({ dict, locale }: Props) {
           </a>
         </nav>
 
-        <LanguageSwitcher locale={locale} />
+        <div className="flex items-center gap-5">
+          <Link
+            href={`/${locale}/login`}
+            className="hidden sm:block text-sm font-semibold text-white/70 hover:text-white transition-colors"
+          >
+            {dict.login}
+          </Link>
+          <LanguageSwitcher locale={locale} />
+        </div>
       </div>
     </header>
   );

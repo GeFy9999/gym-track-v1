@@ -19,7 +19,7 @@ stripeRouter.post(
   async (req: AuthRequest, res) => {
     try {
       const userId = req.userId!;
-      const { plan } = req.body;
+      const { plan, successUrl, cancelUrl } = req.body;
 
       if (!plan || !["monthly", "annual", "lifetime"].includes(plan)) {
         return res
@@ -27,7 +27,10 @@ stripeRouter.post(
           .json({ error: "Plan invalide (monthly, annual ou lifetime)" });
       }
 
-      const url = await createCheckoutSession(userId, plan);
+      const url = await createCheckoutSession(userId, plan, {
+        success: successUrl,
+        cancel: cancelUrl,
+      });
       return res.status(200).json({ url });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);

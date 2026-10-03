@@ -3,6 +3,7 @@ export type Dictionary = {
     features: string;
     pricing: string;
     faq: string;
+    login: string;
   };
   hero: {
     title: [string, string];
@@ -73,6 +74,137 @@ export type Dictionary = {
   meta: {
     title: string;
     description: string;
+  };
+  auth: {
+    continueWithGoogle: string;
+    login: {
+      subtitle: string;
+      email: string;
+      emailPlaceholder: string;
+      password: string;
+      submit: string;
+      submitting: string;
+      forgotPassword: string;
+      or: string;
+      noAccount: string;
+      createAccount: string;
+      errors: {
+        emailRequired: string;
+        emailInvalid: string;
+        passwordRequired: string;
+        generic: string;
+        unknown: string;
+      };
+    };
+    register: {
+      subtitle: string;
+      name: string;
+      namePlaceholder: string;
+      email: string;
+      emailPlaceholder: string;
+      password: string;
+      confirmPassword: string;
+      submit: string;
+      submitting: string;
+      or: string;
+      haveAccount: string;
+      signIn: string;
+      legalPrefix: string;
+      termsLink: string;
+      legalAnd: string;
+      privacyLink: string;
+      strength: { weak: string; medium: string; good: string };
+      rules: {
+        minLength: string;
+        uppercase: string;
+        lowercase: string;
+        digit: string;
+        special: string;
+      };
+      errors: {
+        nameMin: string;
+        nameMax: string;
+        emailRequired: string;
+        emailInvalid: string;
+        passwordMin: string;
+        passwordUppercase: string;
+        passwordLowercase: string;
+        passwordDigit: string;
+        passwordSpecial: string;
+        confirmRequired: string;
+        passwordMismatch: string;
+        generic: string;
+        unknown: string;
+      };
+    };
+    forgotPassword: {
+      title: string;
+      subtitle: string;
+      email: string;
+      emailPlaceholder: string;
+      sendLink: string;
+      emailSent: string;
+      emailSentDesc: string;
+      backToLogin: string;
+      resendSuccess: string;
+      noEmailReceived: string;
+      retryIn: string;
+      sending: string;
+      retry: string;
+      errors: { emailRequired: string; emailInvalid: string; generic: string };
+    };
+    resetPassword: {
+      title: string;
+      subtitle: string;
+      newPassword: string;
+      confirm: string;
+      resetting: string;
+      resetAction: string;
+      invalidLink: string;
+      backToLogin: string;
+      resetDone: string;
+      resetDoneDesc: string;
+      signIn: string;
+      rules: {
+        minLength: string;
+        uppercase: string;
+        lowercase: string;
+        digit: string;
+        special: string;
+      };
+      errors: {
+        minLength: string;
+        uppercase: string;
+        lowercase: string;
+        digit: string;
+        special: string;
+        confirmRequired: string;
+        mismatch: string;
+        generic: string;
+      };
+    };
+    verifyEmailPending: {
+      title: string;
+      subtitle: string;
+      iVerified: string;
+      checking: string;
+      stillNotVerified: string;
+      resendSuccess: string;
+      noEmailReceived: string;
+      retryIn: string;
+      sending: string;
+      retry: string;
+      logout: string;
+      errorGeneric: string;
+    };
+    verifyEmail: {
+      verifying: string;
+      success: string;
+      redirecting: string;
+      invalidLink: string;
+      errorGeneric: string;
+      backToLogin: string;
+    };
   };
 };
 
