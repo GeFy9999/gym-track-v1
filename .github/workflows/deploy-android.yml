@@ -47,7 +47,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: "17"
+          java-version: "21"
 
       # android-actions/setup-android prompts interactively per license with
       # no way to auto-answer in CI, so it just hangs. The SDK is already
