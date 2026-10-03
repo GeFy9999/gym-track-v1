@@ -10,7 +10,7 @@ type Props = {
 // as authentic without depending on an exported image asset.
 export default function PhoneMockup({ dict }: Props) {
   return (
-    <div className="relative mx-auto w-[280px] sm:w-[320px]">
+    <div className="relative mx-auto w-full max-w-[240px] sm:max-w-[320px]">
       <div className="relative rounded-[2.5rem] border-[8px] border-[#191714] bg-[#191714] shadow-2xl overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-5 bg-[#191714] rounded-b-2xl z-10" />
         <div className="bg-[#faf6f1] rounded-[2rem] overflow-hidden">
