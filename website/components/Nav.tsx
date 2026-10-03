@@ -15,11 +15,11 @@ export default function Nav({ dict, locale }: Props) {
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 h-20 sm:h-24 flex items-center justify-between">
         <Link href={`/${locale}`}>
           <Image
-            src="/icon-mark.png"
+            src="/logo.webp"
             alt="GymsTrack"
-            width={68}
+            width={179}
             height={68}
-            className="w-12 h-12 sm:w-[68px] sm:h-[68px]"
+            className="w-[127px] h-12 sm:w-[179px] sm:h-[68px]"
           />
         </Link>
 
