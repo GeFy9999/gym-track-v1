@@ -31,7 +31,7 @@ export default async function Home({
         />
         <Faq dict={dict.faq} />
       </main>
-      <Footer dict={dict.footer} />
+      <Footer dict={dict.footer} locale={locale as Locale} />
     </>
   );
 }
