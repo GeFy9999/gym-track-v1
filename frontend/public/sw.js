@@ -69,7 +69,10 @@ self.addEventListener("fetch", (event) => {
             if (response.ok) cache.put(request, response.clone());
             return response;
           })
-          .catch(() => cached);
+          // Never resolve to undefined here — respondWith() requires an
+          // actual Response, or the browser throws "Failed to convert
+          // value to 'Response'" and the request just dies.
+          .catch(() => cached || Response.error());
         return cached || networkFetch;
       }),
     );

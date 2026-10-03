@@ -31,16 +31,43 @@ import OfflineBanner from "./components/OfflineBanner";
 import { Capacitor } from "@capacitor/core";
 import { App as CapacitorApp } from "@capacitor/app";
 
+// Must match the longest of the sheet/bar exit animations in index.css
+// (both 0.3s), plus a small buffer so the unmount never cuts it off early.
+const REST_TIMER_EXIT_MS = 320;
+
 function GlobalRestTimer() {
   const { isActive, secondsLeft, totalSeconds, skip, adjustSeconds } =
     useRestTimerContext();
-  if (!isActive) return null;
+  const [visible, setVisible] = useState(isActive);
+  const [exiting, setExiting] = useState(false);
+
+  useEffect(() => {
+    if (isActive) {
+      setVisible(true);
+      setExiting(false);
+      return;
+    }
+    if (!visible) return;
+    // Keep the component mounted long enough to play its exit animation
+    // (slide down / fade out) instead of vanishing instantly when the
+    // timer ends or gets skipped.
+    setExiting(true);
+    const timeout = window.setTimeout(() => {
+      setVisible(false);
+      setExiting(false);
+    }, REST_TIMER_EXIT_MS);
+    return () => window.clearTimeout(timeout);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isActive]);
+
+  if (!visible) return null;
   return (
     <RestTimer
       secondsLeft={secondsLeft}
       totalSeconds={totalSeconds}
       onSkip={skip}
       onAdjust={adjustSeconds}
+      exiting={exiting}
     />
   );
 }
@@ -49,6 +76,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const [checking, setChecking] = useState(true);
   const [valid, setValid] = useState(false);
   const [needsVerification, setNeedsVerification] = useState(false);
+  const { skip: stopRestTimer } = useRestTimerContext();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -72,14 +100,16 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
           }
         } else {
           localStorage.clear();
+          stopRestTimer();
         }
         setChecking(false);
       })
       .catch(() => {
         localStorage.clear();
+        stopRestTimer();
         setChecking(false);
       });
-  }, []);
+  }, [stopRestTimer]);
 
   if (checking) return null;
   if (!valid) return <Navigate to="/login" replace />;

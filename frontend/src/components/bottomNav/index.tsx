@@ -26,6 +26,7 @@ export default function BottomNav() {
   const location = useLocation();
   const { t } = useTranslation();
   const itemRefs = useRef<(HTMLLIElement | null)[]>([]);
+  const navRef = useRef<HTMLElement>(null);
   const [indicator, setIndicator] = useState<{
     left: number;
     width: number;
@@ -42,8 +43,31 @@ export default function BottomNav() {
     }
   }, [activeIndex]);
 
+  // Exposes this nav's real rendered height (which already bakes in the
+  // safe-area inset) as a CSS variable, so the rest timer can rest just
+  // above it instead of either guessing a pixel value or covering it.
+  // Cleared on unmount so it falls back to the screen edge when the nav
+  // isn't shown (e.g. during a session).
+  useLayoutEffect(() => {
+    const updateHeight = () => {
+      if (navRef.current) {
+        document.documentElement.style.setProperty(
+          "--bottom-nav-height",
+          `${navRef.current.offsetHeight}px`,
+        );
+      }
+    };
+    updateHeight();
+    window.addEventListener("resize", updateHeight);
+    return () => {
+      window.removeEventListener("resize", updateHeight);
+      document.documentElement.style.setProperty("--bottom-nav-height", "0px");
+    };
+  }, []);
+
   return (
     <nav
+      ref={navRef}
       aria-label="Navigation"
       className="fixed bottom-0 left-1/2 w-full max-w-[430px] -translate-x-1/2 z-50"
     >

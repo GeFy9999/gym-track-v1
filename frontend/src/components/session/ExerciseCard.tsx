@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Plus, Trash2, Trophy, Link2, Unlink, StickyNote, Flame, Crown, Info } from "lucide-react";
+import { Plus, Trash2, Trophy, Link2, Unlink, StickyNote, Flame, Crown, MoreVertical } from "lucide-react";
 import type { SessionExercise, SetData } from "../../types/session";
 import { formatDuration } from "../../utils/units";
 import { formatLastTime, type Delta as DeltaType, type LastTime as LastTimeType } from "../../hooks/useExerciseDeltas";
@@ -108,6 +108,13 @@ export default function ExerciseCard({
   const { t } = useTranslation();
   const [trophyPopping, setTrophyPopping] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
+  const [showActionsMenu, setShowActionsMenu] = useState(false);
+  // The highest weight logged for this exercise last time it was done, so
+  // each set's input can flag "+X" the moment a heavier weight is entered
+  // — based on actual history, not just whatever was in the field before.
+  const previousBest = lastTime
+    ? Math.max(...lastTime.sets.map((s) => s.weight))
+    : 0;
 
   return (
     <div
@@ -173,75 +180,106 @@ export default function ExerciseCard({
               />
             </button>
             <button
-              data-tour="session-note"
-              onClick={onOpenNoteModal}
-              aria-label={t("session.card.noteAria")}
-              className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
-                note ? "bg-[#c9552c] text-white" : "bg-white/10 text-white/40"
-              }`}
+              data-tour="session-more"
+              onClick={() => setShowActionsMenu((v) => !v)}
+              aria-label={t("session.card.moreAria")}
+              className="w-9 h-9 rounded-lg bg-white/10 text-white/40 flex items-center justify-center transition-colors flex-shrink-0"
             >
-              <StickyNote size={17} />
+              <MoreVertical size={17} />
             </button>
-            {!readOnly && (
-              <button
-                data-tour="session-superset"
-                onClick={onOpenSupersetModal}
-                aria-label={t("session.card.supersetAria")}
-                className={`relative w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
-                  !supersetColor ? "bg-white/10 text-white/40" : ""
-                }`}
-                style={
-                  supersetColor
-                    ? { backgroundColor: `${supersetColor}26`, color: supersetColor }
-                    : undefined
-                }
-              >
-                {supersetColor ? <Unlink size={16} /> : <Link2 size={16} />}
-                {!isPro && !supersetColor && (
-                  <Crown
-                    size={14}
-                    className="absolute -top-1.5 -right-1.5 text-[#c9552c] drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]"
-                  />
-                )}
-              </button>
-            )}
-          </div>
-          <div className="flex flex-col items-end gap-2">
-            {!readOnly && (
-              <button
-                data-tour="session-delete"
-                onClick={onRequestDelete}
-                className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center text-white/60 active:text-red-300 transition-colors"
-              >
-                <Trash2 size={17} />
-              </button>
-            )}
             {delta && (
               <div
-                className={`flex items-center gap-1 px-2.5 py-1 rounded-full ${
+                className={`flex-shrink-0 flex items-center gap-1 px-2.5 py-1 rounded-full ${
                   delta.value > 0 ? "bg-[#c9552c]" : "bg-white/15"
                 }`}
               >
                 <span className="text-[11px] font-bold uppercase text-white">
-                  {delta.value > 0 ? "↑" : "↓"} {delta.value > 0 ? "+" : ""}
-                  {delta.value} {delta.unit}
+                  {delta.value > 0 ? "↑" : "↓"} {Math.abs(delta.value)}{" "}
+                  {delta.unit}
                 </span>
               </div>
             )}
           </div>
-        </div>
-
-        <div className="flex items-center gap-2 mb-3">
-          <h2 className="text-2xl font-black uppercase text-white leading-tight">
-            {se.exercise.name}
-          </h2>
           <button
             onClick={() => setShowInfo(true)}
             aria-label={t("session.exerciseInfo.aria")}
             className="w-6 h-6 rounded-full bg-white/15 flex items-center justify-center flex-shrink-0 active:bg-white/25 transition-colors"
           >
-            <Info size={13} className="text-white" />
+            {/* Lucide's Info icon draws its own circle, which — nested
+                inside this already-circular button — read as two
+                slightly-misaligned-looking circles. A plain "i" glyph
+                avoids that double-circle effect entirely. */}
+            <svg width="4" height="14" viewBox="0 0 4 14" fill="white" className="block">
+              <circle cx="2" cy="2" r="2" />
+              <rect x="0" y="6" width="4" height="8" rx="2" />
+            </svg>
           </button>
+        </div>
+
+        {showActionsMenu && (
+          <>
+            <div
+              className="fixed inset-0 z-40"
+              onClick={() => setShowActionsMenu(false)}
+            />
+            <div className="absolute left-5 top-16 z-50 w-52 bg-white rounded-2xl shadow-xl border border-gray-200 py-1.5 animate-scale-in origin-top-left">
+              <button
+                data-tour="session-note"
+                onClick={() => {
+                  onOpenNoteModal();
+                  setShowActionsMenu(false);
+                }}
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-gray-800 active:bg-gray-50 transition-colors"
+              >
+                <StickyNote
+                  size={16}
+                  className={note ? "text-[#c9552c]" : "text-gray-400"}
+                />
+                {t("session.tour.note.title")}
+              </button>
+              {!readOnly && (
+                <button
+                  data-tour="session-superset"
+                  onClick={() => {
+                    onOpenSupersetModal();
+                    setShowActionsMenu(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-gray-800 active:bg-gray-50 transition-colors"
+                >
+                  {supersetColor ? (
+                    <Unlink size={16} style={{ color: supersetColor }} />
+                  ) : (
+                    <Link2 size={16} className="text-gray-400" />
+                  )}
+                  <span className="flex-1 text-left">
+                    {t("session.tour.superset.title")}
+                  </span>
+                  {!isPro && !supersetColor && (
+                    <Crown size={14} className="text-[#c9552c] flex-shrink-0" />
+                  )}
+                </button>
+              )}
+              {!readOnly && (
+                <button
+                  data-tour="session-delete"
+                  onClick={() => {
+                    onRequestDelete();
+                    setShowActionsMenu(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-red-600 active:bg-red-50 transition-colors border-t border-gray-100 mt-1 pt-2.5"
+                >
+                  <Trash2 size={16} />
+                  {t("session.tour.delete.title")}
+                </button>
+              )}
+            </div>
+          </>
+        )}
+
+        <div className="mb-3">
+          <h2 className="text-2xl font-black uppercase text-white leading-tight">
+            {se.exercise.name}
+          </h2>
         </div>
 
         {!readOnly && (
@@ -327,6 +365,7 @@ export default function ExerciseCard({
               barWeight={barWeight}
               unit={unit}
               readOnly={readOnly}
+              previousBest={previousBest}
               isTypeMenuOpen={openSetTypeMenuId === set.id}
               isTypeMenuClosing={closingSetTypeMenuId === set.id}
               onToggleTypeMenu={() => onToggleSetTypeMenu(set.id)}
