@@ -84,6 +84,28 @@ const en: Dictionary = {
       },
     ],
   },
+  about: {
+    eyebrow: "Our approach",
+    title: "Workouts, not rigid routines",
+    body: "Most apps like Strong or Hevy ask you to build a routine ahead of time, exercise by exercise, before you even start training. GymsTrack works differently: pick a muscle group, start your workout, and add exercises as you go — exactly how you actually train.",
+    points: [
+      {
+        title: "By workout, not by exercise",
+        description:
+          "Organize around your training days (Back, Legs, Push...) instead of rigid routines prepared in advance.",
+      },
+      {
+        title: "Flexible from the start",
+        description:
+          "Improvise your workout in real time — add, remove, or reorder exercises without ever being locked into a fixed plan.",
+      },
+      {
+        title: "Tracking that keeps up",
+        description:
+          "Weight, reps, and progress are logged automatically, no matter how your workout evolves.",
+      },
+    ],
+  },
   pricing: {
     proLabel: "PRO",
     plans: [
@@ -130,21 +152,21 @@ const en: Dictionary = {
   comparison: {
     badge: "PRO",
     title: "Take your training to the next level",
-    columns: { free: "Free", pro: "Pro", lifetime: "Lifetime" },
+    columns: { free: "Free", pro: "Pro" },
     rows: [
-      { label: "Workout and exercise tracking", free: true, pro: true, lifetime: true },
-      { label: "CSV import", free: true, pro: true, lifetime: true },
-      { label: "Rest timer", free: true, pro: true, lifetime: true },
-      { label: "Per-exercise rest timer", free: false, pro: true, lifetime: true },
-      { label: "History", free: "90 days", pro: true, lifetime: true },
-      { label: "Calendar view", free: false, pro: true, lifetime: true },
-      { label: "CSV export", free: false, pro: true, lifetime: true },
-      { label: "Advanced charts (volume, 1RM, records)", free: false, pro: true, lifetime: true },
-      { label: "Supersets", free: false, pro: true, lifetime: true },
-      { label: "Automatic warmup sets", free: false, pro: true, lifetime: true },
-      { label: "Barbell mode and plate calculator", free: false, pro: true, lifetime: true },
-      { label: "Progress photos", free: false, pro: true, lifetime: true },
-      { label: "Drag-and-drop reorder", free: false, pro: true, lifetime: true },
+      { label: "Workout and exercise tracking", free: true, pro: true },
+      { label: "CSV import", free: true, pro: true },
+      { label: "Rest timer", free: true, pro: true },
+      { label: "Per-exercise rest timer", free: false, pro: true },
+      { label: "History", free: "90 days", pro: true },
+      { label: "Calendar view", free: false, pro: true },
+      { label: "CSV export", free: false, pro: true },
+      { label: "Advanced charts (volume, 1RM, records)", free: false, pro: true },
+      { label: "Supersets", free: false, pro: true },
+      { label: "Automatic warmup sets", free: false, pro: true },
+      { label: "Barbell mode and plate calculator", free: false, pro: true },
+      { label: "Progress photos", free: false, pro: true },
+      { label: "Drag-and-drop reorder", free: false, pro: true },
     ],
   },
   faq: {
