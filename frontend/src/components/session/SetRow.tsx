@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Check, X } from "lucide-react";
 import type { SetData } from "../../types/session";
@@ -24,6 +24,7 @@ type Props = {
   barWeight: number;
   unit: string;
   readOnly: boolean;
+  previousBest: number;
   isTypeMenuOpen: boolean;
   isTypeMenuClosing: boolean;
   onToggleTypeMenu: () => void;
@@ -43,6 +44,7 @@ export default function SetRow({
   barWeight,
   unit,
   readOnly,
+  previousBest,
   isTypeMenuOpen,
   isTypeMenuClosing,
   onToggleTypeMenu,
@@ -61,6 +63,13 @@ export default function SetRow({
     : { plates: [], remainder: 0 };
 
   const [justCompleted, setJustCompleted] = useState(false);
+  const [weightGain, setWeightGain] = useState<{ amount: number; key: number } | null>(
+    null,
+  );
+  // Captures the displayed value when editing starts, just to confirm the
+  // user actually changed something this edit (avoids re-firing the badge
+  // on every blur of an already-correct field).
+  const weightOnFocusRef = useRef(0);
 
   const handleToggleCompleted = () => {
     if (!set.completed) {
@@ -85,7 +94,19 @@ export default function SetRow({
         </button>
 
         <div className="grid grid-cols-2 gap-3 flex-1">
-          <div data-tour="session-set-weight" className="bg-gray-100 rounded-2xl p-3">
+          <div
+            data-tour="session-set-weight"
+            className="relative bg-gray-100 rounded-2xl p-3"
+          >
+            {weightGain && (
+              <span
+                key={weightGain.key}
+                className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#3a9e6e] text-white text-xs font-bold rounded-full px-2.5 py-1 shadow-lg whitespace-nowrap animate-weight-gain-pop"
+              >
+                +{weightGain.amount}
+                {unit}
+              </span>
+            )}
             <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">
               {barbell ? t("session.weightPerSide") : t("session.weight")}
             </p>
@@ -111,7 +132,10 @@ export default function SetRow({
                   const total = barbell ? barWeight + num * 2 : num;
                   onLocalWeightChange(total);
                 }}
-                onFocus={(e) => e.target.select()}
+                onFocus={(e) => {
+                  e.target.select();
+                  weightOnFocusRef.current = barbell ? perSide : set.weight;
+                }}
                 onBlur={(e) => {
                   const raw =
                     e.target.value === ""
@@ -119,6 +143,22 @@ export default function SetRow({
                       : clamp(Number(e.target.value), MIN_WEIGHT, MAX_WEIGHT);
                   const total = barbell ? barWeight + raw * 2 : raw;
                   onCommitWeight(total);
+
+                  // previousBest comes from last time's TOTAL weight for
+                  // this exercise — convert to the same per-side/total
+                  // basis the input itself displays before comparing.
+                  const previousBestDisplayed = barbell
+                    ? Math.max(0, (previousBest - barWeight) / 2)
+                    : previousBest;
+                  const changed = raw !== weightOnFocusRef.current;
+                  const delta = raw - previousBestDisplayed;
+                  if (changed && previousBestDisplayed > 0 && delta > 0) {
+                    const amount = Number.isInteger(delta)
+                      ? delta
+                      : Math.round(delta * 10) / 10;
+                    setWeightGain({ amount, key: Date.now() });
+                    window.setTimeout(() => setWeightGain(null), 1100);
+                  }
                 }}
                 disabled={readOnly}
                 className="w-full min-w-0 bg-transparent text-3xl font-black text-gray-900 focus:outline-none"

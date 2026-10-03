@@ -3,11 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { API_URL } from "../lib/api";
 import { useIsPro } from "./useIsPro";
+import { useRestTimerContext } from "../contexts/RestTimerContext";
 
 export function useProfileSettings() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const { isPro, refreshProStatus } = useIsPro();
+  const { skip: stopRestTimer } = useRestTimerContext();
 
   const stored = localStorage.getItem("user");
   const user = stored ? JSON.parse(stored) : null;
@@ -99,6 +101,7 @@ export function useProfileSettings() {
   ];
 
   const handleLogout = () => {
+    stopRestTimer();
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.removeItem("weightSnooze");

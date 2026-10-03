@@ -85,6 +85,8 @@ export default function HistoryPage() {
   const [allSessions, setAllSessions] = useState<SessionData[]>([]);
   const [openWeek, setOpenWeek] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
   const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
   const [calendarMonth, setCalendarMonth] = useState(() =>
     startOfMonth(new Date()),
@@ -133,39 +135,54 @@ export default function HistoryPage() {
 
   useEffect(() => {
     const fetchHistory = async () => {
+      setLoading(true);
+      setLoadError(false);
       const token = localStorage.getItem("token");
-      if (!token) return;
-
-      const start = isPro
-        ? new Date(2000, 0, 1)
-        : new Date(Date.now() - FREE_HISTORY_DAYS * 24 * 60 * 60 * 1000);
-
-      const res = await fetch(
-        `${API_URL}/sessions/me?start=${start.toISOString()}&end=${new Date().toISOString()}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
-
-      if (!res.ok) {
+      if (!token) {
         setLoading(false);
         return;
       }
 
-      const sessions: SessionData[] = await res.json();
-      // Skip sessions that only ever got empty, never-filled-in set rows —
-      // nothing real was performed, so there's nothing to show in history.
-      setAllSessions(
-        sessions.filter(
-          (s) =>
-            s.completed &&
-            s.sessionExercises.some((se) => se.sets.some(hasSetData)),
-        ),
-      );
-      setLoading(false);
+      try {
+        const start = isPro
+          ? new Date(2000, 0, 1)
+          : new Date(Date.now() - FREE_HISTORY_DAYS * 24 * 60 * 60 * 1000);
+
+        const res = await fetch(
+          `${API_URL}/sessions/me?start=${start.toISOString()}&end=${new Date().toISOString()}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
+
+        if (!res.ok) {
+          setLoadError(true);
+          setLoading(false);
+          return;
+        }
+
+        const sessions: SessionData[] = await res.json();
+        // Skip sessions that only ever got empty, never-filled-in set rows —
+        // nothing real was performed, so there's nothing to show in history.
+        setAllSessions(
+          sessions.filter(
+            (s) =>
+              s.completed &&
+              s.sessionExercises.some((se) => se.sets.some(hasSetData)),
+          ),
+        );
+        setLoading(false);
+      } catch (err) {
+        // A network hiccup or bad response must never leave the user
+        // staring at a silent "no history" screen with no way to tell
+        // whether their data is actually gone or the request just failed.
+        console.error(err);
+        setLoadError(true);
+        setLoading(false);
+      }
     };
     fetchHistory();
-  }, [isPro]);
+  }, [isPro, reloadKey]);
 
   const weeks = useMemo<WeekGroup[]>(() => {
     const grouped: { [key: string]: SessionData[] } = {};
@@ -436,7 +453,25 @@ export default function HistoryPage() {
           {t("history.freePlanBanner", { days: FREE_HISTORY_DAYS })}
         </button>
       )}
-      {allSessions.length === 0 ? (
+      {loadError ? (
+        <div className="flex flex-col items-center justify-center py-24">
+          <div className="w-14 h-14 rounded-full bg-red-50 shadow-sm flex items-center justify-center mb-4">
+            <History size={24} className="text-red-500" />
+          </div>
+          <p className="text-base font-bold text-gray-900 mb-1">
+            {t("history.loadError")}
+          </p>
+          <p className="text-sm text-gray-400 text-center px-8 mb-6">
+            {t("history.loadErrorDesc")}
+          </p>
+          <button
+            onClick={() => setReloadKey((k) => k + 1)}
+            className="bg-[#c9552c] text-white px-6 py-3 rounded-2xl font-semibold text-sm shadow-md active:scale-[0.98] transition-all"
+          >
+            {t("history.retry")}
+          </button>
+        </div>
+      ) : allSessions.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24">
           <div className="w-14 h-14 rounded-full bg-[#ece7dd] shadow-sm flex items-center justify-center mb-4">
             <History size={24} className="text-[#c9552c]" />

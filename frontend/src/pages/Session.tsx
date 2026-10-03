@@ -675,19 +675,9 @@ export default function SessionPage() {
       selector: "[data-tour='session-trophy']",
     },
     {
-      title: t("session.tour.note.title"),
-      description: t("session.tour.note.desc"),
-      selector: "[data-tour='session-note']",
-    },
-    {
-      title: t("session.tour.superset.title"),
-      description: t("session.tour.superset.desc"),
-      selector: "[data-tour='session-superset']",
-    },
-    {
-      title: t("session.tour.delete.title"),
-      description: t("session.tour.delete.desc"),
-      selector: "[data-tour='session-delete']",
+      title: t("session.tour.more.title"),
+      description: t("session.tour.more.desc"),
+      selector: "[data-tour='session-more']",
     },
     ...(barbellModeEnabled
       ? [
