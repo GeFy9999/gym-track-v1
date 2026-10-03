@@ -22,7 +22,11 @@ export default async function Home({
         <Hero dict={dict.hero} locale={locale as Locale} />
         <Features dict={dict.features} />
         <Demos dict={dict.demos} phoneDict={dict.phoneMock} />
-        <FeatureComparison dict={dict.comparison} pricingDict={dict.pricing} />
+        <FeatureComparison
+          dict={dict.comparison}
+          pricingDict={dict.pricing}
+          locale={locale as Locale}
+        />
         <Faq dict={dict.faq} />
       </main>
       <Footer dict={dict.footer} />

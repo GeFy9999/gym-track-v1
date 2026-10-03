@@ -30,8 +30,10 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# env files — .env.production is NOT secret (just the public API URL baked
+# into the client bundle, same as frontend/.env.production) and is committed.
+.env
+.env.local
 
 # vercel
 .vercel
