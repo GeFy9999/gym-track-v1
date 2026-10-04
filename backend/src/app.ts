@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
+import compression from "compression";
 import path from "path";
 import { calendarRouter } from "./controllers/calendarController.js";
 import { metaRouter } from "./controllers/metaController.js";
@@ -32,6 +33,12 @@ const allowedOrigins = (
 ).split(",");
 
 app.use(helmet());
+// The exercise list (1300+ rows of JSON) is the biggest single response this
+// API sends — gzip shrinks that kind of repetitive JSON by 70-80%, directly
+// cutting the transfer time that was making the Exercises page feel slow to
+// load. GIFs/thumbnails are already-compressed binary formats, so there's
+// nothing to gain (or lose) compressing those.
+app.use(compression());
 app.use(
   cors({
     origin: allowedOrigins,
