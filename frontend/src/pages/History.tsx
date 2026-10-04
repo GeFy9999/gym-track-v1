@@ -66,6 +66,30 @@ const hasSetData = (s: { weight: number; reps: number }) =>
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
+// A single gym visit often logs more than one muscle group as separate
+// Session records (one per group) — grouping them under a shared day card
+// here is purely a display change; each still links to its own session
+// detail page exactly as before, so nothing about how sessions are stored,
+// completed, or viewed individually is touched.
+type DayGroup = { dateKey: string; date: Date; sessions: SessionData[] };
+
+function groupSessionsByDay(sessions: SessionData[]): DayGroup[] {
+  const grouped = new Map<string, DayGroup>();
+  for (const session of sessions) {
+    const date = new Date(session.date);
+    const key = dateKey(date);
+    const entry = grouped.get(key);
+    if (entry) {
+      entry.sessions.push(session);
+    } else {
+      grouped.set(key, { dateKey: key, date, sessions: [session] });
+    }
+  }
+  return Array.from(grouped.values()).sort(
+    (a, b) => a.date.getTime() - b.date.getTime(),
+  );
+}
+
 export default function HistoryPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -633,70 +657,89 @@ export default function HistoryPage() {
 
                       {isOpen && totalSessions > 0 && (
                         <div className="px-3 pb-3 space-y-2">
-                          {week.sessions.map((session, si) => {
-                            const exerciseCount =
-                              session.sessionExercises.filter((se) =>
-                                se.sets.some(hasSetData),
-                              ).length;
-                            const sessionDate = new Date(session.date);
-                            const dayNum = sessionDate.getDate();
-                            const dayAbbrev = capitalize(
-                              sessionDate
-                                .toLocaleDateString(getDateLocale(), {
-                                  weekday: "short",
-                                })
-                                .replace(".", ""),
-                            );
-                            const fullDateStr = capitalize(
-                              sessionDate.toLocaleDateString(getDateLocale(), {
-                                day: "numeric",
-                                month: "long",
-                              }),
-                            );
+                          {groupSessionsByDay(week.sessions).map(
+                            (day, di) => {
+                              const dayNum = day.date.getDate();
+                              const dayAbbrev = capitalize(
+                                day.date
+                                  .toLocaleDateString(getDateLocale(), {
+                                    weekday: "short",
+                                  })
+                                  .replace(".", ""),
+                              );
+                              const fullDateStr = capitalize(
+                                day.date.toLocaleDateString(getDateLocale(), {
+                                  day: "numeric",
+                                  month: "long",
+                                }),
+                              );
 
-                            return (
-                              <div
-                                key={session.id}
-                                ref={wi === 0 && si === 0 ? ref2 : undefined}
-                              >
-                                <button
-                                  onClick={() =>
-                                    navigate(
-                                      `/session/${session.id}?readonly=true`,
-                                    )
+                              return (
+                                <div
+                                  key={day.dateKey}
+                                  ref={
+                                    wi === 0 && di === 0 ? ref2 : undefined
                                   }
-                                  className="w-full flex items-center gap-3 bg-white rounded-2xl px-3 py-3 shadow-sm active:scale-[0.99] transition-all"
+                                  className="bg-white rounded-2xl shadow-sm overflow-hidden"
                                 >
-                                  <div
-                                    className="w-11 h-11 rounded-xl flex flex-col items-center justify-center flex-shrink-0"
-                                    style={{ background: "#191714" }}
-                                  >
-                                    <span className="text-sm font-black text-white leading-none">
-                                      {dayNum}
-                                    </span>
-                                    <span className="text-[8px] font-bold text-white/50 uppercase leading-none mt-0.5">
-                                      {dayAbbrev}
-                                    </span>
-                                  </div>
-                                  <div className="text-left flex-1 min-w-0">
-                                    <p className="text-sm font-bold text-gray-900 uppercase truncate">
-                                      {getMuscleGroupLabel(session.muscleGroup, t)}
-                                    </p>
-                                    <p className="text-xs font-semibold text-gray-400 mt-0.5 uppercase">
-                                      {fullDateStr} ·{" "}
-                                      {t("history.exerciseCount", {
-                                        count: exerciseCount,
-                                      })}
+                                  <div className="flex items-center gap-3 px-3 pt-3 pb-2">
+                                    <div
+                                      className="w-11 h-11 rounded-xl flex flex-col items-center justify-center flex-shrink-0"
+                                      style={{ background: "#191714" }}
+                                    >
+                                      <span className="text-sm font-black text-white leading-none">
+                                        {dayNum}
+                                      </span>
+                                      <span className="text-[8px] font-bold text-white/50 uppercase leading-none mt-0.5">
+                                        {dayAbbrev}
+                                      </span>
+                                    </div>
+                                    <p className="text-xs font-semibold text-gray-400 uppercase">
+                                      {fullDateStr}
                                     </p>
                                   </div>
-                                  <ChevronRight
-                                    size={18}
-                                    className="text-[#c9552c] flex-shrink-0"
-                                  />
-                                </button>
-                              </div>
-                            );
-                          })}
+
+                                  <div className="divide-y divide-gray-100">
+                                    {day.sessions.map((session) => {
+                                      const exerciseCount =
+                                        session.sessionExercises.filter(
+                                          (se) => se.sets.some(hasSetData),
+                                        ).length;
+                                      return (
+                                        <button
+                                          key={session.id}
+                                          onClick={() =>
+                                            navigate(
+                                              `/session/${session.id}?readonly=true`,
+                                            )
+                                          }
+                                          className="w-full flex items-center gap-3 px-3 py-2.5 active:bg-gray-50 transition-colors"
+                                        >
+                                          <div className="text-left flex-1 min-w-0">
+                                            <p className="text-sm font-bold text-gray-900 uppercase truncate">
+                                              {getMuscleGroupLabel(
+                                                session.muscleGroup,
+                                                t,
+                                              )}
+                                            </p>
+                                            <p className="text-xs font-semibold text-gray-400 mt-0.5 uppercase">
+                                              {t("history.exerciseCount", {
+                                                count: exerciseCount,
+                                              })}
+                                            </p>
+                                          </div>
+                                          <ChevronRight
+                                            size={18}
+                                            className="text-[#c9552c] flex-shrink-0"
+                                          />
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+                              );
+                            },
+                          )}
                         </div>
                       )}
                     </div>
