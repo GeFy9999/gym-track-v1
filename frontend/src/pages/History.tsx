@@ -12,10 +12,12 @@ import {
   Calendar as CalendarIcon,
   List,
   Crown,
+  Clock,
 } from "lucide-react";
 import { API_URL } from "../lib/api";
 import { getDateLocale } from "../i18n";
 import { getMuscleGroupLabel } from "../utils/muscleGroupLabel";
+import { formatWorkoutDuration } from "../utils/units";
 import TourOverlay from "../components/TourOverlay";
 import Toast from "../components/Toast";
 import { useToast } from "../hooks/useToast";
@@ -28,6 +30,7 @@ type SessionData = {
   muscleGroup: string;
   date: string;
   completed: boolean;
+  durationMinutes: number | null;
   sessionExercises: {
     exercise: { id: string; name: string };
     sets: {
@@ -673,6 +676,19 @@ export default function HistoryPage() {
                                   month: "long",
                                 }),
                               );
+                              // Every muscle-group session finished together
+                              // in the same "finish session" tap carries the
+                              // same elapsed time — take the max so one
+                              // missing/older value (e.g. finished via the
+                              // abandoned-session prompt, which has none)
+                              // can't zero out the rest.
+                              const dayDurationMinutes = day.sessions.reduce(
+                                (max, s) =>
+                                  s.durationMinutes && s.durationMinutes > max
+                                    ? s.durationMinutes
+                                    : max,
+                                0,
+                              );
 
                               return (
                                 <div
@@ -694,9 +710,19 @@ export default function HistoryPage() {
                                         {dayAbbrev}
                                       </span>
                                     </div>
-                                    <p className="text-xs font-semibold text-gray-400 uppercase">
-                                      {fullDateStr}
-                                    </p>
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-xs font-semibold text-gray-400 uppercase">
+                                        {fullDateStr}
+                                      </p>
+                                      {dayDurationMinutes > 0 && (
+                                        <p className="flex items-center gap-1 text-[11px] font-bold text-[#c9552c] uppercase mt-0.5">
+                                          <Clock size={11} />
+                                          {formatWorkoutDuration(
+                                            dayDurationMinutes,
+                                          )}
+                                        </p>
+                                      )}
+                                    </div>
                                   </div>
 
                                   <div className="divide-y divide-gray-100">

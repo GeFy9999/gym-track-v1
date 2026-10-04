@@ -32,6 +32,16 @@ export function formatDuration(seconds: number): string {
   return `${minutes}:${rest.toString().padStart(2, "0")}`;
 }
 
+// A whole workout's length ("45 min" / "1h 15"), as opposed to formatDuration
+// above (a rest timer's "M:SS" countdown) — kept distinct since the two read
+// very differently despite both being "duration" formatters.
+export function formatWorkoutDuration(minutes: number): string {
+  if (minutes < 60) return `${minutes} min`;
+  const hours = Math.floor(minutes / 60);
+  const rest = minutes % 60;
+  return rest > 0 ? `${hours}h ${String(rest).padStart(2, "0")}` : `${hours}h`;
+}
+
 const LB_PER_KG = 2.2046226218;
 
 export function convertWeight(value: number, from: string, to: string): number {

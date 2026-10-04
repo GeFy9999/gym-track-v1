@@ -158,7 +158,7 @@ export async function insertSession(session: {
 
 export async function updateSession(
   sessionId: string,
-  data: { completed?: boolean },
+  data: { completed?: boolean; durationMinutes?: number },
 ) {
   return await prisma.session.update({
     where: { id: sessionId },
