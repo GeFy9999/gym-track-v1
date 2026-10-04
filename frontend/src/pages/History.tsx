@@ -184,10 +184,29 @@ export default function HistoryPage() {
     fetchHistory();
   }, [isPro, reloadKey]);
 
-  const weeks = useMemo<WeekGroup[]>(() => {
-    const grouped: { [key: string]: SessionData[] } = {};
+  const now = new Date();
+  // Both the list and calendar view look at the same navigable month now —
+  // the list used to be hard-locked to the real current month, so sessions
+  // from any other month looked like missing data even though the calendar
+  // (which already had month navigation) could see them just fine.
+  //
+  // Sessions are filtered to the selected month by their OWN date first,
+  // then grouped into weeks for display — not the other way around. A week
+  // spanning a month boundary (e.g. Mon Sep 28 – Sun Oct 4) has a Monday in
+  // September, so grouping by week first and then keeping only weeks whose
+  // Monday falls in October would silently drop every October 1–4 session,
+  // even though the month header counts them correctly.
+  const selectedMonthWeeks = useMemo<WeekGroup[]>(() => {
+    const inSelectedMonth = allSessions.filter((s) => {
+      const d = new Date(s.date);
+      return (
+        d.getFullYear() === calendarMonth.getFullYear() &&
+        d.getMonth() === calendarMonth.getMonth()
+      );
+    });
 
-    for (const session of allSessions) {
+    const grouped: { [key: string]: SessionData[] } = {};
+    for (const session of inSelectedMonth) {
       const date = new Date(session.date);
       const day = date.getDay();
       const diff = day === 0 ? 6 : day - 1;
@@ -213,18 +232,7 @@ export default function HistoryPage() {
       })
       .sort((a, b) => b.startDate.getTime() - a.startDate.getTime());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allSessions]);
-
-  const now = new Date();
-  // Both the list and calendar view look at the same navigable month now —
-  // the list used to be hard-locked to the real current month, so sessions
-  // from any other month looked like missing data even though the calendar
-  // (which already had month navigation) could see them just fine.
-  const selectedMonthWeeks = weeks.filter(
-    (w) =>
-      w.startDate.getFullYear() === calendarMonth.getFullYear() &&
-      w.startDate.getMonth() === calendarMonth.getMonth(),
-  );
+  }, [allSessions, calendarMonth]);
 
   useEffect(() => {
     if (selectedMonthWeeks.length > 0 && !openWeek) {
