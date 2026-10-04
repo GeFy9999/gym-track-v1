@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { getDateLocale } from "../../i18n";
 import { getMuscleGroupLabel } from "../../utils/muscleGroupLabel";
+import { formatWorkoutDuration } from "../../utils/units";
 
 type PR = {
   exerciseName: string;
@@ -32,13 +33,6 @@ type Props = {
   exerciseDeltas: ExerciseDelta[];
   onClose: () => void;
 };
-
-function formatDuration(minutes: number): string {
-  if (minutes < 60) return `${minutes} min`;
-  const hours = Math.floor(minutes / 60);
-  const rest = minutes % 60;
-  return rest > 0 ? `${hours}h ${String(rest).padStart(2, "0")}` : `${hours}h`;
-}
 
 function formatDate(dateStr: string): string {
   const d = new Date(dateStr);
@@ -103,7 +97,7 @@ export default function WorkoutSummary({
                   className="text-[#c9552c] mb-2"
                 />
                 <p className="text-[26px] font-black text-gray-900 leading-none tracking-tight">
-                  {formatDuration(durationMinutes)}
+                  {formatWorkoutDuration(durationMinutes)}
                 </p>
                 <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-2">
                   {t("session.summary.duration")}

@@ -410,6 +410,27 @@ export default function DashboardPage() {
         const muscleGroups: string[] = [];
         let earliestDate: Date | null = null;
 
+        // Found up front, in its own pass, so every /complete call below
+        // can send the same final duration — discovering it progressively
+        // in the same loop that also fires those requests would mean
+        // earlier calls go out before a later, earlier-dated session is
+        // even seen.
+        for (const session of sessions) {
+          if (session.completed) continue;
+          const hasSets = session.sessionExercises.some(
+            (se: { sets: { weight: number; reps: number }[] }) =>
+              se.sets.length > 0,
+          );
+          if (!hasSets) continue;
+          const sessionDate = new Date(session.date);
+          if (!earliestDate || sessionDate < earliestDate) {
+            earliestDate = sessionDate;
+          }
+        }
+        const durationMinutes = earliestDate
+          ? Math.max(1, Math.round((Date.now() - earliestDate.getTime()) / 60000))
+          : undefined;
+
         for (const session of sessions) {
           if (session.completed) continue;
 
@@ -419,10 +440,6 @@ export default function DashboardPage() {
           );
 
           if (hasSets) {
-            const sessionDate = new Date(session.date);
-            if (!earliestDate || sessionDate < earliestDate) {
-              earliestDate = sessionDate;
-            }
             muscleGroups.push(session.muscleGroup);
 
             for (const se of session.sessionExercises as {
@@ -479,7 +496,11 @@ export default function DashboardPage() {
 
             await fetch(`${API_URL}/sessions/${session.id}/complete`, {
               method: "PATCH",
-              headers: { Authorization: `Bearer ${token}` },
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({ durationMinutes }),
             });
           } else {
             await fetch(`${API_URL}/sessions/${session.id}`, {
@@ -510,14 +531,7 @@ export default function DashboardPage() {
             : {
                 muscleGroups: [...new Set(muscleGroups)],
                 date: (earliestDate ?? new Date()).toISOString(),
-                durationMinutes: earliestDate
-                  ? Math.max(
-                      1,
-                      Math.round(
-                        (Date.now() - earliestDate.getTime()) / 60000,
-                      ),
-                    )
-                  : 0,
+                durationMinutes: durationMinutes ?? 0,
                 totalSets,
                 totalExercises,
                 prs: allPRs,

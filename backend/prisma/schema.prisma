@@ -68,6 +68,11 @@ model Session {
   completed     Boolean  @default(false)
   date          DateTime @default(now())
   importBatchId String?
+  // Set once, when the session is completed — from the moment the earliest
+  // of that day's not-yet-completed sessions was created to "finish
+  // session" being tapped. Null for sessions finished via the abandoned-
+  // session prompt (days later), where that elapsed time means nothing.
+  durationMinutes Int?
   sessionExercises SessionExercise[]
   user        User      @relation(fields: [userId], references: [id])
 }

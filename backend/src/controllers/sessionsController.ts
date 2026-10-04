@@ -250,7 +250,12 @@ sessionsRouter.patch(
       if (ownerId !== req.userId!) {
         return res.status(404).json({ error: "Session introuvable" });
       }
-      const session = await completeSession(sessionId);
+      const rawDuration = req.body?.durationMinutes;
+      const durationMinutes =
+        typeof rawDuration === "number" && Number.isFinite(rawDuration)
+          ? Math.max(0, Math.round(rawDuration))
+          : undefined;
+      const session = await completeSession(sessionId, durationMinutes);
       return res.status(200).json(session);
     } catch (error) {
       return sendServerError(res, error);

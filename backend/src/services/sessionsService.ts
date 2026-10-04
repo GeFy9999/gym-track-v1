@@ -53,8 +53,14 @@ export async function createSession(session: {
 }
 
 // Marque une session comme complétée
-export async function completeSession(sessionId: string) {
-  return await updateSession(sessionId, { completed: true });
+export async function completeSession(
+  sessionId: string,
+  durationMinutes?: number,
+) {
+  return await updateSession(sessionId, {
+    completed: true,
+    ...(durationMinutes !== undefined ? { durationMinutes } : {}),
+  });
 }
 
 export async function getUserPersonalRecords(userId: string) {
