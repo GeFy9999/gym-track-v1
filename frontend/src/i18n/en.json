@@ -225,6 +225,7 @@
     "notFound": "Session not found",
     "edit": "Edit",
     "done": "Done",
+    "finishExercises": "Finish my exercises",
     "exerciseCountBadge": "{{count}} exercises",
     "emptyTitle": "No exercise yet",
     "emptyDesc": "Add your first exercise to\nstart the session",
