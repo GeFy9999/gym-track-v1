@@ -216,18 +216,22 @@ export default function HistoryPage() {
   }, [allSessions]);
 
   const now = new Date();
-  const currentMonthWeeks = weeks.filter(
+  // Both the list and calendar view look at the same navigable month now —
+  // the list used to be hard-locked to the real current month, so sessions
+  // from any other month looked like missing data even though the calendar
+  // (which already had month navigation) could see them just fine.
+  const selectedMonthWeeks = weeks.filter(
     (w) =>
-      w.startDate.getFullYear() === now.getFullYear() &&
-      w.startDate.getMonth() === now.getMonth(),
+      w.startDate.getFullYear() === calendarMonth.getFullYear() &&
+      w.startDate.getMonth() === calendarMonth.getMonth(),
   );
 
   useEffect(() => {
-    if (currentMonthWeeks.length > 0 && !openWeek) {
-      setOpenWeek(currentMonthWeeks[0].label);
+    if (selectedMonthWeeks.length > 0 && !openWeek) {
+      setOpenWeek(selectedMonthWeeks[0].label);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allSessions]);
+  }, [allSessions, calendarMonth]);
 
   useEffect(() => {
     if (selectedDay) {
@@ -386,7 +390,7 @@ export default function HistoryPage() {
               {allSessions.length > 0
                 ? viewMode === "list"
                   ? t("history.weeksThisMonth", {
-                      count: currentMonthWeeks.length,
+                      count: selectedMonthWeeks.length,
                     })
                   : t("history.sessionsTotal", { count: allSessions.length })
                 : t("history.noHistoryYet")}
@@ -492,8 +496,45 @@ export default function HistoryPage() {
         </div>
       ) : (
         <>
+          <div className="bg-[#ece7dd] rounded-3xl shadow-sm p-4 mb-3">
+            <div className="flex items-center justify-between">
+              <button
+                onClick={() =>
+                  setCalendarMonth(
+                    (m) => new Date(m.getFullYear(), m.getMonth() - 1, 1),
+                  )
+                }
+                className="w-8 h-8 rounded-full bg-white/60 flex items-center justify-center active:bg-white transition-colors flex-shrink-0"
+              >
+                <ChevronLeft size={16} className="text-gray-600" />
+              </button>
+              <div className="text-center">
+                <p className="text-base font-black text-gray-900 uppercase tracking-wide">
+                  {MONTH_LABELS[calendarMonth.getMonth()]}{" "}
+                  {calendarMonth.getFullYear()}
+                </p>
+                <p className="text-[11px] font-bold text-[#c9552c] uppercase tracking-wide mt-0.5">
+                  {t("history.sessionsThisMonth", {
+                    count: monthSessionsCount,
+                  })}
+                </p>
+              </div>
+              <button
+                onClick={() =>
+                  setCalendarMonth(
+                    (m) => new Date(m.getFullYear(), m.getMonth() + 1, 1),
+                  )
+                }
+                disabled={isCurrentMonth}
+                className="w-8 h-8 rounded-full bg-white/60 flex items-center justify-center active:bg-white transition-colors disabled:opacity-30 flex-shrink-0"
+              >
+                <ChevronRight size={16} className="text-gray-600" />
+              </button>
+            </div>
+          </div>
+
           {viewMode === "list" ? (
-            currentMonthWeeks.length === 0 ? (
+            selectedMonthWeeks.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16">
                 <div className="w-14 h-14 rounded-full bg-[#ece7dd] shadow-sm flex items-center justify-center mb-4">
                   <History size={24} className="text-[#c9552c]" />
@@ -514,7 +555,7 @@ export default function HistoryPage() {
               </div>
             ) : (
               <div ref={ref0} className="space-y-3">
-                {currentMonthWeeks.map((week, wi) => {
+                {selectedMonthWeeks.map((week, wi) => {
                   const isOpen = openWeek === week.label;
                   const totalSessions = week.sessions.length;
                   const totalSets = week.sessions.reduce(
@@ -650,42 +691,7 @@ export default function HistoryPage() {
           ) : (
             <>
             <div className="bg-[#ece7dd] rounded-3xl shadow-sm p-4">
-              <div className="flex items-center justify-between">
-                <button
-                  onClick={() =>
-                    setCalendarMonth(
-                      (m) => new Date(m.getFullYear(), m.getMonth() - 1, 1),
-                    )
-                  }
-                  className="w-8 h-8 rounded-full bg-white/60 flex items-center justify-center active:bg-white transition-colors flex-shrink-0"
-                >
-                  <ChevronLeft size={16} className="text-gray-600" />
-                </button>
-                <div className="text-center">
-                  <p className="text-base font-black text-gray-900 uppercase tracking-wide">
-                    {MONTH_LABELS[calendarMonth.getMonth()]}{" "}
-                    {calendarMonth.getFullYear()}
-                  </p>
-                  <p className="text-[11px] font-bold text-[#c9552c] uppercase tracking-wide mt-0.5">
-                    {t("history.sessionsThisMonth", {
-                      count: monthSessionsCount,
-                    })}
-                  </p>
-                </div>
-                <button
-                  onClick={() =>
-                    setCalendarMonth(
-                      (m) => new Date(m.getFullYear(), m.getMonth() + 1, 1),
-                    )
-                  }
-                  disabled={isCurrentMonth}
-                  className="w-8 h-8 rounded-full bg-white/60 flex items-center justify-center active:bg-white transition-colors disabled:opacity-30 flex-shrink-0"
-                >
-                  <ChevronRight size={16} className="text-gray-600" />
-                </button>
-              </div>
-
-              <div className="grid grid-cols-7 gap-1 mt-4 mb-2">
+              <div className="grid grid-cols-7 gap-1 mb-2">
                 {DAY_LABELS.map((d, i) => (
                   <p
                     key={i}
