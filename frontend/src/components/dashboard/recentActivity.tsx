@@ -145,41 +145,54 @@ export default function RecentActivity() {
       </p>
 
       {lastSession && firstExercise && bestSet ? (
-        <div className="bg-[#ece7dd] rounded-2xl p-4 shadow-sm">
-          <div className="flex justify-between items-start mb-3">
-            <div>
-              <p className="text-sm font-black text-gray-900 uppercase tracking-wide">
-                {firstExercise.exercise.name}
-              </p>
-              <p className="text-xs text-gray-500 uppercase tracking-wide mt-0.5">
-                {bestSet.weight} {bestSet.unit} × {bestSet.reps}{" "}
-                {t("dashboard.reps")}
-              </p>
-            </div>
-            {delta && (
-              <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-white text-[#c9552c] flex-shrink-0">
-                <span className="text-xs font-bold">
-                  {delta.value > 0 ? "↑" : "↓"} {delta.value > 0 ? "+" : ""}
-                  {delta.value} {delta.unit}
-                </span>
+        <div className="rounded-2xl shadow-sm overflow-hidden">
+          <div className="p-4" style={{ background: "#191714" }}>
+            <div className="flex justify-between items-start gap-3">
+              <div className="min-w-0">
+                <p className="text-sm font-black text-white uppercase tracking-wide">
+                  {firstExercise.exercise.name}
+                </p>
+                <p className="text-xs text-white/50 uppercase tracking-wide mt-1">
+                  {t("dashboard.setsCount", { count: sets.length })} ·{" "}
+                  {bestSet.weight} {bestSet.unit} × {bestSet.reps}{" "}
+                  {t("dashboard.reps")}
+                </p>
               </div>
-            )}
+              {delta && (
+                <div className="flex flex-col items-end flex-shrink-0">
+                  <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#c9552c] text-white">
+                    <span className="text-xs font-bold">
+                      {delta.value > 0 ? "↑" : "↓"} {Math.abs(delta.value)}{" "}
+                      {delta.unit}
+                    </span>
+                  </div>
+                  <span className="text-[9px] font-bold text-white/40 uppercase tracking-wide mt-1.5">
+                    {t("dashboard.vsPrevious")}
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-2">
+          <div className="bg-[#ece7dd] p-3 space-y-1.5">
             {sets.map((set, i) => (
               <div
                 key={i}
-                className="bg-white rounded-xl py-2 text-center"
+                className="flex items-center gap-2.5 bg-white rounded-xl px-3 py-2"
               >
-                <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">
-                  {t("dashboard.setLabel", { number: i + 1 })}
-                </p>
-                <p className="text-sm font-black text-gray-900">
+                <div
+                  className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
+                  style={{ background: "#191714" }}
+                >
+                  <span className="text-[11px] font-bold text-white">
+                    {i + 1}
+                  </span>
+                </div>
+                <span className="text-sm font-black text-gray-900">
                   {set.weight}
-                  {set.unit}{" "}
-                  <span className="text-[#c9552c]">×{set.reps}</span>
-                </p>
+                  {set.unit} <span className="text-gray-400">×</span>{" "}
+                  {set.reps}
+                </span>
               </div>
             ))}
           </div>
