@@ -225,6 +225,7 @@
     "notFound": "Session introuvable",
     "edit": "Modifier",
     "done": "Terminé",
+    "finishExercises": "Terminer mes exercices",
     "exerciseCountBadge": "{{count}} exo",
     "emptyTitle": "Aucun exercice pour l'instant",
     "emptyDesc": "Ajoute ton premier exercice pour\ncommencer la séance",
