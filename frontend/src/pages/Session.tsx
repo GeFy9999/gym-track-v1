@@ -927,6 +927,15 @@ export default function SessionPage() {
               />
             );
           })}
+
+        {!readOnly && !isEmpty && !isEditMode && (
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="w-full bg-[#191714] active:bg-[#191714]/85 text-white font-bold uppercase text-sm tracking-wide py-4 rounded-2xl transition-colors"
+          >
+            {t("session.finishExercises")}
+          </button>
+        )}
       </div>
 
       {isEmpty && suggestions.length > 0 && !readOnly && (
