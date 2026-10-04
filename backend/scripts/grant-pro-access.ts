@@ -1,6 +1,9 @@
 // Manually flips an account's Pro status — meant for accounts that need
 // Pro access without going through an actual purchase, e.g. the test
-// credentials given to a Google Play reviewer.
+// credentials given to a Google Play reviewer. Also marks the email as
+// verified, since a reviewer can't click a link sent to an inbox nobody
+// reads — without this they'd be stuck on the "confirm your email" screen
+// and could never actually open the app.
 //
 // "manual" as the billing provider keeps this safely out of the way of the
 // real billing webhooks: revenueCatService's EXPIRATION handler only acts
@@ -58,9 +61,10 @@ async function main() {
       isPro: true,
       billingProvider: "manual",
       proCurrentPeriodEnd: FAR_FUTURE,
+      emailVerified: true,
     },
   });
-  console.log(`Granted Pro access to "${email}".`);
+  console.log(`Granted Pro access and verified email for "${email}".`);
 }
 
 main()
