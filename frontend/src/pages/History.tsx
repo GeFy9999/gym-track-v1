@@ -205,7 +205,12 @@ export default function HistoryPage() {
       );
     });
 
-    const grouped: { [key: string]: SessionData[] } = {};
+    // Keyed by the Monday's own local-time Date object, not a re-parsed ISO
+    // string: "YYYY-MM-DD" is parsed as UTC midnight, which in any timezone
+    // behind UTC renders one day earlier once displayed locally (a Monday
+    // Sept 28 would show up labeled "27 septembre"). Keeping the original
+    // Date object avoids that round-trip entirely.
+    const grouped = new Map<string, { monday: Date; sessions: SessionData[] }>();
     for (const session of inSelectedMonth) {
       const date = new Date(session.date);
       const day = date.getDay();
@@ -215,13 +220,16 @@ export default function HistoryPage() {
       monday.setHours(0, 0, 0, 0);
       const key = monday.toISOString().slice(0, 10);
 
-      if (!grouped[key]) grouped[key] = [];
-      grouped[key].push(session);
+      const entry = grouped.get(key);
+      if (entry) {
+        entry.sessions.push(session);
+      } else {
+        grouped.set(key, { monday, sessions: [session] });
+      }
     }
 
-    return Object.entries(grouped)
-      .map(([key, sessions]) => {
-        const startDate = new Date(key);
+    return Array.from(grouped.values())
+      .map(({ monday: startDate, sessions }) => {
         const label = t("history.weekOf", {
           date: startDate.toLocaleDateString(getDateLocale(), {
             day: "numeric",
