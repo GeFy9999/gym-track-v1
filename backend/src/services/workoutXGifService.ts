@@ -36,6 +36,12 @@ export function findWorkoutXMatch(exerciseName: string): WorkoutXCatalogEntry | 
   return getCatalog().get(normalize(exerciseName)) ?? null;
 }
 
+// Lets a caller (e.g. a cache warm-up script) tell a real fetch apart from
+// a cache hit without guessing from how long getOrFetchGifPath took.
+export function isGifCached(wxId: string): boolean {
+  return existsSync(join(GIFS_DIR, `${wxId}.gif`));
+}
+
 // Fetches a single GIF from the live WorkoutX API and saves it locally. This
 // is the ONLY place in the app that spends API quota, and it only runs the
 // first time a given exercise's GIF is actually requested — every request
