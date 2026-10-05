@@ -20,6 +20,9 @@ type RevenueCatEvent = {
   // PRODUCT_CHANGE only: product_id is the OLD product, this the new one.
   new_product_id?: string | null;
   expiration_at_ms?: number | null;
+  // "SANDBOX" for Google Play test purchases (license testers), whose
+  // subscriptions renew every few minutes instead of every month/year.
+  environment?: string;
 };
 
 export async function handleRevenueCatWebhook(
@@ -71,6 +74,9 @@ export async function handleRevenueCatWebhook(
       } else if (
         event.type === "RENEWAL" &&
         interval &&
+        // Test renewals (every few minutes) must never earn a real
+        // loyalty discount.
+        event.environment !== "SANDBOX" &&
         (!event.id || event.id !== user.loyaltyLastInvoiceId)
       ) {
         loyalty = {
