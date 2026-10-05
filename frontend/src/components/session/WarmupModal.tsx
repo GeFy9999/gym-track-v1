@@ -6,7 +6,14 @@ import {
   MIN_WARMUP_SETS,
   MAX_WARMUP_SETS,
   DEFAULT_WARMUP_SETS,
+  type WarmupSetPlan,
 } from "../../utils/warmup";
+import {
+  isPerSideInput,
+  toDisplayedWeight,
+  toTotalWeight,
+  type LoadingType,
+} from "../../utils/loadingType";
 import { MIN_WEIGHT, MAX_WEIGHT, MIN_REPS, MAX_REPS } from "../../utils/plates";
 
 const clamp = (n: number, min: number, max: number) =>
@@ -14,22 +21,52 @@ const clamp = (n: number, min: number, max: number) =>
 
 type Props = {
   unit: string;
+  // Same input basis as the exercise's set rows: per side for a barbell or
+  // plate-loaded machine (null = plain weight).
+  loadingType: LoadingType | null;
+  barWeight: number;
   onClose: () => void;
-  onConfirm: (workingWeight: number, workingReps: number, count: number) => void;
+  // Weights are TOTALS, ready to store.
+  onConfirm: (
+    workingWeight: number,
+    workingReps: number,
+    plan: WarmupSetPlan[],
+  ) => void;
 };
 
-export default function WarmupModal({ unit, onClose, onConfirm }: Props) {
+export default function WarmupModal({
+  unit,
+  loadingType,
+  barWeight,
+  onClose,
+  onConfirm,
+}: Props) {
   const { t } = useTranslation();
   const [weight, setWeight] = useState("");
   const [reps, setReps] = useState("8");
   const [count, setCount] = useState(DEFAULT_WARMUP_SETS);
 
-  const workingWeight =
+  const perSide = isPerSideInput(loadingType);
+  const typedWeight =
     weight === "" ? 0 : clamp(Number(weight), MIN_WEIGHT, MAX_WEIGHT);
+  const workingWeight = toTotalWeight(typedWeight, loadingType, barWeight);
   const workingReps =
     reps === "" ? 0 : clamp(Number(reps), MIN_REPS, MAX_REPS);
+  // Warm-ups never go below the empty bar for a barbell.
   const plan =
-    workingWeight > 0 ? computeWarmupSets(workingWeight, unit, count) : [];
+    workingWeight > 0
+      ? computeWarmupSets(
+          workingWeight,
+          unit,
+          count,
+          loadingType === "BARBELL" ? barWeight : undefined,
+        )
+      : [];
+  // Shown on the same per-side basis as the input.
+  const shown = (total: number) =>
+    `${toDisplayedWeight(total, loadingType, barWeight)} ${unit}${
+      perSide ? t("session.warmupModal.perSideSuffix") : ""
+    }`;
 
   return (
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6 animate-fade-in">
@@ -47,7 +84,9 @@ export default function WarmupModal({ unit, onClose, onConfirm }: Props) {
         <div className="grid grid-cols-2 gap-3 mb-4">
           <div className="bg-gray-100 rounded-2xl p-3">
             <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">
-              {t("session.warmupModal.workingWeight")}
+              {perSide
+                ? t("session.warmupModal.workingWeightPerSide")
+                : t("session.warmupModal.workingWeight")}
             </p>
             <div className="flex items-baseline gap-1">
               <input
@@ -121,7 +160,7 @@ export default function WarmupModal({ unit, onClose, onConfirm }: Props) {
                   {t("session.warmupModal.warmupSet", { index: i + 1 })}
                 </span>
                 <span className="font-semibold text-gray-800">
-                  {s.weight} {unit} × {s.reps}
+                  {shown(s.weight)} × {s.reps}
                 </span>
               </div>
             ))}
@@ -130,7 +169,7 @@ export default function WarmupModal({ unit, onClose, onConfirm }: Props) {
                 {t("session.warmupModal.workingSet")}
               </span>
               <span className="font-bold text-[#c9552c]">
-                {workingWeight} {unit} × {workingReps}
+                {shown(workingWeight)} × {workingReps}
               </span>
             </div>
           </div>
@@ -144,7 +183,7 @@ export default function WarmupModal({ unit, onClose, onConfirm }: Props) {
             {t("session.cancel")}
           </button>
           <button
-            onClick={() => onConfirm(workingWeight, workingReps, count)}
+            onClick={() => onConfirm(workingWeight, workingReps, plan)}
             disabled={workingWeight <= 0 || workingReps <= 0}
             className="flex-1 bg-[#c9552c] disabled:opacity-50 text-white py-3 rounded-xl font-semibold transition-colors"
           >

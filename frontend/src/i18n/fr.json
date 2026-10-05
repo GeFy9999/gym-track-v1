@@ -305,6 +305,8 @@
       "title": "Échauffement auto",
       "subtitle": "Entre ton poids de travail, on génère la montée en charge.",
       "workingWeight": "Poids de travail",
+      "workingWeightPerSide": "Poids de travail / côté",
+      "perSideSuffix": " / côté",
       "workingReps": "Reps de travail",
       "setsCount": "Nombre de sets d'échauffement",
       "warmupSet": "Échauffement {{index}}",
