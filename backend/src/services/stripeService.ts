@@ -109,7 +109,8 @@ export const createCheckoutSession = async (
   // that complexity yet, so opt every session out of it explicitly.
   //
   // Lifetime is a one-time payment (no subscription, no trial) — everything
-  // else is a recurring subscription with a 7-day free trial.
+  // else is a recurring subscription, with a 7-day free trial only if this
+  // account has never had one (on either plan or either billing provider).
   const session =
     plan === "lifetime"
       ? await client.checkout.sessions.create({
@@ -124,7 +125,9 @@ export const createCheckoutSession = async (
           mode: "subscription",
           customer: customerId,
           line_items: [{ price: priceId, quantity: 1 }],
-          subscription_data: { trial_period_days: 7 },
+          ...(user.hasUsedTrial
+            ? {}
+            : { subscription_data: { trial_period_days: 7 } }),
           managed_payments: { enabled: false },
           success_url: successUrl,
           cancel_url: cancelUrl,
@@ -153,9 +156,17 @@ export const changePlan = async (
     const itemId = subscription.items.data[0]?.id;
     if (!itemId) throw new Error("Abonnement introuvable");
 
+    // Changing plan restarts the loyalty streak from zero and drops any
+    // loyalty coupon — the annual plan is already discounted, and a monthly
+    // streak doesn't carry over to annual (nor the other way around).
     await client.subscriptions.update(user.stripeSubscriptionId, {
       items: [{ id: itemId, price: priceId }],
       proration_behavior: "create_prorations",
+      discounts: "",
+    });
+    await prisma.user.update({
+      where: { id: userId },
+      data: { loyaltyPeriodsPaid: 0 },
     });
     return { switched: true };
   }
@@ -266,6 +277,15 @@ export const handleWebhookEvent = async (rawBody: Buffer, signature: string) => 
       const currentPeriodEnd = subscription.items.data[0]?.current_period_end;
       const interval = subscription.items.data[0]?.price.recurring?.interval ?? null;
 
+      // Same subscription, different billing interval: a plan change, made
+      // from our Upgrade page or from Stripe's own billing portal. Either
+      // way the loyalty streak restarts and its coupon goes away.
+      const planChanged =
+        user.stripeSubscriptionId === subscription.id &&
+        !!user.proInterval &&
+        !!interval &&
+        user.proInterval !== interval;
+
       await prisma.user.update({
         where: { id: user.id },
         data: {
@@ -275,8 +295,17 @@ export const handleWebhookEvent = async (rawBody: Buffer, signature: string) => 
             ? new Date(currentPeriodEnd * 1000)
             : null,
           proInterval: interval,
+          // Any recurring subscription uses up the one free trial.
+          hasUsedTrial: true,
+          ...(planChanged ? { loyaltyPeriodsPaid: 0 } : {}),
         },
       });
+
+      if (planChanged && (subscription.discounts?.length ?? 0) > 0) {
+        await retry(() =>
+          client.subscriptions.update(subscription.id, { discounts: "" }),
+        );
+      }
       break;
     }
 
@@ -329,13 +358,37 @@ export const handleWebhookEvent = async (rawBody: Buffer, signature: string) => 
       const user = await getUserByStripeCustomerId(customerId);
       if (!user) break;
 
-      const periodsPaid = user.loyaltyPeriodsPaid + 1;
-      const discountCents = computeLoyaltyDiscountCents(periodsPaid, user.proInterval);
+      // A renewal of a subscription the user has since replaced (e.g. a
+      // stale event after switching to lifetime) must not touch the streak.
+      if (user.stripeSubscriptionId && user.stripeSubscriptionId !== subscriptionId) {
+        break;
+      }
 
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { loyaltyPeriodsPaid: periodsPaid },
-      });
+      // Count each renewal invoice exactly once. Stripe redelivers a webhook
+      // whenever we answer with an error (e.g. the coupon update below
+      // failing after its retries) or too slowly — without this guard every
+      // redelivery would add another period. The conditional update also
+      // makes two concurrent deliveries of the same invoice count it once.
+      let periodsPaid = user.loyaltyPeriodsPaid;
+      if (user.loyaltyLastInvoiceId !== invoice.id) {
+        const counted = await prisma.user.updateMany({
+          where: {
+            id: user.id,
+            OR: [
+              { loyaltyLastInvoiceId: null },
+              { loyaltyLastInvoiceId: { not: invoice.id } },
+            ],
+          },
+          data: {
+            loyaltyPeriodsPaid: { increment: 1 },
+            loyaltyLastInvoiceId: invoice.id,
+          },
+        });
+        const fresh = await getUserById(user.id);
+        periodsPaid = fresh?.loyaltyPeriodsPaid ?? periodsPaid + counted.count;
+      }
+
+      const discountCents = computeLoyaltyDiscountCents(periodsPaid, user.proInterval);
 
       if (discountCents > 0) {
         const couponId = await getOrCreateLoyaltyCoupon(

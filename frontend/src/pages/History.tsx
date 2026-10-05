@@ -31,6 +31,9 @@ type SessionData = {
   date: string;
   completed: boolean;
   durationMinutes: number | null;
+  // Older than the free plan's window: date and muscle group only, shown
+  // blurred and unclickable behind a Pro badge.
+  locked?: boolean;
   sessionExercises: {
     exercise: { id: string; name: string };
     sets: {
@@ -126,6 +129,7 @@ export default function HistoryPage() {
   const [dayCardClosing, setDayCardClosing] = useState(false);
   const { toast, toastVariant, closingToast, showToast } = useToast();
   const [showExportConfirm, setShowExportConfirm] = useState(false);
+  const refMonth = useRef<HTMLDivElement>(null);
   const ref0 = useRef<HTMLDivElement>(null);
   const ref1 = useRef<HTMLDivElement>(null);
   const ref2 = useRef<HTMLDivElement>(null);
@@ -142,6 +146,8 @@ export default function HistoryPage() {
     if (el) setTabIndicator({ left: el.offsetLeft, width: el.offsetWidth });
   }, [viewMode, allSessions.length]);
 
+  // refIndex points into the `refs` array passed to TourOverlay below:
+  // [month navigator, week list, first day card, list/calendar tabs].
   const tourSteps = [
     {
       title: t("history.tour.month.title"),
@@ -149,14 +155,19 @@ export default function HistoryPage() {
       refIndex: 0,
     },
     {
-      title: t("history.tour.calendarView.title"),
-      description: t("history.tour.calendarView.desc"),
+      title: t("history.tour.weeks.title"),
+      description: t("history.tour.weeks.desc"),
       refIndex: 1,
     },
     {
       title: t("history.tour.sessionDetail.title"),
       description: t("history.tour.sessionDetail.desc"),
       refIndex: 2,
+    },
+    {
+      title: t("history.tour.calendarView.title"),
+      description: t("history.tour.calendarView.desc"),
+      refIndex: 3,
     },
   ];
 
@@ -171,12 +182,13 @@ export default function HistoryPage() {
       }
 
       try {
-        const start = isPro
-          ? new Date(2000, 0, 1)
-          : new Date(Date.now() - FREE_HISTORY_DAYS * 24 * 60 * 60 * 1000);
+        // Free users ask for the full range too: the server still caps real
+        // sessions at FREE_HISTORY_DAYS and returns anything older as
+        // `locked` stubs, shown blurred with a Pro upsell.
+        const start = new Date(2000, 0, 1);
 
         const res = await fetch(
-          `${API_URL}/sessions/me?start=${start.toISOString()}&end=${new Date().toISOString()}`,
+          `${API_URL}/sessions/me?start=${start.toISOString()}&end=${new Date().toISOString()}&includeLocked=true`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -194,8 +206,9 @@ export default function HistoryPage() {
         setAllSessions(
           sessions.filter(
             (s) =>
-              s.completed &&
-              s.sessionExercises.some((se) => se.sets.some(hasSetData)),
+              s.locked ||
+              (s.completed &&
+                s.sessionExercises.some((se) => se.sets.some(hasSetData))),
           ),
         );
         setLoading(false);
@@ -539,7 +552,10 @@ export default function HistoryPage() {
         </div>
       ) : (
         <>
-          <div className="bg-[#ece7dd] rounded-3xl shadow-sm p-4 mb-3">
+          <div
+            ref={refMonth}
+            className="bg-[#ece7dd] rounded-3xl shadow-sm p-4 mb-3"
+          >
             <div className="flex items-center justify-between">
               <button
                 onClick={() =>
@@ -727,6 +743,44 @@ export default function HistoryPage() {
 
                                   <div className="divide-y divide-gray-100">
                                     {day.sessions.map((session) => {
+                                      if (session.locked) {
+                                        return (
+                                          <div
+                                            key={session.id}
+                                            className="relative flex items-center gap-3 px-3 py-2.5"
+                                          >
+                                            <div
+                                              aria-hidden
+                                              className="text-left flex-1 min-w-0 blur-[5px] select-none pointer-events-none"
+                                            >
+                                              <p className="text-sm font-bold text-gray-900 uppercase truncate">
+                                                {getMuscleGroupLabel(
+                                                  session.muscleGroup,
+                                                  t,
+                                                )}
+                                              </p>
+                                              <p className="text-xs font-semibold text-gray-400 mt-0.5 uppercase">
+                                                {t("history.exerciseCount", {
+                                                  count: 5,
+                                                })}
+                                              </p>
+                                            </div>
+                                            <button
+                                              onClick={() =>
+                                                navigate("/upgrade")
+                                              }
+                                              aria-label={t(
+                                                "history.lockedSession",
+                                                { days: FREE_HISTORY_DAYS },
+                                              )}
+                                              className="flex items-center gap-1 bg-[#c9552c] text-white text-[10px] font-black uppercase tracking-wide px-2.5 py-1.5 rounded-full shadow-sm active:scale-[0.97] transition-all flex-shrink-0"
+                                            >
+                                              <Crown size={12} />
+                                              Pro
+                                            </button>
+                                          </div>
+                                        );
+                                      }
                                       const exerciseCount =
                                         session.sessionExercises.filter(
                                           (se) => se.sets.some(hasSetData),
@@ -896,7 +950,21 @@ export default function HistoryPage() {
       )}
       </div>
 
-      <TourOverlay tourKey="history" steps={tourSteps} refs={[ref0, ref1, ref2]} />
+      {/* Only once there's history to point at: the tour marks itself as
+          seen the moment it starts, so starting it on an empty page would
+          skip every step and use it up before the user ever saw it. The
+          week/session steps are dropped when the shown month is empty. */}
+      {!loadError && allSessions.length > 0 && (
+        <TourOverlay
+          tourKey="history"
+          steps={
+            selectedMonthWeeks.length > 0
+              ? tourSteps
+              : tourSteps.filter((s) => s.refIndex === 0 || s.refIndex === 3)
+          }
+          refs={[refMonth, ref0, ref2, ref1]}
+        />
+      )}
 
       {showExportConfirm && (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-[60] px-6 animate-fade-in">

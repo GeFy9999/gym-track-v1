@@ -13,9 +13,12 @@ function intervalFromProductId(productId: string | undefined): string | null {
 }
 
 type RevenueCatEvent = {
+  id?: string;
   type: string;
   app_user_id?: string;
   product_id?: string;
+  // PRODUCT_CHANGE only: product_id is the OLD product, this the new one.
+  new_product_id?: string | null;
   expiration_at_ms?: number | null;
 };
 
@@ -45,15 +48,51 @@ export async function handleRevenueCatWebhook(
     case "PRODUCT_CHANGE":
     case "SUBSCRIPTION_EXTENDED":
     case "NON_RENEWING_PURCHASE": {
+      const productId =
+        (event.type === "PRODUCT_CHANGE" && event.new_product_id) ||
+        event.product_id;
+      const interval = intervalFromProductId(productId);
+
+      // Loyalty streak, mirroring Stripe: a brand-new subscription starts
+      // at 0, switching monthly <-> yearly restarts at 0 (moving to a
+      // loyalty price tier of the same plan does not), and each paid
+      // renewal adds one — counted once per event, since RevenueCat
+      // redelivers a webhook it didn't get a 200 for.
+      let loyalty: { loyaltyPeriodsPaid?: number | { increment: number }; loyaltyLastInvoiceId?: string } = {};
+      if (event.type === "INITIAL_PURCHASE" && interval) {
+        loyalty = { loyaltyPeriodsPaid: 0 };
+      } else if (
+        event.type === "PRODUCT_CHANGE" &&
+        user.proInterval &&
+        interval &&
+        user.proInterval !== interval
+      ) {
+        loyalty = { loyaltyPeriodsPaid: 0 };
+      } else if (
+        event.type === "RENEWAL" &&
+        interval &&
+        (!event.id || event.id !== user.loyaltyLastInvoiceId)
+      ) {
+        loyalty = {
+          loyaltyPeriodsPaid: { increment: 1 },
+          ...(event.id ? { loyaltyLastInvoiceId: event.id } : {}),
+        };
+      }
+
       await prisma.user.update({
         where: { id: user.id },
         data: {
           isPro: true,
           billingProvider: "google_play",
-          proInterval: intervalFromProductId(event.product_id),
+          proInterval: interval,
+          proProductId: interval ? (productId ?? null) : null,
           proCurrentPeriodEnd: event.expiration_at_ms
             ? new Date(event.expiration_at_ms)
             : null,
+          // A Google Play subscription uses up the account's one free trial
+          // too (lifetime, which has no interval, doesn't).
+          ...(interval ? { hasUsedTrial: true } : {}),
+          ...loyalty,
         },
       });
       break;
@@ -62,7 +101,7 @@ export async function handleRevenueCatWebhook(
     // CANCELLATION only means auto-renew was turned off (or a refund was
     // issued) — access continues until the period actually ends. EXPIRATION
     // is the real "access ends now" signal, mirroring Stripe's
-    // customer.subscription.deleted.
+    // customer.subscription.deleted (which also resets the loyalty streak).
     case "EXPIRATION": {
       // A stale event for a user who has since moved to a different
       // provider (e.g. switched to Stripe) shouldn't clobber that.
@@ -74,6 +113,8 @@ export async function handleRevenueCatWebhook(
           isPro: false,
           proCurrentPeriodEnd: null,
           proInterval: null,
+          proProductId: null,
+          loyaltyPeriodsPaid: 0,
         },
       });
       break;

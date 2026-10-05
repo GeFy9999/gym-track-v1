@@ -48,6 +48,9 @@ export default function UpgradePage() {
   const stored = localStorage.getItem("user");
   const user = stored ? JSON.parse(stored) : null;
   const loyaltyDiscountCents: number = user?.loyaltyDiscountCents ?? 0;
+  // The 7-day trial is once per account, across both plans — the server
+  // enforces it; this only keeps the wording honest.
+  const hasUsedTrial: boolean = user?.hasUsedTrial ?? false;
 
   // What the user is actually subscribed to right now, if anything — used
   // to mark that plan as current and block re-buying it.
@@ -73,6 +76,7 @@ export default function UpgradePage() {
   const [activationTimedOut, setActivationTimedOut] = useState(false);
   const [portalLoading, setPortalLoading] = useState(false);
   const [showCancelWarning, setShowCancelWarning] = useState(false);
+  const [showSwitchWarning, setShowSwitchWarning] = useState(false);
   const [switchSuccess, setSwitchSuccess] = useState(false);
   const [restoring, setRestoring] = useState(false);
   const [restoreMessage, setRestoreMessage] = useState<string | null>(null);
@@ -167,7 +171,10 @@ export default function UpgradePage() {
 
     if (isGooglePlayBilled) {
       try {
-        await purchasePlan(plan);
+        await purchasePlan(plan, {
+          skipTrial: hasUsedTrial,
+          replacingProductId: user?.proProductId ?? null,
+        });
         setLoading(false);
         setNativePurchaseFlow(true);
         await pollAfterNativePurchase();
@@ -239,7 +246,7 @@ export default function UpgradePage() {
 
     if (Capacitor.isNativePlatform()) {
       try {
-        await purchasePlan(plan);
+        await purchasePlan(plan, { skipTrial: hasUsedTrial });
         setLoading(false);
         setNativePurchaseFlow(true);
         await pollAfterNativePurchase();
@@ -469,7 +476,9 @@ export default function UpgradePage() {
                 ? t("upgrade.lifetimeNote")
                 : isPro
                   ? t("upgrade.switchNote")
-                  : t("upgrade.trialNote")}
+                  : hasUsedTrial
+                    ? t("upgrade.noTrialNote")
+                    : t("upgrade.trialNote")}
           </p>
         </div>
 
@@ -515,8 +524,29 @@ export default function UpgradePage() {
           </div>
         </div>
 
+        {isPro && !isCurrentSelection && loyaltyDiscountCents > 0 && (
+          <div className="flex items-start gap-2.5 bg-[#c9552c]/10 rounded-2xl px-4 py-3">
+            <TrendingDown size={16} className="text-[#c9552c] flex-shrink-0 mt-0.5" />
+            <p className="text-xs font-semibold text-[#c9552c]">
+              {t("upgrade.switchLoyaltyReminder", {
+                amount: (loyaltyDiscountCents / 100).toFixed(2),
+              })}
+            </p>
+          </div>
+        )}
+
         <button
-          onClick={isCurrentSelection ? undefined : isPro ? handleChangePlan : handleCheckout}
+          onClick={
+            isCurrentSelection
+              ? undefined
+              : isPro
+                ? // Switching plan wipes the loyalty discount — confirm first
+                  // when there's one to lose.
+                  loyaltyDiscountCents > 0
+                  ? () => setShowSwitchWarning(true)
+                  : handleChangePlan
+                : handleCheckout
+          }
           disabled={loading || isCurrentSelection}
           className="w-full bg-[#c9552c] disabled:opacity-40 text-white py-3.5 rounded-full font-bold uppercase tracking-wide text-sm active:scale-[0.98] transition-transform shadow-sm"
         >
@@ -528,7 +558,9 @@ export default function UpgradePage() {
                 ? t("upgrade.switchPlan")
                 : plan === "lifetime"
                   ? t("upgrade.buyLifetime")
-                  : t("upgrade.startTrial")}
+                  : hasUsedTrial
+                    ? t("upgrade.subscribe")
+                    : t("upgrade.startTrial")}
         </button>
 
         {isPro && user?.proCurrentPeriodEnd && (
@@ -550,6 +582,41 @@ export default function UpgradePage() {
           </button>
         )}
       </div>
+
+      {showSwitchWarning && (
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-[60] px-6 animate-fade-in">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
+            <div className="w-12 h-12 rounded-full bg-[#c9552c]/10 flex items-center justify-center mx-auto mb-3">
+              <TrendingDown size={22} className="text-[#c9552c]" />
+            </div>
+            <p className="text-base font-bold text-gray-900 text-center mb-2">
+              {t("upgrade.switchWarning.title")}
+            </p>
+            <p className="text-sm text-gray-500 text-center mb-6">
+              {t("upgrade.switchWarning.desc", {
+                amount: (loyaltyDiscountCents / 100).toFixed(2),
+              })}
+            </p>
+            <div className="flex flex-col gap-2">
+              <button
+                onClick={() => setShowSwitchWarning(false)}
+                className="w-full bg-[#c9552c] text-white py-3 rounded-xl font-semibold"
+              >
+                {t("upgrade.switchWarning.keep")}
+              </button>
+              <button
+                onClick={() => {
+                  setShowSwitchWarning(false);
+                  handleChangePlan();
+                }}
+                className="w-full bg-gray-100 text-gray-700 py-3 rounded-xl font-semibold"
+              >
+                {t("upgrade.switchWarning.continue")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showCancelWarning && (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-[60] px-6 animate-fade-in">

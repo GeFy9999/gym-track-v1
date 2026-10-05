@@ -4,6 +4,8 @@ import { Plus, Trash2, Trophy, Link2, Unlink, StickyNote, Flame, Crown, MoreVert
 import type { SessionExercise, SetData } from "../../types/session";
 import { formatDuration } from "../../utils/units";
 import { formatLastTime, type Delta as DeltaType, type LastTime as LastTimeType } from "../../hooks/useExerciseDeltas";
+import type { LoadingType } from "../../utils/loadingType";
+import LoadingTypeSheet from "./LoadingTypeSheet";
 import BarbellSelector from "./BarbellSelector";
 import RestTimerPicker from "./RestTimerPicker";
 import SetRow from "./SetRow";
@@ -16,13 +18,14 @@ type Props = {
   se: SessionExercise;
   seIndex: number;
   totalExercises: number;
-  barbell: boolean;
+  // null when loading-type inputs are off (free plan or disabled in the
+  // profile) — the card then shows a plain weight input.
+  loadingType: LoadingType | null;
+  isLoadingTypeOverridden: boolean;
   barWeight: number;
   unit: string;
   readOnly: boolean;
   isPro: boolean;
-  barbellModeEnabled: boolean;
-  isBarbellExercise: boolean;
   restTimerEnabled: boolean;
   exerciseDuration: number;
   delta: Delta;
@@ -34,8 +37,6 @@ type Props = {
   supersetGroupLength: number;
   isRemoving: boolean;
   animationDelay?: number;
-  openDurationPicker: boolean;
-  closingDurationPicker: boolean;
   openSetTypeMenuId: string | null;
   closingSetTypeMenuId: string | null;
   cardRef: (el: HTMLDivElement | null) => void;
@@ -43,8 +44,7 @@ type Props = {
   onOpenNoteModal: () => void;
   onOpenSupersetModal: () => void;
   onRequestDelete: () => void;
-  onToggleBarbellOverride: () => void;
-  onToggleDurationPicker: () => void;
+  onSelectLoadingType: (type: LoadingType | null) => void;
   onSelectDuration: (seconds: number) => void;
   onSelectBarWeight: (weight: number) => void;
   onToggleSetTypeMenu: (setId: string) => void;
@@ -63,13 +63,12 @@ export default function ExerciseCard({
   se,
   seIndex,
   totalExercises,
-  barbell,
+  loadingType,
+  isLoadingTypeOverridden,
   barWeight,
   unit,
   readOnly,
   isPro,
-  barbellModeEnabled,
-  isBarbellExercise,
   restTimerEnabled,
   exerciseDuration,
   delta,
@@ -81,8 +80,6 @@ export default function ExerciseCard({
   supersetGroupLength,
   isRemoving,
   animationDelay,
-  openDurationPicker,
-  closingDurationPicker,
   openSetTypeMenuId,
   closingSetTypeMenuId,
   cardRef,
@@ -90,8 +87,7 @@ export default function ExerciseCard({
   onOpenNoteModal,
   onOpenSupersetModal,
   onRequestDelete,
-  onToggleBarbellOverride,
-  onToggleDurationPicker,
+  onSelectLoadingType,
   onSelectDuration,
   onSelectBarWeight,
   onToggleSetTypeMenu,
@@ -109,6 +105,8 @@ export default function ExerciseCard({
   const [trophyPopping, setTrophyPopping] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
   const [showActionsMenu, setShowActionsMenu] = useState(false);
+  const [showLoadingMenu, setShowLoadingMenu] = useState(false);
+  const [showRestPicker, setShowRestPicker] = useState(false);
   // The highest weight logged for this exercise last time it was done, so
   // each set's input can flag "+X" the moment a heavier weight is entered
   // — based on actual history, not just whatever was in the field before.
@@ -284,24 +282,20 @@ export default function ExerciseCard({
 
         {!readOnly && (
           <div className="flex items-center gap-2 flex-wrap">
-            {barbellModeEnabled && isBarbellExercise && (
+            {loadingType && (
               <button
-                data-tour="session-barbell-chip"
-                onClick={onToggleBarbellOverride}
-                className={`text-[11px] font-bold uppercase tracking-wide px-3 py-1.5 rounded-full transition-colors ${
-                  barbell
-                    ? "bg-[#c9552c] text-white"
-                    : "bg-white/10 text-white/60"
-                }`}
+                data-tour="session-loading-chip"
+                onClick={() => setShowLoadingMenu((v) => !v)}
+                className="text-[11px] font-bold uppercase tracking-wide px-3 py-1.5 rounded-full bg-[#c9552c] text-white"
               >
-                {t("session.card.barMode")}
+                {t(`session.loadingType.${loadingType}`)}
               </button>
             )}
 
             {restTimerEnabled && isPro && (
               <button
                 data-tour="session-rest-chip"
-                onClick={onToggleDurationPicker}
+                onClick={() => setShowRestPicker(true)}
                 className="text-[11px] font-bold uppercase tracking-wide px-3 py-1.5 rounded-full bg-white/10 text-white/80"
               >
                 {t("session.card.rest", {
@@ -312,14 +306,25 @@ export default function ExerciseCard({
           </div>
         )}
 
+        {!readOnly && loadingType && showLoadingMenu && (
+          <LoadingTypeSheet
+            exerciseName={se.exercise.name}
+            current={loadingType}
+            isOverridden={isLoadingTypeOverridden}
+            onSelect={onSelectLoadingType}
+            onClose={() => setShowLoadingMenu(false)}
+          />
+        )}
+
         {!readOnly &&
           restTimerEnabled &&
           isPro &&
-          (openDurationPicker || closingDurationPicker) && (
+          showRestPicker && (
             <RestTimerPicker
+              exerciseName={se.exercise.name}
               currentDuration={exerciseDuration}
-              isClosing={closingDurationPicker}
               onSelect={onSelectDuration}
+              onClose={() => setShowRestPicker(false)}
             />
           )}
       </div>
@@ -336,7 +341,7 @@ export default function ExerciseCard({
           </div>
         )}
 
-        {!readOnly && barbell && (
+        {!readOnly && loadingType === "BARBELL" && (
           <BarbellSelector
             unit={unit}
             currentBarWeight={barWeight}
@@ -361,7 +366,7 @@ export default function ExerciseCard({
               key={set.id}
               set={set}
               index={i}
-              barbell={barbell}
+              loadingType={loadingType}
               barWeight={barWeight}
               unit={unit}
               readOnly={readOnly}

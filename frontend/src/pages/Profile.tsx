@@ -22,6 +22,7 @@ import {
 import { getDateLocale } from "../i18n";
 import { useProfileSettings } from "../hooks/useProfileSettings";
 import TourOverlay from "../components/TourOverlay";
+import LoyaltyTierBanner from "../components/LoyaltyTierBanner";
 
 // Annual renewals are worth far more than monthly ones, so the loyalty
 // discount scales up accordingly: -$0.10/renewal (max -$1) monthly,
@@ -30,6 +31,10 @@ const LOYALTY_CENTS_PER_PERIOD_MONTHLY = 10;
 const LOYALTY_MAX_CENTS_MONTHLY = 100;
 const LOYALTY_CENTS_PER_PERIOD_YEARLY = 100;
 const LOYALTY_MAX_CENTS_YEARLY = 300;
+// Regular prices, for the Google Play loyalty tier's new price (kept in sync
+// with pages/Upgrade.tsx).
+const MONTHLY_PRICE_CENTS = 499;
+const ANNUAL_PRICE_CENTS = 2999;
 const LOYALTY_MAX_PERIODS_MONTHLY = 10;
 const LOYALTY_MAX_PERIODS_YEARLY = 3;
 
@@ -189,7 +194,9 @@ export default function ProfilePage() {
       )}
 
       {/* Réduction de fidélité — seulement pertinent pour un abonnement
-          récurrent (les acheteurs à vie n'ont pas de "prochain paiement"). */}
+          récurrent (les acheteurs à vie n'ont pas de "prochain paiement").
+          Sur Google Play, la réduction passe par un palier de prix que
+          l'abonné active (LoyaltyTierBanner). */}
       {isPro &&
         user?.proCurrentPeriodEnd &&
         (() => {
@@ -206,8 +213,11 @@ export default function ProfilePage() {
 
           const ringRadius = 34;
           const circumference = 2 * Math.PI * ringRadius;
+          // Renewals keep counting past the cap; the ring and "x/max" stop
+          // at full instead of overflowing (e.g. "14/10").
+          const shownPeriods = Math.min(loyaltyPeriodsPaid, loyaltyMaxPeriods);
           const ringOffset =
-            circumference * (1 - loyaltyPeriodsPaid / loyaltyMaxPeriods);
+            circumference * (1 - shownPeriods / loyaltyMaxPeriods);
           const atMax = loyaltyDiscountCents >= loyaltyMaxCents;
           const daysUntilRenewal = Math.max(
             0,
@@ -252,7 +262,7 @@ export default function ProfilePage() {
                   <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-[#3a9e6e] border-2 border-[#ece7dd]" />
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
                     <span className="text-base font-black text-gray-900 leading-none">
-                      {loyaltyPeriodsPaid}/{loyaltyMaxPeriods}
+                      {shownPeriods}/{loyaltyMaxPeriods}
                     </span>
                     <span className="text-[8px] font-bold text-gray-400 uppercase tracking-widest mt-1">
                       {t("profile.loyaltyRenewalsShort")}
@@ -307,6 +317,18 @@ export default function ProfilePage() {
                     </div>
                   </div>
                 </>
+              )}
+
+              {user?.loyaltyUpgradeProductId && user?.proProductId && (
+                <LoyaltyTierBanner
+                  upgradeProductId={user.loyaltyUpgradeProductId}
+                  currentProductId={user.proProductId}
+                  newPriceLabel={`${(
+                    ((isYearly ? ANNUAL_PRICE_CENTS : MONTHLY_PRICE_CENTS) -
+                      loyaltyDiscountCents) /
+                    100
+                  ).toFixed(2)}$${isYearly ? t("upgrade.perYear") : t("upgrade.perMonth")}`}
+                />
               )}
             </div>
           );

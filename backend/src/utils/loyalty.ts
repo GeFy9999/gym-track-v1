@@ -36,3 +36,67 @@ export function loyaltyCouponId(cents: number, interval: string | null): string 
   const suffix = interval === "year" ? "y" : "m";
   return `loyalty_${cents}_cad_${suffix}`;
 }
+
+// --- Google Play (RevenueCat) -------------------------------------------
+// Google Play can't lower one subscriber's renewal price, so the loyalty
+// discount is delivered as price tiers: extra base plans created in Play
+// Console next to the regular one, named after it with a "-l<tier>" suffix,
+// each priced one discount step lower (monthly-l1 = 4.89$ … monthly-l10 =
+// 3.99$; yearly-l1 = 28.99$ … yearly-l3 = 26.99$). The app offers to move
+// the subscriber to the tier they've earned, as a deferred plan change that
+// takes effect at their next renewal.
+
+// How many discount steps the subscriber has earned (0 = full price).
+export function loyaltyTier(periodsPaid: number, interval: string | null): number {
+  return (
+    computeLoyaltyDiscountCents(periodsPaid, interval) /
+    loyaltyCentsPerPeriod(interval)
+  );
+}
+
+const TIER_SUFFIX = /-l(\d+)$/;
+
+// RevenueCat reports Google Play subscriptions as "<subscriptionId>:<basePlanId>".
+function splitGooglePlayProductId(productId: string) {
+  const sep = productId.indexOf(":");
+  if (sep === -1) return null;
+  return {
+    subscriptionId: productId.slice(0, sep),
+    basePlanId: productId.slice(sep + 1),
+  };
+}
+
+// The tier a product id is on (0 for the regular base plan).
+export function googlePlayTierOf(productId: string): number {
+  const parts = splitGooglePlayProductId(productId);
+  const match = parts && TIER_SUFFIX.exec(parts.basePlanId);
+  return match ? Number(match[1]) : 0;
+}
+
+// The product id of a given tier of the same subscription, or null when the
+// id isn't in "<subscriptionId>:<basePlanId>" form.
+export function googlePlayTierProductId(
+  productId: string,
+  tier: number,
+): string | null {
+  const parts = splitGooglePlayProductId(productId);
+  if (!parts) return null;
+  const regularBasePlan = parts.basePlanId.replace(TIER_SUFFIX, "");
+  return `${parts.subscriptionId}:${tier > 0 ? `${regularBasePlan}-l${tier}` : regularBasePlan}`;
+}
+
+// The tier product a Google Play subscriber should move to, if they've
+// earned a lower price than the one they're on; otherwise null.
+export function googlePlayLoyaltyUpgradeProductId(user: {
+  billingProvider: string;
+  proProductId: string | null;
+  proInterval: string | null;
+  loyaltyPeriodsPaid: number;
+}): string | null {
+  if (user.billingProvider !== "google_play" || !user.proProductId || !user.proInterval) {
+    return null;
+  }
+  const earned = loyaltyTier(user.loyaltyPeriodsPaid, user.proInterval);
+  if (earned <= googlePlayTierOf(user.proProductId)) return null;
+  return googlePlayTierProductId(user.proProductId, earned);
+}

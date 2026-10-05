@@ -7,7 +7,10 @@ import {
 } from "../repositories/databaseRepository.js";
 import { prisma } from "../prisma.js";
 import { Resend } from "resend";
-import { computeLoyaltyDiscountCents } from "../utils/loyalty.js";
+import {
+  computeLoyaltyDiscountCents,
+  googlePlayLoyaltyUpgradeProductId,
+} from "../utils/loyalty.js";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -29,6 +32,8 @@ const toPublicUser = (user: {
   loyaltyPeriodsPaid: number;
   billingProvider: string;
   emailVerified: boolean;
+  hasUsedTrial: boolean;
+  proProductId: string | null;
 }) => ({
   id: user.id,
   email: user.email,
@@ -46,6 +51,11 @@ const toPublicUser = (user: {
   loyaltyPeriodsPaid: user.loyaltyPeriodsPaid,
   billingProvider: user.billingProvider,
   emailVerified: user.emailVerified,
+  hasUsedTrial: user.hasUsedTrial,
+  proProductId: user.proProductId,
+  // Google Play only: the cheaper loyalty tier the subscriber has earned
+  // but isn't on yet — the app offers to switch to it (see loyalty.ts).
+  loyaltyUpgradeProductId: googlePlayLoyaltyUpgradeProductId(user),
   loyaltyDiscountCents: computeLoyaltyDiscountCents(
     user.loyaltyPeriodsPaid,
     user.proInterval,
@@ -184,6 +194,8 @@ export const deleteAccount = async (userId: string) => {
   await prisma.bodyWeight.deleteMany({ where: { userId } });
   await prisma.schedule.deleteMany({ where: { userId } });
   await prisma.trackedExercise.deleteMany({ where: { userId } });
+  await prisma.exerciseNote.deleteMany({ where: { userId } });
+  await prisma.exerciseLoadingType.deleteMany({ where: { userId } });
   await prisma.progressPhoto.deleteMany({ where: { userId } });
   await prisma.user.delete({ where: { id: userId } });
 };

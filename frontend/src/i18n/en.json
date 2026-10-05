@@ -110,12 +110,13 @@
     "finish": "Finish",
     "resume": "Resume",
     "tour": {
+      "week": { "title": "Your week", "desc": "The ring fills up as your week goes on: it shows how many muscle groups you've already trained out of the total. Goal: complete it before Monday!" },
       "muscleGroups": { "title": "Muscle groups", "desc": "Tap a muscle group to create a session and add exercises. An orange badge appears while a session is in progress." },
       "activity": { "title": "Recent activity", "desc": "Here you'll find your latest sessions with the exercises and sets you did." },
       "home": { "title": "Home", "desc": "This is your main dashboard. You'll see your week, your muscle groups, and your recent activity here." },
       "stats": { "title": "Stats", "desc": "Check your personal records, your progression, and your training volume by muscle group." },
-      "records": { "title": "Personal records", "desc": "Tap the trophy to choose which exercises to track as a personal record. Once you've done the exercise at least once, your best weight will show up in Stats." },
-      "history": { "title": "History", "desc": "Find all your past sessions organized by week. Tap a session to review the details." },
+      "exercises": { "title": "Exercises", "desc": "Browse every exercise and open one to see its demo, your progress and your records. Tap the trophy to track it as a personal record in Stats." },
+      "history": { "title": "History", "desc": "Find all your past sessions, month by month, grouped by week and by day. Tap a session to review the details." },
       "profile": { "title": "Profile", "desc": "Manage your account, change your password, track your body weight, and check your progress photos." }
     },
     "abandoned": {
@@ -170,6 +171,7 @@
     "noHistoryYet": "No history yet",
     "export": "Export",
     "freePlanBanner": "Free plan: last {{days}} days only — Go Pro for full history",
+    "lockedSession": "Session older than {{days}} days — Go Pro to view it",
     "list": "List",
     "calendar": "Calendar",
     "noHistory": "No history",
@@ -218,9 +220,10 @@
     "months": ["January","February","March","April","May","June","July","August","September","October","November","December"],
     "dayLabels": ["M","T","W","T","F","S","S"],
     "tour": {
-      "month": { "title": "This month", "desc": "Your history shows the weeks of the current month, with the number of sessions and sets done." },
-      "calendarView": { "title": "Calendar view", "desc": "To find a previous month, switch to the calendar view and navigate with the arrows." },
-      "sessionDetail": { "title": "Session detail", "desc": "Tap a session to review your exercises, weights, and reps in read-only mode." }
+      "month": { "title": "Month", "desc": "Move from one month to another with the arrows. The number of sessions done that month is shown underneath." },
+      "weeks": { "title": "Weeks", "desc": "Your sessions are grouped by week, then by day, with the number of sessions and sets done. Tap a week to open or close it." },
+      "sessionDetail": { "title": "Session detail", "desc": "Tap a session to review your exercises, weights, and reps in read-only mode." },
+      "calendarView": { "title": "List or calendar", "desc": "Switch to the calendar view to see at a glance the days you trained (Pro)." }
     }
   },
   "session": {
@@ -246,7 +249,6 @@
       "noteAria": "Personal note",
       "supersetAria": "Link as superset",
       "moreAria": "More options",
-      "barMode": "Bar mode",
       "rest": "Rest {{duration}}",
       "lastTime": "Last time",
       "autoWarmup": "Auto warm-up",
@@ -266,7 +268,22 @@
     "reps": "Reps",
     "perSide": "Per side:",
     "notCalculable": "+{{count}} not calculable",
-    "total": "{{weight}} {{unit}} total",
+    "total": "Total: {{weight}} {{unit}}",
+    "weightPerDumbbell": "Weight / dumbbell",
+    "weightStack": "Weight (stack)",
+    "addedWeight": "Added weight (+)",
+    "assistance": "Assistance",
+    "loadingType": {
+      "menuTitle": "Loading type",
+      "reset": "Back to automatic type",
+      "BARBELL": "Barbell",
+      "PLATE_LOADED": "Plate-loaded machine",
+      "DUMBBELL": "Dumbbells",
+      "MACHINE": "Machine (stack)",
+      "CABLE": "Cable",
+      "BODYWEIGHT": "Bodyweight",
+      "ASSISTED": "Assisted"
+    },
     "cancel": "Cancel",
     "confirm": "Confirm",
     "save": "Save",
@@ -349,13 +366,14 @@
       "note": { "title": "Personal note", "desc": "Write a note about this exercise (technique, feel, goal). It stays linked to the exercise, not just this session." },
       "superset": { "title": "Superset", "desc": "Link several exercises together to chain them with no rest in between." },
       "delete": { "title": "Delete exercise", "desc": "Remove this exercise from the session. All its sets will also be deleted." },
-      "barMode": { "title": "Bar mode", "desc": "Enable it to enter the weight added on each side of the bar — the app calculates the total weight and the plates to load." },
+      "barMode": { "title": "Loading type", "desc": "Shows how the exercise is loaded (barbell, plate-loaded machine, dumbbells…). Inputs adapt: weight per side for a barbell (with the total and plates) or a plate-loaded machine, per dumbbell, and so on. Tap to change it." },
       "rest": { "title": "Rest", "desc": "Change the rest timer duration for this specific exercise." },
       "warmup": { "title": "Auto warm-up", "desc": "Enter your working weight: the app automatically generates a progressive ramp-up before your working set." },
-      "addSet": { "title": "Add a set", "desc": "Add a new set to this exercise." }
+      "addSet": { "title": "Add a set", "desc": "Add a new set to this exercise." },
+      "finishExercises": { "title": "Finish my exercises", "desc": "Once you're done with this muscle group's exercises, head back home. You can move on to another muscle group, then finish the session from the home screen." }
     },
     "setRowTour": {
-      "weight": { "title": "Weight", "desc": "Enter the weight lifted. In bar mode, it's the weight added on one side of the bar." },
+      "weight": { "title": "Weight", "desc": "Enter the weight lifted. The label adapts to the loading type (total, per side, per dumbbell…)." },
       "reps": { "title": "Reps", "desc": "The number of reps done for this set." },
       "type": { "title": "Set type", "desc": "Change the set type: normal, warm-up, drop set, or to failure." },
       "check": { "title": "Confirm the set", "desc": "Mark the set as complete. The rest timer starts automatically if enabled." },
@@ -384,8 +402,8 @@
     "restTimerAuto": "Automatic rest timer",
     "restTimerAutoDesc": "Starts as soon as a set is marked complete",
     "restTimerDefault": "Default duration",
-    "barModeTitle": "Bar mode",
-    "barModeDesc": "Enter the weight on each side of the bar",
+    "barModeTitle": "Loading-type inputs",
+    "barModeDesc": "Bar and plates, weight per side, per dumbbell…",
     "dangerZone": "Danger zone",
     "deleteAccount": "Delete account",
     "deleteAccountDesc": "All your data will be lost",
@@ -395,6 +413,12 @@
     "proRenewsOn": "Renews on {{date}}",
     "proLifetime": "Lifetime access",
     "loyaltyTitle": "Loyalty discount",
+    "loyaltyTier": {
+      "ready": "Your discount is ready! Activate it to pay {{price}} from your next renewal.",
+      "openApp": "Your discount is ready! Open the Android app to activate it and pay {{price}} from your next renewal.",
+      "activate": "Activate my discount",
+      "done": "Discount activated: you'll pay {{price}} from your next renewal."
+    },
     "loyaltyRenewalsShort": "Renew.",
     "loyaltyActuel": "Current",
     "loyaltyMaxed": "Maximum discount reached: -${{amount}} on every renewal!",
@@ -411,7 +435,7 @@
     "toastUnitChanged": "Unit changed to {{unit}}",
     "toastRestTimerUpdated": "Rest timer updated",
     "restTimerAutoAria": "Enable the automatic rest timer",
-    "barModeAria": "Enable bar mode",
+    "barModeAria": "Enable loading-type inputs",
     "tour": {
       "progressPhotos": {
         "title": "Progress photos",
@@ -698,7 +722,15 @@
     "save": "Save {{pct}}%",
     "trialNote": "7-day free trial, cancel anytime.",
     "lifetimeNote": "One-time payment, lifetime access, no subscription.",
-    "switchNote": "Plan changes are prorated — no new free trial.",
+    "switchNote": "Plan changes are prorated, with no new free trial. Your loyalty discount starts over from zero.",
+    "noTrialNote": "You've already used your free trial. Cancel anytime.",
+    "switchLoyaltyReminder": "Changing plan makes you lose your -${{amount}} loyalty discount: it starts over from zero on the new plan.",
+    "switchWarning": {
+      "title": "Lose your discount?",
+      "desc": "You've earned a -${{amount}} loyalty discount on your current plan. Changing plan removes it and starts it over from zero.",
+      "keep": "Keep my plan",
+      "continue": "Change anyway"
+    },
     "currentPlanNote": "This is your current plan.",
     "mostPopular": "Most popular",
     "currentPlan": "Your subscription",
@@ -717,10 +749,11 @@
       "csvExport": "CSV export of your sessions",
       "advancedCharts": "Advanced progress charts (volume, 1RM, records by rep range)",
       "supersetsWarmup": "Supersets and automatic warmup",
-      "barbellMode": "Barbell mode and plate calculator",
+      "barbellMode": "Loading-type inputs (bar and plates, plate-loaded machines, dumbbells…)",
       "progressPhotos": "Unlimited progress photos"
     },
     "startTrial": "Start your 7-day trial",
+    "subscribe": "Subscribe",
     "buyLifetime": "Buy lifetime access",
     "redirecting": "Redirecting...",
     "errorGeneric": "Error",

@@ -303,12 +303,17 @@ export default function ExerciseDetailPage() {
 
       <div className="px-5 space-y-4">
         {!gifFailed ? (
-          <img
-            src={`${API_URL}/exercises/${exercise.id}/gif`}
-            alt=""
-            onError={() => setGifFailed(true)}
-            className="w-full h-80 object-contain rounded-2xl bg-[#faf6f1]"
-          />
+          // The box hugs the GIF's own size (no object-contain letterboxing)
+          // so the rounded corners land on the visible image itself, not on
+          // an invisible larger frame around it.
+          <div className="flex justify-center">
+            <img
+              src={`${API_URL}/exercises/${exercise.id}/gif`}
+              alt=""
+              onError={() => setGifFailed(true)}
+              className="max-w-full max-h-80 w-auto h-auto rounded-2xl"
+            />
+          </div>
         ) : exercise.image ? (
           <img
             src={exercise.image}

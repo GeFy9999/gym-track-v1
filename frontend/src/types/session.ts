@@ -13,6 +13,8 @@ export type SessionExercise = {
     id: string;
     name: string;
     image: string | null;
+    // Curated loading type (see utils/loadingType); null when not set.
+    loadingType?: string | null;
   };
   sets: SetData[];
   supersetId: string | null;

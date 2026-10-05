@@ -110,12 +110,13 @@
     "finish": "Terminer",
     "resume": "Reprendre",
     "tour": {
+      "week": { "title": "Ta semaine", "desc": "Le cercle se remplit au fil de ta semaine : il montre combien de groupes musculaires tu as déjà travaillés sur le total. Objectif : le compléter avant lundi !" },
       "muscleGroups": { "title": "Groupes musculaires", "desc": "Clique sur un groupe musculaire pour créer une session et ajouter des exercices. Un badge orange apparaîtra quand une session est en cours." },
       "activity": { "title": "Activité récente", "desc": "Ici tu retrouves tes dernières sessions avec les exercices et sets que tu as faits." },
       "home": { "title": "Accueil", "desc": "C'est ici, ton tableau de bord principal. Tu y verras ta semaine, tes groupes musculaires et ton activité récente." },
       "stats": { "title": "Statistiques", "desc": "Consulte tes records personnels, ta progression et le volume de travail par groupe musculaire." },
-      "records": { "title": "Records personnels", "desc": "Appuie sur le trophée pour choisir quels exercices suivre en record personnel. Une fois l'exercice fait au moins une fois, ton meilleur poids apparaîtra dans Stats." },
-      "history": { "title": "Historique", "desc": "Retrouve toutes tes séances passées organisées par semaine. Clique sur une séance pour revoir les détails." },
+      "exercises": { "title": "Exercices", "desc": "Parcours tous les exercices et ouvre-en un pour voir sa démonstration, ta progression et tes records. Appuie sur le trophée pour le suivre en record personnel dans Stats." },
+      "history": { "title": "Historique", "desc": "Retrouve toutes tes séances passées, mois par mois, regroupées par semaine et par jour. Clique sur une séance pour revoir les détails." },
       "profile": { "title": "Profil", "desc": "Gère ton compte, change ton mot de passe, suis ton poids corporel et consulte tes photos de progression." }
     },
     "abandoned": {
@@ -170,6 +171,7 @@
     "noHistoryYet": "Aucun historique encore",
     "export": "Exporter",
     "freePlanBanner": "Plan gratuit : derniers {{days}} jours seulement — Passe à Pro pour l'historique complet",
+    "lockedSession": "Séance de plus de {{days}} jours — Passe à Pro pour la voir",
     "list": "Liste",
     "calendar": "Calendrier",
     "noHistory": "Aucun historique",
@@ -218,9 +220,10 @@
     "months": ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"],
     "dayLabels": ["L","M","M","J","V","S","D"],
     "tour": {
-      "month": { "title": "Ce mois-ci", "desc": "Ton historique montre les semaines du mois en cours, organisées avec le nombre de séances et de sets faits." },
-      "calendarView": { "title": "Vue calendrier", "desc": "Pour retrouver un mois précédent, bascule sur la vue calendrier et navigue avec les flèches." },
-      "sessionDetail": { "title": "Détail d'une séance", "desc": "Clique sur une séance pour revoir tes exercices, poids et répétitions en lecture seule." }
+      "month": { "title": "Mois", "desc": "Passe d'un mois à l'autre avec les flèches. Le nombre de séances faites ce mois-là s'affiche juste en dessous." },
+      "weeks": { "title": "Semaines", "desc": "Tes séances sont regroupées par semaine puis par jour, avec le nombre de séances et de sets faits. Touche une semaine pour l'ouvrir ou la fermer." },
+      "sessionDetail": { "title": "Détail d'une séance", "desc": "Clique sur une séance pour revoir tes exercices, poids et répétitions en lecture seule." },
+      "calendarView": { "title": "Liste ou calendrier", "desc": "Bascule en vue calendrier pour voir d'un coup d'œil les jours où tu t'es entraîné (Pro)." }
     }
   },
   "session": {
@@ -246,7 +249,6 @@
       "noteAria": "Note personnelle",
       "supersetAria": "Lier en superset",
       "moreAria": "Plus d'options",
-      "barMode": "Mode barre",
       "rest": "Repos {{duration}}",
       "lastTime": "Dernière fois",
       "autoWarmup": "Échauffement auto",
@@ -266,7 +268,22 @@
     "reps": "Reps",
     "perSide": "Par côté :",
     "notCalculable": "+{{count}} non calculable",
-    "total": "{{weight}} {{unit}} total",
+    "total": "Total : {{weight}} {{unit}}",
+    "weightPerDumbbell": "Poids / haltère",
+    "weightStack": "Poids (pile)",
+    "addedWeight": "Lest (+)",
+    "assistance": "Assistance",
+    "loadingType": {
+      "menuTitle": "Type de chargement",
+      "reset": "Revenir au type automatique",
+      "BARBELL": "Barre",
+      "PLATE_LOADED": "Machine à disques",
+      "DUMBBELL": "Haltères",
+      "MACHINE": "Machine (pile)",
+      "CABLE": "Poulie",
+      "BODYWEIGHT": "Poids du corps",
+      "ASSISTED": "Assisté"
+    },
     "cancel": "Annuler",
     "confirm": "Confirmer",
     "save": "Sauvegarder",
@@ -349,13 +366,14 @@
       "note": { "title": "Note personnelle", "desc": "Écris une note sur cet exercice (technique, sensation, objectif). Elle reste liée à l'exercice, pas juste à cette séance." },
       "superset": { "title": "Superset", "desc": "Lie plusieurs exercices ensemble pour les enchaîner sans repos entre eux." },
       "delete": { "title": "Supprimer l'exercice", "desc": "Retire cet exercice de la séance. Tous ses sets seront aussi supprimés." },
-      "barMode": { "title": "Mode barre", "desc": "Active-le pour saisir le poids ajouté de chaque côté de la barre — l'app calcule le poids total et les plaques à charger." },
+      "barMode": { "title": "Type de chargement", "desc": "Indique comment l'exercice est chargé (barre, machine à disques, haltères…). La saisie s'adapte : poids par côté pour une barre (avec le total et les plaques) ou une machine à disques, poids par haltère, etc. Touche pour le changer." },
       "rest": { "title": "Repos", "desc": "Change la durée du minuteur de repos pour cet exercice précis." },
       "warmup": { "title": "Échauffement auto", "desc": "Entre ton poids de travail : l'app génère automatiquement une montée en charge progressive avant ton set de travail." },
-      "addSet": { "title": "Ajouter un set", "desc": "Ajoute une nouvelle série à cet exercice." }
+      "addSet": { "title": "Ajouter un set", "desc": "Ajoute une nouvelle série à cet exercice." },
+      "finishExercises": { "title": "Terminer mes exercices", "desc": "Quand tu as fini les exercices de ce groupe, reviens à l'accueil. Tu peux enchaîner un autre groupe musculaire, puis terminer la séance depuis l'accueil." }
     },
     "setRowTour": {
-      "weight": { "title": "Poids", "desc": "Saisis le poids soulevé. En mode barre, c'est le poids ajouté d'un seul côté de la barre." },
+      "weight": { "title": "Poids", "desc": "Saisis le poids soulevé. Le libellé s'adapte au type de chargement (total, par côté, par haltère…)." },
       "reps": { "title": "Reps", "desc": "Le nombre de répétitions effectuées pour ce set." },
       "type": { "title": "Type de set", "desc": "Change le type du set : normal, échauffement, dégressif ou jusqu'à l'échec." },
       "check": { "title": "Valider le set", "desc": "Marque le set comme complété. Le minuteur de repos démarre automatiquement si activé." },
@@ -384,8 +402,8 @@
     "restTimerAuto": "Minuteur de repos automatique",
     "restTimerAutoDesc": "Démarre dès qu'un set est marqué complété",
     "restTimerDefault": "Durée par défaut",
-    "barModeTitle": "Mode barre",
-    "barModeDesc": "Saisis le poids de chaque côté de la barre",
+    "barModeTitle": "Saisie selon le chargement",
+    "barModeDesc": "Barre et plaques, poids par côté, par haltère…",
     "dangerZone": "Zone de danger",
     "deleteAccount": "Supprimer le compte",
     "deleteAccountDesc": "Toutes tes données seront perdues",
@@ -395,6 +413,12 @@
     "proRenewsOn": "Renouvellement le {{date}}",
     "proLifetime": "Accès à vie",
     "loyaltyTitle": "Réduction de fidélité",
+    "loyaltyTier": {
+      "ready": "Ta réduction est prête ! Active-la pour payer {{price}} à partir de ton prochain renouvellement.",
+      "openApp": "Ta réduction est prête ! Ouvre l'app Android pour l'activer et payer {{price}} à partir de ton prochain renouvellement.",
+      "activate": "Activer ma réduction",
+      "done": "Réduction activée : tu paieras {{price}} à partir de ton prochain renouvellement."
+    },
     "loyaltyRenewalsShort": "Renouv.",
     "loyaltyActuel": "Actuel",
     "loyaltyMaxed": "Réduction maximale atteinte : -{{amount}}$ à chaque renouvellement !",
@@ -411,7 +435,7 @@
     "toastUnitChanged": "Unité changée en {{unit}}",
     "toastRestTimerUpdated": "Minuteur de repos mis à jour",
     "restTimerAutoAria": "Activer le minuteur de repos automatique",
-    "barModeAria": "Activer le mode barre",
+    "barModeAria": "Activer la saisie selon le type de chargement",
     "tour": {
       "progressPhotos": {
         "title": "Photos de progression",
@@ -698,7 +722,15 @@
     "save": "Économise {{pct}}%",
     "trialNote": "Essai gratuit de 7 jours, annule à tout moment.",
     "lifetimeNote": "Paiement unique, accès à vie, aucun abonnement.",
-    "switchNote": "Le changement de plan est calculé au prorata, aucun nouvel essai gratuit.",
+    "switchNote": "Le changement de plan est calculé au prorata, sans nouvel essai gratuit. Ta réduction de fidélité repart à zéro.",
+    "noTrialNote": "Tu as déjà profité de ton essai gratuit. Annule à tout moment.",
+    "switchLoyaltyReminder": "Changer de plan te fait perdre ta réduction de fidélité de -{{amount}}$ : elle repart à zéro sur le nouveau plan.",
+    "switchWarning": {
+      "title": "Perdre ta réduction ?",
+      "desc": "Tu as gagné une réduction de fidélité de -{{amount}}$ sur ton abonnement actuel. En changeant de plan, elle disparaît et repart à zéro.",
+      "keep": "Garder mon plan",
+      "continue": "Changer quand même"
+    },
     "currentPlanNote": "C'est ton plan actuel.",
     "mostPopular": "Le plus populaire",
     "currentPlan": "Ton abonnement",
@@ -717,10 +749,11 @@
       "csvExport": "Export CSV de tes séances",
       "advancedCharts": "Graphiques de progression avancés (volume, 1RM, records par répétitions)",
       "supersetsWarmup": "Supersets et échauffement automatique",
-      "barbellMode": "Mode barre et calculateur de plaques",
+      "barbellMode": "Saisie selon le chargement (barre et plaques, machine à disques, haltères…)",
       "progressPhotos": "Photos de progression illimitées"
     },
     "startTrial": "Commencer l'essai de 7 jours",
+    "subscribe": "S'abonner",
     "buyLifetime": "Acheter l'accès à vie",
     "redirecting": "Redirection...",
     "errorGeneric": "Erreur",

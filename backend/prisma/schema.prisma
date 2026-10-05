@@ -24,6 +24,7 @@ datasource db {
   trackedExercises TrackedExercise[]
   progressPhotos   ProgressPhoto[]
   exerciseNotes    ExerciseNote[]
+  exerciseLoadingTypes ExerciseLoadingType[]
   recoveryEmail String?
   weightUnit    String   @default("lb")
   restTimerSeconds Int   @default(120)
@@ -46,6 +47,18 @@ datasource db {
   proCurrentPeriodEnd  DateTime?
   proInterval          String?
   loyaltyPeriodsPaid   Int       @default(0)
+  // Last renewal counted toward loyaltyPeriodsPaid (a Stripe invoice id or
+  // a RevenueCat event id) — both providers can deliver the same webhook
+  // more than once, and a renewal must only ever count once.
+  loyaltyLastInvoiceId String?
+  // Google Play product the user is subscribed to, as RevenueCat reports it
+  // ("<subscriptionId>:<basePlanId>") — tells which loyalty price tier
+  // they're on. Null for Stripe.
+  proProductId         String?
+  // The 7-day free trial is offered once per account, across both monthly
+  // and annual plans and both billing providers. Set as soon as any
+  // recurring subscription is created.
+  hasUsedTrial         Boolean   @default(false)
   // "stripe" (web/default) or "google_play" (Android, via RevenueCat).
   // Loyalty discounts and the Stripe billing portal only apply to "stripe" —
   // Google Play subscriptions are managed entirely through the Play Store.
@@ -88,10 +101,17 @@ model Exercise {
   // available, falling back to the static `image` otherwise.
   videoUrl      String?
   isCustom      Boolean @default(false)
+  // How the weight is loaded (BARBELL, PLATE_LOADED, DUMBBELL, MACHINE,
+  // CABLE, BODYWEIGHT, ASSISTED) — drives which weight inputs the session
+  // screen shows. Null means "not curated": the app infers it from the
+  // exercise name, and each user can still override it per exercise
+  // (ExerciseLoadingType).
+  loadingType   String?
   muscleGroup   MuscleGroup  @relation(fields: [muscleGroupId], references: [id])  
   sessionExercises SessionExercise[]
   trackedBy TrackedExercise[]
   notes     ExerciseNote[]
+  loadingTypeOverrides ExerciseLoadingType[]
 }
 
 model SessionExercise {
@@ -168,4 +188,19 @@ model ProgressPhoto {
   createdAt DateTime @default(now())
 
   user      User     @relation(fields: [userId], references: [id])
+}
+// A user's own choice of loading type for an exercise (e.g. "Lever Chest
+// Press" is plate-loaded at one gym and pin-loaded at another), taking
+// precedence over Exercise.loadingType and the name-based inference.
+model ExerciseLoadingType {
+  id          String   @id @default(uuid())
+  userId      String
+  exerciseId  String
+  loadingType String
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id])
+  exercise    Exercise @relation(fields: [exerciseId], references: [id])
+
+  @@unique([userId, exerciseId])
 }
