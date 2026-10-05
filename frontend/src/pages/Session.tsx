@@ -203,7 +203,9 @@ export default function SessionPage() {
 
   const fetchExercises = async (muscleGroupName: string) => {
     try {
-      const res = await fetch(`${API_URL}/exercises`);
+      const res = await fetch(`${API_URL}/exercises`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
       if (!res.ok) return;
       const all: AvailableExercise[] = await res.json();
       setExercises(

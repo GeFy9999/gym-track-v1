@@ -95,7 +95,9 @@ export default function ImportPage() {
       }
 
       const [exercisesRes, muscleGroupsRes] = await Promise.all([
-        fetch(`${API_URL}/exercises`),
+        fetch(`${API_URL}/exercises`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }),
         fetch(`${API_URL}/muscleGroups`),
       ]);
       if (!exercisesRes.ok || !muscleGroupsRes.ok) {

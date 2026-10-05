@@ -18,3 +18,15 @@ export const passwordResetLimiter = rateLimit({
   legacyHeaders: false,
   message: { error: "Trop de tentatives, réessaie dans quelques minutes." },
 });
+
+// Exercise GIFs and thumbnails come from the licensed ExerciseDB pack, whose
+// EULA forbids endpoints that allow bulk download of its media. Generous
+// enough for scrolling the whole exercise list (thumbnails are also cached
+// by the browser for a week), but far too slow to scrape the collection.
+export const exerciseMediaLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 1500,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Trop de requêtes, réessaie dans quelques minutes." },
+});

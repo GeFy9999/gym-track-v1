@@ -101,6 +101,10 @@ model Exercise {
   // available, falling back to the static `image` otherwise.
   videoUrl      String?
   isCustom      Boolean @default(false)
+  // ExerciseDB id ("0001"…) of the licensed exercise this row comes from —
+  // locates its GIFs in the ExerciseDB pack (see services/exerciseDb.ts).
+  // Null for custom exercises. Never sent to clients.
+  exerciseDbId  String?
   // How the weight is loaded (BARBELL, PLATE_LOADED, DUMBBELL, MACHINE,
   // CABLE, BODYWEIGHT, ASSISTED) — drives which weight inputs the session
   // screen shows. Null means "not curated": the app infers it from the
@@ -112,6 +116,8 @@ model Exercise {
   trackedBy TrackedExercise[]
   notes     ExerciseNote[]
   loadingTypeOverrides ExerciseLoadingType[]
+
+  @@index([exerciseDbId])
 }
 
 model SessionExercise {

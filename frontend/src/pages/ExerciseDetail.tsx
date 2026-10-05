@@ -151,7 +151,9 @@ export default function ExerciseDetailPage() {
     const fetchData = async () => {
       try {
         const [exRes, notesRes, historyRes] = await Promise.all([
-          fetch(`${API_URL}/exercises`),
+          fetch(`${API_URL}/exercises`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
           token
             ? fetch(`${API_URL}/exercise-notes`, {
                 headers: { Authorization: `Bearer ${token}` },
