@@ -82,3 +82,37 @@ export function inferLoadingType(exerciseName: string): LoadingType {
 
   return "MACHINE";
 }
+
+// Barbells and plate-loaded machines are entered per side (that's how
+// they're loaded); the stored set weight is always the TOTAL load — the
+// other side plus, for a barbell, the bar itself.
+export function isPerSideInput(loadingType: LoadingType | null): boolean {
+  return loadingType === "BARBELL" || loadingType === "PLATE_LOADED";
+}
+
+// Two decimals: kg plates go down to 1.25 per side, which one decimal
+// would turn into 1.3 (and corrupt the total if the field is re-saved).
+const round2 = (n: number) => Math.round(n * 100) / 100;
+
+// Total stored weight → what the per-side input shows.
+export function toDisplayedWeight(
+  total: number,
+  loadingType: LoadingType | null,
+  barWeight: number,
+): number {
+  if (!isPerSideInput(loadingType)) return total;
+  const base = loadingType === "BARBELL" ? barWeight : 0;
+  return Math.max(0, round2((total - base) / 2));
+}
+
+// What was typed (per side or not) → total stored weight. An empty input
+// stays 0, not "just the bar".
+export function toTotalWeight(
+  displayed: number,
+  loadingType: LoadingType | null,
+  barWeight: number,
+): number {
+  if (!isPerSideInput(loadingType) || displayed <= 0) return displayed;
+  const base = loadingType === "BARBELL" ? barWeight : 0;
+  return base + displayed * 2;
+}

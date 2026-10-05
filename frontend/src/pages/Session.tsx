@@ -20,7 +20,7 @@ import { useIsPro } from "../hooks/useIsPro";
 import { getDefaultBarWeight } from "../utils/plates";
 import { inferLoadingType, isLoadingType, type LoadingType } from "../utils/loadingType";
 import { useExerciseLoadingTypes } from "../hooks/useExerciseLoadingTypes";
-import { computeWarmupSets } from "../utils/warmup";
+import type { WarmupSetPlan } from "../utils/warmup";
 import PRCelebration from "../components/session/PRCelebration";
 import Toast from "../components/Toast";
 import TourOverlay from "../components/TourOverlay";
@@ -371,11 +371,10 @@ export default function SessionPage() {
     sessionExerciseId: string,
     workingWeight: number,
     workingReps: number,
-    count: number,
+    plan: WarmupSetPlan[],
   ) => {
     setWarmupModalFor(null);
     const unit = getWeightUnit();
-    const plan = computeWarmupSets(workingWeight, unit, count);
 
     try {
       const token = localStorage.getItem("token");
@@ -998,9 +997,16 @@ export default function SessionPage() {
       {warmupModalFor && (
         <WarmupModal
           unit={unit}
+          loadingType={(() => {
+            const se = session.sessionExercises.find(
+              (s) => s.id === warmupModalFor,
+            );
+            return se && loadingTypesEnabled ? getLoadingType(se) : null;
+          })()}
+          barWeight={getBarWeight(warmupModalFor)}
           onClose={() => setWarmupModalFor(null)}
-          onConfirm={(workingWeight, workingReps, count) =>
-            generateWarmup(warmupModalFor, workingWeight, workingReps, count)
+          onConfirm={(workingWeight, workingReps, plan) =>
+            generateWarmup(warmupModalFor, workingWeight, workingReps, plan)
           }
         />
       )}

@@ -305,6 +305,8 @@
       "title": "Auto warm-up",
       "subtitle": "Enter your working weight, we'll generate the ramp-up.",
       "workingWeight": "Working weight",
+      "workingWeightPerSide": "Working weight / side",
+      "perSideSuffix": " / side",
       "workingReps": "Working reps",
       "setsCount": "Number of warm-up sets",
       "warmupSet": "Warm-up {{index}}",
