@@ -718,6 +718,13 @@
     "lifetimeNote": "One-time payment, lifetime access, no subscription.",
     "switchNote": "Plan changes are prorated, with no new free trial. Your loyalty discount starts over from zero.",
     "noTrialNote": "You've already used your free trial. Cancel anytime.",
+    "switchLoyaltyReminder": "Changing plan makes you lose your -${{amount}} loyalty discount: it starts over from zero on the new plan.",
+    "switchWarning": {
+      "title": "Lose your discount?",
+      "desc": "You've earned a -${{amount}} loyalty discount on your current plan. Changing plan removes it and starts it over from zero.",
+      "keep": "Keep my plan",
+      "continue": "Change anyway"
+    },
     "currentPlanNote": "This is your current plan.",
     "mostPopular": "Most popular",
     "currentPlan": "Your subscription",
