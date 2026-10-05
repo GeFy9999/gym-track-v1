@@ -716,7 +716,8 @@
     "save": "Économise {{pct}}%",
     "trialNote": "Essai gratuit de 7 jours, annule à tout moment.",
     "lifetimeNote": "Paiement unique, accès à vie, aucun abonnement.",
-    "switchNote": "Le changement de plan est calculé au prorata, aucun nouvel essai gratuit.",
+    "switchNote": "Le changement de plan est calculé au prorata, sans nouvel essai gratuit. Ta réduction de fidélité repart à zéro.",
+    "noTrialNote": "Tu as déjà profité de ton essai gratuit. Annule à tout moment.",
     "currentPlanNote": "C'est ton plan actuel.",
     "mostPopular": "Le plus populaire",
     "currentPlan": "Ton abonnement",
@@ -739,6 +740,7 @@
       "progressPhotos": "Photos de progression illimitées"
     },
     "startTrial": "Commencer l'essai de 7 jours",
+    "subscribe": "S'abonner",
     "buyLifetime": "Acheter l'accès à vie",
     "redirecting": "Redirection...",
     "errorGeneric": "Erreur",

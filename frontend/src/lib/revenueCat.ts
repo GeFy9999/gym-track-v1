@@ -68,6 +68,7 @@ export class PurchaseCancelledError extends Error {
 
 export async function purchasePlan(
   plan: "monthly" | "annual" | "lifetime",
+  { skipTrial = false }: { skipTrial?: boolean } = {},
 ): Promise<CustomerInfo> {
   const offerings = await Purchases.getOfferings();
   const current = offerings.current;
@@ -83,8 +84,20 @@ export async function purchasePlan(
     throw new Error("Ce plan n'est pas disponible sur Android pour le moment.");
   }
 
+  // The free trial is once per GymsTrack account (see User.hasUsedTrial),
+  // but Google Play only knows the Google account — and purchasePackage
+  // picks the offer with the free trial by default. Once our account has
+  // used its trial, buy the plain base plan instead.
+  const basePlan = skipTrial
+    ? pkg.product.subscriptionOptions?.find(
+        (o) => o.isBasePlan && !o.freePhase,
+      )
+    : undefined;
+
   try {
-    const { customerInfo } = await Purchases.purchasePackage({ aPackage: pkg });
+    const { customerInfo } = basePlan
+      ? await Purchases.purchaseSubscriptionOption({ subscriptionOption: basePlan })
+      : await Purchases.purchasePackage({ aPackage: pkg });
     return customerInfo;
   } catch (error) {
     const purchasesError = error as PurchasesError;

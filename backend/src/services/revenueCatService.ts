@@ -54,6 +54,11 @@ export async function handleRevenueCatWebhook(
           proCurrentPeriodEnd: event.expiration_at_ms
             ? new Date(event.expiration_at_ms)
             : null,
+          // A Google Play subscription uses up the account's one free trial
+          // too (lifetime, which has no interval, doesn't).
+          ...(intervalFromProductId(event.product_id)
+            ? { hasUsedTrial: true }
+            : {}),
         },
       });
       break;

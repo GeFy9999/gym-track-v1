@@ -29,6 +29,7 @@ const toPublicUser = (user: {
   loyaltyPeriodsPaid: number;
   billingProvider: string;
   emailVerified: boolean;
+  hasUsedTrial: boolean;
 }) => ({
   id: user.id,
   email: user.email,
@@ -46,6 +47,7 @@ const toPublicUser = (user: {
   loyaltyPeriodsPaid: user.loyaltyPeriodsPaid,
   billingProvider: user.billingProvider,
   emailVerified: user.emailVerified,
+  hasUsedTrial: user.hasUsedTrial,
   loyaltyDiscountCents: computeLoyaltyDiscountCents(
     user.loyaltyPeriodsPaid,
     user.proInterval,
