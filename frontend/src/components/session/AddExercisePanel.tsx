@@ -70,6 +70,7 @@ export default function AddExercisePanel({
                 key={ex.id}
                 onClick={() => {
                   onAdd(ex.id);
+                  setShowExerciseList(false);
                   setSearchQuery("");
                 }}
                 className="w-full text-left hover:bg-white/40 rounded-xl px-3 py-2.5 text-sm font-semibold text-gray-700 transition-colors"
