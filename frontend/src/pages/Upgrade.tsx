@@ -171,7 +171,10 @@ export default function UpgradePage() {
 
     if (isGooglePlayBilled) {
       try {
-        await purchasePlan(plan, { skipTrial: hasUsedTrial });
+        await purchasePlan(plan, {
+          skipTrial: hasUsedTrial,
+          replacingProductId: user?.proProductId ?? null,
+        });
         setLoading(false);
         setNativePurchaseFlow(true);
         await pollAfterNativePurchase();
@@ -479,9 +482,7 @@ export default function UpgradePage() {
           </p>
         </div>
 
-        {/* In the Android app the purchase goes through Google Play, which
-            never applies the loyalty discount — don't advertise it there. */}
-        {plan !== "lifetime" && !Capacitor.isNativePlatform() && (
+        {plan !== "lifetime" && (
           <div className="bg-[#3a9e6e] rounded-2xl p-4 shadow-sm flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center flex-shrink-0">
               <TrendingDown size={20} className="text-white" />

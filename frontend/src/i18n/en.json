@@ -413,6 +413,12 @@
     "proRenewsOn": "Renews on {{date}}",
     "proLifetime": "Lifetime access",
     "loyaltyTitle": "Loyalty discount",
+    "loyaltyTier": {
+      "ready": "Your discount is ready! Activate it to pay {{price}} from your next renewal.",
+      "openApp": "Your discount is ready! Open the Android app to activate it and pay {{price}} from your next renewal.",
+      "activate": "Activate my discount",
+      "done": "Discount activated: you'll pay {{price}} from your next renewal."
+    },
     "loyaltyRenewalsShort": "Renew.",
     "loyaltyActuel": "Current",
     "loyaltyMaxed": "Maximum discount reached: -${{amount}} on every renewal!",
