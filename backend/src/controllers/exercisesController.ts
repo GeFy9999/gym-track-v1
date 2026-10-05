@@ -7,11 +7,14 @@ import {
   getExercisesForMuscleGroup,
 } from "../services/exercisesService.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
+import { exerciseMediaLimiter } from "../middleware/rateLimiters.js";
 import { sendServerError } from "../utils/errorResponse.js";
 
 export const exercisesRouter = express.Router();
 
-exercisesRouter.get("", async (req, res) => {
+// Signed-in only: the catalog is licensed (ExerciseDB) data and mustn't be
+// freely harvestable.
+exercisesRouter.get("", authMiddleware, async (req, res) => {
   try {
     const muscleGroupId = req.query.muscleGroupId as string | undefined;
     const exercises = muscleGroupId
@@ -23,9 +26,12 @@ exercisesRouter.get("", async (req, res) => {
   }
 });
 
-exercisesRouter.get("/:id/gif", async (req, res) => {
+// One GIF at a time, rate limited (see exerciseMediaLimiter). These stay
+// unauthenticated because they're loaded by plain <img> tags, which can't
+// send the auth header.
+exercisesRouter.get("/:id/gif", exerciseMediaLimiter, async (req, res) => {
   try {
-    const gifPath = await getExerciseGifPath(req.params.id);
+    const gifPath = await getExerciseGifPath(req.params.id as string);
     if (!gifPath) {
       return res.status(404).json({ error: "Aucun GIF disponible pour cet exercice" });
     }
@@ -37,9 +43,9 @@ exercisesRouter.get("/:id/gif", async (req, res) => {
   }
 });
 
-exercisesRouter.get("/:id/thumbnail", async (req, res) => {
+exercisesRouter.get("/:id/thumbnail", exerciseMediaLimiter, async (req, res) => {
   try {
-    const thumbPath = await getExerciseThumbnailPath(req.params.id);
+    const thumbPath = await getExerciseThumbnailPath(req.params.id as string);
     if (!thumbPath) {
       return res.status(404).json({ error: "Aucune miniature disponible pour cet exercice" });
     }

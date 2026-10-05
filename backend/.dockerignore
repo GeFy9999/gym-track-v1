@@ -2,3 +2,7 @@ node_modules
 src/generated
 .git
 .env
+# Licensed ExerciseDB pack and the local SQLite DB: provided at runtime on the
+# mounted /app/data volume, never baked into an image.
+data
+dev.db*
