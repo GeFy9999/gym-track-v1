@@ -20,6 +20,11 @@ import { sendServerError } from "../utils/errorResponse.js";
 
 export const sessionsRouter = express.Router();
 
+// Free users only get the last 90 days of history.
+const FREE_HISTORY_DAYS = 90;
+const freeHistoryCutoff = () =>
+  new Date(Date.now() - FREE_HISTORY_DAYS * 24 * 60 * 60 * 1000);
+
 // GET /api/sessions/me/records
 sessionsRouter.get(
   "/me/records",
@@ -101,7 +106,7 @@ sessionsRouter.get("/me", authMiddleware, async (req: AuthRequest, res) => {
     // so a hand-edited request can't bypass the frontend's own date filter.
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user?.isPro) {
-      const cutoff = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+      const cutoff = freeHistoryCutoff();
       const requestedStart = start;
       if (start < cutoff) start = cutoff;
 
@@ -253,6 +258,20 @@ sessionsRouter.get(
       }
       const session = await getSession(sessionId);
       if (!session) return res.status(404).json({ error: "Session introuvable" });
+
+      // Same 90-day limit as GET /me, so an old session's id (e.g. from the
+      // exercise history list) can't be used to read it directly. Unfinished
+      // sessions stay reachable whatever their age so they can still be
+      // resumed or closed out.
+      if (session.completed && session.date < freeHistoryCutoff()) {
+        const user = await prisma.user.findUnique({ where: { id: req.userId! } });
+        if (!user?.isPro) {
+          return res
+            .status(403)
+            .json({ error: "Historique réservé Pro", proRequired: true });
+        }
+      }
+
       return res.status(200).json(session);
     } catch (error) {
       return sendServerError(res, error);

@@ -121,6 +121,16 @@ export default function SessionPage() {
       const res = await fetch(`${API_URL}/sessions/${sessionId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      // Completed sessions past the free plan's 90-day window are Pro-only
+      // (reachable e.g. from an exercise's history list) — send the user to
+      // the upgrade page rather than falling back to a cached copy below.
+      if (res.status === 403) {
+        const body = await res.json().catch(() => null);
+        if (body?.proRequired) {
+          navigate("/upgrade", { replace: true });
+          return;
+        }
+      }
       if (!res.ok) throw new Error("Session introuvable");
       const data = await res.json();
       setSession(data);
