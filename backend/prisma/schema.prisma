@@ -47,10 +47,14 @@ datasource db {
   proCurrentPeriodEnd  DateTime?
   proInterval          String?
   loyaltyPeriodsPaid   Int       @default(0)
-  // Last renewal invoice counted toward loyaltyPeriodsPaid — Stripe can
-  // deliver the same invoice.paid webhook more than once, and it must only
-  // ever count once.
+  // Last renewal counted toward loyaltyPeriodsPaid (a Stripe invoice id or
+  // a RevenueCat event id) — both providers can deliver the same webhook
+  // more than once, and a renewal must only ever count once.
   loyaltyLastInvoiceId String?
+  // Google Play product the user is subscribed to, as RevenueCat reports it
+  // ("<subscriptionId>:<basePlanId>") — tells which loyalty price tier
+  // they're on. Null for Stripe.
+  proProductId         String?
   // The 7-day free trial is offered once per account, across both monthly
   // and annual plans and both billing providers. Set as soon as any
   // recurring subscription is created.

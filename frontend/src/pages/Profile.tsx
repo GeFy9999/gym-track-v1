@@ -22,6 +22,7 @@ import {
 import { getDateLocale } from "../i18n";
 import { useProfileSettings } from "../hooks/useProfileSettings";
 import TourOverlay from "../components/TourOverlay";
+import LoyaltyTierBanner from "../components/LoyaltyTierBanner";
 
 // Annual renewals are worth far more than monthly ones, so the loyalty
 // discount scales up accordingly: -$0.10/renewal (max -$1) monthly,
@@ -30,6 +31,10 @@ const LOYALTY_CENTS_PER_PERIOD_MONTHLY = 10;
 const LOYALTY_MAX_CENTS_MONTHLY = 100;
 const LOYALTY_CENTS_PER_PERIOD_YEARLY = 100;
 const LOYALTY_MAX_CENTS_YEARLY = 300;
+// Regular prices, for the Google Play loyalty tier's new price (kept in sync
+// with pages/Upgrade.tsx).
+const MONTHLY_PRICE_CENTS = 499;
+const ANNUAL_PRICE_CENTS = 2999;
 const LOYALTY_MAX_PERIODS_MONTHLY = 10;
 const LOYALTY_MAX_PERIODS_YEARLY = 3;
 
@@ -189,12 +194,11 @@ export default function ProfilePage() {
       )}
 
       {/* Réduction de fidélité — seulement pertinent pour un abonnement
-          récurrent (les acheteurs à vie n'ont pas de "prochain paiement"),
-          et seulement facturé par Stripe : Google Play n'applique aucune
-          réduction de fidélité, la carte y promettrait un rabais inexistant. */}
+          récurrent (les acheteurs à vie n'ont pas de "prochain paiement").
+          Sur Google Play, la réduction passe par un palier de prix que
+          l'abonné active (LoyaltyTierBanner). */}
       {isPro &&
         user?.proCurrentPeriodEnd &&
-        user?.billingProvider !== "google_play" &&
         (() => {
           const isYearly = user?.proInterval === "year";
           const loyaltyCentsPerPeriod = isYearly
@@ -313,6 +317,18 @@ export default function ProfilePage() {
                     </div>
                   </div>
                 </>
+              )}
+
+              {user?.loyaltyUpgradeProductId && user?.proProductId && (
+                <LoyaltyTierBanner
+                  upgradeProductId={user.loyaltyUpgradeProductId}
+                  currentProductId={user.proProductId}
+                  newPriceLabel={`${(
+                    ((isYearly ? ANNUAL_PRICE_CENTS : MONTHLY_PRICE_CENTS) -
+                      loyaltyDiscountCents) /
+                    100
+                  ).toFixed(2)}$${isYearly ? t("upgrade.perYear") : t("upgrade.perMonth")}`}
+                />
               )}
             </div>
           );

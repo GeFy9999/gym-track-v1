@@ -413,6 +413,12 @@
     "proRenewsOn": "Renouvellement le {{date}}",
     "proLifetime": "Accès à vie",
     "loyaltyTitle": "Réduction de fidélité",
+    "loyaltyTier": {
+      "ready": "Ta réduction est prête ! Active-la pour payer {{price}} à partir de ton prochain renouvellement.",
+      "openApp": "Ta réduction est prête ! Ouvre l'app Android pour l'activer et payer {{price}} à partir de ton prochain renouvellement.",
+      "activate": "Activer ma réduction",
+      "done": "Réduction activée : tu paieras {{price}} à partir de ton prochain renouvellement."
+    },
     "loyaltyRenewalsShort": "Renouv.",
     "loyaltyActuel": "Actuel",
     "loyaltyMaxed": "Réduction maximale atteinte : -{{amount}}$ à chaque renouvellement !",
