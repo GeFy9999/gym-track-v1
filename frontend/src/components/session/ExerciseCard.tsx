@@ -316,7 +316,9 @@ export default function ExerciseCard({
               className="fixed inset-0 z-40"
               onClick={() => setShowLoadingMenu(false)}
             />
-            <div className="absolute left-5 z-50 w-60 bg-white rounded-2xl shadow-xl border border-gray-200 py-1.5 animate-scale-in origin-top-left">
+            {/* In normal flow (not absolute) so the card grows to fit the
+                whole list instead of clipping it at its rounded edge. */}
+            <div className="relative z-50 mt-3 w-60 max-w-full bg-white rounded-2xl shadow-xl border border-gray-200 py-1.5 animate-scale-in origin-top-left">
               <p className="px-4 pt-1.5 pb-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">
                 {t("session.loadingType.menuTitle")}
               </p>
