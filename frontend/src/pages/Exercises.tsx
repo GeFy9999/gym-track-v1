@@ -17,12 +17,11 @@ type Exercise = {
 
 type MuscleGroup = { id: string; name: string };
 
-// List thumbnails use a pre-generated static JPEG still of the WorkoutX GIF
-// (see backend/src/services/workoutXGifService.ts), never the live GIF
-// endpoint — this list renders many rows at once (and more on scroll), and
-// the thumbnail route only ever reads what's already on disk, so it can
-// never trigger a WorkoutX request no matter how many rows render. Falls
-// back to the free static `image` for exercises with no thumbnail yet.
+// List thumbnails are a small static JPEG still of the exercise's ExerciseDB
+// GIF (see backend/src/services/exerciseDb.ts) rather than the animated GIF
+// itself — this list renders many rows at once — and only load once a row
+// scrolls near the screen. Falls back to the static `image`, then an icon,
+// for exercises with no GIF (custom ones).
 function ExerciseThumb({
   exerciseId,
   image,
@@ -39,6 +38,7 @@ function ExerciseThumb({
       <img
         src={`${API_URL}/exercises/${exerciseId}/thumbnail`}
         alt=""
+        loading="lazy"
         onError={() => setThumbFailed(true)}
         className="w-12 h-12 rounded-xl object-cover flex-shrink-0"
       />
@@ -95,7 +95,9 @@ export default function ExercisesPage() {
     const fetchData = async () => {
       try {
         const [exRes, mgRes, statsRes] = await Promise.all([
-          fetch(`${API_URL}/exercises`),
+          fetch(`${API_URL}/exercises`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
           fetch(`${API_URL}/muscleGroups`),
           fetch(`${API_URL}/sessions/me/exercise-stats`, {
             headers: { Authorization: `Bearer ${token}` },

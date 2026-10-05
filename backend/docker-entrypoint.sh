@@ -22,5 +22,8 @@ npx prisma migrate deploy
 echo "==> Seeding reference data (idempotent)"
 npx tsx prisma/seed.js
 
+echo "==> Syncing exercises with the ExerciseDB pack (idempotent)"
+npx tsx scripts/import-exercisedb.ts
+
 echo "==> Starting server"
 exec "$@"

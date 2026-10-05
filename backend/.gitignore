@@ -10,12 +10,9 @@ dev.db.bak-*
 # Throwaway SQLite DB created by the test suite (see vitest.config.ts)
 /prisma/test.db*
 
-# Exercise GIFs fetched on demand from WorkoutX and cached locally (see
-# src/services/workoutXGifService.ts) — a runtime cache that grows as users
-# view exercises, not source to commit.
-/public/exercise-gifs/
 
-# Static thumbnail stills generated locally from the cached GIFs above —
-# also a runtime cache, regenerable any time via
-# scripts/generate-exercise-thumbnails.ts.
-/public/exercise-thumbnails/
+# Licensed ExerciseDB pack (exercise data + GIFs). Its EULA forbids making
+# the raw files available to anyone else, and this repository is public —
+# NEVER commit it. It lives on the server's persistent volume instead (see
+# src/services/exerciseDb.ts and scripts/import-exercisedb.ts).
+/data/

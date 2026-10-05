@@ -1,43 +1,37 @@
 import {
   getAllExercises,
-  getExerciseById,
   getExercisesByMuscleGroup,
   insertExercise,
 } from "../repositories/databaseRepository.js";
+import { prisma } from "../prisma.js";
 import {
-  findWorkoutXMatch,
-  getOrFetchGifPath,
-  getThumbnailPath,
-} from "./workoutXGifService.js";
+  getExerciseDbGifPath,
+  getExerciseDbThumbnailPath,
+} from "./exerciseDb.js";
 
 export async function getExercises() {
   return await getAllExercises();
 }
 
-// On-demand: resolves "our" exercise to a WorkoutX GIF and fetches it only
-// the first time it's actually requested (see workoutXGifService.ts) — never
-// called in bulk, so this stays within WorkoutX's caching terms.
-export async function getExerciseGifPath(exerciseId: string): Promise<string | null> {
-  const exercise = await getExerciseById(exerciseId);
-  if (!exercise) return null;
-
-  const match = findWorkoutXMatch(exercise.name);
-  if (!match) return null;
-
-  return await getOrFetchGifPath(match.id);
+async function getExerciseDbId(exerciseId: string): Promise<string | null> {
+  const exercise = await prisma.exercise.findUnique({
+    where: { id: exerciseId },
+    select: { exerciseDbId: true },
+  });
+  return exercise?.exerciseDbId ?? null;
 }
 
-// Thumbnails are pre-generated stills (see workoutXGifService.ts) — this
-// only ever reads what's already on disk, never triggers a live fetch, so
-// it's safe to call for every row of a list without any quota risk.
+// The exercise's ExerciseDB GIF (large, for detail/info screens), read from
+// the licensed pack on the server's volume. Null for custom exercises.
+export async function getExerciseGifPath(exerciseId: string): Promise<string | null> {
+  const exerciseDbId = await getExerciseDbId(exerciseId);
+  return exerciseDbId ? getExerciseDbGifPath(exerciseDbId, 360) : null;
+}
+
+// A static still of the small GIF, for list rows.
 export async function getExerciseThumbnailPath(exerciseId: string): Promise<string | null> {
-  const exercise = await getExerciseById(exerciseId);
-  if (!exercise) return null;
-
-  const match = findWorkoutXMatch(exercise.name);
-  if (!match) return null;
-
-  return getThumbnailPath(match.id);
+  const exerciseDbId = await getExerciseDbId(exerciseId);
+  return exerciseDbId ? await getExerciseDbThumbnailPath(exerciseDbId) : null;
 }
 
 export async function getExercisesForMuscleGroup(muscleGroupId: string) {
