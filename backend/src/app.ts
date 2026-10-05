@@ -16,6 +16,7 @@ import { bodyWeightRouter } from "./controllers/bodyWeightController.js";
 import { trackedExerciseRouter } from "./controllers/trackedExerciseController.js";
 import { progressPhotoRouter } from "./controllers/progressPhotoController.js";
 import { exerciseNoteRouter } from "./controllers/exerciseNoteController.js";
+import { exerciseLoadingTypeRouter } from "./controllers/exerciseLoadingTypeController.js";
 import { importRouter } from "./controllers/importController.js";
 import {
   stripeRouter,
@@ -82,6 +83,7 @@ app.use("/api/body-weight", bodyWeightRouter);
 app.use("/api/tracked-exercises", trackedExerciseRouter);
 app.use("/api/progress-photos", progressPhotoRouter);
 app.use("/api/exercise-notes", exerciseNoteRouter);
+app.use("/api/exercise-loading-types", exerciseLoadingTypeRouter);
 app.use("/api/import", importRouter);
 app.use("/api/stripe", stripeRouter);
 app.use("/api/revenuecat", revenueCatRouter);

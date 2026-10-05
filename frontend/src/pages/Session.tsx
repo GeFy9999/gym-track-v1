@@ -17,7 +17,9 @@ import { useExerciseNotes } from "../hooks/useExerciseNotes";
 import { useSupersetManager } from "../hooks/useSupersetManager";
 import { useToast } from "../hooks/useToast";
 import { useIsPro } from "../hooks/useIsPro";
-import { isLikelyBarbellExercise, getDefaultBarWeight } from "../utils/plates";
+import { getDefaultBarWeight } from "../utils/plates";
+import { inferLoadingType, isLoadingType, type LoadingType } from "../utils/loadingType";
+import { useExerciseLoadingTypes } from "../hooks/useExerciseLoadingTypes";
 import { computeWarmupSets } from "../utils/warmup";
 import PRCelebration from "../components/session/PRCelebration";
 import Toast from "../components/Toast";
@@ -73,9 +75,6 @@ export default function SessionPage() {
   const [closingDurationPicker, setClosingDurationPicker] = useState<
     string | null
   >(null);
-  const [barbellOverrides, setBarbellOverrides] = useState<
-    Record<string, boolean>
-  >({});
   const [barWeights, setBarWeights] = useState<Record<string, number>>({});
   const [personalRecords, setPersonalRecords] = useState<
     Record<string, number>
@@ -98,9 +97,12 @@ export default function SessionPage() {
   const restTimer = useRestTimerContext();
   const { isPro } = useIsPro();
   const restTimerEnabled = getRestTimerEnabled();
-  // A lapsed subscription must stop surfacing barbell mode immediately even
-  // though the stored preference boolean itself is still `true`.
-  const barbellModeEnabled = getBarbellModeEnabled() && isPro;
+  // Loading-type inputs (bar + plates, per side, per dumbbell…) are Pro. A
+  // lapsed subscription must stop surfacing them immediately even though
+  // the stored preference boolean itself is still `true`.
+  const loadingTypesEnabled = getBarbellModeEnabled() && isPro;
+  const { loadingTypeOverrides, fetchLoadingTypes, saveLoadingType } =
+    useExerciseLoadingTypes();
 
   const { isTracked, fetchTracked, toggleTracked } = useTrackedExercises();
   const {
@@ -184,17 +186,13 @@ export default function SessionPage() {
     });
   };
 
-  // Barbell mode only makes sense for actual barbell lifts — bodyweight
-  // and machine exercises have no bar/plates to load. The override can
-  // still turn it OFF for a wrongly-detected exercise, but never turn it
-  // ON for one that isn't a barbell exercise in the first place.
-  const isBarbellExercise = (se: SessionExercise) =>
-    isLikelyBarbellExercise(se.exercise.name);
-
-  const isBarbellMode = (se: SessionExercise) =>
-    barbellModeEnabled &&
-    isBarbellExercise(se) &&
-    (barbellOverrides[se.id] ?? true);
+  // The user's own choice for this exercise wins, then the curated type
+  // stored on the exercise, then a guess from its name.
+  const getLoadingType = (se: SessionExercise): LoadingType =>
+    loadingTypeOverrides[se.exercise.id] ??
+    (isLoadingType(se.exercise.loadingType)
+      ? se.exercise.loadingType
+      : inferLoadingType(se.exercise.name));
 
   const getBarWeight = (sessionExerciseId: string) =>
     barWeights[sessionExerciseId] ?? getDefaultBarWeight(getWeightUnit());
@@ -277,6 +275,7 @@ export default function SessionPage() {
     fetchTracked();
     fetchPersonalRecords();
     fetchExerciseNotes();
+    fetchLoadingTypes();
   }, [sessionId]);
 
   // Once every queued offline write has synced, refetch so temporary
@@ -689,12 +688,12 @@ export default function SessionPage() {
       description: t("session.tour.more.desc"),
       selector: "[data-tour='session-more']",
     },
-    ...(barbellModeEnabled
+    ...(loadingTypesEnabled
       ? [
           {
             title: t("session.tour.barMode.title"),
             description: t("session.tour.barMode.desc"),
-            selector: "[data-tour='session-barbell-chip']",
+            selector: "[data-tour='session-loading-chip']",
           },
         ]
       : []),
@@ -831,7 +830,7 @@ export default function SessionPage() {
 
         {!isEditMode &&
           session.sessionExercises.map((se, seIndex) => {
-            const barbell = isBarbellMode(se);
+            const loadingType = loadingTypesEnabled ? getLoadingType(se) : null;
             const barWeight = getBarWeight(se.id);
             const delta = deltas.get(se.exercise.id);
             const lastTime = lastTimes.get(se.exercise.id);
@@ -853,13 +852,14 @@ export default function SessionPage() {
                 se={se}
                 seIndex={seIndex}
                 totalExercises={session.sessionExercises.length}
-                barbell={barbell}
+                loadingType={loadingType}
                 barWeight={barWeight}
                 unit={unit}
                 readOnly={readOnly}
                 isPro={isPro}
-                barbellModeEnabled={barbellModeEnabled}
-                isBarbellExercise={isBarbellExercise(se)}
+                isLoadingTypeOverridden={
+                  se.exercise.id in loadingTypeOverrides
+                }
                 restTimerEnabled={restTimerEnabled}
                 exerciseDuration={getExerciseDuration(se.id)}
                 delta={delta}
@@ -892,11 +892,8 @@ export default function SessionPage() {
                   isPro ? openSupersetModal(se) : navigate("/upgrade")
                 }
                 onRequestDelete={() => setConfirmDelete(se.id)}
-                onToggleBarbellOverride={() =>
-                  setBarbellOverrides((prev) => ({
-                    ...prev,
-                    [se.id]: !isBarbellMode(se),
-                  }))
+                onSelectLoadingType={(type) =>
+                  saveLoadingType(se.exercise.id, type)
                 }
                 onToggleDurationPicker={() =>
                   openDurationPicker === se.id

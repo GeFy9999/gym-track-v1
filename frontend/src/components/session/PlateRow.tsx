@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 type Props = {
   plates: number[];
   remainder: number;
-  totalWeight: number;
+  perSide: number;
   unit: string;
 };
 
@@ -13,7 +13,7 @@ const MAX_SIZE = 34;
 export default function PlateRow({
   plates,
   remainder,
-  totalWeight,
+  perSide,
   unit,
 }: Props) {
   const { t } = useTranslation();
@@ -46,7 +46,7 @@ export default function PlateRow({
         )}
       </div>
       <span className="text-xs font-bold text-[#c9552c] ml-auto flex-shrink-0">
-        {t("session.total", { weight: totalWeight, unit })}
+        {t("session.perSideWeight", { weight: perSide, unit })}
       </span>
     </div>
   );

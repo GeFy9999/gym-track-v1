@@ -184,6 +184,8 @@ export const deleteAccount = async (userId: string) => {
   await prisma.bodyWeight.deleteMany({ where: { userId } });
   await prisma.schedule.deleteMany({ where: { userId } });
   await prisma.trackedExercise.deleteMany({ where: { userId } });
+  await prisma.exerciseNote.deleteMany({ where: { userId } });
+  await prisma.exerciseLoadingType.deleteMany({ where: { userId } });
   await prisma.progressPhoto.deleteMany({ where: { userId } });
   await prisma.user.delete({ where: { id: userId } });
 };

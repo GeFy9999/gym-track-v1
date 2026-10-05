@@ -10,6 +10,7 @@ import {
   MAX_REPS,
 } from "../../utils/plates";
 import { getSetTypeColor, getSetBadgeLabel } from "../../utils/setTypes";
+import type { LoadingType } from "../../utils/loadingType";
 import { playSetCompleteSound } from "../../utils/sound";
 import PlateRow from "./PlateRow";
 import SetTypeMenu from "./SetTypeMenu";
@@ -17,10 +18,23 @@ import SetTypeMenu from "./SetTypeMenu";
 const clamp = (n: number, min: number, max: number) =>
   Math.min(Math.max(n, min), max);
 
+const round1 = (n: number) => Math.round(n * 10) / 10;
+
+const WEIGHT_LABEL_KEYS: Record<LoadingType, string> = {
+  BARBELL: "session.weightTotal",
+  PLATE_LOADED: "session.weightPerSide",
+  DUMBBELL: "session.weightPerDumbbell",
+  MACHINE: "session.weightStack",
+  CABLE: "session.weightStack",
+  BODYWEIGHT: "session.addedWeight",
+  ASSISTED: "session.assistance",
+};
+
 type Props = {
   set: SetData;
   index: number;
-  barbell: boolean;
+  // null = plain "Weight" input (loading types off / free plan).
+  loadingType: LoadingType | null;
   barWeight: number;
   unit: string;
   readOnly: boolean;
@@ -40,7 +54,7 @@ type Props = {
 export default function SetRow({
   set,
   index,
-  barbell,
+  loadingType,
   barWeight,
   unit,
   readOnly,
@@ -57,9 +71,22 @@ export default function SetRow({
   onDelete,
 }: Props) {
   const { t } = useTranslation();
-  const perSide = barbell ? Math.max(0, (set.weight - barWeight) / 2) : 0;
+  // set.weight always stores the TOTAL load. A plate-loaded machine is the
+  // only type entered per side (it's how those machines are loaded and
+  // read), so its input shows half the total and doubles what's typed.
+  const perSideInput = loadingType === "PLATE_LOADED";
+  const toDisplayed = (total: number) =>
+    perSideInput ? round1(total / 2) : total;
+  const toTotal = (displayed: number) =>
+    perSideInput ? displayed * 2 : displayed;
+  const displayedWeight = toDisplayed(set.weight);
+
+  const barbell = loadingType === "BARBELL";
+  const platesPerSide = barbell
+    ? Math.max(0, round1((set.weight - barWeight) / 2))
+    : 0;
   const { plates, remainder } = barbell
-    ? calculatePlates(perSide, unit)
+    ? calculatePlates(platesPerSide, unit)
     : { plates: [], remainder: 0 };
 
   const [justCompleted, setJustCompleted] = useState(false);
@@ -108,48 +135,36 @@ export default function SetRow({
               </span>
             )}
             <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">
-              {barbell ? t("session.weightPerSide") : t("session.weight")}
+              {t(loadingType ? WEIGHT_LABEL_KEYS[loadingType] : "session.weight")}
             </p>
             <div className="flex items-baseline gap-1">
               <input
                 type="text"
                 inputMode="numeric"
                 pattern="[0-9]*"
-                value={
-                  barbell
-                    ? perSide === 0
-                      ? ""
-                      : perSide
-                    : set.weight === 0
-                      ? ""
-                      : set.weight
-                }
+                value={displayedWeight === 0 ? "" : displayedWeight}
                 placeholder="0"
                 onChange={(e) => {
                   const val = e.target.value.replace(/[^0-9.]/g, "");
                   const num =
                     val === "" ? 0 : clamp(Number(val), MIN_WEIGHT, MAX_WEIGHT);
-                  const total = barbell ? barWeight + num * 2 : num;
-                  onLocalWeightChange(total);
+                  onLocalWeightChange(toTotal(num));
                 }}
                 onFocus={(e) => {
                   e.target.select();
-                  weightOnFocusRef.current = barbell ? perSide : set.weight;
+                  weightOnFocusRef.current = displayedWeight;
                 }}
                 onBlur={(e) => {
                   const raw =
                     e.target.value === ""
                       ? 0
                       : clamp(Number(e.target.value), MIN_WEIGHT, MAX_WEIGHT);
-                  const total = barbell ? barWeight + raw * 2 : raw;
-                  onCommitWeight(total);
+                  onCommitWeight(toTotal(raw));
 
                   // previousBest comes from last time's TOTAL weight for
                   // this exercise — convert to the same per-side/total
                   // basis the input itself displays before comparing.
-                  const previousBestDisplayed = barbell
-                    ? Math.max(0, (previousBest - barWeight) / 2)
-                    : previousBest;
+                  const previousBestDisplayed = toDisplayed(previousBest);
                   const changed = raw !== weightOnFocusRef.current;
                   const delta = raw - previousBestDisplayed;
                   if (changed && previousBestDisplayed > 0 && delta > 0) {
@@ -241,10 +256,16 @@ export default function SetRow({
           <PlateRow
             plates={plates}
             remainder={remainder}
-            totalWeight={set.weight}
+            perSide={platesPerSide}
             unit={unit}
           />
         </div>
+      )}
+
+      {perSideInput && set.weight > 0 && (
+        <p className="mb-2 pl-14 text-xs font-bold text-[#c9552c]">
+          {t("session.total", { weight: round1(set.weight), unit })}
+        </p>
       )}
     </div>
   );

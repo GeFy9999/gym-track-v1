@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Plus, Trash2, Trophy, Link2, Unlink, StickyNote, Flame, Crown, MoreVertical } from "lucide-react";
+import { Plus, Trash2, Trophy, Link2, Unlink, StickyNote, Flame, Crown, MoreVertical, Check } from "lucide-react";
 import type { SessionExercise, SetData } from "../../types/session";
 import { formatDuration } from "../../utils/units";
 import { formatLastTime, type Delta as DeltaType, type LastTime as LastTimeType } from "../../hooks/useExerciseDeltas";
+import { LOADING_TYPES, type LoadingType } from "../../utils/loadingType";
 import BarbellSelector from "./BarbellSelector";
 import RestTimerPicker from "./RestTimerPicker";
 import SetRow from "./SetRow";
@@ -16,13 +17,14 @@ type Props = {
   se: SessionExercise;
   seIndex: number;
   totalExercises: number;
-  barbell: boolean;
+  // null when loading-type inputs are off (free plan or disabled in the
+  // profile) — the card then shows a plain weight input.
+  loadingType: LoadingType | null;
+  isLoadingTypeOverridden: boolean;
   barWeight: number;
   unit: string;
   readOnly: boolean;
   isPro: boolean;
-  barbellModeEnabled: boolean;
-  isBarbellExercise: boolean;
   restTimerEnabled: boolean;
   exerciseDuration: number;
   delta: Delta;
@@ -43,7 +45,7 @@ type Props = {
   onOpenNoteModal: () => void;
   onOpenSupersetModal: () => void;
   onRequestDelete: () => void;
-  onToggleBarbellOverride: () => void;
+  onSelectLoadingType: (type: LoadingType | null) => void;
   onToggleDurationPicker: () => void;
   onSelectDuration: (seconds: number) => void;
   onSelectBarWeight: (weight: number) => void;
@@ -63,13 +65,12 @@ export default function ExerciseCard({
   se,
   seIndex,
   totalExercises,
-  barbell,
+  loadingType,
+  isLoadingTypeOverridden,
   barWeight,
   unit,
   readOnly,
   isPro,
-  barbellModeEnabled,
-  isBarbellExercise,
   restTimerEnabled,
   exerciseDuration,
   delta,
@@ -90,7 +91,7 @@ export default function ExerciseCard({
   onOpenNoteModal,
   onOpenSupersetModal,
   onRequestDelete,
-  onToggleBarbellOverride,
+  onSelectLoadingType,
   onToggleDurationPicker,
   onSelectDuration,
   onSelectBarWeight,
@@ -109,6 +110,7 @@ export default function ExerciseCard({
   const [trophyPopping, setTrophyPopping] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
   const [showActionsMenu, setShowActionsMenu] = useState(false);
+  const [showLoadingMenu, setShowLoadingMenu] = useState(false);
   // The highest weight logged for this exercise last time it was done, so
   // each set's input can flag "+X" the moment a heavier weight is entered
   // — based on actual history, not just whatever was in the field before.
@@ -284,17 +286,13 @@ export default function ExerciseCard({
 
         {!readOnly && (
           <div className="flex items-center gap-2 flex-wrap">
-            {barbellModeEnabled && isBarbellExercise && (
+            {loadingType && (
               <button
-                data-tour="session-barbell-chip"
-                onClick={onToggleBarbellOverride}
-                className={`text-[11px] font-bold uppercase tracking-wide px-3 py-1.5 rounded-full transition-colors ${
-                  barbell
-                    ? "bg-[#c9552c] text-white"
-                    : "bg-white/10 text-white/60"
-                }`}
+                data-tour="session-loading-chip"
+                onClick={() => setShowLoadingMenu((v) => !v)}
+                className="text-[11px] font-bold uppercase tracking-wide px-3 py-1.5 rounded-full bg-[#c9552c] text-white"
               >
-                {t("session.card.barMode")}
+                {t(`session.loadingType.${loadingType}`)}
               </button>
             )}
 
@@ -310,6 +308,46 @@ export default function ExerciseCard({
               </button>
             )}
           </div>
+        )}
+
+        {!readOnly && loadingType && showLoadingMenu && (
+          <>
+            <div
+              className="fixed inset-0 z-40"
+              onClick={() => setShowLoadingMenu(false)}
+            />
+            <div className="absolute left-5 z-50 w-60 bg-white rounded-2xl shadow-xl border border-gray-200 py-1.5 animate-scale-in origin-top-left">
+              <p className="px-4 pt-1.5 pb-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                {t("session.loadingType.menuTitle")}
+              </p>
+              {LOADING_TYPES.map((type) => (
+                <button
+                  key={type}
+                  onClick={() => {
+                    onSelectLoadingType(type);
+                    setShowLoadingMenu(false);
+                  }}
+                  className="w-full flex items-center justify-between gap-3 px-4 py-2.5 text-sm font-semibold text-gray-800 active:bg-gray-50 transition-colors"
+                >
+                  {t(`session.loadingType.${type}`)}
+                  {type === loadingType && (
+                    <Check size={16} className="text-[#c9552c]" />
+                  )}
+                </button>
+              ))}
+              {isLoadingTypeOverridden && (
+                <button
+                  onClick={() => {
+                    onSelectLoadingType(null);
+                    setShowLoadingMenu(false);
+                  }}
+                  className="w-full px-4 py-2.5 text-left text-sm font-semibold text-gray-500 active:bg-gray-50 transition-colors border-t border-gray-100 mt-1 pt-2.5"
+                >
+                  {t("session.loadingType.reset")}
+                </button>
+              )}
+            </div>
+          </>
         )}
 
         {!readOnly &&
@@ -336,7 +374,7 @@ export default function ExerciseCard({
           </div>
         )}
 
-        {!readOnly && barbell && (
+        {!readOnly && loadingType === "BARBELL" && (
           <BarbellSelector
             unit={unit}
             currentBarWeight={barWeight}
@@ -361,7 +399,7 @@ export default function ExerciseCard({
               key={set.id}
               set={set}
               index={i}
-              barbell={barbell}
+              loadingType={loadingType}
               barWeight={barWeight}
               unit={unit}
               readOnly={readOnly}
