@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getMuscleGroupLabel } from "../utils/muscleGroupLabel";
 import { Search, Dumbbell, Trophy, ChevronDown } from "lucide-react";
+import { buildExerciseSearchIndex, searchExercises } from "../utils/exerciseSearch";
 import { API_URL } from "../lib/api";
 import { useTrackedExercises } from "../hooks/useTrackedExercises";
 import { useToast } from "../hooks/useToast";
@@ -141,15 +142,19 @@ export default function ExercisesPage() {
     setVisibleCount(PAGE_SIZE);
   }, [search, selectedGroup]);
 
+  // Built once per exercise list (aliases, normalized words), so each
+  // keystroke only has to score the query against it.
+  const searchIndex = useMemo(
+    () => buildExerciseSearchIndex(exercises),
+    [exercises],
+  );
+
   const filtered = useMemo(() => {
-    return exercises.filter((e) => {
-      if (selectedGroup && e.muscleGroup.name !== selectedGroup) return false;
-      if (search && !e.name.toLowerCase().includes(search.toLowerCase())) {
-        return false;
-      }
-      return true;
-    });
-  }, [exercises, selectedGroup, search]);
+    const matches = searchExercises(searchIndex, search);
+    return selectedGroup
+      ? matches.filter((e) => e.muscleGroup.name === selectedGroup)
+      : matches;
+  }, [searchIndex, selectedGroup, search]);
 
   const trackedExercises = useMemo(
     () => exercises.filter((e) => isTracked(e.id)),

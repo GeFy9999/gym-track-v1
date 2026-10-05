@@ -1,8 +1,12 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Plus, ChevronDown, Search } from "lucide-react";
 import type { AvailableExercise } from "../../types/session";
 import { getMuscleGroupLabel } from "../../utils/muscleGroupLabel";
+import {
+  buildExerciseSearchIndex,
+  searchExercises,
+} from "../../utils/exerciseSearch";
 
 type Props = {
   muscleGroup: string;
@@ -19,8 +23,15 @@ export default function AddExercisePanel({
   const [showExerciseList, setShowExerciseList] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const filtered = availableExercises.filter((ex) =>
-    ex.name.toLowerCase().includes(searchQuery.toLowerCase()),
+  // Other names, typos, word order and accents all match — see
+  // utils/exerciseSearch.ts. Best match first.
+  const searchIndex = useMemo(
+    () => buildExerciseSearchIndex(availableExercises),
+    [availableExercises],
+  );
+  const filtered = useMemo(
+    () => searchExercises(searchIndex, searchQuery),
+    [searchIndex, searchQuery],
   );
 
   return (
