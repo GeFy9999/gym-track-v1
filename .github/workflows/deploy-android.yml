@@ -21,12 +21,15 @@ permissions:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    # Pinned rather than ubuntu-latest: the build relies on the Android SDK
+    # preinstalled on this image, and ubuntu-latest moves to Ubuntu 26 from
+    # Oct 19, 2026 — upgrade deliberately, not as a surprise.
+    runs-on: ubuntu-24.04
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
@@ -44,7 +47,7 @@ jobs:
         working-directory: frontend
         run: npx cap sync android
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "21"
