@@ -1,21 +1,3 @@
-const BARBELL_EXERCISE_PATTERNS = [
-  "barbell",
-  "bench press",
-  "squat",
-  "deadlift",
-  "overhead press",
-  "ohp",
-  "military press",
-  "clean",
-  "snatch",
-  "row",
-];
-
-export function isLikelyBarbellExercise(name: string): boolean {
-  const lower = name.toLowerCase();
-  return BARBELL_EXERCISE_PATTERNS.some((p) => lower.includes(p));
-}
-
 export const BAR_WEIGHTS: Record<string, number[]> = {
   lb: [45, 35, 15],
   kg: [20, 15, 10],
