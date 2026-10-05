@@ -9,6 +9,7 @@ import {
   getBarbellModeEnabled,
 } from "../utils/units";
 import { API_URL } from "../lib/api";
+import { fetchWithRetry } from "../lib/fetchWithRetry";
 import { getDateLocale } from "../i18n";
 import { useExerciseHistory } from "../hooks/useExerciseDeltas";
 import { useRestTimerContext } from "../contexts/RestTimerContext";
@@ -203,7 +204,7 @@ export default function SessionPage() {
 
   const fetchExercises = async (muscleGroupName: string) => {
     try {
-      const res = await fetch(`${API_URL}/exercises`, {
+      const res = await fetchWithRetry(`${API_URL}/exercises`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       if (!res.ok) return;
