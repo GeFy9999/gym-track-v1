@@ -546,6 +546,9 @@
     "session_other": "sessions",
     "allExercises": "All exercises",
     "noneFound": "No exercises found",
+    "loadError": "Couldn't load the exercises",
+    "loadErrorDesc": "Check your connection and try again.",
+    "retry": "Try again",
     "scrollForMore": "Scroll for more...",
     "trackedAdded": "Exercise added to tracking",
     "trackedRemoved": "Exercise removed from tracking"

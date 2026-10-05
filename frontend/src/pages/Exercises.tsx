@@ -5,6 +5,7 @@ import { getMuscleGroupLabel } from "../utils/muscleGroupLabel";
 import { Search, Dumbbell, Trophy, ChevronDown } from "lucide-react";
 import { buildExerciseSearchIndex, searchExercises } from "../utils/exerciseSearch";
 import { API_URL } from "../lib/api";
+import { fetchWithRetry } from "../lib/fetchWithRetry";
 import { useTrackedExercises } from "../hooks/useTrackedExercises";
 import { useToast } from "../hooks/useToast";
 import Toast from "../components/Toast";
@@ -80,6 +81,10 @@ export default function ExercisesPage() {
   const [muscleGroups, setMuscleGroups] = useState<MuscleGroup[]>([]);
   const [stats, setStats] = useState<Record<string, ExerciseStat>>({});
   const [loading, setLoading] = useState(true);
+  // The list couldn't be loaded (as opposed to genuinely empty) — shown with
+  // a retry button instead of a misleading "0 exercises".
+  const [loadError, setLoadError] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
 
   const [search, setSearch] = useState("");
   const [selectedGroup, setSelectedGroup] = useState<string | null>(
@@ -94,9 +99,10 @@ export default function ExercisesPage() {
     if (!token) return;
 
     const fetchData = async () => {
+      setLoadError(false);
       try {
         const [exRes, mgRes, statsRes] = await Promise.all([
-          fetch(`${API_URL}/exercises`, {
+          fetchWithRetry(`${API_URL}/exercises`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
           fetch(`${API_URL}/muscleGroups`),
@@ -106,6 +112,7 @@ export default function ExercisesPage() {
         ]);
 
         if (exRes.ok) setExercises(await exRes.json());
+        else setLoadError(true);
         if (mgRes.ok) setMuscleGroups(await mgRes.json());
         if (statsRes.ok) {
           const statsList: ExerciseStat[] = await statsRes.json();
@@ -115,6 +122,7 @@ export default function ExercisesPage() {
         }
       } catch (err) {
         console.error(err);
+        setLoadError(true);
       } finally {
         setLoading(false);
       }
@@ -123,7 +131,7 @@ export default function ExercisesPage() {
     fetchData();
     fetchTracked();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [reloadKey]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -343,11 +351,30 @@ export default function ExercisesPage() {
           </div>
           <div className="space-y-2">
             {visible.map((ex) => renderCard(ex))}
-            {visible.length === 0 && (
-              <p className="text-sm text-gray-400 text-center py-8">
-                {t("exercises.noneFound")}
-              </p>
-            )}
+            {visible.length === 0 &&
+              (loadError ? (
+                <div className="flex flex-col items-center py-8">
+                  <p className="text-sm font-bold text-gray-900">
+                    {t("exercises.loadError")}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1 mb-4">
+                    {t("exercises.loadErrorDesc")}
+                  </p>
+                  <button
+                    onClick={() => {
+                      setLoading(true);
+                      setReloadKey((k) => k + 1);
+                    }}
+                    className="bg-[#c9552c] text-white px-6 py-3 rounded-2xl font-semibold text-sm shadow-md active:scale-[0.98] transition-all"
+                  >
+                    {t("exercises.retry")}
+                  </button>
+                </div>
+              ) : (
+                <p className="text-sm text-gray-400 text-center py-8">
+                  {t("exercises.noneFound")}
+                </p>
+              ))}
             {hasMore && (
               <p className="text-xs text-gray-400 text-center py-3">
                 {t("exercises.scrollForMore")}

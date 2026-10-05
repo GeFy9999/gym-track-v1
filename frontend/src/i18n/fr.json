@@ -546,6 +546,9 @@
     "session_other": "sessions",
     "allExercises": "Tous les exercices",
     "noneFound": "Aucun exercice trouvé",
+    "loadError": "Impossible de charger les exercices",
+    "loadErrorDesc": "Vérifie ta connexion et réessaie.",
+    "retry": "Réessayer",
     "scrollForMore": "Scroll pour voir plus...",
     "trackedAdded": "Exercice ajouté au suivi",
     "trackedRemoved": "Exercice retiré du suivi"
