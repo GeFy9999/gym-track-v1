@@ -37,8 +37,6 @@ type Props = {
   supersetGroupLength: number;
   isRemoving: boolean;
   animationDelay?: number;
-  openDurationPicker: boolean;
-  closingDurationPicker: boolean;
   openSetTypeMenuId: string | null;
   closingSetTypeMenuId: string | null;
   cardRef: (el: HTMLDivElement | null) => void;
@@ -47,7 +45,6 @@ type Props = {
   onOpenSupersetModal: () => void;
   onRequestDelete: () => void;
   onSelectLoadingType: (type: LoadingType | null) => void;
-  onToggleDurationPicker: () => void;
   onSelectDuration: (seconds: number) => void;
   onSelectBarWeight: (weight: number) => void;
   onToggleSetTypeMenu: (setId: string) => void;
@@ -83,8 +80,6 @@ export default function ExerciseCard({
   supersetGroupLength,
   isRemoving,
   animationDelay,
-  openDurationPicker,
-  closingDurationPicker,
   openSetTypeMenuId,
   closingSetTypeMenuId,
   cardRef,
@@ -93,7 +88,6 @@ export default function ExerciseCard({
   onOpenSupersetModal,
   onRequestDelete,
   onSelectLoadingType,
-  onToggleDurationPicker,
   onSelectDuration,
   onSelectBarWeight,
   onToggleSetTypeMenu,
@@ -112,6 +106,7 @@ export default function ExerciseCard({
   const [showInfo, setShowInfo] = useState(false);
   const [showActionsMenu, setShowActionsMenu] = useState(false);
   const [showLoadingMenu, setShowLoadingMenu] = useState(false);
+  const [showRestPicker, setShowRestPicker] = useState(false);
   // The highest weight logged for this exercise last time it was done, so
   // each set's input can flag "+X" the moment a heavier weight is entered
   // — based on actual history, not just whatever was in the field before.
@@ -300,7 +295,7 @@ export default function ExerciseCard({
             {restTimerEnabled && isPro && (
               <button
                 data-tour="session-rest-chip"
-                onClick={onToggleDurationPicker}
+                onClick={() => setShowRestPicker(true)}
                 className="text-[11px] font-bold uppercase tracking-wide px-3 py-1.5 rounded-full bg-white/10 text-white/80"
               >
                 {t("session.card.rest", {
@@ -324,11 +319,12 @@ export default function ExerciseCard({
         {!readOnly &&
           restTimerEnabled &&
           isPro &&
-          (openDurationPicker || closingDurationPicker) && (
+          showRestPicker && (
             <RestTimerPicker
+              exerciseName={se.exercise.name}
               currentDuration={exerciseDuration}
-              isClosing={closingDurationPicker}
               onSelect={onSelectDuration}
+              onClose={() => setShowRestPicker(false)}
             />
           )}
       </div>

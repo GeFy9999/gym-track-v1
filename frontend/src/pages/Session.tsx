@@ -69,12 +69,6 @@ export default function SessionPage() {
   const [exerciseDurations, setExerciseDurations] = useState<
     Record<string, number>
   >({});
-  const [openDurationPicker, setOpenDurationPicker] = useState<string | null>(
-    null,
-  );
-  const [closingDurationPicker, setClosingDurationPicker] = useState<
-    string | null
-  >(null);
   const [barWeights, setBarWeights] = useState<Record<string, number>>({});
   const [personalRecords, setPersonalRecords] = useState<
     Record<string, number>
@@ -167,15 +161,6 @@ export default function SessionPage() {
 
   const getExerciseDuration = (sessionExerciseId: string) =>
     exerciseDurations[sessionExerciseId] ?? getRestTimerSeconds();
-
-  const closeDurationPicker = () => {
-    setOpenDurationPicker((current) => {
-      if (!current) return current;
-      setClosingDurationPicker(current);
-      setTimeout(() => setClosingDurationPicker(null), 150);
-      return null;
-    });
-  };
 
   const closeSetTypeMenu = () => {
     setOpenSetTypeMenu((current) => {
@@ -871,8 +856,6 @@ export default function SessionPage() {
                 supersetGroupLength={supersetGroup.length}
                 isRemoving={removingId === se.id}
                 animationDelay={seIndex * 80}
-                openDurationPicker={openDurationPicker === se.id}
-                closingDurationPicker={closingDurationPicker === se.id}
                 openSetTypeMenuId={openSetTypeMenu}
                 closingSetTypeMenuId={closingSetTypeMenu}
                 cardRef={(el) => {
@@ -895,17 +878,11 @@ export default function SessionPage() {
                 onSelectLoadingType={(type) =>
                   saveLoadingType(se.exercise.id, type)
                 }
-                onToggleDurationPicker={() =>
-                  openDurationPicker === se.id
-                    ? closeDurationPicker()
-                    : setOpenDurationPicker(se.id)
-                }
                 onSelectDuration={(seconds) => {
                   setExerciseDurations((prev) => ({
                     ...prev,
                     [se.id]: seconds,
                   }));
-                  closeDurationPicker();
                 }}
                 onSelectBarWeight={(weight) =>
                   setBarWeights((prev) => ({ ...prev, [se.id]: weight }))
