@@ -48,6 +48,9 @@ export default function UpgradePage() {
   const stored = localStorage.getItem("user");
   const user = stored ? JSON.parse(stored) : null;
   const loyaltyDiscountCents: number = user?.loyaltyDiscountCents ?? 0;
+  // The 7-day trial is once per account, across both plans — the server
+  // enforces it; this only keeps the wording honest.
+  const hasUsedTrial: boolean = user?.hasUsedTrial ?? false;
 
   // What the user is actually subscribed to right now, if anything — used
   // to mark that plan as current and block re-buying it.
@@ -167,7 +170,7 @@ export default function UpgradePage() {
 
     if (isGooglePlayBilled) {
       try {
-        await purchasePlan(plan);
+        await purchasePlan(plan, { skipTrial: hasUsedTrial });
         setLoading(false);
         setNativePurchaseFlow(true);
         await pollAfterNativePurchase();
@@ -239,7 +242,7 @@ export default function UpgradePage() {
 
     if (Capacitor.isNativePlatform()) {
       try {
-        await purchasePlan(plan);
+        await purchasePlan(plan, { skipTrial: hasUsedTrial });
         setLoading(false);
         setNativePurchaseFlow(true);
         await pollAfterNativePurchase();
@@ -469,7 +472,9 @@ export default function UpgradePage() {
                 ? t("upgrade.lifetimeNote")
                 : isPro
                   ? t("upgrade.switchNote")
-                  : t("upgrade.trialNote")}
+                  : hasUsedTrial
+                    ? t("upgrade.noTrialNote")
+                    : t("upgrade.trialNote")}
           </p>
         </div>
 
@@ -530,7 +535,9 @@ export default function UpgradePage() {
                 ? t("upgrade.switchPlan")
                 : plan === "lifetime"
                   ? t("upgrade.buyLifetime")
-                  : t("upgrade.startTrial")}
+                  : hasUsedTrial
+                    ? t("upgrade.subscribe")
+                    : t("upgrade.startTrial")}
         </button>
 
         {isPro && user?.proCurrentPeriodEnd && (

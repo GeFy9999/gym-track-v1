@@ -51,6 +51,10 @@ datasource db {
   // deliver the same invoice.paid webhook more than once, and it must only
   // ever count once.
   loyaltyLastInvoiceId String?
+  // The 7-day free trial is offered once per account, across both monthly
+  // and annual plans and both billing providers. Set as soon as any
+  // recurring subscription is created.
+  hasUsedTrial         Boolean   @default(false)
   // "stripe" (web/default) or "google_play" (Android, via RevenueCat).
   // Loyalty discounts and the Stripe billing portal only apply to "stripe" —
   // Google Play subscriptions are managed entirely through the Play Store.

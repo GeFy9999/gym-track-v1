@@ -1,17 +1,23 @@
 import { describe, it, expect, beforeAll, beforeEach, vi } from "vitest";
 import { randomUUID } from "crypto";
 import { prisma } from "../prisma.js";
-import { registerUser } from "./helpers.js";
 
 // Simulates months/years of Stripe webhooks so the loyalty discount can be
 // checked without waiting for real renewals. Stripe itself is mocked: the
 // "signature check" just parses the body, and coupon/subscription calls are
 // recorded instead of hitting the API.
-const stripeMock = vi.hoisted(() => ({
-  coupons: new Set<string>(),
-  subscriptionUpdates: [] as { id: string; coupon: string }[],
-  failNextSubscriptionUpdate: false,
-}));
+const stripeMock = vi.hoisted(() => {
+  // Read by stripeService at import time.
+  process.env.STRIPE_PRICE_MONTHLY = "price_monthly";
+  process.env.STRIPE_PRICE_ANNUAL = "price_annual";
+  return {
+    coupons: new Set<string>(),
+    // coupon: the applied coupon id, "" when discounts were cleared.
+    subscriptionUpdates: [] as { id: string; coupon?: string | undefined; price?: string | undefined }[],
+    checkoutSessions: [] as { subscription_data?: { trial_period_days?: number } }[],
+    failNextSubscriptionUpdate: false,
+  };
+});
 
 vi.mock("stripe", () => ({
   default: class {
@@ -29,9 +35,16 @@ vi.mock("stripe", () => ({
       },
     };
     subscriptions = {
+      retrieve: async (id: string) => ({
+        id,
+        items: { data: [{ id: "si_mock" }] },
+      }),
       update: async (
         id: string,
-        params: { discounts: { coupon: string }[] },
+        params: {
+          discounts?: { coupon: string }[] | "";
+          items?: { price: string }[];
+        },
       ) => {
         if (stripeMock.failNextSubscriptionUpdate) {
           stripeMock.failNextSubscriptionUpdate = false;
@@ -41,16 +54,35 @@ vi.mock("stripe", () => ({
         }
         stripeMock.subscriptionUpdates.push({
           id,
-          coupon: params.discounts[0]!.coupon,
+          coupon:
+            params.discounts === ""
+              ? ""
+              : params.discounts?.[0]?.coupon,
+          price: params.items?.[0]?.price,
         });
         return { id };
       },
       cancel: async () => ({}),
     };
+    customers = {
+      create: async () => ({ id: `cus_${Math.random()}` }),
+    };
+    checkout = {
+      sessions: {
+        create: async (params: {
+          subscription_data?: { trial_period_days?: number };
+        }) => {
+          stripeMock.checkoutSessions.push(params);
+          return { url: "https://checkout.stripe.test/session" };
+        },
+      },
+    };
   },
 }));
 
-const { handleWebhookEvent } = await import("../services/stripeService.js");
+const { handleWebhookEvent, changePlan, createCheckoutSession } = await import(
+  "../services/stripeService.js"
+);
 
 beforeAll(() => {
   process.env.STRIPE_SECRET_KEY = "sk_test_mock";
@@ -59,8 +91,22 @@ beforeAll(() => {
 
 beforeEach(() => {
   stripeMock.subscriptionUpdates.length = 0;
+  stripeMock.checkoutSessions.length = 0;
   stripeMock.failNextSubscriptionUpdate = false;
 });
+
+// Created straight in the database: going through /api/auth/register would
+// trip its rate limit with this many accounts in one file.
+async function registerUser() {
+  const user = await prisma.user.create({
+    data: {
+      email: `loyalty_${randomUUID()}@example.com`,
+      name: "Loyalty Test",
+      password: "not-used",
+    },
+  });
+  return { user };
+}
 
 const send = (event: object) =>
   handleWebhookEvent(Buffer.from(JSON.stringify(event)), "sig");
@@ -241,5 +287,123 @@ describe("loyalty discount", () => {
 
     expect(await periodsPaid(s.userId)).toBe(0);
     expect(appliedCoupons()).toEqual([]);
+  });
+});
+
+function subscriptionEvent(
+  type: "customer.subscription.created" | "customer.subscription.updated",
+  s: { customerId: string; subscriptionId: string },
+  interval: "month" | "year",
+  discounts: string[] = [],
+) {
+  return {
+    type,
+    data: {
+      object: {
+        id: s.subscriptionId,
+        customer: s.customerId,
+        status: "active",
+        discounts,
+        items: {
+          data: [{ current_period_end: 0, price: { recurring: { interval } } }],
+        },
+      },
+    },
+  };
+}
+
+describe("changing plan", () => {
+  it("from the app: restarts the streak at 0 and removes the loyalty coupon", async () => {
+    const s = await subscriber("month");
+    for (let i = 0; i < 5; i++) {
+      await send(invoice(s.customerId, s.subscriptionId, "subscription_cycle"));
+    }
+    await prisma.user.update({
+      where: { id: s.userId },
+      data: { stripeSubscriptionId: s.subscriptionId },
+    });
+    stripeMock.subscriptionUpdates.length = 0;
+
+    await changePlan(s.userId, "annual");
+
+    expect(stripeMock.subscriptionUpdates).toEqual([
+      { id: s.subscriptionId, coupon: "", price: "price_annual" },
+    ]);
+    expect(await periodsPaid(s.userId)).toBe(0);
+
+    // The next annual renewal starts the annual streak from scratch.
+    await send(subscriptionEvent("customer.subscription.updated", s, "year"));
+    stripeMock.subscriptionUpdates.length = 0;
+    await send(invoice(s.customerId, s.subscriptionId, "subscription_cycle"));
+    expect(appliedCoupons()).toEqual(["loyalty_100_cad_y"]);
+  });
+
+  it("from Stripe's portal (annual → monthly): the webhook resets it too", async () => {
+    const s = await subscriber("year");
+    for (let i = 0; i < 2; i++) {
+      await send(invoice(s.customerId, s.subscriptionId, "subscription_cycle"));
+    }
+    stripeMock.subscriptionUpdates.length = 0;
+
+    await send(
+      subscriptionEvent("customer.subscription.updated", s, "month", [
+        "di_loyalty",
+      ]),
+    );
+
+    expect(await periodsPaid(s.userId)).toBe(0);
+    expect(appliedCoupons()).toEqual([""]);
+  });
+
+  it("a normal update on the same plan keeps the streak", async () => {
+    const s = await subscriber("month");
+    await send(invoice(s.customerId, s.subscriptionId, "subscription_cycle"));
+    stripeMock.subscriptionUpdates.length = 0;
+
+    await send(
+      subscriptionEvent("customer.subscription.updated", s, "month", [
+        "di_loyalty",
+      ]),
+    );
+
+    expect(await periodsPaid(s.userId)).toBe(1);
+    expect(appliedCoupons()).toEqual([]);
+  });
+});
+
+describe("free trial", () => {
+  it("is offered once per account, across monthly and annual", async () => {
+    const { user } = await registerUser();
+
+    await createCheckoutSession(user.id, "monthly");
+    expect(stripeMock.checkoutSessions[0]?.subscription_data).toEqual({
+      trial_period_days: 7,
+    });
+
+    // The monthly subscription gets created (with its trial)...
+    const fresh = await prisma.user.findUniqueOrThrow({ where: { id: user.id } });
+    await send(
+      subscriptionEvent(
+        "customer.subscription.created",
+        { customerId: fresh.stripeCustomerId!, subscriptionId: `sub_${randomUUID()}` },
+        "month",
+      ),
+    );
+
+    // ...so no further checkout gets one, whichever plan.
+    await createCheckoutSession(user.id, "annual");
+    await createCheckoutSession(user.id, "monthly");
+    expect(stripeMock.checkoutSessions[1]?.subscription_data).toBeUndefined();
+    expect(stripeMock.checkoutSessions[2]?.subscription_data).toBeUndefined();
+  });
+
+  it("an abandoned checkout doesn't use up the trial", async () => {
+    const { user } = await registerUser();
+    await createCheckoutSession(user.id, "annual");
+    await createCheckoutSession(user.id, "annual");
+
+    expect(stripeMock.checkoutSessions[1]?.subscription_data).toEqual({
+      trial_period_days: 7,
+    });
   });
 });

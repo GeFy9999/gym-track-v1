@@ -716,7 +716,8 @@
     "save": "Save {{pct}}%",
     "trialNote": "7-day free trial, cancel anytime.",
     "lifetimeNote": "One-time payment, lifetime access, no subscription.",
-    "switchNote": "Plan changes are prorated — no new free trial.",
+    "switchNote": "Plan changes are prorated, with no new free trial. Your loyalty discount starts over from zero.",
+    "noTrialNote": "You've already used your free trial. Cancel anytime.",
     "currentPlanNote": "This is your current plan.",
     "mostPopular": "Most popular",
     "currentPlan": "Your subscription",
@@ -739,6 +740,7 @@
       "progressPhotos": "Unlimited progress photos"
     },
     "startTrial": "Start your 7-day trial",
+    "subscribe": "Subscribe",
     "buyLifetime": "Buy lifetime access",
     "redirecting": "Redirecting...",
     "errorGeneric": "Error",
