@@ -329,13 +329,37 @@ export const handleWebhookEvent = async (rawBody: Buffer, signature: string) => 
       const user = await getUserByStripeCustomerId(customerId);
       if (!user) break;
 
-      const periodsPaid = user.loyaltyPeriodsPaid + 1;
-      const discountCents = computeLoyaltyDiscountCents(periodsPaid, user.proInterval);
+      // A renewal of a subscription the user has since replaced (e.g. a
+      // stale event after switching to lifetime) must not touch the streak.
+      if (user.stripeSubscriptionId && user.stripeSubscriptionId !== subscriptionId) {
+        break;
+      }
 
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { loyaltyPeriodsPaid: periodsPaid },
-      });
+      // Count each renewal invoice exactly once. Stripe redelivers a webhook
+      // whenever we answer with an error (e.g. the coupon update below
+      // failing after its retries) or too slowly — without this guard every
+      // redelivery would add another period. The conditional update also
+      // makes two concurrent deliveries of the same invoice count it once.
+      let periodsPaid = user.loyaltyPeriodsPaid;
+      if (user.loyaltyLastInvoiceId !== invoice.id) {
+        const counted = await prisma.user.updateMany({
+          where: {
+            id: user.id,
+            OR: [
+              { loyaltyLastInvoiceId: null },
+              { loyaltyLastInvoiceId: { not: invoice.id } },
+            ],
+          },
+          data: {
+            loyaltyPeriodsPaid: { increment: 1 },
+            loyaltyLastInvoiceId: invoice.id,
+          },
+        });
+        const fresh = await getUserById(user.id);
+        periodsPaid = fresh?.loyaltyPeriodsPaid ?? periodsPaid + counted.count;
+      }
+
+      const discountCents = computeLoyaltyDiscountCents(periodsPaid, user.proInterval);
 
       if (discountCents > 0) {
         const couponId = await getOrCreateLoyaltyCoupon(
