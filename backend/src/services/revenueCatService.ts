@@ -22,6 +22,9 @@ type RevenueCatEvent = {
   expiration_at_ms?: number | null;
   // "SANDBOX" for Google Play test purchases (license testers), whose
   // subscriptions renew every few minutes instead of every month/year.
+  // Deliberately NOT excluded from the loyalty count below: it lets a
+  // tester see the discount tiers in minutes. Only test accounts ever get
+  // sandbox events; real subscribers' renewals arrive as "PRODUCTION".
   environment?: string;
 };
 
@@ -74,9 +77,6 @@ export async function handleRevenueCatWebhook(
       } else if (
         event.type === "RENEWAL" &&
         interval &&
-        // Test renewals (every few minutes) must never earn a real
-        // loyalty discount.
-        event.environment !== "SANDBOX" &&
         (!event.id || event.id !== user.loyaltyLastInvoiceId)
       ) {
         loyalty = {
