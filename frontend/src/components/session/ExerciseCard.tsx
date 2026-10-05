@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Plus, Trash2, Trophy, Link2, Unlink, StickyNote, Flame, Crown, MoreVertical, Check } from "lucide-react";
+import { Plus, Trash2, Trophy, Link2, Unlink, StickyNote, Flame, Crown, MoreVertical } from "lucide-react";
 import type { SessionExercise, SetData } from "../../types/session";
 import { formatDuration } from "../../utils/units";
 import { formatLastTime, type Delta as DeltaType, type LastTime as LastTimeType } from "../../hooks/useExerciseDeltas";
-import { LOADING_TYPES, type LoadingType } from "../../utils/loadingType";
+import type { LoadingType } from "../../utils/loadingType";
+import LoadingTypeSheet from "./LoadingTypeSheet";
 import BarbellSelector from "./BarbellSelector";
 import RestTimerPicker from "./RestTimerPicker";
 import SetRow from "./SetRow";
@@ -311,45 +312,13 @@ export default function ExerciseCard({
         )}
 
         {!readOnly && loadingType && showLoadingMenu && (
-          <>
-            <div
-              className="fixed inset-0 z-40"
-              onClick={() => setShowLoadingMenu(false)}
-            />
-            {/* In normal flow (not absolute) so the card grows to fit the
-                whole list instead of clipping it at its rounded edge. */}
-            <div className="relative z-50 mt-3 w-60 max-w-full bg-white rounded-2xl shadow-xl border border-gray-200 py-1.5 animate-scale-in origin-top-left">
-              <p className="px-4 pt-1.5 pb-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">
-                {t("session.loadingType.menuTitle")}
-              </p>
-              {LOADING_TYPES.map((type) => (
-                <button
-                  key={type}
-                  onClick={() => {
-                    onSelectLoadingType(type);
-                    setShowLoadingMenu(false);
-                  }}
-                  className="w-full flex items-center justify-between gap-3 px-4 py-2.5 text-sm font-semibold text-gray-800 active:bg-gray-50 transition-colors"
-                >
-                  {t(`session.loadingType.${type}`)}
-                  {type === loadingType && (
-                    <Check size={16} className="text-[#c9552c]" />
-                  )}
-                </button>
-              ))}
-              {isLoadingTypeOverridden && (
-                <button
-                  onClick={() => {
-                    onSelectLoadingType(null);
-                    setShowLoadingMenu(false);
-                  }}
-                  className="w-full px-4 py-2.5 text-left text-sm font-semibold text-gray-500 active:bg-gray-50 transition-colors border-t border-gray-100 mt-1 pt-2.5"
-                >
-                  {t("session.loadingType.reset")}
-                </button>
-              )}
-            </div>
-          </>
+          <LoadingTypeSheet
+            exerciseName={se.exercise.name}
+            current={loadingType}
+            isOverridden={isLoadingTypeOverridden}
+            onSelect={onSelectLoadingType}
+            onClose={() => setShowLoadingMenu(false)}
+          />
         )}
 
         {!readOnly &&
