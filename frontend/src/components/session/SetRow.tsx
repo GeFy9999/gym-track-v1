@@ -10,7 +10,11 @@ import {
   MAX_REPS,
 } from "../../utils/plates";
 import { getSetTypeColor, getSetBadgeLabel } from "../../utils/setTypes";
-import type { LoadingType } from "../../utils/loadingType";
+import {
+  toDisplayedWeight,
+  toTotalWeight,
+  type LoadingType,
+} from "../../utils/loadingType";
 import { playSetCompleteSound } from "../../utils/sound";
 import PlateRow from "./PlateRow";
 import SetTypeMenu from "./SetTypeMenu";
@@ -76,12 +80,10 @@ export default function SetRow({
   // shows the weight on one side, and the total adds the other side — plus
   // the bar itself for a barbell. An empty input stays 0, not "just the bar".
   const barbell = loadingType === "BARBELL";
-  const perSideInput = barbell || loadingType === "PLATE_LOADED";
-  const baseWeight = barbell ? barWeight : 0;
   const toDisplayed = (total: number) =>
-    perSideInput ? Math.max(0, round1((total - baseWeight) / 2)) : total;
+    toDisplayedWeight(total, loadingType, barWeight);
   const toTotal = (displayed: number) =>
-    perSideInput && displayed > 0 ? baseWeight + displayed * 2 : displayed;
+    toTotalWeight(displayed, loadingType, barWeight);
   const displayedWeight = toDisplayed(set.weight);
 
   const { plates, remainder } = barbell
@@ -141,7 +143,9 @@ export default function SetRow({
                 type="text"
                 inputMode="numeric"
                 pattern="[0-9]*"
-                value={displayedWeight === 0 ? "" : displayedWeight}
+                // Blank only for a set with no weight yet — "just the empty
+                // bar" is a real 0 per side and must show as such.
+                value={set.weight === 0 ? "" : displayedWeight}
                 placeholder="0"
                 onChange={(e) => {
                   const val = e.target.value.replace(/[^0-9.]/g, "");
@@ -261,7 +265,9 @@ export default function SetRow({
         </div>
       )}
 
-      {loadingType === "PLATE_LOADED" && set.weight > 0 && (
+      {set.weight > 0 &&
+        (loadingType === "PLATE_LOADED" ||
+          (barbell && plates.length === 0 && remainder <= 0)) && (
         <p className="mb-2 pl-14 text-xs font-bold text-[#c9552c]">
           {t("session.total", { weight: round1(set.weight), unit })}
         </p>

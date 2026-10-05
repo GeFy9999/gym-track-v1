@@ -12,10 +12,14 @@ const END_PERCENTAGE = 0.85;
 const START_REPS = 10;
 const END_REPS = 3;
 
+// `minWeight` floors every warm-up set — for a barbell it's the empty bar,
+// since nothing can be lifted below that (a lighter "total" would show up
+// as a negative, i.e. blank, weight per side).
 export function computeWarmupSets(
   workingWeight: number,
   unit: string,
   count: number,
+  minWeight?: number,
 ): WarmupSetPlan[] {
   const roundTo = unit === "kg" ? 2.5 : 5;
   const clampedCount = Math.min(
@@ -28,7 +32,7 @@ export function computeWarmupSets(
     const percentage = START_PERCENTAGE + (END_PERCENTAGE - START_PERCENTAGE) * t;
     const reps = Math.round(START_REPS + (END_REPS - START_REPS) * t);
     const weight = Math.max(
-      roundTo,
+      minWeight ?? roundTo,
       Math.round((workingWeight * percentage) / roundTo) * roundTo,
     );
     return { weight, reps };
