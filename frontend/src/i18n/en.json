@@ -267,8 +267,6 @@
     "perSide": "Per side:",
     "notCalculable": "+{{count}} not calculable",
     "total": "Total: {{weight}} {{unit}}",
-    "perSideWeight": "{{weight}} {{unit}} / side",
-    "weightTotal": "Total weight",
     "weightPerDumbbell": "Weight / dumbbell",
     "weightStack": "Weight (stack)",
     "addedWeight": "Added weight (+)",
@@ -366,7 +364,7 @@
       "note": { "title": "Personal note", "desc": "Write a note about this exercise (technique, feel, goal). It stays linked to the exercise, not just this session." },
       "superset": { "title": "Superset", "desc": "Link several exercises together to chain them with no rest in between." },
       "delete": { "title": "Delete exercise", "desc": "Remove this exercise from the session. All its sets will also be deleted." },
-      "barMode": { "title": "Loading type", "desc": "Shows how the exercise is loaded (barbell, plate-loaded machine, dumbbells…). Inputs adapt: total weight and plates for a barbell, weight per side for a plate-loaded machine, and so on. Tap to change it." },
+      "barMode": { "title": "Loading type", "desc": "Shows how the exercise is loaded (barbell, plate-loaded machine, dumbbells…). Inputs adapt: weight per side for a barbell (with the total and plates) or a plate-loaded machine, per dumbbell, and so on. Tap to change it." },
       "rest": { "title": "Rest", "desc": "Change the rest timer duration for this specific exercise." },
       "warmup": { "title": "Auto warm-up", "desc": "Enter your working weight: the app automatically generates a progressive ramp-up before your working set." },
       "addSet": { "title": "Add a set", "desc": "Add a new set to this exercise." }

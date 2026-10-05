@@ -267,8 +267,6 @@
     "perSide": "Par côté :",
     "notCalculable": "+{{count}} non calculable",
     "total": "Total : {{weight}} {{unit}}",
-    "perSideWeight": "{{weight}} {{unit}} / côté",
-    "weightTotal": "Poids total",
     "weightPerDumbbell": "Poids / haltère",
     "weightStack": "Poids (pile)",
     "addedWeight": "Lest (+)",
@@ -366,7 +364,7 @@
       "note": { "title": "Note personnelle", "desc": "Écris une note sur cet exercice (technique, sensation, objectif). Elle reste liée à l'exercice, pas juste à cette séance." },
       "superset": { "title": "Superset", "desc": "Lie plusieurs exercices ensemble pour les enchaîner sans repos entre eux." },
       "delete": { "title": "Supprimer l'exercice", "desc": "Retire cet exercice de la séance. Tous ses sets seront aussi supprimés." },
-      "barMode": { "title": "Type de chargement", "desc": "Indique comment l'exercice est chargé (barre, machine à disques, haltères…). La saisie s'adapte : poids total et plaques pour une barre, poids par côté pour une machine à disques, etc. Touche pour le changer." },
+      "barMode": { "title": "Type de chargement", "desc": "Indique comment l'exercice est chargé (barre, machine à disques, haltères…). La saisie s'adapte : poids par côté pour une barre (avec le total et les plaques) ou une machine à disques, poids par haltère, etc. Touche pour le changer." },
       "rest": { "title": "Repos", "desc": "Change la durée du minuteur de repos pour cet exercice précis." },
       "warmup": { "title": "Échauffement auto", "desc": "Entre ton poids de travail : l'app génère automatiquement une montée en charge progressive avant ton set de travail." },
       "addSet": { "title": "Ajouter un set", "desc": "Ajoute une nouvelle série à cet exercice." }
