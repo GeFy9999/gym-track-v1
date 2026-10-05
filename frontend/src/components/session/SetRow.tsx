@@ -21,7 +21,7 @@ const clamp = (n: number, min: number, max: number) =>
 const round1 = (n: number) => Math.round(n * 10) / 10;
 
 const WEIGHT_LABEL_KEYS: Record<LoadingType, string> = {
-  BARBELL: "session.weightTotal",
+  BARBELL: "session.weightPerSide",
   PLATE_LOADED: "session.weightPerSide",
   DUMBBELL: "session.weightPerDumbbell",
   MACHINE: "session.weightStack",
@@ -71,22 +71,21 @@ export default function SetRow({
   onDelete,
 }: Props) {
   const { t } = useTranslation();
-  // set.weight always stores the TOTAL load. A plate-loaded machine is the
-  // only type entered per side (it's how those machines are loaded and
-  // read), so its input shows half the total and doubles what's typed.
-  const perSideInput = loadingType === "PLATE_LOADED";
+  // set.weight always stores the TOTAL load. Barbells and plate-loaded
+  // machines are entered per side (that's how they're loaded): the input
+  // shows the weight on one side, and the total adds the other side — plus
+  // the bar itself for a barbell. An empty input stays 0, not "just the bar".
+  const barbell = loadingType === "BARBELL";
+  const perSideInput = barbell || loadingType === "PLATE_LOADED";
+  const baseWeight = barbell ? barWeight : 0;
   const toDisplayed = (total: number) =>
-    perSideInput ? round1(total / 2) : total;
+    perSideInput ? Math.max(0, round1((total - baseWeight) / 2)) : total;
   const toTotal = (displayed: number) =>
-    perSideInput ? displayed * 2 : displayed;
+    perSideInput && displayed > 0 ? baseWeight + displayed * 2 : displayed;
   const displayedWeight = toDisplayed(set.weight);
 
-  const barbell = loadingType === "BARBELL";
-  const platesPerSide = barbell
-    ? Math.max(0, round1((set.weight - barWeight) / 2))
-    : 0;
   const { plates, remainder } = barbell
-    ? calculatePlates(platesPerSide, unit)
+    ? calculatePlates(displayedWeight, unit)
     : { plates: [], remainder: 0 };
 
   const [justCompleted, setJustCompleted] = useState(false);
@@ -256,13 +255,13 @@ export default function SetRow({
           <PlateRow
             plates={plates}
             remainder={remainder}
-            perSide={platesPerSide}
+            totalWeight={round1(set.weight)}
             unit={unit}
           />
         </div>
       )}
 
-      {perSideInput && set.weight > 0 && (
+      {loadingType === "PLATE_LOADED" && set.weight > 0 && (
         <p className="mb-2 pl-14 text-xs font-bold text-[#c9552c]">
           {t("session.total", { weight: round1(set.weight), unit })}
         </p>
