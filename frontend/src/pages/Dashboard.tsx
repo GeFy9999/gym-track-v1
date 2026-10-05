@@ -256,19 +256,25 @@ export default function DashboardPage() {
   };
 
   // Tour refs
+  const tourRefWeek = useRef<HTMLDivElement>(null);
   const tourRef0 = useRef<HTMLDivElement>(null);
   const tourRef1 = useRef<HTMLDivElement>(null);
 
   const dashboardTourSteps = [
     {
+      title: t("dashboard.tour.week.title"),
+      description: t("dashboard.tour.week.desc"),
+      refIndex: 0,
+    },
+    {
       title: t("dashboard.tour.muscleGroups.title"),
       description: t("dashboard.tour.muscleGroups.desc"),
-      refIndex: 0,
+      refIndex: 1,
     },
     {
       title: t("dashboard.tour.activity.title"),
       description: t("dashboard.tour.activity.desc"),
-      refIndex: 1,
+      refIndex: 2,
     },
     {
       title: t("dashboard.tour.home.title"),
@@ -283,9 +289,9 @@ export default function DashboardPage() {
       tooltipPosition: "above" as const,
     },
     {
-      title: t("dashboard.tour.records.title"),
-      description: t("dashboard.tour.records.desc"),
-      selector: "[data-tour='nav-records']",
+      title: t("dashboard.tour.exercises.title"),
+      description: t("dashboard.tour.exercises.desc"),
+      selector: "[data-tour='nav-exercices']",
       tooltipPosition: "above" as const,
     },
     {
@@ -604,10 +610,12 @@ export default function DashboardPage() {
   return (
     <div className="pb-28 bg-[#faf6f1] min-h-screen">
       <HeaderDashboard />
-      <WeekSummaryCard
-        completed={weekSummary.completed}
-        total={weekSummary.total}
-      />
+      <div ref={tourRefWeek}>
+        <WeekSummaryCard
+          completed={weekSummary.completed}
+          total={weekSummary.total}
+        />
+      </div>
       <div ref={tourRef0}>
         <MuscleGroupsCards
           refreshKey={refreshKey}
@@ -886,7 +894,7 @@ export default function DashboardPage() {
         <TourOverlay
           tourKey={`dashboard_${userId}`}
           steps={dashboardTourSteps}
-          refs={[tourRef0, tourRef1]}
+          refs={[tourRefWeek, tourRef0, tourRef1]}
         />
       )}
 

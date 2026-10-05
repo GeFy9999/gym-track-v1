@@ -701,6 +701,11 @@ export default function SessionPage() {
       description: t("session.tour.addSet.desc"),
       selector: "[data-tour='session-add-set']",
     },
+    {
+      title: t("session.tour.finishExercises.title"),
+      description: t("session.tour.finishExercises.desc"),
+      selector: "[data-tour='session-finish-exercises']",
+    },
   ];
 
   // Contextual mini-tour that explains a set row's own controls, triggered
@@ -914,6 +919,7 @@ export default function SessionPage() {
 
         {!readOnly && !isEmpty && !isEditMode && (
           <button
+            data-tour="session-finish-exercises"
             onClick={() => navigate("/dashboard")}
             className="w-full bg-[#191714] active:bg-[#191714]/85 text-white font-bold uppercase text-sm tracking-wide py-4 rounded-2xl transition-colors"
           >

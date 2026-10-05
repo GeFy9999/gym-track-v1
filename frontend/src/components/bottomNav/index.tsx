@@ -9,7 +9,7 @@ const links = [
   {
     to: "/exercises",
     labelKey: "nav.exercises",
-    tourKey: "records",
+    tourKey: "exercices",
     icon: Dumbbell,
     accent: true,
   },
