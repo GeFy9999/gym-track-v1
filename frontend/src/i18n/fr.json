@@ -110,12 +110,13 @@
     "finish": "Terminer",
     "resume": "Reprendre",
     "tour": {
+      "week": { "title": "Ta semaine", "desc": "Le cercle se remplit au fil de ta semaine : il montre combien de groupes musculaires tu as déjà travaillés sur le total. Objectif : le compléter avant lundi !" },
       "muscleGroups": { "title": "Groupes musculaires", "desc": "Clique sur un groupe musculaire pour créer une session et ajouter des exercices. Un badge orange apparaîtra quand une session est en cours." },
       "activity": { "title": "Activité récente", "desc": "Ici tu retrouves tes dernières sessions avec les exercices et sets que tu as faits." },
       "home": { "title": "Accueil", "desc": "C'est ici, ton tableau de bord principal. Tu y verras ta semaine, tes groupes musculaires et ton activité récente." },
       "stats": { "title": "Statistiques", "desc": "Consulte tes records personnels, ta progression et le volume de travail par groupe musculaire." },
-      "records": { "title": "Records personnels", "desc": "Appuie sur le trophée pour choisir quels exercices suivre en record personnel. Une fois l'exercice fait au moins une fois, ton meilleur poids apparaîtra dans Stats." },
-      "history": { "title": "Historique", "desc": "Retrouve toutes tes séances passées organisées par semaine. Clique sur une séance pour revoir les détails." },
+      "exercises": { "title": "Exercices", "desc": "Parcours tous les exercices et ouvre-en un pour voir sa démonstration, ta progression et tes records. Appuie sur le trophée pour le suivre en record personnel dans Stats." },
+      "history": { "title": "Historique", "desc": "Retrouve toutes tes séances passées, mois par mois, regroupées par semaine et par jour. Clique sur une séance pour revoir les détails." },
       "profile": { "title": "Profil", "desc": "Gère ton compte, change ton mot de passe, suis ton poids corporel et consulte tes photos de progression." }
     },
     "abandoned": {
@@ -219,9 +220,10 @@
     "months": ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"],
     "dayLabels": ["L","M","M","J","V","S","D"],
     "tour": {
-      "month": { "title": "Ce mois-ci", "desc": "Ton historique montre les semaines du mois en cours, organisées avec le nombre de séances et de sets faits." },
-      "calendarView": { "title": "Vue calendrier", "desc": "Pour retrouver un mois précédent, bascule sur la vue calendrier et navigue avec les flèches." },
-      "sessionDetail": { "title": "Détail d'une séance", "desc": "Clique sur une séance pour revoir tes exercices, poids et répétitions en lecture seule." }
+      "month": { "title": "Mois", "desc": "Passe d'un mois à l'autre avec les flèches. Le nombre de séances faites ce mois-là s'affiche juste en dessous." },
+      "weeks": { "title": "Semaines", "desc": "Tes séances sont regroupées par semaine puis par jour, avec le nombre de séances et de sets faits. Touche une semaine pour l'ouvrir ou la fermer." },
+      "sessionDetail": { "title": "Détail d'une séance", "desc": "Clique sur une séance pour revoir tes exercices, poids et répétitions en lecture seule." },
+      "calendarView": { "title": "Liste ou calendrier", "desc": "Bascule en vue calendrier pour voir d'un coup d'œil les jours où tu t'es entraîné (Pro)." }
     }
   },
   "session": {
@@ -367,7 +369,8 @@
       "barMode": { "title": "Type de chargement", "desc": "Indique comment l'exercice est chargé (barre, machine à disques, haltères…). La saisie s'adapte : poids par côté pour une barre (avec le total et les plaques) ou une machine à disques, poids par haltère, etc. Touche pour le changer." },
       "rest": { "title": "Repos", "desc": "Change la durée du minuteur de repos pour cet exercice précis." },
       "warmup": { "title": "Échauffement auto", "desc": "Entre ton poids de travail : l'app génère automatiquement une montée en charge progressive avant ton set de travail." },
-      "addSet": { "title": "Ajouter un set", "desc": "Ajoute une nouvelle série à cet exercice." }
+      "addSet": { "title": "Ajouter un set", "desc": "Ajoute une nouvelle série à cet exercice." },
+      "finishExercises": { "title": "Terminer mes exercices", "desc": "Quand tu as fini les exercices de ce groupe, reviens à l'accueil. Tu peux enchaîner un autre groupe musculaire, puis terminer la séance depuis l'accueil." }
     },
     "setRowTour": {
       "weight": { "title": "Poids", "desc": "Saisis le poids soulevé. Le libellé s'adapte au type de chargement (total, par côté, par haltère…)." },

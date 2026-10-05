@@ -110,12 +110,13 @@
     "finish": "Finish",
     "resume": "Resume",
     "tour": {
+      "week": { "title": "Your week", "desc": "The ring fills up as your week goes on: it shows how many muscle groups you've already trained out of the total. Goal: complete it before Monday!" },
       "muscleGroups": { "title": "Muscle groups", "desc": "Tap a muscle group to create a session and add exercises. An orange badge appears while a session is in progress." },
       "activity": { "title": "Recent activity", "desc": "Here you'll find your latest sessions with the exercises and sets you did." },
       "home": { "title": "Home", "desc": "This is your main dashboard. You'll see your week, your muscle groups, and your recent activity here." },
       "stats": { "title": "Stats", "desc": "Check your personal records, your progression, and your training volume by muscle group." },
-      "records": { "title": "Personal records", "desc": "Tap the trophy to choose which exercises to track as a personal record. Once you've done the exercise at least once, your best weight will show up in Stats." },
-      "history": { "title": "History", "desc": "Find all your past sessions organized by week. Tap a session to review the details." },
+      "exercises": { "title": "Exercises", "desc": "Browse every exercise and open one to see its demo, your progress and your records. Tap the trophy to track it as a personal record in Stats." },
+      "history": { "title": "History", "desc": "Find all your past sessions, month by month, grouped by week and by day. Tap a session to review the details." },
       "profile": { "title": "Profile", "desc": "Manage your account, change your password, track your body weight, and check your progress photos." }
     },
     "abandoned": {
@@ -219,9 +220,10 @@
     "months": ["January","February","March","April","May","June","July","August","September","October","November","December"],
     "dayLabels": ["M","T","W","T","F","S","S"],
     "tour": {
-      "month": { "title": "This month", "desc": "Your history shows the weeks of the current month, with the number of sessions and sets done." },
-      "calendarView": { "title": "Calendar view", "desc": "To find a previous month, switch to the calendar view and navigate with the arrows." },
-      "sessionDetail": { "title": "Session detail", "desc": "Tap a session to review your exercises, weights, and reps in read-only mode." }
+      "month": { "title": "Month", "desc": "Move from one month to another with the arrows. The number of sessions done that month is shown underneath." },
+      "weeks": { "title": "Weeks", "desc": "Your sessions are grouped by week, then by day, with the number of sessions and sets done. Tap a week to open or close it." },
+      "sessionDetail": { "title": "Session detail", "desc": "Tap a session to review your exercises, weights, and reps in read-only mode." },
+      "calendarView": { "title": "List or calendar", "desc": "Switch to the calendar view to see at a glance the days you trained (Pro)." }
     }
   },
   "session": {
@@ -367,7 +369,8 @@
       "barMode": { "title": "Loading type", "desc": "Shows how the exercise is loaded (barbell, plate-loaded machine, dumbbells…). Inputs adapt: weight per side for a barbell (with the total and plates) or a plate-loaded machine, per dumbbell, and so on. Tap to change it." },
       "rest": { "title": "Rest", "desc": "Change the rest timer duration for this specific exercise." },
       "warmup": { "title": "Auto warm-up", "desc": "Enter your working weight: the app automatically generates a progressive ramp-up before your working set." },
-      "addSet": { "title": "Add a set", "desc": "Add a new set to this exercise." }
+      "addSet": { "title": "Add a set", "desc": "Add a new set to this exercise." },
+      "finishExercises": { "title": "Finish my exercises", "desc": "Once you're done with this muscle group's exercises, head back home. You can move on to another muscle group, then finish the session from the home screen." }
     },
     "setRowTour": {
       "weight": { "title": "Weight", "desc": "Enter the weight lifted. The label adapts to the loading type (total, per side, per dumbbell…)." },

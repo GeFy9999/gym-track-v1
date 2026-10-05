@@ -129,6 +129,7 @@ export default function HistoryPage() {
   const [dayCardClosing, setDayCardClosing] = useState(false);
   const { toast, toastVariant, closingToast, showToast } = useToast();
   const [showExportConfirm, setShowExportConfirm] = useState(false);
+  const refMonth = useRef<HTMLDivElement>(null);
   const ref0 = useRef<HTMLDivElement>(null);
   const ref1 = useRef<HTMLDivElement>(null);
   const ref2 = useRef<HTMLDivElement>(null);
@@ -145,6 +146,8 @@ export default function HistoryPage() {
     if (el) setTabIndicator({ left: el.offsetLeft, width: el.offsetWidth });
   }, [viewMode, allSessions.length]);
 
+  // refIndex points into the `refs` array passed to TourOverlay below:
+  // [month navigator, week list, first day card, list/calendar tabs].
   const tourSteps = [
     {
       title: t("history.tour.month.title"),
@@ -152,14 +155,19 @@ export default function HistoryPage() {
       refIndex: 0,
     },
     {
-      title: t("history.tour.calendarView.title"),
-      description: t("history.tour.calendarView.desc"),
+      title: t("history.tour.weeks.title"),
+      description: t("history.tour.weeks.desc"),
       refIndex: 1,
     },
     {
       title: t("history.tour.sessionDetail.title"),
       description: t("history.tour.sessionDetail.desc"),
       refIndex: 2,
+    },
+    {
+      title: t("history.tour.calendarView.title"),
+      description: t("history.tour.calendarView.desc"),
+      refIndex: 3,
     },
   ];
 
@@ -544,7 +552,10 @@ export default function HistoryPage() {
         </div>
       ) : (
         <>
-          <div className="bg-[#ece7dd] rounded-3xl shadow-sm p-4 mb-3">
+          <div
+            ref={refMonth}
+            className="bg-[#ece7dd] rounded-3xl shadow-sm p-4 mb-3"
+          >
             <div className="flex items-center justify-between">
               <button
                 onClick={() =>
@@ -939,7 +950,21 @@ export default function HistoryPage() {
       )}
       </div>
 
-      <TourOverlay tourKey="history" steps={tourSteps} refs={[ref0, ref1, ref2]} />
+      {/* Only once there's history to point at: the tour marks itself as
+          seen the moment it starts, so starting it on an empty page would
+          skip every step and use it up before the user ever saw it. The
+          week/session steps are dropped when the shown month is empty. */}
+      {!loadError && allSessions.length > 0 && (
+        <TourOverlay
+          tourKey="history"
+          steps={
+            selectedMonthWeeks.length > 0
+              ? tourSteps
+              : tourSteps.filter((s) => s.refIndex === 0 || s.refIndex === 3)
+          }
+          refs={[refMonth, ref0, ref2, ref1]}
+        />
+      )}
 
       {showExportConfirm && (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-[60] px-6 animate-fade-in">
