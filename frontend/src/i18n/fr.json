@@ -170,6 +170,7 @@
     "noHistoryYet": "Aucun historique encore",
     "export": "Exporter",
     "freePlanBanner": "Plan gratuit : derniers {{days}} jours seulement — Passe à Pro pour l'historique complet",
+    "lockedSession": "Séance de plus de {{days}} jours — Passe à Pro pour la voir",
     "list": "Liste",
     "calendar": "Calendrier",
     "noHistory": "Aucun historique",

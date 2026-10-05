@@ -170,6 +170,7 @@
     "noHistoryYet": "No history yet",
     "export": "Export",
     "freePlanBanner": "Free plan: last {{days}} days only — Go Pro for full history",
+    "lockedSession": "Session older than {{days}} days — Go Pro to view it",
     "list": "List",
     "calendar": "Calendar",
     "noHistory": "No history",

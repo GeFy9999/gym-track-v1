@@ -31,6 +31,9 @@ type SessionData = {
   date: string;
   completed: boolean;
   durationMinutes: number | null;
+  // Older than the free plan's window: date and muscle group only, shown
+  // blurred and unclickable behind a Pro badge.
+  locked?: boolean;
   sessionExercises: {
     exercise: { id: string; name: string };
     sets: {
@@ -171,12 +174,13 @@ export default function HistoryPage() {
       }
 
       try {
-        const start = isPro
-          ? new Date(2000, 0, 1)
-          : new Date(Date.now() - FREE_HISTORY_DAYS * 24 * 60 * 60 * 1000);
+        // Free users ask for the full range too: the server still caps real
+        // sessions at FREE_HISTORY_DAYS and returns anything older as
+        // `locked` stubs, shown blurred with a Pro upsell.
+        const start = new Date(2000, 0, 1);
 
         const res = await fetch(
-          `${API_URL}/sessions/me?start=${start.toISOString()}&end=${new Date().toISOString()}`,
+          `${API_URL}/sessions/me?start=${start.toISOString()}&end=${new Date().toISOString()}&includeLocked=true`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -194,8 +198,9 @@ export default function HistoryPage() {
         setAllSessions(
           sessions.filter(
             (s) =>
-              s.completed &&
-              s.sessionExercises.some((se) => se.sets.some(hasSetData)),
+              s.locked ||
+              (s.completed &&
+                s.sessionExercises.some((se) => se.sets.some(hasSetData))),
           ),
         );
         setLoading(false);
@@ -727,6 +732,44 @@ export default function HistoryPage() {
 
                                   <div className="divide-y divide-gray-100">
                                     {day.sessions.map((session) => {
+                                      if (session.locked) {
+                                        return (
+                                          <div
+                                            key={session.id}
+                                            className="relative flex items-center gap-3 px-3 py-2.5"
+                                          >
+                                            <div
+                                              aria-hidden
+                                              className="text-left flex-1 min-w-0 blur-[5px] select-none pointer-events-none"
+                                            >
+                                              <p className="text-sm font-bold text-gray-900 uppercase truncate">
+                                                {getMuscleGroupLabel(
+                                                  session.muscleGroup,
+                                                  t,
+                                                )}
+                                              </p>
+                                              <p className="text-xs font-semibold text-gray-400 mt-0.5 uppercase">
+                                                {t("history.exerciseCount", {
+                                                  count: 5,
+                                                })}
+                                              </p>
+                                            </div>
+                                            <button
+                                              onClick={() =>
+                                                navigate("/upgrade")
+                                              }
+                                              aria-label={t(
+                                                "history.lockedSession",
+                                                { days: FREE_HISTORY_DAYS },
+                                              )}
+                                              className="flex items-center gap-1 bg-[#c9552c] text-white text-[10px] font-black uppercase tracking-wide px-2.5 py-1.5 rounded-full shadow-sm active:scale-[0.97] transition-all flex-shrink-0"
+                                            >
+                                              <Crown size={12} />
+                                              Pro
+                                            </button>
+                                          </div>
+                                        );
+                                      }
                                       const exerciseCount =
                                         session.sessionExercises.filter(
                                           (se) => se.sets.some(hasSetData),
