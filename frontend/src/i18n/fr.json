@@ -718,6 +718,13 @@
     "lifetimeNote": "Paiement unique, accès à vie, aucun abonnement.",
     "switchNote": "Le changement de plan est calculé au prorata, sans nouvel essai gratuit. Ta réduction de fidélité repart à zéro.",
     "noTrialNote": "Tu as déjà profité de ton essai gratuit. Annule à tout moment.",
+    "switchLoyaltyReminder": "Changer de plan te fait perdre ta réduction de fidélité de -{{amount}}$ : elle repart à zéro sur le nouveau plan.",
+    "switchWarning": {
+      "title": "Perdre ta réduction ?",
+      "desc": "Tu as gagné une réduction de fidélité de -{{amount}}$ sur ton abonnement actuel. En changeant de plan, elle disparaît et repart à zéro.",
+      "keep": "Garder mon plan",
+      "continue": "Changer quand même"
+    },
     "currentPlanNote": "C'est ton plan actuel.",
     "mostPopular": "Le plus populaire",
     "currentPlan": "Ton abonnement",
