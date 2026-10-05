@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Timer } from "lucide-react";
 
@@ -27,6 +28,18 @@ export default function RestTimer({
   const [minimized, setMinimized] = useState(false);
   const [dragOffset, setDragOffset] = useState(0);
   const [dragging, setDragging] = useState(false);
+
+  // Leaving the page collapses the full sheet down to the small bar so it
+  // doesn't cover the next screen — the timer itself keeps running.
+  const { pathname } = useLocation();
+  const lastPathnameRef = useRef(pathname);
+  useEffect(() => {
+    if (pathname === lastPathnameRef.current) return;
+    lastPathnameRef.current = pathname;
+    setMinimized(true);
+    setDragging(false);
+    setDragOffset(0);
+  }, [pathname]);
 
   const minutes = Math.floor(secondsLeft / 60);
   const seconds = secondsLeft % 60;
