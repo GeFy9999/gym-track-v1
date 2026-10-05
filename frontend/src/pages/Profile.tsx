@@ -189,9 +189,12 @@ export default function ProfilePage() {
       )}
 
       {/* Réduction de fidélité — seulement pertinent pour un abonnement
-          récurrent (les acheteurs à vie n'ont pas de "prochain paiement"). */}
+          récurrent (les acheteurs à vie n'ont pas de "prochain paiement"),
+          et seulement facturé par Stripe : Google Play n'applique aucune
+          réduction de fidélité, la carte y promettrait un rabais inexistant. */}
       {isPro &&
         user?.proCurrentPeriodEnd &&
+        user?.billingProvider !== "google_play" &&
         (() => {
           const isYearly = user?.proInterval === "year";
           const loyaltyCentsPerPeriod = isYearly
@@ -206,8 +209,11 @@ export default function ProfilePage() {
 
           const ringRadius = 34;
           const circumference = 2 * Math.PI * ringRadius;
+          // Renewals keep counting past the cap; the ring and "x/max" stop
+          // at full instead of overflowing (e.g. "14/10").
+          const shownPeriods = Math.min(loyaltyPeriodsPaid, loyaltyMaxPeriods);
           const ringOffset =
-            circumference * (1 - loyaltyPeriodsPaid / loyaltyMaxPeriods);
+            circumference * (1 - shownPeriods / loyaltyMaxPeriods);
           const atMax = loyaltyDiscountCents >= loyaltyMaxCents;
           const daysUntilRenewal = Math.max(
             0,
@@ -252,7 +258,7 @@ export default function ProfilePage() {
                   <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-[#3a9e6e] border-2 border-[#ece7dd]" />
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
                     <span className="text-base font-black text-gray-900 leading-none">
-                      {loyaltyPeriodsPaid}/{loyaltyMaxPeriods}
+                      {shownPeriods}/{loyaltyMaxPeriods}
                     </span>
                     <span className="text-[8px] font-bold text-gray-400 uppercase tracking-widest mt-1">
                       {t("profile.loyaltyRenewalsShort")}
