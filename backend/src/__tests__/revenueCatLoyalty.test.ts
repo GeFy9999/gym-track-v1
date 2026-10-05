@@ -32,7 +32,7 @@ const send = (
   userId: string,
   type: string,
   productId: string,
-  extra: { id?: string; new_product_id?: string } = {},
+  extra: { id?: string; new_product_id?: string; environment?: string } = {},
 ) =>
   handleRevenueCatWebhook(SECRET, {
     event: {
@@ -42,6 +42,7 @@ const send = (
       product_id: productId,
       expiration_at_ms: Date.now() + 30 * 86400_000,
       ...(extra.new_product_id ? { new_product_id: extra.new_product_id } : {}),
+      ...(extra.environment ? { environment: extra.environment } : {}),
     },
   });
 
@@ -95,6 +96,16 @@ describe("Google Play loyalty tiers", () => {
     await send(u.id, "RENEWAL", MONTHLY, { id: "evt_1" });
     await send(u.id, "RENEWAL", MONTHLY, { id: "evt_1" });
     expect((await load(u.id)).loyaltyPeriodsPaid).toBe(1);
+  });
+
+  it("counts test (sandbox) renewals too, so testers can try the tiers quickly", async () => {
+    const u = await newUser();
+    await send(u.id, "INITIAL_PURCHASE", YEARLY, { environment: "SANDBOX" });
+    for (let i = 0; i < 2; i++) {
+      await send(u.id, "RENEWAL", YEARLY, { environment: "SANDBOX" });
+    }
+    expect((await load(u.id)).loyaltyPeriodsPaid).toBe(2);
+    expect(await upgradeFor(u.id)).toBe("gymstrack_pro_yearly:yearly-l2");
   });
 
   it("switching monthly -> yearly restarts the streak at 0", async () => {
