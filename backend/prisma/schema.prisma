@@ -62,6 +62,8 @@ datasource db {
   loyaltyLastRenewalAt DateTime?
   loyaltyReminder1For  String?
   loyaltyReminder2For  String?
+  // Unsubscribed from the reminder emails (one-click link in each email).
+  loyaltyEmailsOptOut  Boolean   @default(false)
   // The 7-day free trial is offered once per account, across both monthly
   // and annual plans and both billing providers. Set as soon as any
   // recurring subscription is created.
