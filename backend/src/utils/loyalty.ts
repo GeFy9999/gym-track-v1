@@ -40,9 +40,11 @@ export function loyaltyCouponId(cents: number, interval: string | null): string 
 // --- Google Play (RevenueCat) -------------------------------------------
 // Google Play can't lower one subscriber's renewal price, so the loyalty
 // discount is delivered as price tiers: extra base plans created in Play
-// Console next to the regular one, named after it with a "-l<tier>" suffix,
-// each priced one discount step lower (monthly-l1 = 4.89$ … monthly-l10 =
-// 3.99$; yearly-l1 = 28.99$ … yearly-l3 = 26.99$). The app offers to move
+// Console in the same subscription, named after the first word of the
+// regular base plan with a "-l<tier>" suffix, each priced one discount step
+// lower. E.g. regular "monthly-autorenew" → tiers monthly-l1 = 4.89$ …
+// monthly-l10 = 3.99$; regular "yearly-autorenew" → yearly-l1 = 28.99$ …
+// yearly-l3 = 26.99$. The app offers to move
 // the subscriber to the tier they've earned, as a deferred plan change that
 // takes effect at their next renewal.
 
@@ -73,16 +75,17 @@ export function googlePlayTierOf(productId: string): number {
   return match ? Number(match[1]) : 0;
 }
 
-// The product id of a given tier of the same subscription, or null when the
-// id isn't in "<subscriptionId>:<basePlanId>" form.
+// The product id of a given (≥ 1) tier of the same subscription, or null
+// when the id isn't in "<subscriptionId>:<basePlanId>" form. Works from the
+// regular plan ("monthly-autorenew") or from another tier ("monthly-l3").
 export function googlePlayTierProductId(
   productId: string,
   tier: number,
 ): string | null {
   const parts = splitGooglePlayProductId(productId);
-  if (!parts) return null;
-  const regularBasePlan = parts.basePlanId.replace(TIER_SUFFIX, "");
-  return `${parts.subscriptionId}:${tier > 0 ? `${regularBasePlan}-l${tier}` : regularBasePlan}`;
+  if (!parts || tier < 1) return null;
+  const stem = parts.basePlanId.split("-")[0];
+  return `${parts.subscriptionId}:${stem}-l${tier}`;
 }
 
 // The tier product a Google Play subscriber should move to, if they've
