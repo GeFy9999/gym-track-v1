@@ -122,31 +122,24 @@ export function useExerciseHistory(sessionId?: string) {
   return { deltas, lastTimes };
 }
 
+// One short line however the sets varied — "3 séries de 11 reps à 65 lb",
+// or with ranges when they didn't all match: "4 séries de 6–9 reps à
+// 185 lb", "4 séries de 6–10 reps à 135–185 lb". (Listing every set
+// separately made this line several lines long.)
 export function formatLastTime(lastTime: LastTime): string {
   const { sets, unit } = lastTime;
-  const [first] = sets;
-  const allSame = sets.every(
-    (s) => s.weight === first.weight && s.reps === first.reps,
-  );
+  const range = (values: number[]) => {
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    return min === max ? `${min}` : `${min}–${max}`;
+  };
+  const maxReps = Math.max(...sets.map((s) => s.reps));
 
-  if (allSame) {
-    return i18n.t("session.lastTimeUniform", {
-      count: sets.length,
-      reps: first.reps,
-      weight: first.weight,
-      unit,
-      context: first.reps > 1 ? "plural" : undefined,
-    });
-  }
-
-  return sets
-    .map((s) =>
-      i18n.t("session.lastTimeSet", {
-        weight: s.weight,
-        unit,
-        reps: s.reps,
-        count: s.reps,
-      }),
-    )
-    .join(", ");
+  return i18n.t("session.lastTimeUniform", {
+    count: sets.length,
+    reps: range(sets.map((s) => s.reps)),
+    weight: range(sets.map((s) => s.weight)),
+    unit,
+    context: maxReps > 1 ? "plural" : undefined,
+  });
 }
