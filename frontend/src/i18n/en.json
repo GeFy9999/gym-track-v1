@@ -156,7 +156,7 @@
     "oneRepMaxEmpty": "Enable the trophy on an exercise and log a set to see its estimated 1RM here.",
     "tour": {
       "records": { "title": "Personal records", "desc": "The best weight you've ever lifted for each exercise you track (enable the trophy on an exercise card to add it here)." },
-      "oneRepMax": { "title": "Estimated 1-rep max strength", "desc": "Your estimated 1RM (Epley formula) for each tracked exercise, with its progress over time." },
+      "oneRepMax": { "title": "Estimated 1-rep max strength", "desc": "Your estimated 1RM (Epley formula) for each tracked exercise and how it changed. Tap an exercise to see its full chart." },
       "progression": { "title": "Progression", "desc": "How your body weight has evolved week by week." },
       "volume": { "title": "Volume by muscle group", "desc": "The number of sets done per muscle group, to see where your training volume goes." }
     }
@@ -357,8 +357,6 @@
     "searchExercisePlaceholder": "Search for an exercise...",
     "noExerciseForGroup": "No exercise available for {{group}}",
     "noResults": "No results",
-    "lastTimeSet_one": "{{weight}} {{unit}} × {{reps}} rep",
-    "lastTimeSet_other": "{{weight}} {{unit}} × {{reps}} reps",
     "tour": {
       "back": { "title": "Back", "desc": "Go back to the previous screen." },
       "addExercise": { "title": "Add an exercise", "desc": "Search and add an exercise to your session." },

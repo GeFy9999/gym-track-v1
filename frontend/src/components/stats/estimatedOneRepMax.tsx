@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Trophy } from "lucide-react";
+import { ChevronRight, Trophy } from "lucide-react";
 import { getWeightUnit } from "../../utils/units";
 import { API_URL } from "../../lib/api";
 
@@ -29,6 +30,7 @@ function buildDemoData(translate: (key: string) => string): ExerciseOneRM[] {
 
 export default function EstimatedOneRepMax({ isPro }: { isPro: boolean }) {
   const { t: translate } = useTranslation();
+  const navigate = useNavigate();
   const [data, setData] = useState<ExerciseOneRM[]>([]);
   const [loading, setLoading] = useState(isPro);
 
@@ -95,12 +97,7 @@ export default function EstimatedOneRepMax({ isPro }: { isPro: boolean }) {
     return (
       <div className="grid grid-cols-2 gap-3">
         {withData.map((ex) => (
-          <OneRepMaxCard
-            key={ex.exerciseId}
-            name={ex.name}
-            points={ex.points}
-            showChart={false}
-          />
+          <OneRepMaxCard key={ex.exerciseId} name={ex.name} points={ex.points} />
         ))}
       </div>
     );
@@ -112,8 +109,8 @@ export default function EstimatedOneRepMax({ isPro }: { isPro: boolean }) {
         {[1, 2].map((i) => (
           <div key={i} className="bg-[#ece7dd] rounded-2xl p-4 shadow-sm">
             <div className="h-3 w-20 bg-gray-300/50 rounded mb-2" />
-            <div className="h-5 w-16 bg-gray-300/50 rounded mb-3" />
-            <div className="h-8 bg-gray-300/30 rounded-lg" />
+            <div className="h-5 w-16 bg-gray-300/50 rounded mb-2" />
+            <div className="h-3 w-10 bg-gray-300/30 rounded" />
           </div>
         ))}
       </div>
@@ -134,68 +131,58 @@ export default function EstimatedOneRepMax({ isPro }: { isPro: boolean }) {
   return (
     <div className="grid grid-cols-2 gap-3">
       {withData.map((ex) => (
-        <OneRepMaxCard key={ex.exerciseId} name={ex.name} points={ex.points} />
+        <OneRepMaxCard
+          key={ex.exerciseId}
+          name={ex.name}
+          points={ex.points}
+          // The full 1RM chart lives on the exercise's detail page.
+          onClick={() => navigate(`/exercise/${ex.exerciseId}`)}
+        />
       ))}
     </div>
   );
 }
 
+// Current estimated 1RM and its change. No chart here — the exercise's
+// detail page (where the card leads) has the full, much better one.
 function OneRepMaxCard({
   name,
   points,
-  showChart = true,
+  onClick,
 }: {
   name: string;
   points: ProgressPoint[];
-  showChart?: boolean;
+  onClick?: () => void;
 }) {
   const unit = getWeightUnit();
   const current = points[points.length - 1].oneRepMax;
   const diff = Math.round((current - points[0].oneRepMax) * 10) / 10;
 
-  const w = 100;
-  const h = 32;
-  const values = points.map((p) => p.oneRepMax);
-  const maxVal = Math.max(...values);
-  const minVal = Math.min(...values);
-  const range = maxVal - minVal || 1;
-
-  const getX = (i: number) =>
-    points.length === 1 ? w / 2 : (i / (points.length - 1)) * w;
-  const getY = (v: number) => h - ((v - minVal) / range) * h * 0.8 - h * 0.1;
-
-  const linePath = points
-    .map((p, i) => `${i === 0 ? "M" : "L"} ${getX(i)} ${getY(p.oneRepMax)}`)
-    .join(" ");
-
   return (
-    <div className="bg-[#ece7dd] rounded-2xl p-4 shadow-sm">
-      <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1 truncate">
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={!onClick}
+      className="relative w-full text-left bg-[#ece7dd] rounded-2xl p-4 shadow-sm active:scale-[0.98] transition-transform disabled:active:scale-100"
+    >
+      {onClick && (
+        <ChevronRight size={16} className="absolute top-4 right-3 text-gray-400" />
+      )}
+      <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1 truncate pr-4">
         {name}
       </p>
       <p className="text-lg font-black text-[#c9552c]">
         {Math.round(current)} {unit}
       </p>
       {points.length >= 2 && (
-        <>
-          <p
-            className={`text-[11px] font-semibold mb-1 ${
-              diff > 0 ? "text-[#c9552c]" : "text-gray-400"
-            }`}
-          >
-            {diff > 0 ? "↑" : diff < 0 ? "↓" : "–"} {Math.abs(diff)} {unit}
-          </p>
-          {showChart && (
-            <svg
-              viewBox={`0 0 ${w} ${h}`}
-              className="w-full h-8 mt-1"
-              preserveAspectRatio="none"
-            >
-              <path d={linePath} fill="none" stroke="#c9552c" strokeWidth="2" />
-            </svg>
-          )}
-        </>
+        <p
+          className={`text-[11px] font-semibold ${
+            diff > 0 ? "text-[#c9552c]" : "text-gray-400"
+          }`}
+        >
+          {diff > 0 ? "↑" : diff < 0 ? "↓" : "–"} {Math.abs(diff)} {unit}
+        </p>
       )}
-    </div>
+    </button>
   );
 }

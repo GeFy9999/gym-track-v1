@@ -156,7 +156,7 @@
     "oneRepMaxEmpty": "Active le trophée sur un exercice et enregistre un set pour voir son 1RM estimé ici.",
     "tour": {
       "records": { "title": "Records personnels", "desc": "Le meilleur poids jamais soulevé pour chaque exercice que tu suis (active le trophée sur une carte d'exercice pour l'ajouter ici)." },
-      "oneRepMax": { "title": "Force maximale estimée par 1 répétition", "desc": "Ton 1RM estimé (formule d'Epley) pour chaque exercice suivi, avec sa progression dans le temps." },
+      "oneRepMax": { "title": "Force maximale estimée par 1 répétition", "desc": "Ton 1RM estimé (formule d'Epley) pour chaque exercice suivi et sa progression. Touche un exercice pour voir son graphique complet." },
       "progression": { "title": "Progression", "desc": "L'évolution de ton poids corporel au fil des semaines." },
       "volume": { "title": "Volume par groupe musculaire", "desc": "Le nombre de sets effectués par groupe musculaire, pour voir où va ton volume d'entraînement." }
     }
@@ -357,8 +357,6 @@
     "searchExercisePlaceholder": "Rechercher un exercice...",
     "noExerciseForGroup": "Aucun exercice disponible pour {{group}}",
     "noResults": "Aucun résultat",
-    "lastTimeSet_one": "{{weight}} {{unit}} × {{reps}} rep",
-    "lastTimeSet_other": "{{weight}} {{unit}} × {{reps}} reps",
     "tour": {
       "back": { "title": "Retour", "desc": "Retourne à l'écran précédent." },
       "addExercise": { "title": "Ajouter un exercice", "desc": "Cherche et ajoute un exercice à ta séance." },
