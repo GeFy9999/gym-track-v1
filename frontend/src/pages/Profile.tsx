@@ -47,6 +47,7 @@ export default function ProfilePage() {
     initials,
     loyaltyDiscountCents,
     loyaltyActiveDiscountCents,
+    refreshUntilOnProduct,
     loyaltyPeriodsPaid,
     isPro,
     activeModal,
@@ -324,6 +325,7 @@ export default function ProfilePage() {
               {user?.loyaltyUpgradeProductId && user?.proProductId && (
                 <LoyaltyTierBanner
                   upgradeProductId={user.loyaltyUpgradeProductId}
+                  onActivated={() => refreshUntilOnProduct(user.loyaltyUpgradeProductId)}
                   currentProductId={user.proProductId}
                   newPriceLabel={`${formatAmount(((isYearly ? ANNUAL_PRICE_CENTS : MONTHLY_PRICE_CENTS) - loyaltyDiscountCents) / 100)}$${isYearly ? t("upgrade.perYear") : t("upgrade.perMonth")}`}
                 />

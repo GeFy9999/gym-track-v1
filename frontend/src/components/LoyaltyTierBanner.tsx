@@ -6,6 +6,8 @@ import { PurchaseCancelledError, switchToLoyaltyTier } from "../lib/revenueCat";
 
 type Props = {
   upgradeProductId: string;
+  // Called once Google Play accepted the switch (e.g. to refresh the card).
+  onActivated?: () => void;
   currentProductId: string;
   newPriceLabel: string;
 };
@@ -19,6 +21,7 @@ const REQUESTED_KEY = "loyaltyTierRequested";
 // on its own). Accepting it schedules the switch for the next renewal.
 export default function LoyaltyTierBanner({
   upgradeProductId,
+  onActivated,
   currentProductId,
   newPriceLabel,
 }: Props) {
@@ -44,6 +47,7 @@ export default function LoyaltyTierBanner({
         // Only a convenience — the webhook will catch up either way.
       }
       setDone(true);
+      onActivated?.();
     } catch (err) {
       if (!(err instanceof PurchaseCancelledError)) {
         setError(err instanceof Error ? err.message : t("upgrade.errorGeneric"));
