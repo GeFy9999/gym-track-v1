@@ -13,7 +13,7 @@ import {
 const SECRET = "rc_test_secret";
 // Same shape as the real Play Console products.
 const MONTHLY = "gymstrack_pro_monthly:monthly-autorenew";
-const YEARLY = "gymstrack_pro_yearly:yearly-autorenew";
+const YEARLY = "gymstrack_pro_yearly:gymstrack-pro-yearly";
 
 beforeAll(() => {
   process.env.REVENUECAT_WEBHOOK_SECRET = SECRET;
@@ -143,6 +143,8 @@ describe("Google Play loyalty tiers", () => {
 
   it("builds tier ids only for '<subscription>:<basePlan>' product ids", () => {
     expect(googlePlayTierProductId("pro_monthly:monthly-autorenew", 1)).toBe("pro_monthly:monthly-l1");
+    expect(googlePlayTierProductId("pro_yearly:gymstrack-pro-yearly", 2)).toBe("pro_yearly:yearly-l2");
+    expect(googlePlayTierProductId("pro_yearly:yearly-l1", 3)).toBe("pro_yearly:yearly-l3");
     expect(googlePlayTierProductId("pro_monthly:monthly-l2", 5)).toBe("pro_monthly:monthly-l5");
     expect(googlePlayTierProductId("pro_monthly:monthly-l2", 0)).toBeNull();
     expect(googlePlayTierProductId("legacy_monthly", 3)).toBeNull();
