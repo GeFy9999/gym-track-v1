@@ -153,7 +153,7 @@ export function buildReminderEmail(user: ReminderUser, kind: ReminderKind): Remi
 }
 
 let resend: Resend | null = null;
-async function sendWithResend(email: ReminderEmail) {
+export async function sendWithResend(email: ReminderEmail) {
   resend ??= new Resend(process.env.RESEND_API_KEY);
   await resend.emails.send({
     // Same authenticated domain as every other GymsTrack email (DKIM via
