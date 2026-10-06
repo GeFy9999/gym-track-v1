@@ -152,10 +152,12 @@ export async function purchasePlan(
 
 // Google Play can't lower one subscriber's renewal price, so the loyalty
 // discount is delivered as cheaper "tier" base plans (see the backend's
-// utils/loyalty.ts). This moves the subscriber to the tier they've earned as
-// a DEFERRED change: nothing is charged now, and the new, lower price
-// applies from their next renewal. Google Play shows its own confirmation
-// sheet, which the user has to accept.
+// utils/loyalty.ts). This moves the subscriber to the tier they've earned
+// with WITHOUT_PRORATION: the switch happens now, nothing is charged now,
+// and the new, lower price is charged from their next renewal date. (Google
+// Play rejects DEFERRED for a change between base plans of the same
+// subscription: "Requested replacement mode is not supported".) Google Play
+// shows its own confirmation sheet, which the user has to accept.
 export async function switchToLoyaltyTier(
   newProductId: string,
   oldProductId: string,
@@ -177,7 +179,7 @@ export async function switchToLoyaltyTier(
       product,
       storeProductChangeInfo: {
         oldProductIdentifier: googlePlaySubscriptionId(oldProductId),
-        replacementMode: STORE_REPLACEMENT_MODE.DEFERRED,
+        replacementMode: STORE_REPLACEMENT_MODE.WITHOUT_PRORATION,
       },
     });
     return customerInfo;
