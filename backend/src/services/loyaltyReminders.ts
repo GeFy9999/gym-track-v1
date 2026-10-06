@@ -1,3 +1,4 @@
+import { createHmac, timingSafeEqual } from "crypto";
 import { Resend } from "resend";
 import { prisma } from "../prisma.js";
 import {
@@ -24,7 +25,30 @@ export type ReminderEmail = {
   to: string;
   subject: string;
   html: string;
+  // Plain-text twin of the HTML: HTML-only mail is a classic spam signal.
+  text: string;
+  headers: Record<string, string>;
 };
+
+// One-click unsubscribe (RFC 8058) — Gmail and Yahoo expect it from senders,
+// and an easy way out keeps people from hitting "report spam" instead. The
+// link is signed so it can't be forged to unsubscribe someone else.
+export function unsubscribeToken(userId: string): string {
+  return createHmac("sha256", process.env.JWT_SECRET ?? "")
+    .update(`loyalty-reminders:${userId}`)
+    .digest("hex");
+}
+
+export function isValidUnsubscribeToken(userId: string, token: string): boolean {
+  const expected = Buffer.from(unsubscribeToken(userId));
+  const given = Buffer.from(token);
+  return expected.length === given.length && timingSafeEqual(expected, given);
+}
+
+function unsubscribeUrl(userId: string): string {
+  const base = process.env.BACKEND_URL ?? "https://api.gymstrack.com";
+  return `${base}/api/email/unsubscribe/loyalty?uid=${encodeURIComponent(userId)}&token=${unsubscribeToken(userId)}`;
+}
 
 const CONTENT = {
   fr: {
@@ -41,7 +65,8 @@ const CONTENT = {
         `Ton abonnement se renouvelle dans 2 jours. Active ta réduction maintenant pour payer <strong>${price}</strong> à ce renouvellement.`,
     },
     how: "Ouvre l'app GymsTrack → <strong>Profil</strong> → <strong>Activer ma réduction</strong>.",
-    footer: "Tu reçois ce message parce que tu as un abonnement GymsTrack Pro.",
+    footer: "Tu reçois ce message parce que tu as un abonnement GymsTrack Pro avec une réduction de fidélité à activer.",
+    unsubscribe: "Ne plus recevoir ces rappels",
     perMonth: "/mois",
     perYear: "/an",
   },
@@ -59,13 +84,15 @@ const CONTENT = {
         `Your subscription renews in 2 days. Activate your discount now to pay <strong>${price}</strong> at that renewal.`,
     },
     how: "Open the GymsTrack app → <strong>Profile</strong> → <strong>Activate my discount</strong>.",
-    footer: "You're receiving this because you have a GymsTrack Pro subscription.",
+    footer: "You're receiving this because you have a GymsTrack Pro subscription with a loyalty discount to activate.",
+    unsubscribe: "Stop these reminders",
     perMonth: "/month",
     perYear: "/year",
   },
 };
 
 type ReminderUser = {
+  id: string;
   email: string;
   language: string;
   proInterval: string | null;
@@ -85,22 +112,56 @@ export function buildReminderEmail(user: ReminderUser, kind: ReminderKind): Remi
   }).format(priceCents / 100);
   const price = `${amount}$${interval === "year" ? c.perYear : c.perMonth}`;
 
+  const unsubscribe = unsubscribeUrl(user.id);
+  const stripTags = (html: string) => html.replace(/<[^>]+>/g, "");
+
   return {
     to: user.email,
     subject: c[kind].subject,
-    html: `
-      <h2 style="color:#23784d;">${c[kind].heading}</h2>
-      <p>${c[kind].body(price)}</p>
-      <p>${c.how}</p>
-      <p style="color:#888;margin-top:16px;">${c.footer}</p>
-    `,
+    html: `<!doctype html>
+<html lang="${lang}">
+  <body style="margin:0;padding:24px;background:#faf6f1;font-family:Arial,Helvetica,sans-serif;color:#191714;">
+    <div style="max-width:520px;margin:0 auto;background:#ffffff;border-radius:16px;padding:28px;">
+      <p style="margin:0 0 4px;font-size:13px;font-weight:bold;color:#c9552c;letter-spacing:1px;">GYMSTRACK</p>
+      <h2 style="margin:0 0 16px;color:#23784d;">${c[kind].heading}</h2>
+      <p style="margin:0 0 12px;font-size:15px;line-height:1.5;">${c[kind].body(price)}</p>
+      <p style="margin:0;font-size:15px;line-height:1.5;">${c.how}</p>
+    </div>
+    <p style="max-width:520px;margin:16px auto 0;font-size:12px;line-height:1.5;color:#888;">
+      ${c.footer}<br />
+      <a href="${unsubscribe}" style="color:#888;">${c.unsubscribe}</a>
+    </p>
+  </body>
+</html>`,
+    text: [
+      "GymsTrack",
+      "",
+      stripTags(c[kind].heading),
+      "",
+      stripTags(c[kind].body(price)),
+      stripTags(c.how),
+      "",
+      "--",
+      c.footer,
+      `${c.unsubscribe} : ${unsubscribe}`,
+    ].join("\n"),
+    headers: {
+      "List-Unsubscribe": `<${unsubscribe}>`,
+      "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+    },
   };
 }
 
 let resend: Resend | null = null;
 async function sendWithResend(email: ReminderEmail) {
   resend ??= new Resend(process.env.RESEND_API_KEY);
-  await resend.emails.send({ from: "GymsTrack <noreply@gymstrack.com>", ...email });
+  await resend.emails.send({
+    // Same authenticated domain as every other GymsTrack email (DKIM via
+    // Resend), with a real address people can reply to.
+    from: "GymsTrack <noreply@gymstrack.com>",
+    replyTo: "support@gymstrack.com",
+    ...email,
+  });
 }
 
 // Sends every reminder that is due right now. Safe to run as often as
@@ -115,6 +176,7 @@ export async function sendDueLoyaltyReminders(
     where: {
       isPro: true,
       billingProvider: "google_play",
+      loyaltyEmailsOptOut: false,
       loyaltyLastRenewalAt: { not: null },
       proCurrentPeriodEnd: { not: null },
     },

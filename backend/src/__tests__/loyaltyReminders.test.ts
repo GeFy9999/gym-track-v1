@@ -1,8 +1,11 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { randomUUID } from "crypto";
 import { prisma } from "../prisma.js";
+import request from "supertest";
+import { app } from "../app.js";
 import {
   sendDueLoyaltyReminders,
+  unsubscribeToken,
   type ReminderEmail,
 } from "../services/loyaltyReminders.js";
 
@@ -146,5 +149,39 @@ describe("loyalty reminders", () => {
     };
     expect(await sendDueLoyaltyReminders(now, failing)).toEqual({ first: 0, final: 0 });
     expect(await sendDueLoyaltyReminders(now, send)).toEqual({ first: 1, final: 0 });
+  });
+
+  it("carries a plain-text version, a reply-to-able sender and one-click unsubscribe", async () => {
+    const now = new Date();
+    const user = await subscriber({ renewedAt: new Date(now.getTime() - 26 * 3600_000), renewsAt: new Date(now.getTime() + 28 * DAY) });
+    await sendDueLoyaltyReminders(now, send);
+    const email = outbox[0]!;
+    expect(email.text).toContain("4,69$/mois");
+    expect(email.text).not.toContain("<");
+    expect(email.headers["List-Unsubscribe-Post"]).toBe("List-Unsubscribe=One-Click");
+    expect(email.headers["List-Unsubscribe"]).toContain(`uid=${user.id}`);
+    expect(email.html).toContain("Ne plus recevoir ces rappels");
+  });
+
+  it("unsubscribing (link or one-click) stops the reminders; forged links are refused", async () => {
+    const now = new Date();
+    const user = await subscriber({ renewedAt: new Date(now.getTime() - 26 * 3600_000), renewsAt: new Date(now.getTime() + 28 * DAY) });
+
+    const forged = await request(app).get(`/api/email/unsubscribe/loyalty?uid=${user.id}&token=${"0".repeat(64)}`);
+    expect(forged.status).toBe(400);
+
+    const page = await request(app).get(
+      `/api/email/unsubscribe/loyalty?uid=${user.id}&token=${unsubscribeToken(user.id)}`,
+    );
+    expect(page.status).toBe(200);
+    expect(page.text).toContain("tu ne recevras plus");
+    expect(await sendDueLoyaltyReminders(now, send)).toEqual({ first: 0, final: 0 });
+
+    const other = await subscriber({ renewedAt: new Date(now.getTime() - 26 * 3600_000), renewsAt: new Date(now.getTime() + 28 * DAY) });
+    const oneClick = await request(app).post(
+      `/api/email/unsubscribe/loyalty?uid=${other.id}&token=${unsubscribeToken(other.id)}`,
+    );
+    expect(oneClick.status).toBe(200);
+    expect(await sendDueLoyaltyReminders(now, send)).toEqual({ first: 0, final: 0 });
   });
 });
