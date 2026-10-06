@@ -11,8 +11,9 @@ import {
 // loyalty price tiers without waiting for real renewals.
 
 const SECRET = "rc_test_secret";
-const MONTHLY = "gymstrack_pro:monthly";
-const YEARLY = "gymstrack_pro_yearly:yearly";
+// Same shape as the real Play Console products.
+const MONTHLY = "gymstrack_pro_monthly:monthly-autorenew";
+const YEARLY = "gymstrack_pro_yearly:gymstrack-pro-yearly";
 
 beforeAll(() => {
   process.env.REVENUECAT_WEBHOOK_SECRET = SECRET;
@@ -59,10 +60,10 @@ describe("Google Play loyalty tiers", () => {
 
     for (let i = 0; i < 3; i++) await send(u.id, "RENEWAL", MONTHLY);
     expect((await load(u.id)).loyaltyPeriodsPaid).toBe(3);
-    expect(await upgradeFor(u.id)).toBe("gymstrack_pro:monthly-l3");
+    expect(await upgradeFor(u.id)).toBe("gymstrack_pro_monthly:monthly-l3");
 
     for (let i = 0; i < 9; i++) await send(u.id, "RENEWAL", MONTHLY);
-    expect(await upgradeFor(u.id)).toBe("gymstrack_pro:monthly-l10");
+    expect(await upgradeFor(u.id)).toBe("gymstrack_pro_monthly:monthly-l10");
   });
 
   it("moving to the earned tier keeps the streak and stops offering it", async () => {
@@ -71,16 +72,16 @@ describe("Google Play loyalty tiers", () => {
     for (let i = 0; i < 3; i++) await send(u.id, "RENEWAL", MONTHLY);
 
     await send(u.id, "PRODUCT_CHANGE", MONTHLY, {
-      new_product_id: "gymstrack_pro:monthly-l3",
+      new_product_id: "gymstrack_pro_monthly:monthly-l3",
     });
     const after = await load(u.id);
     expect(after.loyaltyPeriodsPaid).toBe(3);
-    expect(after.proProductId).toBe("gymstrack_pro:monthly-l3");
+    expect(after.proProductId).toBe("gymstrack_pro_monthly:monthly-l3");
     expect(await upgradeFor(u.id)).toBeNull();
 
     // Renewing on the tier keeps counting and offers the next one.
-    await send(u.id, "RENEWAL", "gymstrack_pro:monthly-l3");
-    expect(await upgradeFor(u.id)).toBe("gymstrack_pro:monthly-l4");
+    await send(u.id, "RENEWAL", "gymstrack_pro_monthly:monthly-l3");
+    expect(await upgradeFor(u.id)).toBe("gymstrack_pro_monthly:monthly-l4");
   });
 
   it("yearly: up to -l3", async () => {
@@ -141,8 +142,11 @@ describe("Google Play loyalty tiers", () => {
   });
 
   it("builds tier ids only for '<subscription>:<basePlan>' product ids", () => {
-    expect(googlePlayTierProductId("pro:monthly-l2", 5)).toBe("pro:monthly-l5");
-    expect(googlePlayTierProductId("pro:monthly-l2", 0)).toBe("pro:monthly");
+    expect(googlePlayTierProductId("pro_monthly:monthly-autorenew", 1)).toBe("pro_monthly:monthly-l1");
+    expect(googlePlayTierProductId("pro_yearly:gymstrack-pro-yearly", 2)).toBe("pro_yearly:yearly-l2");
+    expect(googlePlayTierProductId("pro_yearly:yearly-l1", 3)).toBe("pro_yearly:yearly-l3");
+    expect(googlePlayTierProductId("pro_monthly:monthly-l2", 5)).toBe("pro_monthly:monthly-l5");
+    expect(googlePlayTierProductId("pro_monthly:monthly-l2", 0)).toBeNull();
     expect(googlePlayTierProductId("legacy_monthly", 3)).toBeNull();
   });
 });

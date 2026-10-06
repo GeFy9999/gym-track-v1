@@ -45,6 +45,7 @@ export default function ProfilePage() {
     user,
     initials,
     loyaltyDiscountCents,
+    loyaltyActiveDiscountCents,
     loyaltyPeriodsPaid,
     isPro,
     activeModal,
@@ -276,7 +277,7 @@ export default function ProfilePage() {
                   </p>
                   <p className="flex items-baseline gap-1.5 mt-0.5">
                     <span className="text-2xl font-black text-gray-900 whitespace-nowrap">
-                      -{(loyaltyDiscountCents / 100).toFixed(2)}$
+                      -{(loyaltyActiveDiscountCents / 100).toFixed(2)}$
                     </span>
                     <span className="text-[10px] font-bold text-gray-400 uppercase">
                       {t("profile.loyaltyActuel")}

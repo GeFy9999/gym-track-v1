@@ -14,6 +14,10 @@ export function useProfileSettings() {
   const stored = localStorage.getItem("user");
   const user = stored ? JSON.parse(stored) : null;
   const loyaltyDiscountCents: number = user?.loyaltyDiscountCents ?? 0;
+  // Actually applied right now: on Google Play only once the earned tier
+  // has been activated (see LoyaltyTierBanner); same as earned on Stripe.
+  const loyaltyActiveDiscountCents: number =
+    user?.loyaltyActiveDiscountCents ?? loyaltyDiscountCents;
   const loyaltyPeriodsPaid: number = Math.min(user?.loyaltyPeriodsPaid ?? 0, 10);
   const initials = user?.name
     ? user.name
@@ -315,6 +319,7 @@ export function useProfileSettings() {
     user,
     initials,
     loyaltyDiscountCents,
+    loyaltyActiveDiscountCents,
     loyaltyPeriodsPaid,
     isPro,
     activeModal,
