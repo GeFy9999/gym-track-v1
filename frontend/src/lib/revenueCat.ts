@@ -142,10 +142,13 @@ export async function switchToLoyaltyTier(
   newProductId: string,
   oldProductId: string,
 ): Promise<CustomerInfo> {
+  // Google Play products are fetched by subscription id; RevenueCat then
+  // returns one product per base plan, identified "<subscription>:<basePlan>".
+  // Ask for both forms and pick the exact tier.
   const { products } = await Purchases.getProducts({
-    productIdentifiers: [newProductId],
+    productIdentifiers: [googlePlaySubscriptionId(newProductId), newProductId],
   });
-  const product = products.find((p) => p.identifier === newProductId) ?? products[0];
+  const product = products.find((p) => p.identifier === newProductId);
   if (!product) {
     throw new Error("Ce palier de réduction n'est pas encore disponible sur Google Play.");
   }
