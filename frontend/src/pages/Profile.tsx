@@ -243,92 +243,110 @@ export default function ProfilePage() {
             loyaltyMaxCents,
           );
 
+          const remainingCount = Math.ceil(
+            (loyaltyMaxCents - loyaltyDiscountCents) / loyaltyCentsPerPeriod,
+          );
+
           return (
-            <div className="bg-[#ece7dd] rounded-2xl mb-6 shadow-sm p-4">
-              <div className="flex items-center gap-4">
-                <div className="relative w-20 h-20 flex-shrink-0">
-                  <svg viewBox="0 0 80 80" className="w-20 h-20 -rotate-90">
-                    <circle cx="40" cy="40" r={ringRadius} fill="none" stroke="#d6d0c1" strokeWidth="8" />
+            <div className="rounded-3xl mb-6 shadow-sm overflow-hidden bg-[#ece7dd]">
+              {/* Top: progress + discount currently applied */}
+              <div className="bg-[#23784d] px-5 py-5 flex items-center gap-4">
+                <div className="relative w-[84px] h-[84px] flex-shrink-0">
+                  <svg viewBox="0 0 80 80" className="w-full h-full -rotate-90">
+                    <circle cx="40" cy="40" r={ringRadius} fill="none" stroke="rgba(255,255,255,0.18)" strokeWidth="7" />
                     <circle
                       cx="40"
                       cy="40"
                       r={ringRadius}
                       fill="none"
-                      stroke="#3a9e6e"
-                      strokeWidth="8"
+                      stroke="#ffffff"
+                      strokeWidth="7"
                       strokeLinecap="round"
                       strokeDasharray={circumference}
                       strokeDashoffset={ringOffset}
                       className="transition-all duration-500"
                     />
                   </svg>
-                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-[#3a9e6e] border-2 border-[#ece7dd]" />
+                  <div className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-white" />
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-base font-black text-gray-900 leading-none">
-                      {shownPeriods}/{loyaltyMaxPeriods}
+                    <span className="leading-none text-white">
+                      <span className="text-xl font-black">{shownPeriods}</span>
+                      <span className="text-xs font-bold text-white/60">/{loyaltyMaxPeriods}</span>
                     </span>
-                    <span className="text-[8px] font-bold text-gray-400 uppercase tracking-widest mt-1">
+                    <span className="text-[8px] font-bold text-white/60 uppercase tracking-widest mt-1">
                       {t("profile.loyaltyRenewalsShort")}
                     </span>
                   </div>
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <p className="text-[10px] font-bold text-[#3a9e6e] uppercase tracking-widest">
+                  <p className="text-[10px] font-bold text-white/80 uppercase tracking-widest">
                     {t("profile.loyaltyTitle")}
                   </p>
-                  <p className="flex items-baseline gap-1.5 mt-0.5">
-                    <span className="text-2xl font-black text-gray-900 whitespace-nowrap">
+                  <p className="flex items-baseline gap-2 mt-0.5">
+                    <span className="text-[34px] leading-tight font-black text-white whitespace-nowrap">
                       -{formatAmount(loyaltyActiveDiscountCents / 100)}$
                     </span>
-                    <span className="text-[10px] font-bold text-gray-400 uppercase">
+                    <span className="text-[10px] font-bold text-white/80 uppercase tracking-wide">
                       {t("profile.loyaltyActuel")}
                     </span>
                   </p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {atMax
-                      ? t("profile.loyaltyMaxed", {
-                          amount: formatAmount(loyaltyMaxCents / 100),
-                        })
-                      : t("profile.loyaltyRemaining", {
-                          count: Math.ceil(
-                            (loyaltyMaxCents - loyaltyDiscountCents) /
-                              loyaltyCentsPerPeriod,
-                          ),
-                          max: formatAmount(loyaltyMaxCents / 100),
-                        })}
+                  <p className="text-xs text-white/85 mt-1">
+                    {atMax ? (
+                      t("profile.loyaltyMaxed", {
+                        amount: formatAmount(loyaltyMaxCents / 100),
+                      })
+                    ) : (
+                      <>
+                        {t("profile.loyaltyRemainingLead", { count: remainingCount })}{" "}
+                        <span className="font-black text-white">
+                          -{formatAmount(loyaltyMaxCents / 100)}$
+                        </span>
+                      </>
+                    )}
                   </p>
                 </div>
               </div>
 
-              {!atMax && (
-                <>
-                  <div className="border-t border-black/10 my-3" />
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 text-xs text-gray-500">
-                      <Calendar size={13} className="flex-shrink-0" />
-                      {t("profile.loyaltyInDays", { count: daysUntilNextDiscount })}
+              {/* Bottom: next step */}
+              {(!atMax || user?.loyaltyUpgradeProductId) && (
+                <div className="px-4 py-4 space-y-4">
+                  {!atMax && (
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-white/70 flex items-center justify-center flex-shrink-0">
+                        <Calendar size={16} className="text-gray-700" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">
+                          {t("profile.loyaltyNextTier")}
+                        </p>
+                        <p className="text-sm font-black text-gray-900">
+                          {daysUntilNextDiscount === 0
+                            ? t("profile.loyaltyToday")
+                            : t("profile.loyaltyInDays", { count: daysUntilNextDiscount })}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <span className="text-xs font-semibold text-gray-400 line-through">
+                          -{formatAmount(loyaltyDiscountCents / 100)}$
+                        </span>
+                        <ArrowRight size={13} className="text-gray-700 flex-shrink-0" />
+                        <span className="text-sm font-black text-white bg-[#23784d] px-3 py-1.5 rounded-full whitespace-nowrap">
+                          -{formatAmount(nextDiscountCents / 100)}$
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-xs text-gray-400 line-through">
-                        -{formatAmount(loyaltyDiscountCents / 100)}$
-                      </span>
-                      <ArrowRight size={12} className="text-gray-400 flex-shrink-0" />
-                      <span className="text-xs font-bold text-white bg-[#3a9e6e] px-2 py-1 rounded-full whitespace-nowrap">
-                        -{formatAmount(nextDiscountCents / 100)}$
-                      </span>
-                    </div>
-                  </div>
-                </>
-              )}
+                  )}
 
-              {user?.loyaltyUpgradeProductId && user?.proProductId && (
-                <LoyaltyTierBanner
-                  upgradeProductId={user.loyaltyUpgradeProductId}
-                  onActivated={() => refreshUntilOnProduct(user.loyaltyUpgradeProductId)}
-                  currentProductId={user.proProductId}
-                  newPriceLabel={`${formatAmount(((isYearly ? ANNUAL_PRICE_CENTS : MONTHLY_PRICE_CENTS) - loyaltyDiscountCents) / 100)}$${isYearly ? t("upgrade.perYear") : t("upgrade.perMonth")}`}
-                />
+                  {user?.loyaltyUpgradeProductId && user?.proProductId && (
+                    <LoyaltyTierBanner
+                      upgradeProductId={user.loyaltyUpgradeProductId}
+                      onActivated={() => refreshUntilOnProduct(user.loyaltyUpgradeProductId)}
+                      currentProductId={user.proProductId}
+                      newPriceLabel={`${formatAmount(((isYearly ? ANNUAL_PRICE_CENTS : MONTHLY_PRICE_CENTS) - loyaltyDiscountCents) / 100)}$${isYearly ? t("upgrade.perYear") : t("upgrade.perMonth")}`}
+                    />
+                  )}
+                </div>
               )}
             </div>
           );
