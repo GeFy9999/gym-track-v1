@@ -30,6 +30,7 @@ import RestTimer from "./components/session/RestTimer";
 import OfflineBanner from "./components/OfflineBanner";
 import { Capacitor } from "@capacitor/core";
 import { App as CapacitorApp } from "@capacitor/app";
+import { syncLoyaltyReminders } from "./lib/loyaltyReminders";
 
 // Must match the longest of the sheet/bar exit animations in index.css
 // (both 0.3s), plus a small buffer so the unmount never cuts it off early.
@@ -91,6 +92,18 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
       .then((res) => {
         if (res.ok) {
           setValid(true);
+          // Fresh user data on every launch — also (re)schedules the
+          // loyalty reminders for people who never open their Profile.
+          fetch(`${API_URL}/auth/me`, {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+            .then((meRes) => (meRes.ok ? meRes.json() : null))
+            .then((data) => {
+              if (!data?.user) return;
+              localStorage.setItem("user", JSON.stringify(data.user));
+              syncLoyaltyReminders(data.user);
+            })
+            .catch(() => {});
           // A stored user predating this check (or one that hasn't verified
           // yet) might not have this flag cached — read it fresh here
           // rather than trusting a possibly-stale localStorage snapshot.
@@ -99,6 +112,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
             setNeedsVerification(true);
           }
         } else {
+          syncLoyaltyReminders(null);
           localStorage.clear();
           stopRestTimer();
         }

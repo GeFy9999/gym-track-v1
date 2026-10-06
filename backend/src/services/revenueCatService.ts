@@ -21,6 +21,7 @@ type RevenueCatEvent = {
   // PRODUCT_CHANGE only: product_id is the OLD product, this the new one.
   new_product_id?: string | null;
   expiration_at_ms?: number | null;
+  event_timestamp_ms?: number;
   // "SANDBOX" for Google Play test purchases (license testers), whose
   // subscriptions renew every few minutes instead of every month/year.
   // Deliberately NOT excluded from the loyalty count below: it lets a
@@ -72,7 +73,11 @@ export async function handleRevenueCatWebhook(
       // tier never resets it: Google Play replaces the purchase for that,
       // which RevenueCat may report as a brand-new purchase (seen on a real
       // device: the streak dropped to 0 right after activating a discount).
-      let loyalty: { loyaltyPeriodsPaid?: number; loyaltyLastInvoiceId?: string } = {};
+      let loyalty: {
+        loyaltyPeriodsPaid?: number;
+        loyaltyLastInvoiceId?: string;
+        loyaltyLastRenewalAt?: Date;
+      } = {};
       if (event.type === "INITIAL_PURCHASE" && interval) {
         loyalty = tier > 0 ? keepStreak : { loyaltyPeriodsPaid: 0 };
       } else if (
@@ -94,6 +99,8 @@ export async function handleRevenueCatWebhook(
         loyalty = {
           loyaltyPeriodsPaid: Math.max(user.loyaltyPeriodsPaid, tier) + 1,
           ...(event.id ? { loyaltyLastInvoiceId: event.id } : {}),
+          // Starts the reminder clock (services/loyaltyReminders.ts).
+          loyaltyLastRenewalAt: new Date(event.event_timestamp_ms ?? Date.now()),
         };
       }
 
