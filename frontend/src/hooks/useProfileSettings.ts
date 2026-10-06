@@ -1,3 +1,5 @@
+import { Capacitor } from "@capacitor/core";
+import { App as CapacitorApp } from "@capacitor/app";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -53,8 +55,33 @@ export function useProfileSettings() {
 
   useEffect(() => {
     refreshProStatus();
+    // Back in the app (after the Google Play sheet, or later): the server
+    // may have learned about a renewal or plan change in the meantime.
+    if (!Capacitor.isNativePlatform()) return;
+    const listener = CapacitorApp.addListener("resume", () => {
+      refreshProStatus();
+    });
+    return () => {
+      listener.then((l) => l.remove());
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // After switching to a loyalty tier, the server only hears about it a few
+  // seconds later (RevenueCat webhook) — poll until the stored user is on
+  // that product, so the card updates without a manual refresh.
+  const refreshUntilOnProduct = async (productId: string) => {
+    for (let attempt = 0; attempt < 15; attempt++) {
+      await refreshProStatus();
+      try {
+        const fresh = JSON.parse(localStorage.getItem("user") ?? "null");
+        if (fresh?.proProductId === productId) return;
+      } catch {
+        // Keep polling.
+      }
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+    }
+  };
 
   const tourRef0 = useRef<HTMLDivElement>(null);
   const tourRef1 = useRef<HTMLDivElement>(null);
@@ -320,6 +347,7 @@ export function useProfileSettings() {
     initials,
     loyaltyDiscountCents,
     loyaltyActiveDiscountCents,
+    refreshUntilOnProduct,
     loyaltyPeriodsPaid,
     isPro,
     activeModal,
