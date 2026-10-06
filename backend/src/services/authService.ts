@@ -8,6 +8,7 @@ import {
 import { prisma } from "../prisma.js";
 import { Resend } from "resend";
 import {
+  activeLoyaltyDiscountCents,
   computeLoyaltyDiscountCents,
   googlePlayLoyaltyUpgradeProductId,
 } from "../utils/loyalty.js";
@@ -56,6 +57,9 @@ const toPublicUser = (user: {
   // Google Play only: the cheaper loyalty tier the subscriber has earned
   // but isn't on yet — the app offers to switch to it (see loyalty.ts).
   loyaltyUpgradeProductId: googlePlayLoyaltyUpgradeProductId(user),
+  // What they pay less right now (≠ earned on Google Play until the earned
+  // tier is activated) — the Profile card's "current" amount.
+  loyaltyActiveDiscountCents: activeLoyaltyDiscountCents(user),
   loyaltyDiscountCents: computeLoyaltyDiscountCents(
     user.loyaltyPeriodsPaid,
     user.proInterval,
