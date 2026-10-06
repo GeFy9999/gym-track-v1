@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { formatAmount } from "../utils/units";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Capacitor } from "@capacitor/core";
@@ -500,7 +501,7 @@ export default function UpgradePage() {
                 {t("profile.upTo")}
               </span>
               <span className="text-lg font-black text-[#3a9e6e] leading-none whitespace-nowrap">
-                -{(plan === "annual" ? 3 : 1).toFixed(2)}$
+                -{formatAmount(plan === "annual" ? 3 : 1)}$
               </span>
             </div>
           </div>
@@ -529,7 +530,7 @@ export default function UpgradePage() {
             <TrendingDown size={16} className="text-[#c9552c] flex-shrink-0 mt-0.5" />
             <p className="text-xs font-semibold text-[#c9552c]">
               {t("upgrade.switchLoyaltyReminder", {
-                amount: (loyaltyDiscountCents / 100).toFixed(2),
+                amount: formatAmount(loyaltyDiscountCents / 100),
               })}
             </p>
           </div>
@@ -594,7 +595,7 @@ export default function UpgradePage() {
             </p>
             <p className="text-sm text-gray-500 text-center mb-6">
               {t("upgrade.switchWarning.desc", {
-                amount: (loyaltyDiscountCents / 100).toFixed(2),
+                amount: formatAmount(loyaltyDiscountCents / 100),
               })}
             </p>
             <div className="flex flex-col gap-2">
@@ -630,7 +631,7 @@ export default function UpgradePage() {
             <p className="text-sm text-gray-500 text-center mb-6">
               {loyaltyDiscountCents > 0
                 ? t("profile.cancelWarning.descWithDiscount", {
-                    amount: (loyaltyDiscountCents / 100).toFixed(2),
+                    amount: formatAmount(loyaltyDiscountCents / 100),
                   })
                 : t("profile.cancelWarning.desc")}
             </p>
