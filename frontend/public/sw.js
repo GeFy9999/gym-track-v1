@@ -1,7 +1,8 @@
 // Service worker: notifications (unchanged) + opportunistic offline caching
 // of the app shell and exercise images, so the app still opens — and shows
 // exercises already seen before — with no connection at all.
-const STATIC_CACHE = "gymstrack-static-v1";
+// Bumped whenever the caching strategy changes, so old entries get purged.
+const STATIC_CACHE = "gymstrack-static-v2";
 const IMAGE_CACHE = "gymstrack-images-v1";
 
 self.addEventListener("install", () => {
@@ -9,7 +10,18 @@ self.addEventListener("install", () => {
 });
 
 self.addEventListener("activate", (event) => {
-  event.waitUntil(self.clients.claim());
+  event.waitUntil(
+    caches
+      .keys()
+      .then((keys) =>
+        Promise.all(
+          keys
+            .filter((key) => key.startsWith("gymstrack-static-") && key !== STATIC_CACHE)
+            .map((key) => caches.delete(key)),
+        ),
+      )
+      .then(() => self.clients.claim()),
+  );
 });
 
 self.addEventListener("notificationclick", (event) => {
@@ -57,24 +69,48 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // App shell (HTML/JS/CSS/fonts): stale-while-revalidate — serve the
-  // cached copy instantly if there is one, refresh it in the background,
-  // and fall back to the cache entirely when there's no network at all.
-  if (url.origin === self.location.origin) {
+  if (url.origin !== self.location.origin) return;
+
+  // Pages (index.html): network first, so a new deploy shows up on the very
+  // next load — serving the cached shell first meant every deploy only
+  // appeared one reload late. The cached copy is only the offline fallback.
+  if (request.mode === "navigate") {
     event.respondWith(
       caches.open(STATIC_CACHE).then(async (cache) => {
-        const cached = await cache.match(request);
-        const networkFetch = fetch(request)
-          .then((response) => {
-            if (response.ok) cache.put(request, response.clone());
-            return response;
-          })
-          // Never resolve to undefined here — respondWith() requires an
-          // actual Response, or the browser throws "Failed to convert
-          // value to 'Response'" and the request just dies.
-          .catch(() => cached || Response.error());
-        return cached || networkFetch;
+        try {
+          const response = await fetch(request);
+          if (response.ok) cache.put(request, response.clone());
+          return response;
+        } catch {
+          // Offline: any cached page works — it's the same SPA shell.
+          return (
+            (await cache.match(request)) ||
+            (await cache.match("/")) ||
+            (await cache.match("/index.html")) ||
+            Response.error()
+          );
+        }
       }),
     );
+    return;
   }
+
+  // Everything else from our origin (hashed JS/CSS in /assets/, fonts,
+  // icons, manifest): stale-while-revalidate — /assets/ files get a new
+  // name on every build, so a cached one is never stale.
+  event.respondWith(
+    caches.open(STATIC_CACHE).then(async (cache) => {
+      const cached = await cache.match(request);
+      const networkFetch = fetch(request)
+        .then((response) => {
+          if (response.ok) cache.put(request, response.clone());
+          return response;
+        })
+        // Never resolve to undefined here — respondWith() requires an
+        // actual Response, or the browser throws "Failed to convert value
+        // to 'Response'" and the request just dies.
+        .catch(() => cached || Response.error());
+      return cached || networkFetch;
+    }),
+  );
 });
