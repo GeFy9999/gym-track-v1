@@ -113,6 +113,9 @@ export function buildReminderEmail(user: ReminderUser, kind: ReminderKind): Remi
   const price = `${amount}$${interval === "year" ? c.perYear : c.perMonth}`;
 
   const unsubscribe = unsubscribeUrl(user.id);
+  // PNG (not the site's WebP, which Outlook and some others won't show),
+  // served by the web app from frontend/public.
+  const logoUrl = `${process.env.FRONTEND_URL ?? "https://gymstrack.com"}/email-logo.png`;
   const stripTags = (html: string) => html.replace(/<[^>]+>/g, "");
 
   return {
@@ -122,7 +125,7 @@ export function buildReminderEmail(user: ReminderUser, kind: ReminderKind): Remi
 <html lang="${lang}">
   <body style="margin:0;padding:24px;background:#faf6f1;font-family:Arial,Helvetica,sans-serif;color:#191714;">
     <div style="max-width:520px;margin:0 auto;background:#ffffff;border-radius:16px;padding:28px;">
-      <p style="margin:0 0 4px;font-size:13px;font-weight:bold;color:#c9552c;letter-spacing:1px;">GYMSTRACK</p>
+      <img src="${logoUrl}" width="160" height="48" alt="GymsTrack" style="display:block;border:0;margin:0 0 16px;" />
       <h2 style="margin:0 0 16px;color:#23784d;">${c[kind].heading}</h2>
       <p style="margin:0 0 12px;font-size:15px;line-height:1.5;">${c[kind].body(price)}</p>
       <p style="margin:0;font-size:15px;line-height:1.5;">${c.how}</p>
