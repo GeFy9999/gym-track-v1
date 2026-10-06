@@ -94,6 +94,24 @@ export function googlePlayTierProductId(
   return prefix ? `${parts.subscriptionId}:${prefix}-l${tier}` : null;
 }
 
+// The discount the subscriber actually pays less right now. Stripe applies
+// the earned discount by itself (coupon), so it's the earned one; a Google
+// Play subscriber only pays less once on a tier — the one they're on.
+export function activeLoyaltyDiscountCents(user: {
+  billingProvider: string;
+  proProductId: string | null;
+  proInterval: string | null;
+  loyaltyPeriodsPaid: number;
+}): number {
+  const earned = computeLoyaltyDiscountCents(user.loyaltyPeriodsPaid, user.proInterval);
+  if (user.billingProvider !== "google_play") return earned;
+  if (!user.proProductId) return 0;
+  return Math.min(
+    googlePlayTierOf(user.proProductId) * loyaltyCentsPerPeriod(user.proInterval),
+    loyaltyMaxCents(user.proInterval),
+  );
+}
+
 // The tier product a Google Play subscriber should move to, if they've
 // earned a lower price than the one they're on; otherwise null.
 export function googlePlayLoyaltyUpgradeProductId(user: {
