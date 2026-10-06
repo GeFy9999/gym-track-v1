@@ -40,6 +40,22 @@ export async function ensureRevenueCatConfigured(userId: string) {
   configuredUserId = userId;
 }
 
+// Every purchase call makes sure the SDK is configured for the signed-in
+// user first — the Upgrade page configures it on mount, but purchases also
+// start from elsewhere (the Profile's "Activer ma réduction"), possibly
+// before that page was ever opened ("Purchases must be configured before
+// calling this function").
+async function ensureConfiguredForStoredUser() {
+  let userId: string | undefined;
+  try {
+    userId = JSON.parse(localStorage.getItem("user") ?? "null")?.id;
+  } catch {
+    userId = undefined;
+  }
+  if (!userId) throw new Error("Connecte-toi pour gérer ton abonnement.");
+  await ensureRevenueCatConfigured(userId);
+}
+
 function packageTypeForPlan(
   plan: "monthly" | "annual" | "lifetime",
 ): PACKAGE_TYPE {
@@ -53,6 +69,7 @@ export function isEntitledToPro(customerInfo: CustomerInfo): boolean {
 }
 
 export async function getCustomerInfo(): Promise<CustomerInfo> {
+  await ensureConfiguredForStoredUser();
   const { customerInfo } = await Purchases.getCustomerInfo();
   return customerInfo;
 }
@@ -86,6 +103,7 @@ export async function purchasePlan(
     replacingProductId?: string | null;
   } = {},
 ): Promise<CustomerInfo> {
+  await ensureConfiguredForStoredUser();
   const offerings = await Purchases.getOfferings();
   const current = offerings.current;
   if (!current) {
@@ -142,6 +160,7 @@ export async function switchToLoyaltyTier(
   newProductId: string,
   oldProductId: string,
 ): Promise<CustomerInfo> {
+  await ensureConfiguredForStoredUser();
   // Google Play products are fetched by subscription id; RevenueCat then
   // returns one product per base plan, identified "<subscription>:<basePlan>".
   // Ask for both forms and pick the exact tier.
@@ -175,6 +194,7 @@ export async function switchToLoyaltyTier(
 // subscription tied to their Google Play account without paying again —
 // required by Play Store review guidelines for restorable purchases.
 export async function restorePurchases(): Promise<CustomerInfo> {
+  await ensureConfiguredForStoredUser();
   const { customerInfo } = await Purchases.restorePurchases();
   return customerInfo;
 }
