@@ -23,6 +23,9 @@ export default function Footer({ dict, locale }: Props) {
           <Link href={`/${locale}/legal`} className="hover:text-[#191714] transition-colors">
             {dict.legal}
           </Link>
+          <Link href={`/${locale}/contact`} className="hover:text-[#191714] transition-colors">
+            {dict.contact}
+          </Link>
         </div>
 
         <p className="text-xs text-[#191714]/40">
