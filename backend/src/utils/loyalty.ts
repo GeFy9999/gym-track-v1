@@ -49,6 +49,13 @@ export function loyaltyCouponId(cents: number, interval: string | null): string 
 // the subscriber to the tier they've earned: the plan switches right away
 // and the lower price is charged from their next renewal (nothing now).
 
+// Regular Google Play prices (CAD cents) — the tiers are these minus the
+// discount. Kept in sync with Play Console and the app's pages.
+export const GOOGLE_PLAY_BASE_PRICE_CENTS: Record<string, number> = {
+  month: 499,
+  year: 2999,
+};
+
 // How many discount steps the subscriber has earned (0 = full price).
 export function loyaltyTier(periodsPaid: number, interval: string | null): number {
   return (

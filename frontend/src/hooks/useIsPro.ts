@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { API_URL } from "../lib/api";
+import { syncLoyaltyReminders } from "../lib/loyaltyReminders";
 
 function readIsPro(): boolean {
   const stored = localStorage.getItem("user");
@@ -30,6 +31,7 @@ export function useIsPro() {
       localStorage.setItem("user", JSON.stringify(user));
       setIsPro(Boolean(user.isPro));
       setUserVersion((v) => v + 1);
+      syncLoyaltyReminders(user);
     } catch {
       // Network hiccup — keep whatever Pro status is already cached.
     }

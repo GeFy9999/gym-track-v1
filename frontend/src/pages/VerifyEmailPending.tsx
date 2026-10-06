@@ -5,6 +5,7 @@ import { Mail, LogOut } from "lucide-react";
 import { API_URL } from "../lib/api";
 import { consumePendingPlan } from "../utils/pendingPlan";
 import { useRestTimerContext } from "../contexts/RestTimerContext";
+import { syncLoyaltyReminders } from "../lib/loyaltyReminders";
 
 const COOLDOWN_SECONDS = 300;
 
@@ -90,6 +91,7 @@ export default function VerifyEmailPendingPage() {
 
   const handleLogout = () => {
     stopRestTimer();
+    syncLoyaltyReminders(null);
     localStorage.clear();
     navigate("/login");
   };

@@ -35,6 +35,7 @@ const toPublicUser = (user: {
   emailVerified: boolean;
   hasUsedTrial: boolean;
   proProductId: string | null;
+  loyaltyLastRenewalAt: Date | null;
 }) => ({
   id: user.id,
   email: user.email,
@@ -60,6 +61,9 @@ const toPublicUser = (user: {
   // What they pay less right now (≠ earned on Google Play until the earned
   // tier is activated) — the Profile card's "current" amount.
   loyaltyActiveDiscountCents: activeLoyaltyDiscountCents(user),
+  // When the last paid renewal happened — the app times its "activate your
+  // discount" phone reminders from it.
+  loyaltyLastRenewalAt: user.loyaltyLastRenewalAt,
   loyaltyDiscountCents: computeLoyaltyDiscountCents(
     user.loyaltyPeriodsPaid,
     user.proInterval,

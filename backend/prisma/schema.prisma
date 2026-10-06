@@ -55,6 +55,15 @@ datasource db {
   // ("<subscriptionId>:<basePlanId>") — tells which loyalty price tier
   // they're on. Null for Stripe.
   proProductId         String?
+  // Google Play loyalty reminders (services/loyaltyReminders.ts): when the
+  // last paid renewal happened, and which renewal (loyaltyLastInvoiceId)
+  // each of the two "activate your discount" reminders was already sent
+  // for — each goes out at most once per renewal.
+  loyaltyLastRenewalAt DateTime?
+  loyaltyReminder1For  String?
+  loyaltyReminder2For  String?
+  // Unsubscribed from the reminder emails (one-click link in each email).
+  loyaltyEmailsOptOut  Boolean   @default(false)
   // The 7-day free trial is offered once per account, across both monthly
   // and annual plans and both billing providers. Set as soon as any
   // recurring subscription is created.
