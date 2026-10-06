@@ -1,5 +1,6 @@
 import { prisma } from "../prisma.js";
 import { getUserById } from "../repositories/databaseRepository.js";
+import { googlePlayTierOf } from "../utils/loyalty.js";
 
 // Product IDs are ones we chose ourselves when creating the subscriptions in
 // Google Play Console — kept predictable so we can derive the billing
@@ -58,15 +59,22 @@ export async function handleRevenueCatWebhook(
         (event.type === "PRODUCT_CHANGE" && event.new_product_id) ||
         event.product_id;
       const interval = intervalFromProductId(productId);
+      // Loyalty price tier of the product (0 = regular price).
+      const tier = productId ? googlePlayTierOf(productId) : 0;
+      // On a tier the streak is at least that tier: it was earned to get
+      // there, and must never be lost by the switch itself.
+      const keepStreak = { loyaltyPeriodsPaid: Math.max(user.loyaltyPeriodsPaid, tier) };
 
       // Loyalty streak, mirroring Stripe: a brand-new subscription starts
-      // at 0, switching monthly <-> yearly restarts at 0 (moving to a
-      // loyalty price tier of the same plan does not), and each paid
+      // at 0, switching monthly <-> yearly restarts at 0, and each paid
       // renewal adds one — counted once per event, since RevenueCat
-      // redelivers a webhook it didn't get a 200 for.
-      let loyalty: { loyaltyPeriodsPaid?: number | { increment: number }; loyaltyLastInvoiceId?: string } = {};
+      // redelivers a webhook it didn't get a 200 for. Moving to a loyalty
+      // tier never resets it: Google Play replaces the purchase for that,
+      // which RevenueCat may report as a brand-new purchase (seen on a real
+      // device: the streak dropped to 0 right after activating a discount).
+      let loyalty: { loyaltyPeriodsPaid?: number; loyaltyLastInvoiceId?: string } = {};
       if (event.type === "INITIAL_PURCHASE" && interval) {
-        loyalty = { loyaltyPeriodsPaid: 0 };
+        loyalty = tier > 0 ? keepStreak : { loyaltyPeriodsPaid: 0 };
       } else if (
         event.type === "PRODUCT_CHANGE" &&
         user.proInterval &&
@@ -74,13 +82,17 @@ export async function handleRevenueCatWebhook(
         user.proInterval !== interval
       ) {
         loyalty = { loyaltyPeriodsPaid: 0 };
+      } else if (event.type === "PRODUCT_CHANGE" && tier > 0) {
+        loyalty = keepStreak;
       } else if (
         event.type === "RENEWAL" &&
         interval &&
         (!event.id || event.id !== user.loyaltyLastInvoiceId)
       ) {
+        // From at least the tier they're on, so a streak that was wrongly
+        // reset by an earlier tier switch repairs itself on this renewal.
         loyalty = {
-          loyaltyPeriodsPaid: { increment: 1 },
+          loyaltyPeriodsPaid: Math.max(user.loyaltyPeriodsPaid, tier) + 1,
           ...(event.id ? { loyaltyLastInvoiceId: event.id } : {}),
         };
       }
@@ -112,6 +124,15 @@ export async function handleRevenueCatWebhook(
       // A stale event for a user who has since moved to a different
       // provider (e.g. switched to Stripe) shouldn't clobber that.
       if (user.billingProvider !== "google_play") break;
+      // Nor the end of a purchase that was replaced (moving to a loyalty
+      // tier, or monthly <-> yearly): the user is already on the new one.
+      if (
+        event.product_id &&
+        user.proProductId &&
+        event.product_id !== user.proProductId
+      ) {
+        break;
+      }
 
       await prisma.user.update({
         where: { id: user.id },
