@@ -45,8 +45,8 @@ export function loyaltyCouponId(cents: number, interval: string | null): string 
 // plan is called), each priced one discount step lower:
 //   gymstrack_pro_monthly:monthly-autorenew → monthly-l1 = 4.89$ … monthly-l10 = 3.99$
 //   gymstrack_pro_yearly:gymstrack-pro-yearly → yearly-l1 = 28.99$ … yearly-l3 = 26.99$ The app offers to move
-// the subscriber to the tier they've earned, as a deferred plan change that
-// takes effect at their next renewal.
+// the subscriber to the tier they've earned: the plan switches right away
+// and the lower price is charged from their next renewal (nothing now).
 
 // How many discount steps the subscriber has earned (0 = full price).
 export function loyaltyTier(periodsPaid: number, interval: string | null): number {
