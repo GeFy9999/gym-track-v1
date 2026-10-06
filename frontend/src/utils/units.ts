@@ -1,3 +1,4 @@
+import { getDateLocale } from "../i18n";
 export function getWeightUnit(): string {
   const stored = localStorage.getItem("user");
   if (!stored) return "lb";
@@ -53,4 +54,13 @@ export function convertWeight(value: number, from: string, to: string): number {
 
 export function roundWeight(value: number): number {
   return Math.round(value * 10) / 10;
+}
+
+// A money amount with 2 decimals in the app's language: "1,00" in French,
+// "1.00" in English (the currency sign is added by the caller).
+export function formatAmount(value: number): string {
+  return new Intl.NumberFormat(getDateLocale(), {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
 }

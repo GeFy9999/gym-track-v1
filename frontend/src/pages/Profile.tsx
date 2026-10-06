@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { formatAmount } from "../utils/units";
 import { useTranslation } from "react-i18next";
 import {
   Mail,
@@ -277,7 +278,7 @@ export default function ProfilePage() {
                   </p>
                   <p className="flex items-baseline gap-1.5 mt-0.5">
                     <span className="text-2xl font-black text-gray-900 whitespace-nowrap">
-                      -{(loyaltyActiveDiscountCents / 100).toFixed(2)}$
+                      -{formatAmount(loyaltyActiveDiscountCents / 100)}$
                     </span>
                     <span className="text-[10px] font-bold text-gray-400 uppercase">
                       {t("profile.loyaltyActuel")}
@@ -286,14 +287,14 @@ export default function ProfilePage() {
                   <p className="text-xs text-gray-500 mt-1">
                     {atMax
                       ? t("profile.loyaltyMaxed", {
-                          amount: (loyaltyMaxCents / 100).toFixed(2),
+                          amount: formatAmount(loyaltyMaxCents / 100),
                         })
                       : t("profile.loyaltyRemaining", {
                           count: Math.ceil(
                             (loyaltyMaxCents - loyaltyDiscountCents) /
                               loyaltyCentsPerPeriod,
                           ),
-                          max: (loyaltyMaxCents / 100).toFixed(2),
+                          max: formatAmount(loyaltyMaxCents / 100),
                         })}
                   </p>
                 </div>
@@ -309,11 +310,11 @@ export default function ProfilePage() {
                     </div>
                     <div className="flex items-center gap-1.5">
                       <span className="text-xs text-gray-400 line-through">
-                        -{(loyaltyDiscountCents / 100).toFixed(2)}$
+                        -{formatAmount(loyaltyDiscountCents / 100)}$
                       </span>
                       <ArrowRight size={12} className="text-gray-400 flex-shrink-0" />
                       <span className="text-xs font-bold text-white bg-[#3a9e6e] px-2 py-1 rounded-full whitespace-nowrap">
-                        -{(nextDiscountCents / 100).toFixed(2)}$
+                        -{formatAmount(nextDiscountCents / 100)}$
                       </span>
                     </div>
                   </div>
@@ -324,11 +325,7 @@ export default function ProfilePage() {
                 <LoyaltyTierBanner
                   upgradeProductId={user.loyaltyUpgradeProductId}
                   currentProductId={user.proProductId}
-                  newPriceLabel={`${(
-                    ((isYearly ? ANNUAL_PRICE_CENTS : MONTHLY_PRICE_CENTS) -
-                      loyaltyDiscountCents) /
-                    100
-                  ).toFixed(2)}$${isYearly ? t("upgrade.perYear") : t("upgrade.perMonth")}`}
+                  newPriceLabel={`${formatAmount(((isYearly ? ANNUAL_PRICE_CENTS : MONTHLY_PRICE_CENTS) - loyaltyDiscountCents) / 100)}$${isYearly ? t("upgrade.perYear") : t("upgrade.perMonth")}`}
                 />
               )}
             </div>

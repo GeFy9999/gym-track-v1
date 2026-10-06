@@ -13,6 +13,10 @@ function readIsPro(): boolean {
 
 export function useIsPro() {
   const [isPro, setIsPro] = useState(readIsPro);
+  // Bumped when fresh user data lands, so components that read the stored
+  // user (e.g. the Profile's loyalty card) re-render even when isPro itself
+  // didn't change.
+  const [, setUserVersion] = useState(0);
 
   const refreshProStatus = async () => {
     const token = localStorage.getItem("token");
@@ -25,6 +29,7 @@ export function useIsPro() {
       const { user } = await res.json();
       localStorage.setItem("user", JSON.stringify(user));
       setIsPro(Boolean(user.isPro));
+      setUserVersion((v) => v + 1);
     } catch {
       // Network hiccup — keep whatever Pro status is already cached.
     }
