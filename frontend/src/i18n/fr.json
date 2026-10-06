@@ -357,8 +357,6 @@
     "searchExercisePlaceholder": "Rechercher un exercice...",
     "noExerciseForGroup": "Aucun exercice disponible pour {{group}}",
     "noResults": "Aucun résultat",
-    "lastTimeSet_one": "{{weight}} {{unit}} × {{reps}} rep",
-    "lastTimeSet_other": "{{weight}} {{unit}} × {{reps}} reps",
     "tour": {
       "back": { "title": "Retour", "desc": "Retourne à l'écran précédent." },
       "addExercise": { "title": "Ajouter un exercice", "desc": "Cherche et ajoute un exercice à ta séance." },
