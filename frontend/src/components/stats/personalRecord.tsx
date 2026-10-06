@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ChevronRight } from "lucide-react";
 import { getWeightUnit } from "../../utils/units";
 import { API_URL } from "../../lib/api";
 
@@ -9,6 +11,7 @@ type Record = {
 };
 
 export default function PersonalRecordCards() {
+  const navigate = useNavigate();
   const [records, setRecords] = useState<Record[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -81,15 +84,22 @@ export default function PersonalRecordCards() {
 
   return (
     <div className="grid grid-cols-2 gap-3">
-      {records.map(({ name, weight }) => (
-        <div key={name} className="bg-[#ece7dd] rounded-2xl p-4 shadow-sm">
-          <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">
+      {records.map(({ name, weight, exerciseId }) => (
+        // Opens the exercise's detail page (history, records by reps, charts).
+        <button
+          key={exerciseId}
+          type="button"
+          onClick={() => navigate(`/exercise/${exerciseId}`)}
+          className="relative w-full text-left bg-[#ece7dd] rounded-2xl p-4 shadow-sm active:scale-[0.98] transition-transform"
+        >
+          <ChevronRight size={16} className="absolute top-4 right-3 text-gray-400" />
+          <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1 pr-4">
             {name}
           </p>
           <p className="text-lg font-black text-[#c9552c]">
             {Math.round(weight)} {getWeightUnit()}
           </p>
-        </div>
+        </button>
       ))}
     </div>
   );
