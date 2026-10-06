@@ -30,3 +30,14 @@ export const exerciseMediaLimiter = rateLimit({
   legacyHeaders: false,
   message: { error: "Trop de requêtes, réessaie dans quelques minutes." },
 });
+
+// Public contact form (marketing site): a person rarely writes more than a
+// couple of times an hour; this stops a script from flooding the support
+// inbox through it.
+export const contactLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  limit: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Trop de messages envoyés, réessaie plus tard." },
+});

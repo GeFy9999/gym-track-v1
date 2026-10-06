@@ -75,7 +75,44 @@ export type Dictionary = {
     privacy: string;
     terms: string;
     legal: string;
+    contact: string;
     rights: string;
+  };
+  contact: {
+    title: string;
+    subtitle: string;
+    name: string;
+    namePlaceholder: string;
+    email: string;
+    emailPlaceholder: string;
+    topic: string;
+    topics: {
+      question: string;
+      bug: string;
+      billing: string;
+      account: string;
+      feedback: string;
+      other: string;
+    };
+    message: string;
+    messagePlaceholder: string;
+    submit: string;
+    sending: string;
+    successTitle: string;
+    successText: string;
+    sendAnother: string;
+    errors: {
+      name: string;
+      email: string;
+      message: string;
+      generic: string;
+    };
+    directTitle: string;
+    directText: string;
+    responseTime: string;
+    helpTitle: string;
+    faqLink: string;
+    deleteAccountLink: string;
   };
   meta: {
     title: string;

@@ -17,6 +17,7 @@ import { progressPhotoRouter } from "./controllers/progressPhotoController.js";
 import { exerciseNoteRouter } from "./controllers/exerciseNoteController.js";
 import { exerciseLoadingTypeRouter } from "./controllers/exerciseLoadingTypeController.js";
 import { emailRouter } from "./controllers/emailController.js";
+import { contactRouter } from "./controllers/contactController.js";
 import { importRouter } from "./controllers/importController.js";
 import {
   stripeRouter,
@@ -71,6 +72,7 @@ app.use("/api/progress-photos", progressPhotoRouter);
 app.use("/api/exercise-notes", exerciseNoteRouter);
 app.use("/api/exercise-loading-types", exerciseLoadingTypeRouter);
 app.use("/api/email", emailRouter);
+app.use("/api/contact", contactRouter);
 app.use("/api/import", importRouter);
 app.use("/api/stripe", stripeRouter);
 app.use("/api/revenuecat", revenueCatRouter);
