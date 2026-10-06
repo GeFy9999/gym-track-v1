@@ -150,6 +150,65 @@ describe("Google Play loyalty, end to end (webhook → /auth/me)", () => {
     });
   });
 
+  // What Google Play actually does when the subscriber activates a tier: it
+  // replaces the purchase, which RevenueCat can report as the old product
+  // expiring plus a new purchase, in either order. The streak must survive.
+  it("keeps the streak when activating a tier arrives as expiration + new purchase", async () => {
+    const { token, user } = await registerUser();
+    await webhook(user.id, "INITIAL_PURCHASE", MONTHLY);
+    await renew(user.id, MONTHLY, 4);
+
+    await webhook(user.id, "EXPIRATION", MONTHLY);
+    await webhook(user.id, "INITIAL_PURCHASE", "gymstrack_pro_monthly:monthly-l4");
+    let u = await me(token);
+    expect(u).toMatchObject({
+      isPro: true,
+      proProductId: "gymstrack_pro_monthly:monthly-l4",
+      loyaltyPeriodsPaid: 4,
+      loyaltyActiveDiscountCents: 40,
+      loyaltyUpgradeProductId: null,
+    });
+
+    await renew(user.id, "gymstrack_pro_monthly:monthly-l4", 1);
+    u = await me(token);
+    expect(u.loyaltyPeriodsPaid).toBe(5);
+    expect(u.loyaltyUpgradeProductId).toBe("gymstrack_pro_monthly:monthly-l5");
+  });
+
+  it("keeps the streak when the new purchase arrives before the old one's expiration", async () => {
+    const { token, user } = await registerUser();
+    await webhook(user.id, "INITIAL_PURCHASE", MONTHLY);
+    await renew(user.id, MONTHLY, 4);
+
+    await webhook(user.id, "INITIAL_PURCHASE", "gymstrack_pro_monthly:monthly-l4");
+    await webhook(user.id, "EXPIRATION", MONTHLY); // replaced purchase: ignored
+    expect(await me(token)).toMatchObject({
+      isPro: true,
+      proProductId: "gymstrack_pro_monthly:monthly-l4",
+      loyaltyPeriodsPaid: 4,
+      loyaltyActiveDiscountCents: 40,
+    });
+
+    // Its own expiration still ends Pro and the streak.
+    await webhook(user.id, "EXPIRATION", "gymstrack_pro_monthly:monthly-l4");
+    expect(await me(token)).toMatchObject({ isPro: false, loyaltyPeriodsPaid: 0 });
+  });
+
+  it("repairs a streak that was reset on a tier at the next renewal", async () => {
+    const { token, user } = await registerUser();
+    await webhook(user.id, "INITIAL_PURCHASE", "gymstrack_pro_monthly:monthly-l4");
+    await prisma.user.update({ where: { id: user.id }, data: { loyaltyPeriodsPaid: 0 } });
+    await renew(user.id, "gymstrack_pro_monthly:monthly-l4", 1);
+    expect((await me(token)).loyaltyPeriodsPaid).toBe(5);
+  });
+
+  it("a genuinely new regular subscription still starts from 0", async () => {
+    const { token, user } = await registerUser();
+    await prisma.user.update({ where: { id: user.id }, data: { loyaltyPeriodsPaid: 6 } });
+    await webhook(user.id, "INITIAL_PURCHASE", MONTHLY);
+    expect((await me(token)).loyaltyPeriodsPaid).toBe(0);
+  });
+
   it("rejects webhooks without the RevenueCat secret and changes nothing", async () => {
     const { token, user } = await registerUser();
     const res = await webhook(user.id, "INITIAL_PURCHASE", MONTHLY, {}, "wrong");
