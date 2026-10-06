@@ -40,11 +40,11 @@ export function loyaltyCouponId(cents: number, interval: string | null): string 
 // --- Google Play (RevenueCat) -------------------------------------------
 // Google Play can't lower one subscriber's renewal price, so the loyalty
 // discount is delivered as price tiers: extra base plans created in Play
-// Console in the same subscription, named after the first word of the
-// regular base plan with a "-l<tier>" suffix, each priced one discount step
-// lower. E.g. regular "monthly-autorenew" → tiers monthly-l1 = 4.89$ …
-// monthly-l10 = 3.99$; regular "yearly-autorenew" → yearly-l1 = 28.99$ …
-// yearly-l3 = 26.99$. The app offers to move
+// Console in the same subscription, named "monthly-l<tier>" or
+// "yearly-l<tier>" after the billing period (whatever the regular base
+// plan is called), each priced one discount step lower:
+//   gymstrack_pro_monthly:monthly-autorenew → monthly-l1 = 4.89$ … monthly-l10 = 3.99$
+//   gymstrack_pro_yearly:gymstrack-pro-yearly → yearly-l1 = 28.99$ … yearly-l3 = 26.99$ The app offers to move
 // the subscriber to the tier they've earned, as a deferred plan change that
 // takes effect at their next renewal.
 
@@ -76,16 +76,22 @@ export function googlePlayTierOf(productId: string): number {
 }
 
 // The product id of a given (≥ 1) tier of the same subscription, or null
-// when the id isn't in "<subscriptionId>:<basePlanId>" form. Works from the
-// regular plan ("monthly-autorenew") or from another tier ("monthly-l3").
+// when the id isn't in "<subscriptionId>:<basePlanId>" form or its period
+// can't be told. Works from the regular plan or from another tier.
 export function googlePlayTierProductId(
   productId: string,
   tier: number,
 ): string | null {
   const parts = splitGooglePlayProductId(productId);
   if (!parts || tier < 1) return null;
-  const stem = parts.basePlanId.split("-")[0];
-  return `${parts.subscriptionId}:${stem}-l${tier}`;
+  const lower = productId.toLowerCase();
+  const prefix =
+    lower.includes("year") || lower.includes("annual")
+      ? "yearly"
+      : lower.includes("month")
+        ? "monthly"
+        : null;
+  return prefix ? `${parts.subscriptionId}:${prefix}-l${tier}` : null;
 }
 
 // The tier product a Google Play subscriber should move to, if they've
