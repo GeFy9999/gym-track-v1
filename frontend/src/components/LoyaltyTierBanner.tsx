@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Capacitor } from "@capacitor/core";
-import { Sparkles } from "lucide-react";
+import { Check, Sparkles } from "lucide-react";
 import { PurchaseCancelledError, switchToLoyaltyTier } from "../lib/revenueCat";
 
 type Props = {
@@ -57,24 +57,40 @@ export default function LoyaltyTierBanner({
     }
   };
 
+  // The price is shown in bold inside the sentence: translate with a
+  // marker, then put the bold price where the marker landed.
+  const MARK = "__PRICE__";
+  const bodyKey = done
+    ? "profile.loyaltyTier.doneBody"
+    : Capacitor.isNativePlatform()
+      ? "profile.loyaltyTier.readyBody"
+      : "profile.loyaltyTier.openAppBody";
+  const [before, after] = t(bodyKey, { price: MARK }).split(MARK);
+
   return (
-    <div className="mt-3 bg-[#3a9e6e]/10 rounded-xl p-3">
-      <div className="flex items-start gap-2">
-        <Sparkles size={15} className="text-[#3a9e6e] flex-shrink-0 mt-0.5" />
-        <p className="text-xs font-semibold text-[#2c7a55]">
-          {done
-            ? t("profile.loyaltyTier.done", { price: newPriceLabel })
-            : Capacitor.isNativePlatform()
-              ? t("profile.loyaltyTier.ready", { price: newPriceLabel })
-              : t("profile.loyaltyTier.openApp", { price: newPriceLabel })}
-        </p>
+    <div className="bg-[#f7f4ee] rounded-2xl p-4 shadow-sm">
+      <div className="flex items-start gap-3">
+        <div className="w-10 h-10 rounded-xl bg-[#23784d]/10 flex items-center justify-center flex-shrink-0">
+          <Sparkles size={17} className="text-[#23784d]" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-black text-[#23784d] uppercase tracking-wide">
+            {done ? t("profile.loyaltyTier.doneTitle") : t("profile.loyaltyTier.readyTitle")}
+          </p>
+          <p className="text-xs text-gray-700 mt-1 leading-relaxed">
+            {before}
+            <span className="font-black text-gray-900">{newPriceLabel}</span>
+            {after}
+          </p>
+        </div>
       </div>
       {!done && Capacitor.isNativePlatform() && (
         <button
           onClick={activate}
           disabled={loading}
-          className="mt-2.5 w-full bg-[#3a9e6e] disabled:opacity-60 text-white text-xs font-bold uppercase tracking-wide py-2.5 rounded-full"
+          className="mt-4 w-full flex items-center justify-center gap-2 bg-[#23784d] disabled:opacity-60 text-white text-sm font-black uppercase tracking-widest py-4 rounded-full shadow-sm active:scale-[0.98] transition-transform"
         >
+          <Check size={16} strokeWidth={3} />
           {t("profile.loyaltyTier.activate")}
         </button>
       )}
