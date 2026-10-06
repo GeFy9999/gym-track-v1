@@ -419,7 +419,11 @@
       "openAppBody": "Open the Android app to activate it and pay {{price}} from your next renewal.",
       "doneTitle": "Discount activated!",
       "doneBody": "You'll pay {{price}} from your next renewal.",
-      "activate": "Activate my discount"
+      "activate": "Activate my discount",
+      "notifFirstTitle": "Your discount is ready 🎉",
+      "notifFirstBody": "Activate it in your Profile to pay {{price}} from your next renewal.",
+      "notifFinalTitle": "2 days left for your discount",
+      "notifFinalBody": "Your subscription renews soon: activate your discount to pay {{price}}."
     },
     "loyaltyRemainingLead_one": "{{count}} more renewal to reach",
     "loyaltyRemainingLead_other": "{{count}} more renewals to reach",

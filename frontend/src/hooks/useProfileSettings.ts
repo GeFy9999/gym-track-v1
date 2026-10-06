@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { API_URL } from "../lib/api";
 import { useIsPro } from "./useIsPro";
 import { useRestTimerContext } from "../contexts/RestTimerContext";
+import { syncLoyaltyReminders } from "../lib/loyaltyReminders";
 
 export function useProfileSettings() {
   const navigate = useNavigate();
@@ -133,6 +134,7 @@ export function useProfileSettings() {
 
   const handleLogout = () => {
     stopRestTimer();
+    syncLoyaltyReminders(null); // this phone must not remind a signed-out account
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.removeItem("weightSnooze");
@@ -170,6 +172,7 @@ export function useProfileSettings() {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
+      syncLoyaltyReminders(null);
       localStorage.clear();
       navigate("/login");
     } catch (err) {

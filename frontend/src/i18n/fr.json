@@ -419,7 +419,11 @@
       "openAppBody": "Ouvre l'app Android pour l'activer et payer {{price}} à partir de ton prochain renouvellement.",
       "doneTitle": "Réduction activée !",
       "doneBody": "Tu paieras {{price}} à partir de ton prochain renouvellement.",
-      "activate": "Activer ma réduction"
+      "activate": "Activer ma réduction",
+      "notifFirstTitle": "Ta réduction est prête 🎉",
+      "notifFirstBody": "Active-la dans ton Profil pour payer {{price}} à partir de ton prochain renouvellement.",
+      "notifFinalTitle": "Plus que 2 jours pour ta réduction",
+      "notifFinalBody": "Ton abonnement se renouvelle bientôt : active ta réduction pour payer {{price}}."
     },
     "loyaltyRemainingLead_one": "Encore {{count}} renouvellement pour atteindre",
     "loyaltyRemainingLead_other": "Encore {{count}} renouvellements pour atteindre",
