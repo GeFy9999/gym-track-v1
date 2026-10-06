@@ -125,7 +125,9 @@ export function buildReminderEmail(user: ReminderUser, kind: ReminderKind): Remi
 <html lang="${lang}">
   <body style="margin:0;padding:24px;background:#faf6f1;font-family:Arial,Helvetica,sans-serif;color:#191714;">
     <div style="max-width:520px;margin:0 auto;background:#ffffff;border-radius:16px;padding:28px;">
-      <img src="${logoUrl}" width="160" height="48" alt="GymsTrack" style="display:block;border:0;margin:0 0 16px;" />
+      <div style="text-align:center;margin:0 0 20px;">
+        <img src="${logoUrl}" width="160" height="48" alt="GymsTrack" style="display:inline-block;border:0;margin:0 auto;" />
+      </div>
       <h2 style="margin:0 0 16px;color:#23784d;">${c[kind].heading}</h2>
       <p style="margin:0 0 12px;font-size:15px;line-height:1.5;">${c[kind].body(price)}</p>
       <p style="margin:0;font-size:15px;line-height:1.5;">${c.how}</p>
