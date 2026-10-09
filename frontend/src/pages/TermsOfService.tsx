@@ -106,7 +106,7 @@ function TermsContentFr() {
             support@gymstrack.com
           </a>{" "}
           et nous examinerons ta demande. Les achats effectués via Google
-          Play sont soumis à la politique de remboursement de Google Play.
+          Play sont soumis à la politique de remboursement de Google Play. Si tu résides dans l'Union européenne ou au Royaume-Uni et que tu t'abonnes sur le web, tu peux te rétracter dans les 14 jours suivant le premier paiement et être remboursé en écrivant à support@gymstrack.com. Rien dans ces conditions ne limite les droits que te garantit la loi de ton pays de résidence.
         </p>
       </section>
 
@@ -248,7 +248,7 @@ function TermsContentEn() {
             support@gymstrack.com
           </a>{" "}
           and we'll review your request. Purchases made through Google Play
-          are subject to Google Play's own refund policy.
+          are subject to Google Play's own refund policy. If you live in the European Union or the United Kingdom and subscribe on the web, you may withdraw within 14 days of the first payment and get a refund by emailing support@gymstrack.com. Nothing in these terms limits the rights guaranteed to you by the law of your country of residence.
         </p>
       </section>
 
