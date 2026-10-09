@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ArrowLeft, FileText } from "lucide-react";
 
-const LAST_UPDATED = "2026-09-27";
+const LAST_UPDATED = "2026-10-09";
 
 export default function TermsOfServicePage() {
   const { i18n } = useTranslation();
@@ -116,6 +116,20 @@ function TermsContentFr() {
           Tu acceptes de ne pas utiliser GymsTrack à des fins illégales, de ne
           pas tenter d'accéder aux comptes d'autres utilisateurs, et de ne pas
           perturber le fonctionnement du service.
+        </p>
+      </section>
+
+      <section>
+        <h2 className="font-bold text-gray-900 mb-1">Ton contenu</h2>
+        <p>
+          Les photos de progression, notes et exercices personnalisés que tu
+          ajoutes restent ta propriété et ne sont visibles que par toi. Tu
+          nous accordes seulement le droit de les stocker et de te les
+          afficher pour faire fonctionner le service. Tu confirmes avoir les
+          droits sur ce que tu ajoutes (par exemple, des photos de toi prises
+          par toi ou avec permission) et tu acceptes de ne pas ajouter de
+          contenu illégal ou qui porte atteinte aux droits d'autrui. Nous
+          pouvons retirer un contenu qui enfreint ces conditions.
         </p>
       </section>
 
@@ -244,6 +258,19 @@ function TermsContentEn() {
           You agree not to use GymsTrack for unlawful purposes, not to
           attempt to access other users' accounts, and not to disrupt the
           service.
+        </p>
+      </section>
+
+      <section>
+        <h2 className="font-bold text-gray-900 mb-1">Your content</h2>
+        <p>
+          The progress photos, notes and custom exercises you add remain
+          yours and are visible only to you. You only grant us the right to
+          store them and show them back to you to run the service. You
+          confirm you have the rights to what you add (for example, photos
+          of yourself taken by you or with permission) and agree not to add
+          unlawful content or content that infringes anyone else's rights.
+          We may remove content that breaks these terms.
         </p>
       </section>
 
