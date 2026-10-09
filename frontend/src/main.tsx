@@ -1,6 +1,9 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
+// Self-hosted (bundled) font: no request to Google Fonts, which would send
+// every visitor's IP address to Google.
+import "@fontsource-variable/outfit";
 import "./index.css";
 import i18n from "./i18n";
 import App from "./App.tsx";

@@ -183,6 +183,19 @@ export default function LoginPage() {
         </div>
 
         <GoogleLoginButton />
+        {/* Google sign-in can create an account from here, so the terms
+            have to be shown here too, not only on the register page. */}
+        <p className="text-xs text-gray-400 text-center leading-relaxed mt-3 px-4">
+          {t("common.googleLegalPrefix")}{" "}
+          <Link to="/terms" className="text-[#c9552c] underline">
+            {t("register.termsLink")}
+          </Link>{" "}
+          {t("register.legalAnd")}{" "}
+          <Link to="/privacy" className="text-[#c9552c] underline">
+            {t("register.privacyLink")}
+          </Link>
+          .
+        </p>
 
         <p className="text-center text-sm text-gray-500 mt-8">
           {t("login.noAccount")}{" "}

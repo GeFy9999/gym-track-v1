@@ -7,6 +7,7 @@ import { API_URL } from "../lib/api";
 
 const GOOGLE_CLIENT_ID =
   "535959553524-5nicf9d43pi0ssp9da782qb38em3anhn.apps.googleusercontent.com";
+const GSI_SCRIPT_URL = "https://accounts.google.com/gsi/client";
 
 declare global {
   interface Window {
@@ -117,9 +118,19 @@ export default function GoogleLoginButton() {
   };
 
   // Web: render Google's own Identity Services button once its script has
-  // loaded (it's injected via a <script> tag in index.html).
+  // loaded. The script is only injected here, on the pages that show the
+  // button — not in index.html — so visitors' browsers don't contact Google
+  // on every page (privacy: GDPR, cf. the German Google Fonts rulings).
   useEffect(() => {
     if (isNative) return;
+
+    if (!document.querySelector(`script[src="${GSI_SCRIPT_URL}"]`)) {
+      const script = document.createElement("script");
+      script.src = GSI_SCRIPT_URL;
+      script.async = true;
+      script.defer = true;
+      document.head.appendChild(script);
+    }
 
     let cancelled = false;
 
