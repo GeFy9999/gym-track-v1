@@ -21,3 +21,11 @@
     @com.getcapacitor.PluginMethod public <methods>;
 }
 -keep public class * extends com.getcapacitor.Plugin { *; }
+
+# Capacitor reads plugin annotations at runtime (@CapacitorPlugin's
+# permissions/aliases, callbacks). R8 full mode strips annotation types and
+# their members unless kept, which made LocalNotifications.schedule() hang
+# silently in release (no rest-timer notification).
+-keepattributes RuntimeVisibleAnnotations,RuntimeVisibleParameterAnnotations,AnnotationDefault
+-keep @interface com.getcapacitor.** { *; }
+-keep @interface com.getcapacitor.annotation.** { *; }
