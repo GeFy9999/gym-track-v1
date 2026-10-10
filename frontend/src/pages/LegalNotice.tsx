@@ -64,8 +64,7 @@ function LegalContentFr() {
       <section>
         <h2 className="font-bold text-gray-900 mb-1">Hébergement</h2>
         <p>
-          L'application et le site web GymsTrack sont hébergés sur un serveur
-          dédié privé.
+          L'application et le site web GymsTrack sont hébergés sur un serveur dédié privé exploité par l'éditeur et situé au Québec (Canada).
         </p>
       </section>
 
@@ -78,7 +77,7 @@ function LegalContentFr() {
           visuels, code source) présents sur l'application et le site web
           sont la propriété exclusive de Zachary Belley, sauf mention
           contraire. Toute reproduction ou représentation, totale ou
-          partielle, sans autorisation préalable est interdite.
+          partielle, sans autorisation préalable est interdite. Les illustrations animées des exercices proviennent d'ExerciseDB et sont utilisées sous licence ; elles ne peuvent pas être extraites ni réutilisées.
         </p>
       </section>
 
@@ -89,8 +88,7 @@ function LegalContentFr() {
         <p>
           Les présentes mentions légales sont soumises au droit québécois et
           canadien. En cas de litige, et à défaut d'accord amiable, les
-          tribunaux compétents de la province de Québec seront seuls
-          compétents.
+          tribunaux compétents de la province de Québec seront seuls compétents, sans priver le consommateur de la protection que lui accordent les règles impératives de la loi de son pays de résidence ni de son droit de saisir les tribunaux de ce pays lorsque cette loi le prévoit.
         </p>
       </section>
 
@@ -150,8 +148,7 @@ function LegalContentEn() {
       <section>
         <h2 className="font-bold text-gray-900 mb-1">Hosting</h2>
         <p>
-          The GymsTrack app and website are hosted on a private dedicated
-          server.
+          The GymsTrack app and website are hosted on a private dedicated server operated by the publisher and located in Quebec (Canada).
         </p>
       </section>
 
@@ -161,8 +158,7 @@ function LegalContentEn() {
           The GymsTrack name, logo, and all content (text, visuals, source
           code) found on the app and website are the exclusive property of
           Zachary Belley, unless stated otherwise. Any reproduction or
-          representation, in whole or in part, without prior authorization is
-          prohibited.
+          representation, in whole or in part, without prior authorization is prohibited. The animated exercise illustrations come from ExerciseDB and are used under license; they may not be extracted or reused.
         </p>
       </section>
 
@@ -173,7 +169,7 @@ function LegalContentEn() {
         <p>
           This legal notice is governed by Quebec and Canadian law. In the
           event of a dispute, and absent an amicable resolution, the courts
-          of the province of Quebec shall have exclusive jurisdiction.
+          of the province of Quebec shall have exclusive jurisdiction, without depriving consumers of the protection afforded by the mandatory rules of the law of their country of residence, or of their right to bring proceedings in its courts where that law allows it.
         </p>
       </section>
 

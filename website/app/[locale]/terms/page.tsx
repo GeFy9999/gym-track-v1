@@ -3,7 +3,7 @@ import Link from "next/link";
 import LegalLayout from "@/components/LegalLayout";
 import { getDictionary, locales, type Locale } from "@/dictionaries";
 
-const LAST_UPDATED = "2026-09-27";
+const LAST_UPDATED = "2026-10-09";
 
 export default async function TermsPage({
   params,
@@ -86,7 +86,7 @@ function ContentFr() {
           écris-nous à{" "}
           <a href="mailto:support@gymstrack.com">support@gymstrack.com</a>{" "}
           et nous examinerons ta demande. Les achats effectués via Google
-          Play sont soumis à la politique de remboursement de Google Play.
+          Play sont soumis à la politique de remboursement de Google Play. Si tu résides dans l&apos;Union européenne ou au Royaume-Uni et que tu t&apos;abonnes sur le web, tu peux te rétracter dans les 14 jours suivant le premier paiement et être remboursé en écrivant à support@gymstrack.com. Rien dans ces conditions ne limite les droits que te garantit la loi de ton pays de résidence.
         </p>
       </section>
 
@@ -96,6 +96,20 @@ function ContentFr() {
           Tu acceptes de ne pas utiliser GymsTrack à des fins illégales, de
           ne pas tenter d&apos;accéder aux comptes d&apos;autres
           utilisateurs, et de ne pas perturber le fonctionnement du service.
+        </p>
+      </section>
+
+      <section>
+        <h2>Ton contenu</h2>
+        <p>
+          Les photos de progression, notes et exercices personnalisés que tu
+          ajoutes restent ta propriété et ne sont visibles que par toi. Tu
+          nous accordes seulement le droit de les stocker et de te les
+          afficher pour faire fonctionner le service. Tu confirmes avoir les
+          droits sur ce que tu ajoutes (par exemple, des photos de toi prises
+          par toi ou avec permission) et tu acceptes de ne pas ajouter de
+          contenu illégal ou qui porte atteinte aux droits d&apos;autrui.
+          Nous pouvons retirer un contenu qui enfreint ces conditions.
         </p>
       </section>
 
@@ -206,7 +220,7 @@ function ContentEn() {
           underway. If you believe you were charged in error, email us at{" "}
           <a href="mailto:support@gymstrack.com">support@gymstrack.com</a>{" "}
           and we&apos;ll review your request. Purchases made through Google
-          Play are subject to Google Play&apos;s own refund policy.
+          Play are subject to Google Play&apos;s own refund policy. If you live in the European Union or the United Kingdom and subscribe on the web, you may withdraw within 14 days of the first payment and get a refund by emailing support@gymstrack.com. Nothing in these terms limits the rights guaranteed to you by the law of your country of residence.
         </p>
       </section>
 
@@ -216,6 +230,19 @@ function ContentEn() {
           You agree not to use GymsTrack for unlawful purposes, not to
           attempt to access other users&apos; accounts, and not to disrupt
           the service.
+        </p>
+      </section>
+
+      <section>
+        <h2>Your content</h2>
+        <p>
+          The progress photos, notes and custom exercises you add remain
+          yours and are visible only to you. You only grant us the right to
+          store them and show them back to you to run the service. You
+          confirm you have the rights to what you add (for example, photos
+          of yourself taken by you or with permission) and agree not to add
+          unlawful content or content that infringes anyone else&apos;s
+          rights. We may remove content that breaks these terms.
         </p>
       </section>
 

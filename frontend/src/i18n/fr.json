@@ -6,7 +6,8 @@
     "skip": "Passer",
     "next": "Suivant",
     "done": "Terminé",
-    "continueWithGoogle": "Continuer avec Google"
+    "continueWithGoogle": "Continuer avec Google",
+    "googleLegalPrefix": "En continuant avec Google, tu confirmes avoir au moins 16 ans et tu acceptes nos"
   },
   "offline": {
     "offline": "Mode hors ligne",
@@ -52,7 +53,7 @@
     "or": "ou",
     "haveAccount": "Déjà un compte ?",
     "signIn": "Se connecter",
-    "legalPrefix": "En créant un compte, tu acceptes nos",
+    "legalPrefix": "En créant un compte, tu confirmes avoir au moins 16 ans et tu acceptes nos",
     "termsLink": "conditions d'utilisation",
     "legalAnd": "et notre",
     "privacyLink": "politique de confidentialité",
@@ -779,6 +780,17 @@
     "goPro": "Passer à Pro",
     "restorePurchases": "Restaurer mes achats",
     "restoring": "Restauration...",
+    "legal": {
+      "renewal": "Abonnement à renouvellement automatique : {{price}}{{trial}}, débité à chaque période jusqu'à annulation. Annule à tout moment, au moins 24 h avant la date de renouvellement, depuis {{where}} ; l'accès Pro reste actif jusqu'à la fin de la période payée.",
+      "trial": ", après l'essai gratuit de 7 jours (aucuns frais si tu annules avant la fin de l'essai)",
+      "wherePlay": "les abonnements de ton compte Google Play",
+      "whereWeb": "ton profil GymsTrack",
+      "lifetime": "Paiement unique, non récurrent : aucun renouvellement.",
+      "taxes": "Prix en dollars canadiens, taxes applicables en sus selon ta région.",
+      "taxesPlay": "Le prix final, dans ta devise et taxes incluses, est affiché par Google Play avant la confirmation de l'achat.",
+      "terms": "Conditions d'utilisation",
+      "privacy": "Politique de confidentialité"
+    },
     "restoreNone": "Aucun achat actif trouvé pour ce compte."
   }
 }

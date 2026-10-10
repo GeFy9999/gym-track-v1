@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { formatAmount } from "../utils/units";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Capacitor } from "@capacitor/core";
 import { App as CapacitorApp } from "@capacitor/app";
@@ -582,6 +582,34 @@ export default function UpgradePage() {
             {restoring ? t("upgrade.restoring") : t("upgrade.restorePurchases")}
           </button>
         )}
+
+        {/* Auto-renewal terms next to the purchase button, as Google Play's
+            subscription policy and consumer laws (e.g. Quebec, California)
+            require: price, billing period, trial, how to cancel. */}
+        <p className="text-[10px] leading-relaxed text-gray-400 text-center px-2">
+          {plan === "lifetime"
+            ? t("upgrade.legal.lifetime")
+            : t("upgrade.legal.renewal", {
+                price: `${formatAmount(plan === "monthly" ? MONTHLY_PRICE : ANNUAL_PRICE)}$${
+                  plan === "monthly" ? t("upgrade.perMonth") : t("upgrade.perYear")
+                }`,
+                trial: !isPro && !hasUsedTrial ? t("upgrade.legal.trial") : "",
+                where: Capacitor.isNativePlatform()
+                  ? t("upgrade.legal.wherePlay")
+                  : t("upgrade.legal.whereWeb"),
+              })}{" "}
+          {Capacitor.isNativePlatform()
+            ? t("upgrade.legal.taxesPlay")
+            : t("upgrade.legal.taxes")}
+          <br />
+          <Link to="/terms" className="underline">
+            {t("upgrade.legal.terms")}
+          </Link>
+          {" · "}
+          <Link to="/privacy" className="underline">
+            {t("upgrade.legal.privacy")}
+          </Link>
+        </p>
       </div>
 
       {showSwitchWarning && (
