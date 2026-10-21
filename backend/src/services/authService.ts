@@ -205,6 +205,18 @@ export const deleteAccount = async (userId: string) => {
   await prisma.exerciseNote.deleteMany({ where: { userId } });
   await prisma.exerciseLoadingType.deleteMany({ where: { userId } });
   await prisma.progressPhoto.deleteMany({ where: { userId } });
+  // Their custom exercises go too — except one another user still
+  // references (possible from before custom exercises were private), which
+  // the foreign key's SetNull just detaches from the deleted account.
+  await prisma.exercise.deleteMany({
+    where: {
+      userId,
+      sessionExercises: { none: {} },
+      trackedBy: { none: {} },
+      notes: { none: {} },
+      loadingTypeOverrides: { none: {} },
+    },
+  });
   await prisma.user.delete({ where: { id: userId } });
 };
 
@@ -355,6 +367,9 @@ export const forgotPassword = async (email: string) => {
 };
 
 export const resetPassword = async (token: string, newPassword: string) => {
+  if (typeof token !== "string" || typeof newPassword !== "string" || !token) {
+    throw new Error("Lien expiré ou invalide");
+  }
   const user = await prisma.user.findFirst({
     where: {
       resetToken: token,
@@ -424,6 +439,9 @@ const sendVerificationEmail = async (
 };
 
 export const verifyEmail = async (token: string) => {
+  if (typeof token !== "string" || !token) {
+    throw new Error("Lien expiré ou invalide");
+  }
   const user = await prisma.user.findFirst({
     where: {
       verificationToken: token,

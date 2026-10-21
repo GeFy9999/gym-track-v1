@@ -14,6 +14,12 @@ import {
   type AuthRequest,
 } from "../middleware/authMiddleware.js";
 import { sendServerError } from "../utils/errorResponse.js";
+import {
+  definedOnly,
+  optionalBoolean,
+  optionalNumber,
+  optionalString,
+} from "../utils/requestBody.js";
 
 export const setsRouter = express.Router();
 
@@ -39,21 +45,32 @@ setsRouter.get(
 // POST /api/sets - créer un set
 setsRouter.post("", authMiddleware, async (req: AuthRequest, res) => {
   try {
-    const payload = req.body;
-    if (!payload.sessionExerciseId) {
+    const body = req.body ?? {};
+    const sessionExerciseId = optionalString(body.sessionExerciseId);
+    const weight = optionalNumber(body.weight);
+    const reps = optionalNumber(body.reps);
+    if (!sessionExerciseId) {
       return res.status(400).json({ error: "sessionExerciseId requis" });
     }
-    if (payload.weight === undefined) {
+    if (weight === undefined) {
       return res.status(400).json({ error: "weight requis" });
     }
-    if (payload.reps === undefined) {
+    if (reps === undefined) {
       return res.status(400).json({ error: "reps requis" });
     }
-    const ownerId = await getSessionExerciseOwnerId(payload.sessionExerciseId);
+    const ownerId = await getSessionExerciseOwnerId(sessionExerciseId);
     if (ownerId !== req.userId!) {
       return res.status(404).json({ error: "Exercice introuvable" });
     }
-    const set = await createSet(payload);
+    const set = await createSet({
+      sessionExerciseId,
+      weight,
+      reps,
+      ...definedOnly({
+        unit: optionalString(body.unit, 10),
+        type: optionalString(body.type, 20),
+      }),
+    });
     return res.status(201).json(set);
   } catch (error) {
     return sendServerError(res, error);
@@ -64,12 +81,21 @@ setsRouter.post("", authMiddleware, async (req: AuthRequest, res) => {
 setsRouter.patch("/:id", authMiddleware, async (req: AuthRequest, res) => {
   try {
     const id = req.params.id as string;
-    const payload = req.body;
+    const body = req.body ?? {};
     const ownerId = await getSetOwnerId(id);
     if (ownerId !== req.userId!) {
       return res.status(404).json({ error: "Set introuvable" });
     }
-    const set = await editSet(id, payload);
+    const set = await editSet(
+      id,
+      definedOnly({
+        weight: optionalNumber(body.weight),
+        reps: optionalNumber(body.reps),
+        unit: optionalString(body.unit, 10),
+        completed: optionalBoolean(body.completed),
+        type: optionalString(body.type, 20),
+      }),
+    );
     return res.status(200).json(set);
   } catch (error) {
     return sendServerError(res, error);

@@ -10,12 +10,14 @@ import {
   getSessionOwnerId,
   getSessionExerciseOwnerId,
   getSessionExerciseOwnerIds,
+  isExerciseVisibleTo,
 } from "../repositories/databaseRepository.js";
 import {
   authMiddleware,
   type AuthRequest,
 } from "../middleware/authMiddleware.js";
 import { sendServerError } from "../utils/errorResponse.js";
+import { optionalString } from "../utils/requestBody.js";
 
 export const sessionExercisesRouter = express.Router();
 
@@ -91,18 +93,22 @@ sessionExercisesRouter.delete(
 // POST /api/session-exercises - ajouter un exercice à une session
 sessionExercisesRouter.post("", authMiddleware, async (req: AuthRequest, res) => {
   try {
-    const payload = req.body;
-    if (!payload.sessionId) {
+    const sessionId = optionalString(req.body?.sessionId);
+    const exerciseId = optionalString(req.body?.exerciseId);
+    if (!sessionId) {
       return res.status(400).json({ error: "sessionId requis" });
     }
-    if (!payload.exerciseId) {
+    if (!exerciseId) {
       return res.status(400).json({ error: "exerciseId requis" });
     }
-    const ownerId = await getSessionOwnerId(payload.sessionId);
+    const ownerId = await getSessionOwnerId(sessionId);
     if (ownerId !== req.userId!) {
       return res.status(404).json({ error: "Session introuvable" });
     }
-    const sessionExercise = await addExerciseToSession(payload);
+    if (!(await isExerciseVisibleTo(exerciseId, req.userId!))) {
+      return res.status(404).json({ error: "Exercice introuvable" });
+    }
+    const sessionExercise = await addExerciseToSession({ sessionId, exerciseId });
     return res.status(201).json(sessionExercise);
   } catch (error) {
     return sendServerError(res, error);
