@@ -710,6 +710,7 @@
     "resetAction": "Reset"
   },
   "verifyEmailPending": {
+    "backToLogin": "Back to login",
     "title": "Confirm your email",
     "subtitle": "We sent a confirmation link to {{email}}. Click the link to activate your account.",
     "iVerified": "I confirmed, continue",
@@ -724,9 +725,11 @@
     "errorGeneric": "Error"
   },
   "verifyEmail": {
+    "backToApp": "Head back to the app and tap “I confirmed, continue” (or log in) to get started.",
+    "loginHere": "Or log in here",
+    "continue": "Continue",
     "verifying": "Confirming your email...",
     "success": "Email confirmed!",
-    "redirecting": "Redirecting...",
     "invalidLink": "Invalid link",
     "errorGeneric": "Error",
     "backToLogin": "Back to login"

@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import GoogleLoginButton from "../components/GoogleLoginButton";
 import { API_URL } from "../lib/api";
+import { setPendingSignup } from "../utils/pendingSignup";
 
 type LoginForm = {
   email: string;
@@ -49,6 +50,14 @@ export default function LoginPage() {
       });
 
       const result = await res.json();
+
+      // Right password, but the email was never confirmed: same screen as
+      // right after signup (resend the link, "I confirmed" signs in).
+      if (res.status === 403 && result.emailNotVerified) {
+        setPendingSignup(data.email, data.password);
+        navigate("/verify-email-pending");
+        return;
+      }
 
       if (!res.ok) {
         throw new Error(result.error || t("login.errors.generic"));

@@ -8,6 +8,12 @@ import { API_URL } from "@/lib/api";
 import { interpolate } from "@/lib/interpolate";
 import { consumePendingPlan } from "@/lib/pendingPlan";
 import { startCheckoutForPendingPlan } from "@/lib/checkout";
+import {
+  clearPendingSignup,
+  getPendingSignupEmail,
+  loginWithPendingSignup,
+  resendVerificationEmail,
+} from "@/lib/pendingSignup";
 
 const COOLDOWN_SECONDS = 300;
 
@@ -27,9 +33,11 @@ export default function VerifyEmailPendingPage() {
     // localStorage only exists client-side, so this can't be a lazy useState
     // initializer (that would also run during this client component's
     // server-side render pass) — it has to be read here instead.
+    const pendingEmail = getPendingSignupEmail();
     const stored = localStorage.getItem("user");
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (stored) setEmail(JSON.parse(stored).email ?? "");
+    if (pendingEmail) setEmail(pendingEmail);
+    else if (stored) setEmail(JSON.parse(stored).email ?? "");
   }, []);
 
   useEffect(() => {
@@ -45,37 +53,58 @@ export default function VerifyEmailPendingPage() {
   };
 
   const handleResend = useCallback(async () => {
-    const token = localStorage.getItem("token");
-    if (!token || cooldown > 0 || sending) return;
+    if (!email || cooldown > 0 || sending) return;
 
     setServerError(null);
     setSending(true);
     try {
-      const res = await fetch(`${API_URL}/auth/resend-verification`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const result = await res.json();
-      if (!res.ok) throw new Error(result.error || t.errorGeneric);
+      await resendVerificationEmail(email);
 
       setCooldown(COOLDOWN_SECONDS);
       setResendSuccess(true);
       setTimeout(() => setResendSuccess(false), 3000);
     } catch (err) {
-      setServerError(err instanceof Error ? err.message : t.errorGeneric);
+      setServerError((err instanceof Error && err.message) || t.errorGeneric);
     } finally {
       setSending(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cooldown, sending]);
+  }, [email, cooldown, sending]);
+
+  const goToCheckoutOrPricing = async (token: string) => {
+    const checkout = await startCheckoutForPendingPlan(token);
+    if (checkout && "url" in checkout) {
+      window.location.href = checkout.url;
+      return;
+    }
+    router.push(`/${locale}#tarifs`);
+  };
 
   const handleCheckVerified = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
     setServerError(null);
     setChecking(true);
     try {
+      // Normally a fresh signup (no session yet): sign in with what was just
+      // typed. An account created before signup stopped logging in may still
+      // be here with a session, handled below as before.
+      if (!localStorage.getItem("token")) {
+        const result = await loginWithPendingSignup();
+        if (result.status === "ok") {
+          localStorage.setItem("token", result.token);
+          localStorage.setItem("user", JSON.stringify(result.user));
+          await goToCheckoutOrPricing(result.token);
+        } else if (result.status === "notVerified") {
+          setServerError(t.stillNotVerified);
+        } else if (result.status === "noCredentials") {
+          // Page reloaded since signup — the password isn't kept anywhere.
+          router.push(`/${locale}/login`);
+        } else {
+          setServerError(result.message || t.errorGeneric);
+        }
+        return;
+      }
+
+      const token = localStorage.getItem("token")!;
       const res = await fetch(`${API_URL}/auth/me`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -84,12 +113,7 @@ export default function VerifyEmailPendingPage() {
       localStorage.setItem("user", JSON.stringify(user));
 
       if (user.emailVerified) {
-        const checkout = await startCheckoutForPendingPlan(token);
-        if (checkout && "url" in checkout) {
-          window.location.href = checkout.url;
-          return;
-        }
-        router.push(`/${locale}#tarifs`);
+        await goToCheckoutOrPricing(token);
       } else {
         setServerError(t.stillNotVerified);
       }
@@ -101,6 +125,7 @@ export default function VerifyEmailPendingPage() {
   };
 
   const handleLogout = () => {
+    clearPendingSignup();
     consumePendingPlan();
     localStorage.clear();
     router.push(`/${locale}/login`);
@@ -157,7 +182,7 @@ export default function VerifyEmailPendingPage() {
         className="flex items-center justify-center gap-2 text-sm text-gray-400 py-6"
       >
         <LogOut size={14} />
-        {t.logout}
+        {t.backToLogin}
       </button>
     </div>
   );

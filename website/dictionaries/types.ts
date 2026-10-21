@@ -237,13 +237,14 @@ export type Dictionary = {
       retryIn: string;
       sending: string;
       retry: string;
-      logout: string;
+      backToLogin: string;
       errorGeneric: string;
     };
     verifyEmail: {
       verifying: string;
       success: string;
-      redirecting: string;
+      backToApp: string;
+      loginHere: string;
       invalidLink: string;
       errorGeneric: string;
       backToLogin: string;

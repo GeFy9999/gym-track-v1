@@ -16,6 +16,8 @@ import {
   getMe,
   verifyEmail,
   resendVerificationEmail,
+  resendVerificationEmailByAddress,
+  EmailNotVerifiedError,
 } from "../services/authService.js";
 import {
   authMiddleware,
@@ -68,6 +70,11 @@ authRouter.post("/login", authLimiter, async (req, res) => {
     const result = await login({ email, password });
     return res.status(200).json(result);
   } catch (error) {
+    if (error instanceof EmailNotVerifiedError) {
+      return res
+        .status(403)
+        .json({ error: error.message, emailNotVerified: true });
+    }
     const message = error instanceof Error ? error.message : String(error);
     return res.status(400).json({ error: message });
   }
@@ -338,6 +345,25 @@ authRouter.post("/verify-email", async (req, res) => {
     return res.status(400).json({ error: message });
   }
 });
+
+// POST /api/auth/resend-verification-email — no session needed (signup
+// doesn't log in anymore). Always answers the same, like forgot-password.
+authRouter.post(
+  "/resend-verification-email",
+  passwordResetLimiter,
+  async (req, res) => {
+    try {
+      const { email } = req.body ?? {};
+      if (!email || !isString(email))
+        return res.status(400).json({ error: "Courriel requis" });
+
+      await resendVerificationEmailByAddress(email);
+      return res.status(200).json({ message: "Courriel envoyé" });
+    } catch (error) {
+      return sendServerError(res, error);
+    }
+  },
+);
 
 // POST /api/auth/resend-verification
 authRouter.post(
