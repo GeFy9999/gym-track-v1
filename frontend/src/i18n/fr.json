@@ -710,6 +710,7 @@
     "resetAction": "Réinitialiser"
   },
   "verifyEmailPending": {
+    "backToLogin": "Retour à la connexion",
     "title": "Confirme ton courriel",
     "subtitle": "On a envoyé un lien de confirmation à {{email}}. Clique sur le lien pour activer ton compte.",
     "iVerified": "J'ai confirmé, continuer",
@@ -724,9 +725,11 @@
     "errorGeneric": "Erreur"
   },
   "verifyEmail": {
+    "backToApp": "Retourne sur l'application et appuie sur « J'ai confirmé, continuer » (ou connecte-toi) pour commencer.",
+    "loginHere": "Ou se connecter ici",
+    "continue": "Continuer",
     "verifying": "Confirmation de ton courriel...",
     "success": "Courriel confirmé !",
-    "redirecting": "Redirection...",
     "invalidLink": "Lien invalide",
     "errorGeneric": "Erreur",
     "backToLogin": "Retour à la connexion"

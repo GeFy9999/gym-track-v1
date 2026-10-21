@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { useLocaleDict } from "@/lib/useLocaleDict";
 import { API_URL } from "@/lib/api";
+import { setPendingSignup } from "@/lib/pendingSignup";
 import { startCheckoutForPendingPlan } from "@/lib/checkout";
 import GoogleSignInButton from "@/components/GoogleSignInButton";
 
@@ -44,6 +45,13 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password }),
       });
       const result = await res.json();
+      // Right password, but the email was never confirmed: same screen as
+      // right after signup (resend the link, "I confirmed" signs in).
+      if (res.status === 403 && result.emailNotVerified) {
+        setPendingSignup(email, password);
+        router.push(`/${locale}/verify-email-pending`);
+        return;
+      }
       if (!res.ok) throw new Error(result.error || t.errors.generic);
 
       localStorage.setItem("token", result.token);

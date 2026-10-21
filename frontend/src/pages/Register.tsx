@@ -8,6 +8,7 @@ import { Eye, EyeOff, User, Mail, Lock } from "lucide-react";
 import GoogleLoginButton from "../components/GoogleLoginButton";
 import { API_URL } from "../lib/api";
 import { capturePendingPlan } from "../utils/pendingPlan";
+import { setPendingSignup } from "../utils/pendingSignup";
 
 const PASSWORD_RULES = [
   /.{8,}/,
@@ -115,8 +116,8 @@ export default function RegisterPage() {
         throw new Error(result.error || t("register.errors.generic"));
       }
 
-      localStorage.setItem("token", result.token);
-      localStorage.setItem("user", JSON.stringify(result.user));
+      // No session yet: the account works once the email is confirmed.
+      setPendingSignup(data.email, data.password);
       navigate("/verify-email-pending");
     } catch (err) {
       setServerError(
