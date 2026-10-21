@@ -4,6 +4,10 @@ import { useTranslation } from "react-i18next";
 import { Check } from "lucide-react";
 import { API_URL } from "../../lib/api";
 import { getMuscleGroupLabel } from "../../utils/muscleGroupLabel";
+import {
+  getFinishedExerciseSessionIds,
+  unmarkExercisesFinished,
+} from "../../utils/finishedExercises";
 
 type MuscleGroup = {
   id: string;
@@ -14,12 +18,15 @@ type Props = {
   refreshKey?: number;
   onActiveCountChange?: (count: number) => void;
   onWeekSummaryChange?: (completed: number, total: number) => void;
+  /** Group whose exercises were just finished — its check mark pops in. */
+  justFinishedGroup?: string | null;
 };
 
 export default function MuscleGroupsCards({
   refreshKey,
   onActiveCountChange,
   onWeekSummaryChange,
+  justFinishedGroup,
 }: Props) {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -85,6 +92,7 @@ export default function MuscleGroupsCards({
         );
         if (!res.ok) return;
         const sessions: {
+          id: string;
           muscleGroup: string;
           completed: boolean;
           sessionExercises: {
@@ -92,8 +100,16 @@ export default function MuscleGroupsCards({
           }[];
         }[] = await res.json();
 
+        // Open sessions whose exercises the user already finished show as
+        // done here, while still waiting on "Terminer la séance" server-side.
+        const finishedIds = getFinishedExerciseSessionIds();
+        const isFinishedPending = (s: { id: string; completed: boolean }) =>
+          !s.completed && finishedIds.has(s.id);
+
         const done = new Set(
-          sessions.filter((s) => s.completed).map((s) => s.muscleGroup),
+          sessions
+            .filter((s) => s.completed || isFinishedPending(s))
+            .map((s) => s.muscleGroup),
         );
         setCompletedGroups(done);
 
@@ -102,6 +118,7 @@ export default function MuscleGroupsCards({
             .filter(
               (s) =>
                 !s.completed &&
+                !isFinishedPending(s) &&
                 s.sessionExercises.some((se) =>
                   se.sets.some((set) => set.weight > 0 || set.reps > 0),
                 ),
@@ -109,7 +126,9 @@ export default function MuscleGroupsCards({
             .map((s) => s.muscleGroup),
         );
         setActiveGroups(inProgress);
-        onActiveCountChange?.(inProgress.size);
+        onActiveCountChange?.(
+          sessions.filter(isFinishedPending).length + inProgress.size,
+        );
       } catch (err) {
         console.error(err);
       }
@@ -141,6 +160,8 @@ export default function MuscleGroupsCards({
         );
 
         if (existing) {
+          // Reopening a group marked finished means the user is resuming it.
+          unmarkExercisesFinished(existing.id);
           navigate(`/session/${existing.id}`);
           return;
         }
@@ -169,6 +190,25 @@ export default function MuscleGroupsCards({
   const isDragging = useRef(false);
   const startX = useRef(0);
   const scrollLeft = useRef(0);
+
+  // Bring the just-finished group into view so its check animation is seen
+  // (the row scrolls horizontally). Only moves the row, never the page.
+  useEffect(() => {
+    if (!justFinishedGroup || groups.length === 0 || !scrollRef.current) return;
+    const container = scrollRef.current;
+    const card = container.querySelector<HTMLElement>(
+      `[data-group="${CSS.escape(justFinishedGroup)}"]`,
+    );
+    if (!card) return;
+    container.scrollTo({
+      left:
+        container.scrollLeft +
+        card.getBoundingClientRect().left -
+        container.getBoundingClientRect().left -
+        (container.clientWidth - card.offsetWidth) / 2,
+      behavior: "smooth",
+    });
+  }, [justFinishedGroup, groups]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     isDragging.current = true;
@@ -224,6 +264,7 @@ export default function MuscleGroupsCards({
           return (
             <button
               key={group.id}
+              data-group={group.name}
               onClick={() => handleClick(group)}
               className={`relative flex-shrink-0 w-36 rounded-2xl pt-6 pb-3 flex flex-col items-center transition-all shadow-sm ${
                 isActive
@@ -232,8 +273,19 @@ export default function MuscleGroupsCards({
               }`}
             >
               {isDone && (
-                <div className="absolute top-2.5 right-2.5 w-6 h-6 rounded-full bg-[#3a9e6e] flex items-center justify-center">
-                  <Check size={14} className="text-white" strokeWidth={3} />
+                <div className="absolute top-2.5 right-2.5 w-6 h-6">
+                  {group.name === justFinishedGroup && (
+                    <div className="absolute inset-0 rounded-full bg-[#3a9e6e] animate-set-check-ring [animation-delay:350ms]" />
+                  )}
+                  <div
+                    className={`relative w-6 h-6 rounded-full bg-[#3a9e6e] flex items-center justify-center ${
+                      group.name === justFinishedGroup
+                        ? "animate-set-check-pop [animation-delay:350ms]"
+                        : ""
+                    }`}
+                  >
+                    <Check size={14} className="text-white" strokeWidth={3} />
+                  </div>
                 </div>
               )}
               {isActive && (

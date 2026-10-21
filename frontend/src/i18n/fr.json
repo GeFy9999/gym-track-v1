@@ -105,6 +105,7 @@
     "setsCount_other": "{{count}} séries",
     "vsPrevious": "vs précédente",
     "finishSession": "Terminer la séance",
+    "finishSessionHint": "Appuie ici pour terminer",
     "finishSessionTitle": "Terminer la séance ?",
     "finishSessionBody": "Tes séances en cours seront marquées comme terminées et rangées dans ton historique. Tu pourras en recommencer de nouvelles pour ces groupes musculaires.",
     "cancel": "Annuler",
@@ -233,6 +234,13 @@
     "edit": "Modifier",
     "done": "Terminé",
     "finishExercises": "Terminer mes exercices",
+    "finishChoice": {
+      "title": "{{group}} terminé !",
+      "subtitle": "Tu veux terminer ta séance ou continuer avec un autre groupe musculaire ?",
+      "finishSession": "Terminer la séance",
+      "continue": "Continuer la séance",
+      "back": "Retour aux exercices"
+    },
     "exerciseCountBadge": "{{count}} exo",
     "emptyTitle": "Aucun exercice pour l'instant",
     "emptyDesc": "Ajoute ton premier exercice pour\ncommencer la séance",
