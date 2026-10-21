@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ChevronLeft, Dumbbell, Crown } from "lucide-react";
+import { ChevronLeft, Dumbbell, Crown, Check } from "lucide-react";
 import {
   getWeightUnit,
   getRestTimerSeconds,
@@ -38,6 +38,7 @@ import { getMuscleGroupLabel } from "../utils/muscleGroupLabel";
 import { offlineAwareFetch } from "../lib/offlineFetch";
 import { getOfflineDb } from "../lib/offlineDb";
 import { onSyncQueueChange } from "../lib/syncQueue";
+import { markExercisesFinished } from "../utils/finishedExercises";
 import type {
   SetData,
   SessionExercise,
@@ -86,6 +87,7 @@ export default function SessionPage() {
   );
   const [warmupModalFor, setWarmupModalFor] = useState<string | null>(null);
   const [showSetRowTour, setShowSetRowTour] = useState(false);
+  const [showFinishChoice, setShowFinishChoice] = useState(false);
   const sessionRef = useRef<SessionData | null>(null);
   const exerciseRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const { deltas, lastTimes } = useExerciseHistory(sessionId);
@@ -922,7 +924,7 @@ export default function SessionPage() {
         {!readOnly && !isEmpty && !isEditMode && (
           <button
             data-tour="session-finish-exercises"
-            onClick={() => navigate("/dashboard")}
+            onClick={() => setShowFinishChoice(true)}
             className="w-full bg-[#191714] active:bg-[#191714]/85 text-white font-bold uppercase text-sm tracking-wide py-4 rounded-2xl transition-colors"
           >
             {t("session.finishExercises")}
@@ -962,6 +964,67 @@ export default function SessionPage() {
             }
           }}
         />
+      )}
+
+      {showFinishChoice && (
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-[60] px-6 animate-fade-in">
+          <div className="bg-[#faf6f1] rounded-3xl w-full max-w-sm shadow-2xl animate-scale-in overflow-hidden">
+            <div
+              className="px-6 pt-8 pb-6 text-center"
+              style={{ background: "#191714" }}
+            >
+              <div className="relative w-14 h-14 mx-auto mb-4">
+                <div className="absolute inset-0 rounded-full bg-[#3a9e6e] animate-set-check-ring" />
+                <div className="relative w-14 h-14 rounded-full bg-[#3a9e6e] flex items-center justify-center animate-set-check-pop">
+                  <Check size={26} className="text-white" strokeWidth={3} />
+                </div>
+              </div>
+              <h2 className="text-xl font-black text-white uppercase tracking-wide">
+                {t("session.finishChoice.title", {
+                  group: getMuscleGroupLabel(session.muscleGroup, t),
+                })}
+              </h2>
+              <p className="text-sm text-white/50 mt-1">
+                {t("session.finishChoice.subtitle")}
+              </p>
+            </div>
+
+            <div className="px-5 pt-5 pb-6 flex flex-col gap-3">
+              <button
+                onClick={() => {
+                  markExercisesFinished(session.id);
+                  navigate("/dashboard", {
+                    state: {
+                      justFinishedGroup: session.muscleGroup,
+                      highlightFinishSession: true,
+                    },
+                  });
+                }}
+                className="w-full bg-[#3a9e6e] text-white py-3.5 rounded-full font-bold uppercase tracking-wide text-sm transition-colors active:opacity-90 flex items-center justify-center gap-1.5"
+              >
+                <Check size={16} strokeWidth={3} />
+                {t("session.finishChoice.finishSession")}
+              </button>
+              <button
+                onClick={() => {
+                  markExercisesFinished(session.id);
+                  navigate("/dashboard", {
+                    state: { justFinishedGroup: session.muscleGroup },
+                  });
+                }}
+                className="w-full bg-[#191714] text-white py-3.5 rounded-full font-bold uppercase tracking-wide text-sm transition-colors active:opacity-90"
+              >
+                {t("session.finishChoice.continue")}
+              </button>
+              <button
+                onClick={() => setShowFinishChoice(false)}
+                className="w-full text-gray-500 py-2 font-bold uppercase tracking-wide text-xs active:opacity-70"
+              >
+                {t("session.finishChoice.back")}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {prCelebration && (

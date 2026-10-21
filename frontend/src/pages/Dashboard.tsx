@@ -3,9 +3,9 @@ import MuscleGroupsCards from "../components/dashboard/muscleGroupGrid";
 import WeekSummaryCard from "../components/dashboard/weekSummaryCard";
 import RecentActivity from "../components/dashboard/recentActivity";
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Scale, ChevronRight, Check } from "lucide-react";
+import { Scale, ChevronRight, Check, ChevronDown } from "lucide-react";
 import { API_URL } from "../lib/api";
 import TourOverlay from "../components/TourOverlay";
 import PRCelebration from "../components/session/PRCelebration";
@@ -14,6 +14,10 @@ import { getWeightUnit } from "../utils/units";
 import { useUiChrome } from "../contexts/UiChromeContext";
 import { getDateLocale } from "../i18n";
 import { getMuscleGroupLabel } from "../utils/muscleGroupLabel";
+import {
+  clearFinishedExercises,
+  unmarkExercisesFinished,
+} from "../utils/finishedExercises";
 
 type AbandonedSession = {
   id: string;
@@ -45,8 +49,14 @@ const formatAbandonedDate = (dateStr: string) =>
     day: "numeric",
   });
 
+type DashboardLocationState = {
+  justFinishedGroup?: string;
+  highlightFinishSession?: boolean;
+} | null;
+
 export default function DashboardPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation();
   const stored = localStorage.getItem("user");
   const user = stored ? JSON.parse(stored) : null;
@@ -78,6 +88,38 @@ export default function DashboardPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showWelcome]);
   const [showTour, setShowTour] = useState(false);
+
+  // Coming back from "Terminer mes exercices" on a session page: animate the
+  // group that was just finished and, if the user chose to end the workout,
+  // guide them to the "Terminer la séance" button.
+  const [justFinishedGroup] = useState<string | null>(
+    () => (location.state as DashboardLocationState)?.justFinishedGroup ?? null,
+  );
+  const [highlightFinish, setHighlightFinish] = useState(
+    () => !!(location.state as DashboardLocationState)?.highlightFinishSession,
+  );
+  const finishButtonRef = useRef<HTMLDivElement>(null);
+
+  // Drop the navigation state so a reload doesn't replay the animations.
+  useEffect(() => {
+    if (location.state) navigate(location.pathname, { replace: true, state: null });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!highlightFinish || !hasActiveSession) return;
+    const scroll = setTimeout(() => {
+      finishButtonRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }, 300);
+    const stop = setTimeout(() => setHighlightFinish(false), 6000);
+    return () => {
+      clearTimeout(scroll);
+      clearTimeout(stop);
+    };
+  }, [highlightFinish, hasActiveSession]);
 
   // Detect sessions left unfinished on a previous day
   useEffect(() => {
@@ -323,6 +365,7 @@ export default function DashboardPage() {
     } catch (err) {
       console.error(err);
     }
+    unmarkExercisesFinished(session.id);
     setAbandonedQueue((prev) => prev.filter((s) => s.id !== session.id));
     setRefreshKey((prev) => prev + 1);
   };
@@ -545,6 +588,7 @@ export default function DashboardPage() {
               };
       }
 
+      clearFinishedExercises();
       setShowEndConfirm(false);
       setRefreshKey((prev) => prev + 1);
 
@@ -619,6 +663,7 @@ export default function DashboardPage() {
       <div ref={tourRef0}>
         <MuscleGroupsCards
           refreshKey={refreshKey}
+          justFinishedGroup={justFinishedGroup}
           onActiveCountChange={(count) => setHasActiveSession(count > 0)}
           onWeekSummaryChange={(completed, total) =>
             setWeekSummary({ completed, total })
@@ -630,11 +675,31 @@ export default function DashboardPage() {
       </div>
 
       {hasActiveSession && (
-        <div className="px-5 mt-6">
+        <div ref={finishButtonRef} className="px-5 mt-6 scroll-mb-28">
+          {highlightFinish && (
+            <div className="flex flex-col items-center mb-2 animate-fade-in">
+              <span className="text-xs font-bold text-[#3a9e6e] uppercase tracking-widest">
+                {t("dashboard.finishSessionHint")}
+              </span>
+              <ChevronDown
+                size={20}
+                strokeWidth={3}
+                className="text-[#3a9e6e] animate-finish-hint-bounce"
+              />
+            </div>
+          )}
           <button
-            onClick={() => setShowEndConfirm(true)}
-            className="w-full bg-[#191714] active:scale-[0.98] text-white py-4 rounded-full font-bold uppercase tracking-wide text-sm transition-all flex items-center justify-center shadow-sm"
+            onClick={() => {
+              setHighlightFinish(false);
+              setShowEndConfirm(true);
+            }}
+            className={`w-full active:scale-[0.98] text-white py-4 rounded-full font-bold uppercase tracking-wide text-sm transition-all flex items-center justify-center gap-1.5 shadow-sm ${
+              highlightFinish
+                ? "bg-[#3a9e6e] animate-finish-highlight"
+                : "bg-[#191714]"
+            }`}
           >
+            {highlightFinish && <Check size={16} strokeWidth={3} />}
             {t("dashboard.finishSession")}
           </button>
         </div>

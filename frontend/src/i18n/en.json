@@ -105,6 +105,7 @@
     "setsCount_other": "{{count}} sets",
     "vsPrevious": "vs previous",
     "finishSession": "Finish session",
+    "finishSessionHint": "Tap here to finish",
     "finishSessionTitle": "Finish the session?",
     "finishSessionBody": "Your ongoing sessions will be marked as completed and filed in your history. You'll be able to start new ones for these muscle groups.",
     "cancel": "Cancel",
@@ -233,6 +234,13 @@
     "edit": "Edit",
     "done": "Done",
     "finishExercises": "Finish my exercises",
+    "finishChoice": {
+      "title": "{{group}} done!",
+      "subtitle": "Do you want to finish your session or keep going with another muscle group?",
+      "finishSession": "Finish session",
+      "continue": "Keep going",
+      "back": "Back to exercises"
+    },
     "exerciseCountBadge": "{{count}} exercises",
     "emptyTitle": "No exercise yet",
     "emptyDesc": "Add your first exercise to\nstart the session",
