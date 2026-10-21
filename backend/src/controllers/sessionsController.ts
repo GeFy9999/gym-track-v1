@@ -17,6 +17,7 @@ import {
 import { prisma } from "../prisma.js";
 import { getSessionOwnerId } from "../repositories/databaseRepository.js";
 import { sendServerError } from "../utils/errorResponse.js";
+import { optionalString } from "../utils/requestBody.js";
 
 export const sessionsRouter = express.Router();
 
@@ -282,11 +283,11 @@ sessionsRouter.get(
 // POST /api/sessions
 sessionsRouter.post("/", authMiddleware, async (req: AuthRequest, res) => {
   try {
-    const payload = req.body;
-    if (!payload.muscleGroup)
+    const muscleGroup = optionalString(req.body?.muscleGroup, 100);
+    if (!muscleGroup)
       return res.status(400).json({ error: "Groupe musculaire requis" });
     const session = await createSession({
-      ...payload,
+      muscleGroup,
       userId: req.userId!,
     });
     return res.status(201).json(session);

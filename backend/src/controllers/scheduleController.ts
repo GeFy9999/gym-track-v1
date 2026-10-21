@@ -9,6 +9,11 @@ import {
   type AuthRequest,
 } from "../middleware/authMiddleware.js";
 import { sendServerError } from "../utils/errorResponse.js";
+import {
+  definedOnly,
+  optionalNumber,
+  optionalString,
+} from "../utils/requestBody.js";
 
 export const scheduleRouter = express.Router();
 
@@ -26,12 +31,17 @@ scheduleRouter.get("/me", authMiddleware, async (req: AuthRequest, res) => {
 // POST /api/schedule
 scheduleRouter.post("/", authMiddleware, async (req: AuthRequest, res) => {
   try {
-    const payload = req.body;
-    if (!payload.frequency)
+    const frequency = optionalNumber(req.body?.frequency);
+    const days = optionalString(req.body?.days);
+    if (!frequency)
       return res.status(400).json({ error: "Fréquence requise" });
-    if (!payload.days)
+    if (!days)
       return res.status(400).json({ error: "Jours requis" });
-    const schedule = await createSchedule({ ...payload, userId: req.userId! });
+    const schedule = await createSchedule({
+      frequency,
+      days,
+      userId: req.userId!,
+    });
     return res.status(201).json(schedule);
   } catch (error) {
     return sendServerError(res, error);
@@ -41,8 +51,13 @@ scheduleRouter.post("/", authMiddleware, async (req: AuthRequest, res) => {
 // PUT /api/schedule/me
 scheduleRouter.put("/me", authMiddleware, async (req: AuthRequest, res) => {
   try {
-    const payload = req.body;
-    const schedule = await editSchedule(req.userId!, payload);
+    const schedule = await editSchedule(
+      req.userId!,
+      definedOnly({
+        frequency: optionalNumber(req.body?.frequency),
+        days: optionalString(req.body?.days),
+      }),
+    );
     return res.status(200).json(schedule);
   } catch (error) {
     return sendServerError(res, error);

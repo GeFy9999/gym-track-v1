@@ -1,6 +1,7 @@
 import {
   insertImportBatch,
   deleteImportBatch,
+  isExerciseVisibleTo,
 } from "../repositories/databaseRepository.js";
 
 export type ImportWorkout = {
@@ -33,9 +34,20 @@ export async function importWorkouts(userId: string, workouts: ImportWorkout[]) 
       throw new Error("Séance sans exercice dans l'import");
     }
     for (const exercise of workout.exercises) {
-      if (!exercise.exerciseId) {
+      if (!exercise.exerciseId || typeof exercise.exerciseId !== "string") {
         throw new Error("Exercice non résolu dans l'import");
       }
+    }
+  }
+
+  // Only built-in exercises or the user's own custom ones — never another
+  // user's private custom exercise.
+  const exerciseIds = new Set(
+    workouts.flatMap((w) => w.exercises.map((e) => e.exerciseId)),
+  );
+  for (const exerciseId of exerciseIds) {
+    if (!(await isExerciseVisibleTo(exerciseId, userId))) {
+      throw new Error("Exercice non résolu dans l'import");
     }
   }
 

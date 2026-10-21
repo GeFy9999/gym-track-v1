@@ -24,42 +24,45 @@ export async function getSessionsForUser(
   });
 }
 
-export async function getAllExercises() {
+// What a user's catalog shows: every built-in exercise plus their own
+// custom ones — never another user's custom exercises.
+const visibleExercises = (userId: string) => ({
+  OR: [{ isCustom: false }, { userId }],
+});
+
+export async function getAllExercises(userId: string) {
   return await prisma.exercise.findMany({
+    where: visibleExercises(userId),
     include: {
       muscleGroup: true,
     },
   });
 }
 
-export async function getExerciseById(id: string) {
-  return await prisma.exercise.findUnique({ where: { id } });
+export async function isExerciseVisibleTo(exerciseId: string, userId: string) {
+  const count = await prisma.exercise.count({
+    where: { id: exerciseId, ...visibleExercises(userId) },
+  });
+  return count > 0;
 }
 
 export async function insertExercise(exercise: {
   name: string;
   muscleGroupId: string;
-  isCustom?: boolean;
+  userId: string;
 }) {
   return await prisma.exercise.create({
-    data: exercise,
+    data: { ...exercise, isCustom: true },
     include: { muscleGroup: true },
   });
 }
 
-export async function insertMuscleGroup(muscleGroup: {
-  name: string;
-  description: string;
-  image: string;
-}) {
-  await prisma.muscleGroup.create({
-    data: muscleGroup,
-  });
-}
-
-export async function getExercisesByMuscleGroup(muscleGroupId: string) {
+export async function getExercisesByMuscleGroup(
+  muscleGroupId: string,
+  userId: string,
+) {
   return await prisma.exercise.findMany({
-    where: { muscleGroupId },
+    where: { muscleGroupId, ...visibleExercises(userId) },
     include: { muscleGroup: true },
   });
 }

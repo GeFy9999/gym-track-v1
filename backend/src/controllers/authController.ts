@@ -29,6 +29,11 @@ import { sendServerError } from "../utils/errorResponse.js";
 
 export const authRouter = express.Router();
 
+// JSON bodies can carry objects where a string is expected; passed into a
+// Prisma `where`, `{ "not": "" }` would act as a query operator instead of a
+// value. Every credential/token field must be checked to be a plain string.
+const isString = (v: unknown): v is string => typeof v === "string";
+
 // POST /api/auth/register
 authRouter.post("/register", authLimiter, async (req, res) => {
   try {
@@ -37,6 +42,9 @@ authRouter.post("/register", authLimiter, async (req, res) => {
     if (!password)
       return res.status(400).json({ error: "Mot de passe requis" });
     if (!name) return res.status(400).json({ error: "Nom requis" });
+    if (!isString(email) || !isString(password) || !isString(name)) {
+      return res.status(400).json({ error: "Requête invalide" });
+    }
 
     const result = await register({ email, password, name, language });
     return res.status(201).json(result);
@@ -53,6 +61,9 @@ authRouter.post("/login", authLimiter, async (req, res) => {
     if (!email) return res.status(400).json({ error: "Email requis" });
     if (!password)
       return res.status(400).json({ error: "Mot de passe requis" });
+    if (!isString(email) || !isString(password)) {
+      return res.status(400).json({ error: "Requête invalide" });
+    }
 
     const result = await login({ email, password });
     return res.status(200).json(result);
@@ -68,6 +79,9 @@ authRouter.post("/google", authLimiter, async (req, res) => {
     const { credential, language } = req.body;
     if (!credential)
       return res.status(400).json({ error: "Token Google requis" });
+    if (!isString(credential)) {
+      return res.status(400).json({ error: "Requête invalide" });
+    }
 
     const result = await googleLogin(credential, language);
     return res.status(200).json(result);
@@ -86,7 +100,7 @@ authRouter.post(
       const userId = req.userId!;
       const { currentPassword, newPassword } = req.body;
 
-      if (!currentPassword || !newPassword) {
+      if (!isString(currentPassword) || !isString(newPassword) || !currentPassword || !newPassword) {
         return res
           .status(400)
           .json({ error: "Les deux mots de passe sont requis" });
@@ -131,7 +145,7 @@ authRouter.patch(
       const userId = req.userId!;
       const { recoveryEmail } = req.body;
 
-      if (!recoveryEmail) {
+      if (!recoveryEmail || !isString(recoveryEmail)) {
         return res.status(400).json({ error: "Courriel requis" });
       }
 
@@ -278,7 +292,8 @@ authRouter.get("/me", authMiddleware, async (req: AuthRequest, res) => {
 authRouter.post("/forgot-password", passwordResetLimiter, async (req, res) => {
   try {
     const { email } = req.body;
-    if (!email) return res.status(400).json({ error: "Courriel requis" });
+    if (!email || !isString(email))
+      return res.status(400).json({ error: "Courriel requis" });
 
     await forgotPassword(email);
     return res.status(200).json({ message: "Courriel envoyé" });
@@ -292,8 +307,13 @@ authRouter.post("/forgot-password", passwordResetLimiter, async (req, res) => {
 authRouter.post("/reset-password", passwordResetLimiter, async (req, res) => {
   try {
     const { token, newPassword } = req.body;
-    if (!token || !newPassword) {
+    if (!isString(token) || !isString(newPassword) || !token || !newPassword) {
       return res.status(400).json({ error: "Token et mot de passe requis" });
+    }
+    if (newPassword.length < 8) {
+      return res.status(400).json({
+        error: "Le nouveau mot de passe doit contenir au moins 8 caractères",
+      });
     }
 
     await resetPassword(token, newPassword);
@@ -308,7 +328,8 @@ authRouter.post("/reset-password", passwordResetLimiter, async (req, res) => {
 authRouter.post("/verify-email", async (req, res) => {
   try {
     const { token } = req.body;
-    if (!token) return res.status(400).json({ error: "Token requis" });
+    if (!token || !isString(token))
+      return res.status(400).json({ error: "Token requis" });
 
     const result = await verifyEmail(token);
     return res.status(200).json(result);
