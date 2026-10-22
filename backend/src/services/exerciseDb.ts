@@ -46,16 +46,26 @@ const TIME_EQUIPMENT = new Set([
   "jump rope",
 ]);
 const TIMED_CARDIO_NAME = /\b(run|running|walk|walking|jog|jogging|cycling|skipping)\b|jump rope/;
+// Static bodyweight holds (plank, wall sit, L-sit, levers, planche…) are
+// held for a time — but not their moving variants (plank shoulder taps,
+// wall sit march, side plank hip lifts…), which are counted in reps.
+const HOLD_NAME = /\bhold\b|\bhang\b|plank|wall sit|l-sit|hollow body|isometric/;
+const MOVING_VARIANT =
+  /pike|rotation|jack|tap|raise|lift|push-up|march|alternating|extension|bend|touch/;
 
 // What a set of this exercise records (see Exercise.trackingType): a
-// duration for cardio machines and running/walking/cycling/jump-rope
-// cardio, reps only for bodyweight moves, otherwise weight × reps.
+// duration for cardio machines, running/walking/cycling/jump-rope cardio
+// and static bodyweight holds, reps only for other bodyweight moves,
+// otherwise weight × reps.
 // "weighted" equipment (weighted pull-ups…) is its own category and keeps
 // its weight input.
 export function trackingTypeFor(entry: ExerciseDbEntry): "TIME" | "REPS" | null {
   if (
     TIME_EQUIPMENT.has(entry.equipment) ||
-    (entry.target === "cardiovascular system" && TIMED_CARDIO_NAME.test(entry.name))
+    (entry.target === "cardiovascular system" && TIMED_CARDIO_NAME.test(entry.name)) ||
+    (entry.equipment === "body weight" &&
+      HOLD_NAME.test(entry.name) &&
+      !MOVING_VARIANT.test(entry.name))
   ) {
     return "TIME";
   }

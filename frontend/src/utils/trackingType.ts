@@ -23,6 +23,22 @@ export function inferTrackingType(exerciseName: string): TrackingType {
     return "TIME";
   }
 
+  // Static holds — plank / "planche", wall sit / "chaise", L-sit, dead
+  // hang… — but not their moving variants (shoulder taps, hip lifts…).
+  if (
+    !test(name, /weighted|lest[ée]/) &&
+    test(
+      name,
+      /plank|planche|gainage|wall sit|chaise|\bhold\b|maintien|\bhang\b|suspension|l-sit|hollow|isom[ée]tri/,
+    ) &&
+    !test(
+      name,
+      /pike|rotation|jack|tap|touch|raise|lift|push[- ]?up|pompe|march|alternat|extension|bend|mont[ée]e|lev[ée]e/,
+    )
+  ) {
+    return "TIME";
+  }
+
   if (
     !test(name, /weighted|lest[ée]/) &&
     test(

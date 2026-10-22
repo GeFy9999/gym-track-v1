@@ -35,6 +35,20 @@ describe("catalog tracking type", () => {
     ).toBe("TIME");
   });
 
+  it("times static bodyweight holds, not their moving variants", () => {
+    const bw = (name: string) => trackingTypeFor(entry({ name, equipment: "body weight" }));
+    expect(bw("bench-supported side plank")).toBe("TIME");
+    expect(bw("front lever hold")).toBe("TIME");
+    expect(bw("floor L-sit hold")).toBe("TIME");
+    expect(bw("German hang on rings")).toBe("TIME");
+    expect(bw("plank shoulder tap")).toBe("REPS");
+    expect(bw("side plank hip lift")).toBe("REPS");
+    expect(bw("wall sit march")).toBe("REPS");
+    expect(bw("burpee with plank jack")).toBe("REPS");
+    // A weighted plank keeps its weight input.
+    expect(trackingTypeFor(entry({ name: "weighted forearm plank", equipment: "weighted" }))).toBeNull();
+  });
+
   it("logs bodyweight moves as reps only, but keeps weight for weighted ones", () => {
     expect(trackingTypeFor(entry({ name: "push-up", equipment: "body weight" }))).toBe("REPS");
     // Cardio that isn't running/walking (burpees…) is still counted in reps.
