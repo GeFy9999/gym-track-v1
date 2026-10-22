@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Capacitor } from "@capacitor/core";
+import { App as CapacitorApp } from "@capacitor/app";
 import { LocalNotifications } from "@capacitor/local-notifications";
 import i18n from "../i18n";
 
@@ -89,12 +90,23 @@ function notifyRestOver() {
   }
 }
 
+// How often the remaining time is re-read from the clock. Faster than once a
+// second so the displayed value never visibly skips a second when a tick
+// lands late.
+const TICK_MS = 250;
+
 export function useRestTimer(defaultSeconds: number) {
   const [secondsLeft, setSecondsLeft] = useState(0);
   const [totalSeconds, setTotalSeconds] = useState(0);
   const [isActive, setIsActive] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
+  // When the rest ends (ms timestamp). The remaining time is always derived
+  // from this rather than counted down tick by tick: Android pauses the
+  // WebView's timers while the app is in the background, so a countdown
+  // would freeze there and still be running when the user comes back,
+  // long after the OS notification told them the rest was over.
+  const endAtRef = useRef<number | null>(null);
 
   const clearTimer = useCallback(() => {
     if (intervalRef.current) {
@@ -105,6 +117,7 @@ export function useRestTimer(defaultSeconds: number) {
 
   const skip = useCallback(() => {
     clearTimer();
+    endAtRef.current = null;
     setIsActive(false);
     setSecondsLeft(0);
     cancelNativeRestOverNotification();
@@ -124,6 +137,65 @@ export function useRestTimer(defaultSeconds: number) {
       notifyRestOver();
     }
   }, []);
+
+  // Re-reads the remaining time from the clock. `returning` is set when the
+  // app/tab comes back to the foreground.
+  const sync = useCallback(
+    (returning = false) => {
+      const endAt = endAtRef.current;
+      if (endAt === null) return;
+
+      const left = Math.max(0, Math.ceil((endAt - Date.now()) / 1000));
+      if (left > 0) {
+        setSecondsLeft(left);
+        return;
+      }
+
+      endAtRef.current = null;
+      clearTimer();
+      setIsActive(false);
+      setSecondsLeft(0);
+      // Ended while the native app was in the background: the OS
+      // notification already rang, so just close the timer quietly
+      // instead of beeping late when the user comes back.
+      const endedInBackground =
+        Capacitor.isNativePlatform() && (returning || document.hidden);
+      if (!endedInBackground) handleTimerEnd();
+    },
+    [clearTimer, handleTimerEnd],
+  );
+
+  const runTicker = useCallback(() => {
+    clearTimer();
+    intervalRef.current = setInterval(() => sync(), TICK_MS);
+  }, [clearTimer, sync]);
+
+  // Catch up the moment the app is back on screen, without waiting for the
+  // next tick (which, after a background pause, may take a moment to come).
+  useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState === "visible") sync(true);
+    };
+    document.addEventListener("visibilitychange", onVisible);
+
+    let disposed = false;
+    let removeResume: (() => void) | undefined;
+    if (Capacitor.isNativePlatform()) {
+      CapacitorApp.addListener("resume", () => sync(true))
+        .then((handle) => {
+          // Unmounted before the listener finished registering.
+          if (disposed) handle.remove();
+          else removeResume = () => handle.remove();
+        })
+        .catch(() => {});
+    }
+
+    return () => {
+      disposed = true;
+      document.removeEventListener("visibilitychange", onVisible);
+      removeResume?.();
+    };
+  }, [sync]);
 
   const start = useCallback(
     (seconds?: number) => {
@@ -153,43 +225,37 @@ export function useRestTimer(defaultSeconds: number) {
         // Audio isn't critical to the feature — never let it break the timer.
       }
 
-      clearTimer();
+      endAtRef.current = Date.now() + total * 1000;
       setSecondsLeft(total);
       setTotalSeconds(total);
       setIsActive(true);
       scheduleNativeRestOverNotification(total);
-
-      intervalRef.current = setInterval(() => {
-        setSecondsLeft((prev) => {
-          if (prev <= 1) {
-            clearTimer();
-            setIsActive(false);
-            handleTimerEnd();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
+      runTicker();
     },
-    [defaultSeconds, clearTimer, handleTimerEnd],
+    [defaultSeconds, runTicker],
   );
 
   const adjustSeconds = useCallback(
     (delta: number) => {
-      if (!isActive) return;
-      setSecondsLeft((prev) => {
-        const next = Math.max(0, Math.min(600, prev + delta));
-        if (next <= 0) {
-          clearTimer();
-          setIsActive(false);
-          handleTimerEnd();
-          cancelNativeRestOverNotification();
-        } else {
-          scheduleNativeRestOverNotification(next);
-        }
-        setTotalSeconds((total) => Math.max(total, next));
-        return next;
-      });
+      const endAt = endAtRef.current;
+      if (!isActive || endAt === null) return;
+
+      const current = Math.max(0, Math.ceil((endAt - Date.now()) / 1000));
+      const next = Math.max(0, Math.min(600, current + delta));
+      if (next <= 0) {
+        endAtRef.current = null;
+        clearTimer();
+        setIsActive(false);
+        setSecondsLeft(0);
+        handleTimerEnd();
+        cancelNativeRestOverNotification();
+        return;
+      }
+
+      endAtRef.current = Date.now() + next * 1000;
+      setSecondsLeft(next);
+      setTotalSeconds((total) => Math.max(total, next));
+      scheduleNativeRestOverNotification(next);
     },
     [isActive, clearTimer, handleTimerEnd],
   );
