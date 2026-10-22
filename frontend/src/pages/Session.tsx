@@ -886,7 +886,7 @@ export default function SessionPage() {
   return (
     <div className="min-h-screen bg-[#faf6f1] pb-8">
       <div
-        className="flex items-center justify-between gap-3 px-page pt-8 pb-6"
+        className="flex items-center justify-between gap-3 px-page-focus pt-8 pb-6"
         style={{ background: "#191714" }}
       >
         <div className="flex items-center gap-3 min-w-0">
@@ -931,7 +931,7 @@ export default function SessionPage() {
         )}
       </div>
 
-      <div ref={listRef} className="px-page pt-5 space-y-4">
+      <div ref={listRef} className="px-page-focus pt-5 space-y-4">
         {!readOnly && !isEditMode && (
           <AddExercisePanel
             muscleGroup={session.muscleGroup}

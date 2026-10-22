@@ -277,7 +277,7 @@ export default function MuscleGroupsCards({
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
-        className="flex gap-3 overflow-x-auto hide-scrollbar px-page pt-4 pb-2 cursor-grab active:cursor-grabbing select-none"
+        className="flex gap-3 overflow-x-auto hide-scrollbar px-page pt-4 pb-2 cursor-grab active:cursor-grabbing select-none lg:grid lg:grid-cols-5 lg:overflow-visible lg:cursor-default"
       >
         {groups.map((group) => {
           const isDone = completedGroups.has(group.name);
@@ -288,7 +288,7 @@ export default function MuscleGroupsCards({
               key={group.id}
               data-group={group.name}
               onClick={() => handleClick(group)}
-              className={`relative flex-shrink-0 w-36 rounded-2xl pt-6 pb-3 flex flex-col items-center transition-all shadow-sm ${
+              className={`relative flex-shrink-0 w-36 lg:w-auto rounded-2xl pt-6 pb-3 flex flex-col items-center transition-all shadow-sm ${
                 isActive
                   ? "bg-[#ece7dd] border-2 border-[#c9552c] active:scale-[0.97]"
                   : "bg-[#ece7dd] active:scale-[0.97]"

@@ -333,7 +333,7 @@ export default function ExercisesPage() {
               />
             </button>
             {trackedOpen && (
-              <div className="space-y-2">
+              <div className="space-y-2 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-2">
                 {trackedExercises.map((ex) => renderCard(ex))}
               </div>
             )}
@@ -349,11 +349,11 @@ export default function ExercisesPage() {
               {filtered.length}
             </span>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-2 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-2">
             {visible.map((ex) => renderCard(ex))}
             {visible.length === 0 &&
               (loadError ? (
-                <div className="flex flex-col items-center py-8">
+                <div className="flex flex-col items-center py-8 lg:col-span-2">
                   <p className="text-sm font-bold text-gray-900">
                     {t("exercises.loadError")}
                   </p>
@@ -371,12 +371,12 @@ export default function ExercisesPage() {
                   </button>
                 </div>
               ) : (
-                <p className="text-sm text-gray-400 text-center py-8">
+                <p className="text-sm text-gray-400 text-center py-8 lg:col-span-2">
                   {t("exercises.noneFound")}
                 </p>
               ))}
             {hasMore && (
-              <p className="text-xs text-gray-400 text-center py-3">
+              <p className="text-xs text-gray-400 text-center py-3 lg:col-span-2">
                 {t("exercises.scrollForMore")}
               </p>
             )}
