@@ -21,6 +21,7 @@ import { useIsPro } from "../hooks/useIsPro";
 import { getDefaultBarWeight } from "../utils/plates";
 import { inferLoadingType, isLoadingType, type LoadingType } from "../utils/loadingType";
 import { useExerciseLoadingTypes } from "../hooks/useExerciseLoadingTypes";
+import { getTrackingType, type TrackingType } from "../utils/trackingType";
 import type { WarmupSetPlan } from "../utils/warmup";
 import PRCelebration from "../components/session/PRCelebration";
 import Toast from "../components/Toast";
@@ -182,6 +183,21 @@ export default function SessionPage() {
       ? se.exercise.loadingType
       : inferLoadingType(se.exercise.name));
 
+  // Bodyweight exercises have no weight to enter by default — unless a Pro
+  // user explicitly picked a loading type for it (e.g. added weight on
+  // dips), which brings the weight input back.
+  const getEffectiveTrackingType = (se: SessionExercise): TrackingType => {
+    const tracking = getTrackingType(se.exercise);
+    if (
+      tracking === "REPS" &&
+      loadingTypesEnabled &&
+      se.exercise.id in loadingTypeOverrides
+    ) {
+      return "WEIGHT_REPS";
+    }
+    return tracking;
+  };
+
   const getBarWeight = (sessionExerciseId: string) =>
     barWeights[sessionExerciseId] ?? getDefaultBarWeight(getWeightUnit());
 
@@ -335,6 +351,9 @@ export default function SessionPage() {
       weight: lastSet ? lastSet.weight : 0,
       reps: lastSet ? lastSet.reps : 0,
       unit: lastSet ? lastSet.unit : getWeightUnit(),
+      ...(lastSet?.durationSeconds
+        ? { durationSeconds: lastSet.durationSeconds }
+        : {}),
     };
 
     const result = await offlineAwareFetch("POST", "/sets", payload, "Nouveau set");
@@ -513,7 +532,12 @@ export default function SessionPage() {
 
   const updateSet = async (
     setId: string,
-    data: { weight?: number; reps?: number; type?: string },
+    data: {
+      weight?: number;
+      reps?: number;
+      type?: string;
+      durationSeconds?: number;
+    },
   ) => {
     // Optimistic update first for instant UI feedback
     setSession((prev) => {
@@ -551,6 +575,21 @@ export default function SessionPage() {
           ...s,
           sets: s.sets.map((st) =>
             st.id === setId ? { ...st, weight } : st,
+          ),
+        })),
+      };
+    });
+  };
+
+  const setLocalDuration = (setId: string, durationSeconds: number) => {
+    setSession((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        sessionExercises: prev.sessionExercises.map((s) => ({
+          ...s,
+          sets: s.sets.map((st) =>
+            st.id === setId ? { ...st, durationSeconds } : st,
           ),
         })),
       };
@@ -815,7 +854,18 @@ export default function SessionPage() {
 
         {!isEditMode &&
           session.sessionExercises.map((se, seIndex) => {
-            const loadingType = loadingTypesEnabled ? getLoadingType(se) : null;
+            const trackingType = getEffectiveTrackingType(se);
+            // No loading type for a timed exercise. A bodyweight one left
+            // on its default shows "Bodyweight" on its chip — picking a
+            // loading type there brings the weight input back (added
+            // weight, assistance…).
+            const loadingType: LoadingType | null = !loadingTypesEnabled
+              ? null
+              : trackingType === "TIME"
+                ? null
+                : trackingType === "REPS"
+                  ? "BODYWEIGHT"
+                  : getLoadingType(se);
             const barWeight = getBarWeight(se.id);
             const delta = deltas.get(se.exercise.id);
             const lastTime = lastTimes.get(se.exercise.id);
@@ -838,6 +888,7 @@ export default function SessionPage() {
                 seIndex={seIndex}
                 totalExercises={session.sessionExercises.length}
                 loadingType={loadingType}
+                trackingType={trackingType}
                 barWeight={barWeight}
                 unit={unit}
                 readOnly={readOnly}
@@ -902,6 +953,10 @@ export default function SessionPage() {
                 }
                 onLocalRepsChange={setLocalReps}
                 onCommitReps={(setId, reps) => updateSet(setId, { reps })}
+                onLocalDurationChange={setLocalDuration}
+                onCommitDuration={(setId, durationSeconds) =>
+                  updateSet(setId, { durationSeconds })
+                }
                 onToggleSetCompleted={(set) => toggleSetCompleted(set, se)}
                 onDeleteSet={deleteSet}
                 onAddSet={() => addSet(se.id, se.sets)}

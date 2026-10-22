@@ -215,6 +215,7 @@
       "weight": "Weight",
       "unit": "Unit",
       "reps": "Reps",
+      "duration": "Duration",
       "validated": "Validated",
       "yes": "Yes",
       "no": "No"
@@ -263,6 +264,14 @@
       "autoWarmup": "Auto warm-up",
       "addSet": "Add a set"
     },
+    "duration": "Duration",
+    "durationMinutes": "Minutes",
+    "durationSeconds": "Seconds",
+    "bodyweight": "Body weight",
+    "lastTimeDuration_one": "{{count}} set of {{duration}}",
+    "lastTimeDuration_other": "{{count}} sets of {{duration}}",
+    "lastTimeBodyweight_one": "{{count}} set of {{reps}} reps at body weight",
+    "lastTimeBodyweight_other": "{{count}} sets of {{reps}} reps at body weight",
     "lastTimeUniform_one": "{{count}} set of {{reps}} rep at {{weight}} {{unit}}",
     "lastTimeUniform_plural_one": "{{count}} set of {{reps}} reps at {{weight}} {{unit}}",
     "lastTimeUniform_other": "{{count}} sets of {{reps}} rep at {{weight}} {{unit}}",

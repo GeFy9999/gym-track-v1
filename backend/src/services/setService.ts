@@ -5,11 +5,11 @@ import {
   getSetsBySessionExerciseId,
 } from "../repositories/databaseRepository.js";
 
-export async function createSet(set: { sessionExerciseId: string; weight: number; reps: number; unit?: string; type?: string }) {
+export async function createSet(set: { sessionExerciseId: string; weight: number; reps: number; unit?: string; type?: string; durationSeconds?: number }) {
   return await insertSet(set);
 }
 
-export async function editSet(setId: string, data: { weight?: number; reps?: number; unit?: string; completed?: boolean; type?: string }) {
+export async function editSet(setId: string, data: { weight?: number; reps?: number; unit?: string; completed?: boolean; type?: string; durationSeconds?: number }) {
   return await updateSet(setId, data);
 }
 

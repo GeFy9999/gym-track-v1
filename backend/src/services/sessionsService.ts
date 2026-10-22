@@ -155,8 +155,11 @@ export async function getUserExerciseProgress(
     .sort((a, b) => a.week.localeCompare(b.week));
 }
 
-const hasSetData = (s: { weight: number; reps: number }) =>
-  s.weight > 0 || s.reps > 0;
+const hasSetData = (s: {
+  weight: number;
+  reps: number;
+  durationSeconds: number | null;
+}) => s.weight > 0 || s.reps > 0 || (s.durationSeconds ?? 0) > 0;
 
 // Per-exercise summary (session count + last time done) for the exercise
 // list page — avoids the frontend firing one request per exercise.
@@ -219,6 +222,7 @@ export async function getUserExerciseHistory(userId: string, exerciseId: string)
           sets: sets.map((s) => ({
             weight: s.weight,
             reps: s.reps,
+            durationSeconds: s.durationSeconds,
             unit: s.unit,
             type: s.type,
           })),

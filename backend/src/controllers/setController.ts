@@ -23,6 +23,12 @@ import {
 
 export const setsRouter = express.Router();
 
+// A timed set's duration: whole seconds, up to a day.
+const optionalDuration = (v: unknown) => {
+  const n = optionalNumber(v);
+  return n === undefined ? undefined : Math.min(86_400, Math.max(0, Math.round(n)));
+};
+
 // GET /api/sets/:sessionExerciseId - tous les sets d'un exercice de session
 setsRouter.get(
   "/:sessionExerciseId",
@@ -69,6 +75,7 @@ setsRouter.post("", authMiddleware, async (req: AuthRequest, res) => {
       ...definedOnly({
         unit: optionalString(body.unit, 10),
         type: optionalString(body.type, 20),
+        durationSeconds: optionalDuration(body.durationSeconds),
       }),
     });
     return res.status(201).json(set);
@@ -94,6 +101,7 @@ setsRouter.patch("/:id", authMiddleware, async (req: AuthRequest, res) => {
         unit: optionalString(body.unit, 10),
         completed: optionalBoolean(body.completed),
         type: optionalString(body.type, 20),
+        durationSeconds: optionalDuration(body.durationSeconds),
       }),
     );
     return res.status(200).json(set);

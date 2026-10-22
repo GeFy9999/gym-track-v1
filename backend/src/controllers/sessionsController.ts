@@ -126,7 +126,15 @@ sessionsRouter.get("/me", authMiddleware, async (req: AuthRequest, res) => {
             date: { gte: requestedStart, lt: cutoff },
             sessionExercises: {
               some: {
-                sets: { some: { OR: [{ weight: { gt: 0 } }, { reps: { gt: 0 } }] } },
+                sets: {
+                  some: {
+                    OR: [
+                      { weight: { gt: 0 } },
+                      { reps: { gt: 0 } },
+                      { durationSeconds: { gt: 0 } },
+                    ],
+                  },
+                },
               },
             },
           },

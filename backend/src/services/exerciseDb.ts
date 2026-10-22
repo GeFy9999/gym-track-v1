@@ -34,6 +34,35 @@ export type ExerciseDbEntry = {
   description: string;
 };
 
+// Cardio machines, logged as a duration rather than weight × reps.
+const TIME_EQUIPMENT = new Set([
+  "treadmill",
+  "stationary bike",
+  "elliptical machine",
+  "stepmill machine",
+  "skierg machine",
+  "air bike",
+  "upper body ergometer",
+  "jump rope",
+]);
+const TIMED_CARDIO_NAME = /\b(run|running|walk|walking|jog|jogging|cycling|skipping)\b|jump rope/;
+
+// What a set of this exercise records (see Exercise.trackingType): a
+// duration for cardio machines and running/walking/cycling/jump-rope
+// cardio, reps only for bodyweight moves, otherwise weight × reps.
+// "weighted" equipment (weighted pull-ups…) is its own category and keeps
+// its weight input.
+export function trackingTypeFor(entry: ExerciseDbEntry): "TIME" | "REPS" | null {
+  if (
+    TIME_EQUIPMENT.has(entry.equipment) ||
+    (entry.target === "cardiovascular system" && TIMED_CARDIO_NAME.test(entry.name))
+  ) {
+    return "TIME";
+  }
+  if (entry.equipment === "body weight") return "REPS";
+  return null;
+}
+
 // ExerciseDB ids are 4 digits; anything else must never reach a file path.
 const VALID_ID = /^\d{4}$/;
 
@@ -212,7 +241,7 @@ export async function importExerciseDb(
 
   const builtIns = await prisma.exercise.findMany({
     where: { isCustom: false },
-    select: { id: true, name: true, exerciseDbId: true },
+    select: { id: true, name: true, exerciseDbId: true, trackingType: true },
   });
 
   const claims = new Map<string, typeof builtIns>();
@@ -248,7 +277,13 @@ export async function importExerciseDb(
       const muscleGroupId = groupIdByName.get(muscleGroupNameFor(entry));
       if (!muscleGroupId) continue;
       await prisma.exercise.create({
-        data: { name, muscleGroupId, exerciseDbId: entry.id, isCustom: false },
+        data: {
+          name,
+          muscleGroupId,
+          exerciseDbId: entry.id,
+          isCustom: false,
+          trackingType: trackingTypeFor(entry),
+        },
       });
       stats.created++;
       continue;
@@ -272,6 +307,13 @@ export async function importExerciseDb(
           data: { exerciseDbId: entry.id, name, image: null },
         });
         if (ex.name !== name) stats.renamed++;
+      }
+      const trackingType = trackingTypeFor(entry);
+      if (ex.trackingType !== trackingType) {
+        await prisma.exercise.update({
+          where: { id: ex.id },
+          data: { trackingType },
+        });
       }
       stats.linked++;
     }
