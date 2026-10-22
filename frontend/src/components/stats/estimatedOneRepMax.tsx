@@ -95,7 +95,7 @@ export default function EstimatedOneRepMax({ isPro }: { isPro: boolean }) {
 
   if (!isPro) {
     return (
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {withData.map((ex) => (
           <OneRepMaxCard key={ex.exerciseId} name={ex.name} points={ex.points} />
         ))}
@@ -105,7 +105,7 @@ export default function EstimatedOneRepMax({ isPro }: { isPro: boolean }) {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-2 gap-3 animate-pulse">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 animate-pulse">
         {[1, 2].map((i) => (
           <div key={i} className="bg-[#ece7dd] rounded-2xl p-4 shadow-sm">
             <div className="h-3 w-20 bg-gray-300/50 rounded mb-2" />
@@ -129,7 +129,7 @@ export default function EstimatedOneRepMax({ isPro }: { isPro: boolean }) {
   }
 
   return (
-    <div className="grid grid-cols-2 gap-3">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
       {withData.map((ex) => (
         <OneRepMaxCard
           key={ex.exerciseId}

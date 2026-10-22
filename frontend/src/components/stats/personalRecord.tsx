@@ -50,7 +50,7 @@ export default function PersonalRecordCards() {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-2 gap-3 animate-pulse">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 animate-pulse">
         {[1, 2, 3, 4].map((i) => (
           <div key={i} className="bg-[#ece7dd] rounded-2xl p-4 shadow-sm">
             <div className="h-3 w-20 bg-gray-300/50 rounded mb-3" />
@@ -64,7 +64,7 @@ export default function PersonalRecordCards() {
   if (records.length === 0) {
     const placeholders = ["Bench Press", "Squat", "Deadlift", "Rowing"];
     return (
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {placeholders.map((name) => (
           <div key={name} className="bg-[#ece7dd] rounded-2xl p-4 shadow-sm">
             <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-3">
@@ -83,7 +83,7 @@ export default function PersonalRecordCards() {
   }
 
   return (
-    <div className="grid grid-cols-2 gap-3">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
       {records.map(({ name, weight, exerciseId }) => (
         // Opens the exercise's detail page (history, records by reps, charts).
         <button

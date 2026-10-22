@@ -2,8 +2,18 @@
 
 /* Page gutters that grow on wide screens (tablets, phones in landscape):
    20px on a phone, and past a readable width the content stays centered —
-   while full-bleed backgrounds (the dark headers) still span the screen. */
+   while full-bleed backgrounds (the dark headers) still span the screen.
+   Large tablets (iPad Pro: 1024px+) get a wider column, so the page uses
+   the screen instead of floating in the middle of it. */
 @utility px-page {
+  padding-inline: max(1.25rem, calc((100% - 48rem) / 2));
+  @media (width >= 64rem) {
+    padding-inline: max(2.5rem, calc((100% - 64rem) / 2));
+  }
+}
+/* For screens you type on mid-workout (the session): stays at the phone-ish
+   48rem column even on a large tablet — full-width inputs are harder to use. */
+@utility px-page-focus {
   padding-inline: max(1.25rem, calc((100% - 48rem) / 2));
 }
 /* Same for forms (login, signup…): a narrower column. */
