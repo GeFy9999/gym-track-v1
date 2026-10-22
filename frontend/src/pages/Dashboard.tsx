@@ -14,6 +14,7 @@ import { getWeightUnit } from "../utils/units";
 import { useUiChrome } from "../contexts/UiChromeContext";
 import { getDateLocale } from "../i18n";
 import { getMuscleGroupLabel } from "../utils/muscleGroupLabel";
+import { hasSetData } from "../utils/trackingType";
 import {
   clearFinishedExercises,
   unmarkExercisesFinished,
@@ -404,6 +405,7 @@ export default function DashboardPage() {
             sets: {
               weight: number;
               reps: number;
+              durationSeconds?: number | null;
               completed: boolean;
               type: string;
             }[];
@@ -414,8 +416,12 @@ export default function DashboardPage() {
           .filter((s) => s.completed)
           .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-        const isWorkingSet = (s: { weight: number; reps: number; type: string }) =>
-          s.type !== "warmup" && (s.weight > 0 || s.reps > 0);
+        const isWorkingSet = (s: {
+          weight: number;
+          reps: number;
+          durationSeconds?: number | null;
+          type: string;
+        }) => s.type !== "warmup" && hasSetData(s);
 
         // Baseline: best weight ever validated, from sessions already
         // completed before this one.
@@ -496,13 +502,12 @@ export default function DashboardPage() {
               sets: {
                 weight: number;
                 reps: number;
+                durationSeconds?: number | null;
                 completed: boolean;
                 type: string;
               }[];
             }[]) {
-              const performedSets = se.sets.filter(
-                (s) => s.weight > 0 || s.reps > 0,
-              );
+              const performedSets = se.sets.filter(hasSetData);
               if (performedSets.length > 0) totalExercises += 1;
 
               const workingSets = performedSets.filter(isWorkingSet);

@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Check } from "lucide-react";
 import { API_URL } from "../../lib/api";
 import { getMuscleGroupLabel } from "../../utils/muscleGroupLabel";
+import { hasSetData } from "../../utils/trackingType";
 import {
   getFinishedExerciseSessionIds,
   unmarkExercisesFinished,
@@ -96,7 +97,7 @@ export default function MuscleGroupsCards({
           muscleGroup: string;
           completed: boolean;
           sessionExercises: {
-            sets: { weight: number; reps: number }[];
+            sets: { weight: number; reps: number; durationSeconds?: number | null }[];
           }[];
         }[] = await res.json();
 
@@ -120,7 +121,7 @@ export default function MuscleGroupsCards({
                 !s.completed &&
                 !isFinishedPending(s) &&
                 s.sessionExercises.some((se) =>
-                  se.sets.some((set) => set.weight > 0 || set.reps > 0),
+                  se.sets.some(hasSetData),
                 ),
             )
             .map((s) => s.muscleGroup),

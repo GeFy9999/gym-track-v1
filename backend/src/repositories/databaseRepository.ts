@@ -175,6 +175,7 @@ export async function insertSet(set: {
   reps: number;
   unit?: string;
   type?: string;
+  durationSeconds?: number;
 }) {
   return await prisma.set.create({
     data: set,
@@ -189,6 +190,7 @@ export async function updateSet(
     unit?: string;
     completed?: boolean;
     type?: string;
+    durationSeconds?: number;
   },
 ) {
   return await prisma.set.update({

@@ -5,6 +5,8 @@ export type SetData = {
   unit: string;
   completed: boolean;
   type: string;
+  // Timed exercises only (see utils/trackingType).
+  durationSeconds?: number | null;
 };
 
 export type SessionExercise = {
@@ -15,6 +17,9 @@ export type SessionExercise = {
     image: string | null;
     // Curated loading type (see utils/loadingType); null when not set.
     loadingType?: string | null;
+    // What a set records (see utils/trackingType); null = weight × reps.
+    trackingType?: string | null;
+    isCustom?: boolean;
   };
   sets: SetData[];
   supersetId: string | null;

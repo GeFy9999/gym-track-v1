@@ -127,6 +127,12 @@ model Exercise {
   // exercise name, and each user can still override it per exercise
   // (ExerciseLoadingType).
   loadingType          String?
+  // What a set of this exercise records: null = weight × reps (default),
+  // "REPS" = bodyweight, reps only (no weight to enter), "TIME" = a
+  // duration (treadmill, bike, stairs…). Set from the ExerciseDB catalog
+  // (services/exerciseDb.ts); the app guesses it from the name when null
+  // on a custom exercise.
+  trackingType         String?
   muscleGroup          MuscleGroup           @relation(fields: [muscleGroupId], references: [id])
   sessionExercises     SessionExercise[]
   trackedBy            TrackedExercise[]
@@ -156,6 +162,9 @@ model Set {
   unit              String  @default("lb")
   completed         Boolean @default(false)
   type              String  @default("normal")
+  // Timed exercises (Exercise.trackingType = "TIME"): how long, instead of
+  // weight/reps.
+  durationSeconds   Int?
 
   sessionExercise SessionExercise @relation(fields: [sessionExerciseId], references: [id])
 }

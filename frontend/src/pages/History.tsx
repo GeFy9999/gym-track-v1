@@ -17,7 +17,8 @@ import {
 import { API_URL } from "../lib/api";
 import { getDateLocale } from "../i18n";
 import { getMuscleGroupLabel } from "../utils/muscleGroupLabel";
-import { formatWorkoutDuration } from "../utils/units";
+import { formatDuration, formatWorkoutDuration } from "../utils/units";
+import { hasSetData } from "../utils/trackingType";
 import TourOverlay from "../components/TourOverlay";
 import Toast from "../components/Toast";
 import { useToast } from "../hooks/useToast";
@@ -39,6 +40,7 @@ type SessionData = {
     sets: {
       weight: number;
       reps: number;
+      durationSeconds?: number | null;
       unit: string;
       completed: boolean;
       type: string;
@@ -67,8 +69,6 @@ const dateKey = (d: Date) =>
 
 const startOfMonth = (d: Date) => new Date(d.getFullYear(), d.getMonth(), 1);
 
-const hasSetData = (s: { weight: number; reps: number }) =>
-  s.weight > 0 || s.reps > 0;
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
@@ -361,6 +361,7 @@ export default function HistoryPage() {
           t("history.csv.weight"),
           t("history.csv.unit"),
           t("history.csv.reps"),
+          t("history.csv.duration"),
           t("history.csv.validated"),
         ]
           .map(escapeCsvField)
@@ -385,6 +386,7 @@ export default function HistoryPage() {
                 set.weight,
                 set.unit,
                 set.reps,
+                set.durationSeconds ? formatDuration(set.durationSeconds) : "",
                 set.completed ? t("history.csv.yes") : t("history.csv.no"),
               ]
                 .map(escapeCsvField)

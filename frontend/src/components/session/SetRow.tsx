@@ -15,6 +15,7 @@ import {
   toTotalWeight,
   type LoadingType,
 } from "../../utils/loadingType";
+import type { TrackingType } from "../../utils/trackingType";
 import { playSetCompleteSound } from "../../utils/sound";
 import PlateRow from "./PlateRow";
 import SetTypeMenu from "./SetTypeMenu";
@@ -39,6 +40,8 @@ type Props = {
   index: number;
   // null = plain "Weight" input (loading types off / free plan).
   loadingType: LoadingType | null;
+  // REPS: bodyweight, no weight input. TIME: a duration instead of both.
+  trackingType: TrackingType;
   barWeight: number;
   unit: string;
   readOnly: boolean;
@@ -51,6 +54,8 @@ type Props = {
   onCommitWeight: (weight: number) => void;
   onLocalRepsChange: (reps: number) => void;
   onCommitReps: (reps: number) => void;
+  onLocalDurationChange: (seconds: number) => void;
+  onCommitDuration: (seconds: number) => void;
   onToggleCompleted: () => void;
   onDelete: () => void;
 };
@@ -59,6 +64,7 @@ export default function SetRow({
   set,
   index,
   loadingType,
+  trackingType,
   barWeight,
   unit,
   readOnly,
@@ -71,10 +77,23 @@ export default function SetRow({
   onCommitWeight,
   onLocalRepsChange,
   onCommitReps,
+  onLocalDurationChange,
+  onCommitDuration,
   onToggleCompleted,
   onDelete,
 }: Props) {
   const { t } = useTranslation();
+  // Timed sets: minutes and seconds typed separately, stored as seconds.
+  const durationTotal = set.durationSeconds ?? 0;
+  const durationMinutes = Math.floor(durationTotal / 60);
+  const durationSecs = durationTotal % 60;
+  const toSeconds = (minutes: string, seconds: string) => {
+    const m = clamp(Number(minutes.replace(/[^0-9]/g, "") || 0), 0, 999);
+    // The field shows zero-padded seconds ("05"), so typing appends to it:
+    // only the last two digits count.
+    const s = clamp(Number(seconds.replace(/[^0-9]/g, "").slice(-2) || 0), 0, 59);
+    return m * 60 + s;
+  };
   // set.weight always stores the TOTAL load. Barbells and plate-loaded
   // machines are entered per side (that's how they're loaded): the input
   // shows the weight on one side, and the total adds the other side — plus
@@ -122,6 +141,65 @@ export default function SetRow({
         </button>
 
         <div className="grid grid-cols-2 gap-3 flex-1">
+          {trackingType === "TIME" ? (
+            <div className="col-span-2 bg-gray-100 rounded-2xl p-3">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">
+                {t("session.duration")}
+              </p>
+              <div className="flex items-baseline gap-1">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  aria-label={t("session.durationMinutes")}
+                  value={durationMinutes === 0 && durationSecs === 0 ? "" : durationMinutes}
+                  placeholder="0"
+                  onChange={(e) =>
+                    onLocalDurationChange(
+                      toSeconds(e.target.value, String(durationSecs)),
+                    )
+                  }
+                  onFocus={(e) => e.target.select()}
+                  onBlur={() => onCommitDuration(set.durationSeconds ?? 0)}
+                  disabled={readOnly}
+                  className="w-16 min-w-0 bg-transparent text-3xl font-black text-gray-900 focus:outline-none text-right"
+                />
+                <span className="text-sm font-bold text-gray-400 mr-3">min</span>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  aria-label={t("session.durationSeconds")}
+                  value={durationMinutes === 0 && durationSecs === 0 ? "" : String(durationSecs).padStart(2, "0")}
+                  placeholder="00"
+                  onChange={(e) =>
+                    onLocalDurationChange(
+                      toSeconds(String(durationMinutes), e.target.value),
+                    )
+                  }
+                  onFocus={(e) => e.target.select()}
+                  onBlur={() => onCommitDuration(set.durationSeconds ?? 0)}
+                  disabled={readOnly}
+                  className="w-12 min-w-0 bg-transparent text-3xl font-black text-gray-900 focus:outline-none text-right"
+                />
+                <span className="text-sm font-bold text-gray-400">s</span>
+              </div>
+            </div>
+          ) : (
+          <>
+          {trackingType === "REPS" ? (
+            <div
+              data-tour="session-set-weight"
+              className="bg-gray-100 rounded-2xl p-3 flex flex-col"
+            >
+              <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">
+                {t("session.weight")}
+              </p>
+              <p className="flex-1 flex items-center text-base font-black uppercase text-gray-900 leading-tight">
+                {t("session.bodyweight")}
+              </p>
+            </div>
+          ) : (
           <div
             data-tour="session-set-weight"
             className="relative bg-gray-100 rounded-2xl p-3"
@@ -186,6 +264,7 @@ export default function SetRow({
               </span>
             </div>
           </div>
+          )}
 
           <div data-tour="session-set-reps" className="bg-gray-100 rounded-2xl p-3">
             <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">
@@ -215,6 +294,8 @@ export default function SetRow({
               className="w-full min-w-0 bg-transparent text-3xl font-black text-gray-900 focus:outline-none"
             />
           </div>
+          </>
+          )}
         </div>
 
         {!readOnly && (
