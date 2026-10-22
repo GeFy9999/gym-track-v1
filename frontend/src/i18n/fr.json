@@ -1,5 +1,6 @@
 {
   "common": {
+    "loading": "Chargement",
     "user": "Utilisateur",
     "exercise": "Exercice",
     "notEnoughData": "Pas encore assez de données",
@@ -10,6 +11,8 @@
     "googleLegalPrefix": "En continuant avec Google, tu confirmes avoir au moins 16 ans et tu acceptes nos"
   },
   "offline": {
+    "finishNeedsConnection": "Pas de connexion : tes séries sont gardées, termine la séance une fois reconnecté.",
+    "needsConnection": "Connexion requise pour cette action",
     "offline": "Mode hors ligne",
     "syncing_one": "Synchronisation... ({{count}})",
     "syncing_other": "Synchronisation... ({{count}})"

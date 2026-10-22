@@ -8,6 +8,7 @@ import "./index.css";
 import i18n from "./i18n";
 import App from "./App.tsx";
 import { initSyncQueue } from "./lib/syncQueue";
+import { trackApiRequests } from "./lib/networkActivity";
 
 // A signed-in account's saved language always wins over whatever the browser
 // locale detector guessed, so a returning user sees their own preference
@@ -22,6 +23,7 @@ try {
   // Corrupt localStorage shouldn't block the app from booting.
 }
 
+trackApiRequests();
 initSyncQueue();
 
 if ("serviceWorker" in navigator) {

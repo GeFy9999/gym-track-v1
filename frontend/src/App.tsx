@@ -28,6 +28,8 @@ import { RestTimerProvider, useRestTimerContext } from "./contexts/RestTimerCont
 import { UiChromeProvider, useUiChrome } from "./contexts/UiChromeContext";
 import RestTimer from "./components/session/RestTimer";
 import OfflineBanner from "./components/OfflineBanner";
+import NetworkIndicator from "./components/NetworkIndicator";
+import { FullPageSpinner } from "./components/Spinner";
 import { Capacitor } from "@capacitor/core";
 import { App as CapacitorApp } from "@capacitor/app";
 import { syncLoyaltyReminders } from "./lib/loyaltyReminders";
@@ -86,8 +88,14 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
       return;
     }
 
+    // A bad gym signal can leave this hanging: past a few seconds, treat it
+    // like being offline rather than keeping the user on a spinner.
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 6000);
+
     fetch(`${API_URL}/sessions/me/streak`, {
       headers: { Authorization: `Bearer ${token}` },
+      signal: controller.signal,
     })
       .then((res) => {
         if (res.ok) {
@@ -111,21 +119,29 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
           if (stored && JSON.parse(stored).emailVerified === false) {
             setNeedsVerification(true);
           }
-        } else {
+        } else if (res.status === 401 || res.status === 403) {
+          // The session really is over (expired / revoked token).
           syncLoyaltyReminders(null);
           localStorage.clear();
           stopRestTimer();
+        } else {
+          // Server error: not the user's fault — keep them signed in.
+          setValid(true);
         }
         setChecking(false);
       })
       .catch(() => {
-        localStorage.clear();
-        stopRestTimer();
+        // No connection (or it timed out): stay signed in and let the app
+        // work offline from what it has cached. Logging out here used to
+        // wipe the session on every launch without signal — and strand
+        // any workout logged offline, since syncing needs the token.
+        setValid(true);
         setChecking(false);
-      });
+      })
+      .finally(() => window.clearTimeout(timeout));
   }, [stopRestTimer]);
 
-  if (checking) return null;
+  if (checking) return <FullPageSpinner />;
   if (!valid) return <Navigate to="/login" replace />;
   if (needsVerification) return <Navigate to="/verify-email-pending" replace />;
   return <>{children}</>;
@@ -194,6 +210,7 @@ function AppShell() {
       {error && <Alert message={error} />}
       <GlobalRestTimer />
       <OfflineBanner />
+      <NetworkIndicator />
       <div className="min-h-screen bg-[#e8e0d8] flex justify-center">
         <div className="w-full max-w-[430px] min-h-screen bg-[#faf6f1] relative shadow-2xl">
           <Routes>

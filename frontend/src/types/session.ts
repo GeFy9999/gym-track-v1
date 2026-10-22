@@ -37,6 +37,9 @@ export type AvailableExercise = {
   id: string;
   name: string;
   image: string | null;
+  loadingType?: string | null;
+  trackingType?: string | null;
+  isCustom?: boolean;
   muscleGroup: { id: string; name: string };
 };
 

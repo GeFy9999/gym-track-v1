@@ -87,16 +87,18 @@ export default function ProgressPhotosPage() {
     setUploading(true);
     try {
       const data = await compressImage(file);
+      const tempId = `temp-${crypto.randomUUID()}`;
       const result = await offlineAwareFetch(
         "POST",
         "/progress-photos",
         { data },
         "Photo de progression",
+        { localId: tempId },
       );
       if (result.queued) {
         setPhotos((prev) => [
           {
-            id: `temp-${crypto.randomUUID()}`,
+            id: tempId,
             data,
             note: null,
             createdAt: new Date().toISOString(),
@@ -119,10 +121,8 @@ export default function ProgressPhotosPage() {
     setViewPhoto(null);
     setDeleteConfirm(null);
 
-    // A photo added offline only exists locally so far — nothing to delete
-    // on the server, and no real id to queue a DELETE for.
-    if (id.startsWith("temp-")) return;
-
+    // A photo added offline: the delete is queued behind its upload (which
+    // gives it its real id) — otherwise the upload would bring it back.
     try {
       await offlineAwareFetch(
         "DELETE",

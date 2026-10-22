@@ -9,7 +9,6 @@ import {
   getBarbellModeEnabled,
 } from "../utils/units";
 import { API_URL } from "../lib/api";
-import { fetchWithRetry } from "../lib/fetchWithRetry";
 import { getDateLocale } from "../i18n";
 import { useExerciseHistory } from "../hooks/useExerciseDeltas";
 import { useRestTimerContext } from "../contexts/RestTimerContext";
@@ -38,7 +37,16 @@ import { POPULAR_EXERCISES_BY_MUSCLE_GROUP } from "../utils/popularExercises";
 import { getMuscleGroupLabel } from "../utils/muscleGroupLabel";
 import { offlineAwareFetch } from "../lib/offlineFetch";
 import { getOfflineDb } from "../lib/offlineDb";
-import { onSyncQueueChange } from "../lib/syncQueue";
+import {
+  isLocalId,
+  onSyncQueueChange,
+  pendingMutationCount,
+  replayPendingMutations,
+  resolveLocalId,
+} from "../lib/syncQueue";
+import { cachedJson } from "../lib/cachedFetch";
+import { useOnlineStatus } from "../hooks/useOnlineStatus";
+import { FullPageSpinner } from "../components/Spinner";
 import { markExercisesFinished } from "../utils/finishedExercises";
 import type {
   SetData,
@@ -119,13 +127,47 @@ export default function SessionPage() {
     saveNote,
   } = useExerciseNotes();
 
+  const loadCachedSession = async () => {
+    if (!sessionId) return false;
+    const db = await getOfflineDb();
+    const cached = await db.get("sessionCache", sessionId);
+    if (cached) setSession(cached.data as SessionData);
+    return !!cached;
+  };
+
   const fetchSession = async () => {
     if (!sessionId) return;
+
+    // Created offline and synced since: continue on its real id.
+    const realId = resolveLocalId(sessionId);
+    if (realId !== sessionId) {
+      navigate(`/session/${realId}${readOnly ? "?readonly=true" : ""}`, {
+        replace: true,
+      });
+      return;
+    }
+
     try {
+      // Still only on this device (created offline): nothing to ask the
+      // server yet. Same while edits made offline are waiting to sync —
+      // the server's copy doesn't have them, and would make them vanish
+      // from the screen until the sync is done.
+      if (isLocalId(sessionId) || (await pendingMutationCount()) > 0) {
+        if (await loadCachedSession()) {
+          replayPendingMutations();
+          return;
+        }
+      }
+
       const token = localStorage.getItem("token");
+      // A hanging request on a bad signal falls back to the cached copy
+      // instead of leaving the page on a spinner.
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), 8000);
       const res = await fetch(`${API_URL}/sessions/${sessionId}`, {
         headers: { Authorization: `Bearer ${token}` },
-      });
+        signal: controller.signal,
+      }).finally(() => window.clearTimeout(timeout));
       // Completed sessions past the free plan's 90-day window are Pro-only
       // (reachable e.g. from an exercise's history list) — send the user to
       // the upgrade page rather than falling back to a cached copy below.
@@ -139,19 +181,11 @@ export default function SessionPage() {
       if (!res.ok) throw new Error("Session introuvable");
       const data = await res.json();
       setSession(data);
-      const db = await getOfflineDb();
-      await db.put("sessionCache", {
-        sessionId,
-        data,
-        cachedAt: Date.now(),
-      });
     } catch (err) {
       console.error(err);
       // No connection — fall back to whatever we last saw for this session
-      // instead of leaving the page stuck on a spinner.
-      const db = await getOfflineDb();
-      const cached = await db.get("sessionCache", sessionId);
-      if (cached) setSession(cached.data as SessionData);
+      // (kept up to date with every local change, see below).
+      await loadCachedSession();
     } finally {
       setLoading(false);
     }
@@ -167,6 +201,17 @@ export default function SessionPage() {
   } = useSupersetManager(session, fetchSession);
 
   const { toast, closingToast, showToast } = useToast();
+  const isOnline = useOnlineStatus();
+
+  // Actions that only make sense against the server (they reshape several
+  // records at once): explain instead of failing silently when offline.
+  const whenOnline = (action: () => void) => () => {
+    if (!isOnline) {
+      showToast(t("offline.needsConnection"));
+      return;
+    }
+    action();
+  };
 
   const getExerciseDuration = (sessionExerciseId: string) =>
     exerciseDurations[sessionExerciseId] ?? getRestTimerSeconds();
@@ -227,11 +272,8 @@ export default function SessionPage() {
 
   const fetchExercises = async (muscleGroupName: string) => {
     try {
-      const res = await fetchWithRetry(`${API_URL}/exercises`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-      if (!res.ok) return;
-      const all: AvailableExercise[] = await res.json();
+      // Cached: exercises can still be added to a session offline.
+      const { data: all } = await cachedJson<AvailableExercise[]>("/exercises");
       setExercises(
         all.filter(
           (e) =>
@@ -314,6 +356,21 @@ export default function SessionPage() {
     sessionRef.current = session;
   }, [session]);
 
+  // The cached copy follows what's on screen — offline edits included — so
+  // reopening the session (or the app) without signal shows them.
+  useEffect(() => {
+    if (!session || readOnly) return;
+    getOfflineDb()
+      .then((db) =>
+        db.put("sessionCache", {
+          sessionId: session.id,
+          data: session,
+          cachedAt: Date.now(),
+        }),
+      )
+      .catch(() => {});
+  }, [session, readOnly]);
+
   useLayoutEffect(() => {
     const before = flipRectsRef.current;
     const list = listRef.current;
@@ -359,21 +416,52 @@ export default function SessionPage() {
   };
 
   const addExercise = async (exerciseId: string) => {
-    try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`${API_URL}/session-exercises`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ sessionId, exerciseId }),
-      });
-      if (!res.ok) throw new Error("Erreur ajout exercice");
-      fetchSession();
-    } catch (err) {
-      console.error(err);
+    if (!session) return;
+    const tempId = `temp-${crypto.randomUUID()}`;
+    const result = await offlineAwareFetch(
+      "POST",
+      "/session-exercises",
+      { sessionId: session.id, exerciseId },
+      "Nouvel exercice",
+      { localId: tempId },
+    );
+
+    if (result.queued) {
+      // Offline: show it right away with a temporary id (rewritten in the
+      // queue, then replaced on screen, once it syncs).
+      const exercise = exercises.find((e) => e.id === exerciseId);
+      if (!exercise) return;
+      setSession((prev) =>
+        prev
+          ? {
+              ...prev,
+              sessionExercises: [
+                ...prev.sessionExercises,
+                {
+                  id: tempId,
+                  exercise: {
+                    id: exercise.id,
+                    name: exercise.name,
+                    image: exercise.image,
+                    loadingType: exercise.loadingType,
+                    trackingType: exercise.trackingType,
+                    isCustom: exercise.isCustom,
+                  },
+                  sets: [],
+                  supersetId: null,
+                },
+              ],
+            }
+          : prev,
+      );
+      return;
     }
+
+    if (!result.response.ok) {
+      console.error("Erreur ajout exercice");
+      return;
+    }
+    fetchSession();
   };
 
   const addSet = async (sessionExerciseId: string, sets: SetData[]) => {
@@ -388,14 +476,17 @@ export default function SessionPage() {
         : {}),
     };
 
-    const result = await offlineAwareFetch("POST", "/sets", payload, "Nouveau set");
+    const tempId = `temp-${crypto.randomUUID()}`;
+    const result = await offlineAwareFetch("POST", "/sets", payload, "Nouveau set", {
+      localId: tempId,
+    });
 
     if (result.queued) {
       // No connection — insert locally with a temporary id so the set shows
-      // up right away; a real id replaces it once the queued request syncs
-      // and we refetch (see syncQueue.ts).
+      // up right away; edits to it are queued under that id, which the sync
+      // rewrites to the real one once the create goes through.
       const tempSet: SetData = {
-        id: `temp-${crypto.randomUUID()}`,
+        id: tempId,
         ...payload,
         completed: false,
         type: "normal",
@@ -543,11 +634,8 @@ export default function SessionPage() {
       }
     }
 
-    // A set created offline only exists locally so far (see addSet) — there's
-    // no real id yet to send a PATCH for; the local toggle above is enough,
-    // it'll be included whenever the create itself finally syncs.
-    if (set.id.startsWith("temp-")) return;
-
+    // A set created offline still has its temporary id: offlineAwareFetch
+    // queues this behind its create, which gives it the real id.
     offlineAwareFetch(
       "PATCH",
       `/sets/${set.id}`,
@@ -583,10 +671,7 @@ export default function SessionPage() {
       };
     });
 
-    // Same reasoning as toggleSetCompleted — a not-yet-synced set has no
-    // real id on the server to PATCH.
-    if (setId.startsWith("temp-")) return;
-
+    // Not-yet-synced set: queued behind its create (see toggleSetCompleted).
     const result = await offlineAwareFetch(
       "PATCH",
       `/sets/${setId}`,
@@ -654,10 +739,7 @@ export default function SessionPage() {
       };
     });
 
-    // A set added while offline only ever existed locally — there's nothing
-    // to delete on the server, and no real id to queue a DELETE for.
-    if (setId.startsWith("temp-")) return;
-
+    // A set added offline: the delete is queued behind its create.
     const result = await offlineAwareFetch(
       "DELETE",
       `/sets/${setId}`,
@@ -673,11 +755,7 @@ export default function SessionPage() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-[#faf6f1] flex items-center justify-center">
-        <p className="text-gray-400">{t("session.loading")}</p>
-      </div>
-    );
+    return <FullPageSpinner label={t("session.loading")} />;
   }
 
   if (!session) {
@@ -833,7 +911,9 @@ export default function SessionPage() {
           <button
             data-tour="session-edit-toggle"
             onClick={() =>
-              isPro ? setIsEditMode((v) => !v) : navigate("/upgrade")
+              isPro
+                ? whenOnline(() => setIsEditMode((v) => !v))()
+                : navigate("/upgrade")
             }
             className={`flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide px-3.5 py-2 rounded-full transition-colors flex-shrink-0 ${
               isEditMode ? "bg-[#c9552c] text-white" : "bg-white/10 text-white"
@@ -955,7 +1035,9 @@ export default function SessionPage() {
                 }}
                 onOpenNoteModal={() => openNoteModal(se.exercise.id)}
                 onOpenSupersetModal={() =>
-                  isPro ? openSupersetModal(se) : navigate("/upgrade")
+                  isPro
+                    ? whenOnline(() => openSupersetModal(se))()
+                    : navigate("/upgrade")
                 }
                 onRequestDelete={() => setConfirmDelete(se.id)}
                 onSelectLoadingType={(type) =>
@@ -993,7 +1075,9 @@ export default function SessionPage() {
                 onDeleteSet={deleteSet}
                 onAddSet={() => addSet(se.id, se.sets)}
                 onOpenWarmupModal={() =>
-                  isPro ? setWarmupModalFor(se.id) : navigate("/upgrade")
+                  isPro
+                    ? whenOnline(() => setWarmupModalFor(se.id))()
+                    : navigate("/upgrade")
                 }
               />
             );
@@ -1025,13 +1109,14 @@ export default function SessionPage() {
           onCancel={() => setConfirmDelete(null)}
           onConfirm={() => {
             const removedId = confirmDelete;
-            const token = localStorage.getItem("token");
             // Sent right away, alongside the slide-out — the card doesn't
-            // wait on the network to leave.
-            const request = fetch(`${API_URL}/session-exercises/${removedId}`, {
-              method: "DELETE",
-              headers: { Authorization: `Bearer ${token}` },
-            });
+            // wait on the network to leave. Queued when offline.
+            const request = offlineAwareFetch(
+              "DELETE",
+              `/session-exercises/${removedId}`,
+              undefined,
+              "Suppression exercice",
+            );
             setConfirmDelete(null);
             setRemovingId(removedId);
             showToast(t("session.exerciseDeleted"));
