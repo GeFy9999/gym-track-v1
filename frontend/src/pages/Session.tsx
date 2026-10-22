@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ChevronLeft, Dumbbell, Crown, Check } from "lucide-react";
@@ -91,6 +91,11 @@ export default function SessionPage() {
   const [showFinishChoice, setShowFinishChoice] = useState(false);
   const sessionRef = useRef<SessionData | null>(null);
   const exerciseRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  // FLIP animation for the page's main column: positions captured just
+  // before a layout change (an exercise removed), then everything that
+  // moved glides from where it was instead of jumping there.
+  const listRef = useRef<HTMLDivElement>(null);
+  const flipRectsRef = useRef<Map<Element, DOMRect> | null>(null);
   const { deltas, lastTimes } = useExerciseHistory(sessionId);
   const restTimer = useRestTimerContext();
   const { isPro } = useIsPro();
@@ -308,6 +313,33 @@ export default function SessionPage() {
   useEffect(() => {
     sessionRef.current = session;
   }, [session]);
+
+  useLayoutEffect(() => {
+    const before = flipRectsRef.current;
+    const list = listRef.current;
+    if (!before || !list) return;
+    flipRectsRef.current = null;
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+
+    for (const el of Array.from(list.children)) {
+      const old = before.get(el);
+      if (!old) continue;
+      const dy = old.top - el.getBoundingClientRect().top;
+      if (Math.abs(dy) < 1) continue;
+      el.animate(
+        [{ transform: `translateY(${dy}px)` }, { transform: "translateY(0)" }],
+        { duration: 350, easing: "cubic-bezier(0.22, 1, 0.36, 1)" },
+      );
+    }
+  }, [session]);
+
+  const captureListLayout = () => {
+    const list = listRef.current;
+    if (!list) return;
+    flipRectsRef.current = new Map(
+      Array.from(list.children).map((el) => [el, el.getBoundingClientRect()]),
+    );
+  };
 
   const saveExerciseOrder = async (order: string[]) => {
     try {
@@ -819,7 +851,7 @@ export default function SessionPage() {
         )}
       </div>
 
-      <div className="px-5 pt-5 space-y-4">
+      <div ref={listRef} className="px-5 pt-5 space-y-4">
         {!readOnly && !isEditMode && (
           <AddExercisePanel
             muscleGroup={session.muscleGroup}
@@ -991,23 +1023,46 @@ export default function SessionPage() {
       {confirmDelete && (
         <DeleteExerciseModal
           onCancel={() => setConfirmDelete(null)}
-          onConfirm={async () => {
-            try {
-              const token = localStorage.getItem("token");
-              await fetch(`${API_URL}/session-exercises/${confirmDelete}`, {
-                method: "DELETE",
-                headers: { Authorization: `Bearer ${token}` },
-              });
-              setConfirmDelete(null);
-              setRemovingId(confirmDelete);
-              showToast(t("session.exerciseDeleted"));
+          onConfirm={() => {
+            const removedId = confirmDelete;
+            const token = localStorage.getItem("token");
+            // Sent right away, alongside the slide-out — the card doesn't
+            // wait on the network to leave.
+            const request = fetch(`${API_URL}/session-exercises/${removedId}`, {
+              method: "DELETE",
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            setConfirmDelete(null);
+            setRemovingId(removedId);
+            showToast(t("session.exerciseDeleted"));
+            const slidOut = new Promise<void>((resolve) =>
               setTimeout(() => {
+                // Drop the card locally as soon as it has slid out, so the
+                // rest of the page glides up into its place (see the FLIP
+                // effect above) instead of jumping once the server answers.
+                captureListLayout();
+                setSession((prev) =>
+                  prev
+                    ? {
+                        ...prev,
+                        sessionExercises: prev.sessionExercises.filter(
+                          (se) => se.id !== removedId,
+                        ),
+                      }
+                    : prev,
+                );
                 setRemovingId(null);
-                fetchSession();
-              }, 300);
-            } catch (err) {
-              console.error(err);
-            }
+                resolve();
+              }, 300),
+            );
+            // Then sync with the server (superset unlinking, or bringing
+            // the exercise back if the delete actually failed) — never
+            // before the card is gone, or a fast answer would yank it out
+            // mid-slide.
+            Promise.all([
+              request.catch((err) => console.error(err)),
+              slidOut,
+            ]).finally(() => fetchSession());
           }}
         />
       )}
