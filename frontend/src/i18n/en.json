@@ -1,5 +1,6 @@
 {
   "common": {
+    "loading": "Loading",
     "user": "User",
     "exercise": "Exercise",
     "notEnoughData": "Not enough data yet",
@@ -10,6 +11,8 @@
     "googleLegalPrefix": "By continuing with Google, you confirm you are at least 16 and agree to our"
   },
   "offline": {
+    "finishNeedsConnection": "No connection: your sets are saved — finish the session once you're back online.",
+    "needsConnection": "This needs a connection",
     "offline": "Offline mode",
     "syncing_one": "Syncing... ({{count}})",
     "syncing_other": "Syncing... ({{count}})"

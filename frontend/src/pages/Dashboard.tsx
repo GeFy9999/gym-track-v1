@@ -16,6 +16,12 @@ import { getDateLocale } from "../i18n";
 import { getMuscleGroupLabel } from "../utils/muscleGroupLabel";
 import { hasSetData } from "../utils/trackingType";
 import {
+  pendingMutationCount,
+  replayPendingMutations,
+} from "../lib/syncQueue";
+import { useToast } from "../hooks/useToast";
+import Toast from "../components/Toast";
+import {
   clearFinishedExercises,
   unmarkExercisesFinished,
 } from "../utils/finishedExercises";
@@ -89,6 +95,8 @@ export default function DashboardPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showWelcome]);
   const [showTour, setShowTour] = useState(false);
+  const [endingSession, setEndingSession] = useState(false);
+  const { toast, closingToast, showToast } = useToast();
 
   // Coming back from "Terminer mes exercices" on a session page: animate the
   // group that was just finished and, if the user chose to end the workout,
@@ -243,7 +251,8 @@ export default function DashboardPage() {
         setShowWeightPrompt(true);
       }
     };
-    checkBodyWeight();
+    // Offline: just skip the prompt this time.
+    checkBodyWeight().catch(() => {});
   }, []);
 
   const handleWelcomeNext = () => {
@@ -373,9 +382,19 @@ export default function DashboardPage() {
 
   const handleEndSession = async () => {
     const token = localStorage.getItem("token");
-    if (!token) return;
+    if (!token || endingSession) return;
+    setEndingSession(true);
 
     try {
+      // Sets logged offline must reach the server before the session is
+      // closed — the summary, records and the history are built from it.
+      await replayPendingMutations();
+      if (!navigator.onLine || (await pendingMutationCount()) > 0) {
+        setShowEndConfirm(false);
+        showToast(t("offline.finishNeedsConnection"));
+        return;
+      }
+
       const sessionsRes = await fetch(`${API_URL}/sessions/me`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -607,6 +626,11 @@ export default function DashboardPage() {
       }
     } catch (err) {
       console.error(err);
+      // The connection dropped midway: nothing was lost, it can be retried.
+      setShowEndConfirm(false);
+      showToast(t("offline.finishNeedsConnection"));
+    } finally {
+      setEndingSession(false);
     }
   };
 
@@ -735,9 +759,14 @@ export default function DashboardPage() {
                 </button>
                 <button
                   onClick={handleEndSession}
-                  className="flex-1 bg-[#3a9e6e] text-white py-3.5 rounded-full font-bold uppercase tracking-wide text-sm transition-colors active:opacity-90 flex items-center justify-center gap-1.5"
+                  disabled={endingSession}
+                  className="flex-1 bg-[#3a9e6e] disabled:opacity-80 text-white py-3.5 rounded-full font-bold uppercase tracking-wide text-sm transition-colors active:opacity-90 flex items-center justify-center gap-1.5"
                 >
-                  <Check size={16} strokeWidth={3} />
+                  {endingSession ? (
+                    <span className="inline-block w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
+                  ) : (
+                    <Check size={16} strokeWidth={3} />
+                  )}
                   {t("dashboard.finish")}
                 </button>
               </div>
@@ -976,6 +1005,8 @@ export default function DashboardPage() {
           onClose={() => setPrQueue((prev) => prev.slice(1))}
         />
       )}
+
+      {toast && <Toast message={toast} closing={closingToast} />}
 
       {workoutSummary && (
         <WorkoutSummary

@@ -2,7 +2,12 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Check } from "lucide-react";
-import { API_URL } from "../../lib/api";
+import { cachedJson } from "../../lib/cachedFetch";
+import { offlineAwareFetch } from "../../lib/offlineFetch";
+import {
+  getLocalOnlySessions,
+  saveLocalSession,
+} from "../../lib/localSessions";
 import { getMuscleGroupLabel } from "../../utils/muscleGroupLabel";
 import { hasSetData } from "../../utils/trackingType";
 import {
@@ -61,9 +66,8 @@ export default function MuscleGroupsCards({
   useEffect(() => {
     const fetchGroups = async () => {
       try {
-        const res = await fetch(`${API_URL}/muscleGroups`);
-        if (!res.ok) throw new Error("Erreur fetch muscleGroups");
-        const data = await res.json();
+        // Cached, so the groups still show (and open) without signal.
+        const { data } = await cachedJson<MuscleGroup[]>("/muscleGroups");
         setGroups(data);
       } catch (err) {
         console.error(err);
@@ -87,19 +91,25 @@ export default function MuscleGroupsCards({
       monday.setHours(0, 0, 0, 0);
 
       try {
-        const res = await fetch(
-          `${API_URL}/sessions/me?start=${monday.toISOString()}&end=${now.toISOString()}`,
-          { headers: { Authorization: `Bearer ${token}` } },
-        );
-        if (!res.ok) return;
-        const sessions: {
+        type WeekSession = {
           id: string;
           muscleGroup: string;
           completed: boolean;
           sessionExercises: {
             sets: { weight: number; reps: number; durationSeconds?: number | null }[];
           }[];
-        }[] = await res.json();
+        };
+        const { data: fromServer } = await cachedJson<WeekSession[]>(
+          `/sessions/me?start=${monday.toISOString()}&end=${now.toISOString()}`,
+          { cacheKey: "sessions-this-week" },
+        );
+        // Plus the sessions started offline that haven't synced yet.
+        const sessions: WeekSession[] = [
+          ...fromServer,
+          ...(await getLocalOnlySessions()).filter(
+            (s) => new Date(s.date) >= monday,
+          ),
+        ];
 
         // Open sessions whose exercises the user already finished show as
         // done here, while still waiting on "Terminer la séance" server-side.
@@ -149,38 +159,49 @@ export default function MuscleGroupsCards({
     if (!token) return;
 
     try {
-      const res = await fetch(`${API_URL}/sessions/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      type OpenSession = { id: string; muscleGroup: string; completed: boolean };
+      const fromServer = await cachedJson<OpenSession[]>("/sessions/me", {
+        cacheKey: "sessions-all",
+      })
+        .then((r) => r.data)
+        .catch(() => [] as OpenSession[]);
+      const sessions = [...fromServer, ...(await getLocalOnlySessions())];
+      const existing = sessions.find(
+        (s) => s.muscleGroup === group.name && !s.completed,
+      );
 
-      if (res.ok) {
-        const sessions = await res.json();
-        const existing = sessions.find(
-          (s: { muscleGroup: string; completed: boolean }) =>
-            s.muscleGroup === group.name && !s.completed,
-        );
-
-        if (existing) {
-          // Reopening a group marked finished means the user is resuming it.
-          unmarkExercisesFinished(existing.id);
-          navigate(`/session/${existing.id}`);
-          return;
-        }
+      if (existing) {
+        // Reopening a group marked finished means the user is resuming it.
+        unmarkExercisesFinished(existing.id);
+        navigate(`/session/${existing.id}`);
+        return;
       }
 
-      const createRes = await fetch(`${API_URL}/sessions`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          muscleGroup: group.name,
-        }),
-      });
+      // Works offline too: the session is created on this device under a
+      // temporary id, and on the server once the connection is back.
+      const tempId = `temp-${crypto.randomUUID()}`;
+      const result = await offlineAwareFetch(
+        "POST",
+        "/sessions",
+        { muscleGroup: group.name },
+        "Nouvelle séance",
+        { localId: tempId },
+      );
 
-      if (!createRes.ok) throw new Error("Erreur création session");
-      const session = await createRes.json();
+      if (result.queued) {
+        await saveLocalSession({
+          id: tempId,
+          muscleGroup: group.name,
+          completed: false,
+          date: new Date().toISOString(),
+          sessionExercises: [],
+        });
+        navigate(`/session/${tempId}`);
+        return;
+      }
+
+      if (!result.response.ok) throw new Error("Erreur création session");
+      const session = await result.response.json();
       navigate(`/session/${session.id}`);
     } catch (err) {
       console.error(err);
