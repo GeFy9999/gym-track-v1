@@ -438,28 +438,19 @@ export default function SessionPage() {
     // Start the timer synchronously (same click) so browsers still treat
     // sound/vibration triggered later as originating from a user gesture.
     // A drop set chains immediately into the next weight with no rest, so
-    // it never starts the timer. In a superset, the timer only starts once
-    // every exercise in the group has a completed set for this "round".
+    // it never starts the timer. In a superset, the exercises are chained
+    // with no rest in between: only a set of the chain's last exercise (in
+    // the order shown) starts the timer — the rest comes after the round.
     if (nextCompleted && restTimerEnabled && set.type !== "dropset") {
       const group = se.supersetId
         ? (session?.sessionExercises.filter(
             (s) => s.supersetId === se.supersetId,
           ) ?? [])
         : [];
+      const isLastOfChain = group[group.length - 1]?.id === se.id;
 
-      if (group.length < 2) {
+      if (group.length < 2 || isLastOfChain) {
         restTimer.start(getExerciseDuration(se.id));
-      } else {
-        const myCount =
-          se.sets.filter((s) => s.completed).length + 1; // this toggle isn't reflected in `session` yet
-        const roundComplete = group.every(
-          (g) =>
-            g.id === se.id ||
-            g.sets.filter((s) => s.completed).length >= myCount,
-        );
-        if (roundComplete) {
-          restTimer.start(getExerciseDuration(se.id));
-        }
       }
     }
 
