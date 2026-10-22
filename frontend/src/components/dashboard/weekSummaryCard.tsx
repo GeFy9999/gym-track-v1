@@ -21,7 +21,7 @@ export default function WeekSummaryCard({ completed, total }: Props) {
         : t("dashboard.weekSummary.titleProgress");
 
   return (
-    <div className="px-5 mt-5">
+    <div className="px-page mt-5">
       <div className="bg-[#ece7dd] rounded-2xl p-4 shadow-sm flex items-center gap-4">
         <div className="relative w-20 h-20 flex-shrink-0">
           <svg viewBox="0 0 80 80" className="w-20 h-20 -rotate-90">

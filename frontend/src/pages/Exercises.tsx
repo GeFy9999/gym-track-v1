@@ -245,12 +245,12 @@ export default function ExercisesPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#faf6f1] pb-28">
-        <div className="px-5 pt-8 pb-6 animate-pulse" style={{ background: "#191714" }}>
+        <div className="px-page pt-8 pb-6 animate-pulse" style={{ background: "#191714" }}>
           <div className="h-7 w-40 bg-white/10 rounded mb-2" />
           <div className="h-3 w-56 bg-white/10 rounded mb-4" />
           <div className="h-11 w-full bg-white/10 rounded-full" />
         </div>
-        <div className="px-5 pt-4 space-y-2 animate-pulse">
+        <div className="px-page pt-4 space-y-2 animate-pulse">
           {[1, 2, 3, 4, 5].map((i) => (
             <div key={i} className="h-16 bg-[#ece7dd] rounded-2xl" />
           ))}
@@ -261,7 +261,7 @@ export default function ExercisesPage() {
 
   return (
     <div className="min-h-screen bg-[#faf6f1] pb-28">
-      <div className="px-5 pt-8 pb-6" style={{ background: "#191714" }}>
+      <div className="px-page pt-8 pb-6" style={{ background: "#191714" }}>
         <h1 className="text-[26px] font-black text-white uppercase tracking-wide leading-tight">
           {t("exercises.title")}
         </h1>
@@ -284,7 +284,7 @@ export default function ExercisesPage() {
         </div>
       </div>
 
-      <div className="mt-4 mb-4 pl-5 overflow-x-auto hide-scrollbar">
+      <div className="mt-4 mb-4 px-page overflow-x-auto hide-scrollbar">
         <div className="flex gap-2 pr-5 w-max">
           <button
             onClick={() => setSelectedGroup(null)}
@@ -312,7 +312,7 @@ export default function ExercisesPage() {
         </div>
       </div>
 
-      <div className="px-5 space-y-4">
+      <div className="px-page space-y-4">
         {trackedExercises.length > 0 && (
           <div>
             <button

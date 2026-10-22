@@ -74,7 +74,7 @@ export default function VerifyEmailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#faf6f1] flex flex-col items-center justify-center px-6 text-center">
+    <div className="min-h-screen bg-[#faf6f1] flex flex-col items-center justify-center px-page-narrow text-center">
       <img
         src="/LogoGymsTrack5.webp"
         alt="GymsTrack"

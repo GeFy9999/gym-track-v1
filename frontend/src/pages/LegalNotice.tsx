@@ -7,7 +7,7 @@ export default function LegalNoticePage() {
   const isFrench = i18n.language?.startsWith("fr");
 
   return (
-    <div className="min-h-screen bg-[#faf6f1] flex flex-col pt-8 px-6 pb-16">
+    <div className="min-h-screen bg-[#faf6f1] flex flex-col pt-8 px-page pb-16">
       <Link
         to="/login"
         className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center mb-4"

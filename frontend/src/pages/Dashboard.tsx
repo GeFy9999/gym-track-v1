@@ -704,7 +704,7 @@ export default function DashboardPage() {
       </div>
 
       {hasActiveSession && (
-        <div ref={finishButtonRef} className="px-5 mt-6 scroll-mb-28">
+        <div ref={finishButtonRef} className="px-page mt-6 scroll-mb-28">
           {highlightFinish && (
             <div className="flex flex-col items-center mb-2 animate-fade-in">
               <span className="text-xs font-bold text-[#3a9e6e] uppercase tracking-widest">
@@ -735,7 +735,7 @@ export default function DashboardPage() {
       )}
 
       {showEndConfirm && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-[60] px-6 animate-fade-in">
+        <div className="fixed inset-0 bg-black/30 flex items-center-safe justify-center overflow-y-auto py-6 z-[60] px-6 animate-fade-in">
           <div className="bg-[#faf6f1] rounded-3xl w-full max-w-sm shadow-2xl animate-scale-in overflow-hidden">
             <div
               className="px-6 pt-7 pb-6 text-center"
@@ -776,7 +776,7 @@ export default function DashboardPage() {
       )}
 
       {abandonedQueue.length > 0 && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-[60] px-6 animate-fade-in">
+        <div className="fixed inset-0 bg-black/30 flex items-center-safe justify-center overflow-y-auto py-6 z-[60] px-6 animate-fade-in">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
             <p className="text-base font-semibold text-gray-900 text-center mb-2">
               {t("dashboard.abandoned.title", {
@@ -808,7 +808,7 @@ export default function DashboardPage() {
       )}
 
       {showWeightPrompt && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-[60] px-6 animate-fade-in">
+        <div className="fixed inset-0 bg-black/30 flex items-center-safe justify-center overflow-y-auto py-6 z-[60] px-6 animate-fade-in">
           <div className="bg-[#faf6f1] rounded-3xl w-full max-w-sm shadow-2xl animate-scale-in overflow-hidden">
             <div
               className="px-6 pt-8 pb-6 text-center"
@@ -887,7 +887,7 @@ export default function DashboardPage() {
 
       {/* Welcome overlay */}
       {showWelcome && (
-        <div className="fixed inset-0 bg-[#faf6f1] z-50 flex flex-col items-center justify-center px-8 animate-fade-in">
+        <div className="fixed inset-0 bg-[#faf6f1] z-50 flex flex-col items-center justify-center-safe overflow-y-auto py-8 px-8 animate-fade-in">
           <img
             src="/LogoGymsTrack5.webp"
             alt="GymsTrack"
@@ -911,7 +911,7 @@ export default function DashboardPage() {
 
       {/* Onboarding weight prompt */}
       {showOnboardingWeight && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-[60] px-6 animate-fade-in">
+        <div className="fixed inset-0 bg-black/30 flex items-center-safe justify-center overflow-y-auto py-6 z-[60] px-6 animate-fade-in">
           <div className="bg-[#faf6f1] rounded-3xl w-full max-w-sm shadow-2xl animate-scale-in overflow-hidden">
             <div
               className="px-6 pt-8 pb-6 text-center"

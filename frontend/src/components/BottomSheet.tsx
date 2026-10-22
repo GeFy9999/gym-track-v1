@@ -104,7 +104,7 @@ export default function BottomSheet({
         }`}
       >
         <div
-          className="mx-auto max-w-md bg-white rounded-t-[1.75rem] shadow-2xl pt-3 px-4"
+          className="mx-auto max-w-md bg-white rounded-t-[1.75rem] shadow-2xl pt-3 px-4 max-h-[100dvh] overflow-y-auto"
           style={{ paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))" }}
         >
           <div

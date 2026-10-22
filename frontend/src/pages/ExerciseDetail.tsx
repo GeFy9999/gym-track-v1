@@ -200,7 +200,7 @@ export default function ExerciseDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#faf6f1] px-5 pb-16">
+      <div className="min-h-screen bg-[#faf6f1] px-page pb-16">
         <div className="pt-6 pb-4 flex items-center gap-3 animate-pulse">
           <div className="w-9 h-9 rounded-full bg-gray-200" />
           <div className="h-6 w-40 bg-gray-200 rounded" />
@@ -276,7 +276,7 @@ export default function ExerciseDetailPage() {
 
   return (
     <div className="min-h-screen bg-[#faf6f1] pb-16">
-      <div className="flex items-center justify-between gap-3 px-5 pt-6 pb-4">
+      <div className="flex items-center justify-between gap-3 px-page pt-6 pb-4">
         <div className="flex items-center gap-3 min-w-0">
           <button
             onClick={() => navigate(-1)}
@@ -314,7 +314,7 @@ export default function ExerciseDetailPage() {
         </button>
       </div>
 
-      <div className="px-5 space-y-4">
+      <div className="px-page space-y-4">
         {!gifFailed ? (
           // The box hugs the GIF's own size (no object-contain letterboxing)
           // so the rounded corners land on the visible image itself, not on

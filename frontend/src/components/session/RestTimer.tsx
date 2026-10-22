@@ -171,13 +171,14 @@ export default function RestTimer({
           bottom: "var(--bottom-nav-height, 0px)",
           transform: `translateY(${dragOffset}px)`,
           transition: dragging ? "none" : "transform 0.3s ease-out",
-          touchAction: "none",
         }}
         className={`fixed inset-x-0 z-[60] ${
           closing ? "animate-sheet-slide-down pointer-events-none" : "animate-sheet-slide-up"
         }`}
       >
-        <div className="mx-auto max-w-md bg-[#faf6f1] rounded-t-[1.75rem] shadow-2xl pb-8">
+        {/* Scrolls instead of being cut off on a short screen (phone in
+            landscape is ~390px tall). */}
+        <div className="mx-auto max-w-md bg-[#faf6f1] rounded-t-[1.75rem] shadow-2xl pb-8 max-h-[100dvh] overflow-y-auto">
           <div
             onPointerDown={closing ? undefined : handlePointerDown}
             style={{ touchAction: "none" }}

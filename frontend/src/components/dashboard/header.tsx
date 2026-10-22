@@ -75,7 +75,7 @@ export default function HeaderDashboard() {
   }, []);
 
   return (
-    <div className="px-5 pt-8 pb-5" style={{ background: "#191714" }}>
+    <div className="px-page pt-8 pb-5" style={{ background: "#191714" }}>
       <div className="flex justify-between items-start">
         <div>
           <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">

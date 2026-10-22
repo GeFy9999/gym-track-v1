@@ -296,7 +296,7 @@ export default function UpgradePage() {
 
   if ((sessionId || nativePurchaseFlow) && (activating || isPro || activationTimedOut)) {
     return (
-      <div className="min-h-screen bg-[#faf6f1] flex flex-col items-center justify-center px-6 text-center">
+      <div className="min-h-screen bg-[#faf6f1] flex flex-col items-center justify-center px-page-narrow text-center">
         {isPro ? (
           <>
             <div className="w-16 h-16 rounded-full bg-[#3a9e6e]/10 flex items-center justify-center mb-4">
@@ -357,7 +357,7 @@ export default function UpgradePage() {
 
   return (
     <div className="min-h-screen bg-[#faf6f1] pb-16">
-      <div className="flex items-center gap-3 px-5 pt-8 pb-6" style={{ background: "#191714" }}>
+      <div className="flex items-center gap-3 px-page pt-8 pb-6" style={{ background: "#191714" }}>
         <button
           onClick={() => navigate(-1)}
           className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center active:bg-white/20 transition-colors flex-shrink-0"
@@ -374,7 +374,7 @@ export default function UpgradePage() {
         </div>
       </div>
 
-      <div className="px-5 pt-5 space-y-4">
+      <div className="px-page pt-5 space-y-4">
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-500 text-sm rounded-2xl px-4 py-3">
             {error}
@@ -613,7 +613,7 @@ export default function UpgradePage() {
       </div>
 
       {showSwitchWarning && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-[60] px-6 animate-fade-in">
+        <div className="fixed inset-0 bg-black/30 flex items-center-safe justify-center overflow-y-auto py-6 z-[60] px-6 animate-fade-in">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
             <div className="w-12 h-12 rounded-full bg-[#c9552c]/10 flex items-center justify-center mx-auto mb-3">
               <TrendingDown size={22} className="text-[#c9552c]" />
@@ -648,7 +648,7 @@ export default function UpgradePage() {
       )}
 
       {showCancelWarning && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-[60] px-6 animate-fade-in">
+        <div className="fixed inset-0 bg-black/30 flex items-center-safe justify-center overflow-y-auto py-6 z-[60] px-6 animate-fade-in">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
             <div className="w-12 h-12 rounded-full bg-[#c9552c]/10 flex items-center justify-center mx-auto mb-3">
               <TrendingDown size={22} className="text-[#c9552c]" />

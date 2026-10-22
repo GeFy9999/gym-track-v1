@@ -82,7 +82,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-[#faf6f1] pb-10">
       <div
-        className="px-6 pt-12 pb-8 text-center"
+        className="px-page-narrow pt-12 pb-8 text-center"
         style={{ background: "#191714" }}
       >
         <img
@@ -95,7 +95,7 @@ export default function LoginPage() {
         </p>
       </div>
 
-      <div className="px-6 pt-6">
+      <div className="px-page-narrow pt-6">
         {serverError && (
           <div className="bg-red-50 border border-red-200 text-red-500 text-sm rounded-2xl px-4 py-3 mb-6">
             {serverError}

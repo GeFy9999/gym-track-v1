@@ -91,7 +91,7 @@ export default function ForgotPasswordPage() {
 
   if (sent) {
     return (
-      <div className="min-h-screen bg-[#faf6f1] flex flex-col pt-8 px-6">
+      <div className="min-h-screen bg-[#faf6f1] flex flex-col pt-8 px-page-narrow">
         <Link
           to="/login"
           className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center mb-4"
@@ -146,7 +146,7 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#faf6f1] flex flex-col pt-8 px-6">
+    <div className="min-h-screen bg-[#faf6f1] flex flex-col pt-8 px-page-narrow">
       <Link
         to="/login"
         className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center mb-4"
