@@ -160,16 +160,20 @@ export default function TourOverlay({ tourKey, steps, refs }: Props) {
 
   if (step === null || !rect) return null;
 
-  // The app itself renders in a centered column capped at 430px (see
-  // App.tsx) — on any screen wider than that (e.g. a desktop browser), the
-  // tooltip must line up with that column, not the full browser viewport,
-  // or it ends up floating in the middle of the window instead of next to
-  // the element it's pointing at. The highlighted box itself doesn't need
-  // this: its rect already comes from getBoundingClientRect(), which is
-  // viewport-relative and therefore already correct either way.
-  const APP_COLUMN_MAX_WIDTH = 430;
-  const columnWidth = Math.min(window.innerWidth, APP_COLUMN_MAX_WIDTH);
-  const columnLeft = (window.innerWidth - columnWidth) / 2;
+  // On a wide screen (tablet, landscape) the tooltip is centered on the
+  // element it points at — kept fully on-screen — rather than on the whole
+  // window, where it would float far from it. On a phone it simply spans
+  // the screen. The highlighted box needs none of this: its rect comes from
+  // getBoundingClientRect(), already viewport-relative.
+  const TOOLTIP_COLUMN_MAX_WIDTH = 430;
+  const columnWidth = Math.min(window.innerWidth, TOOLTIP_COLUMN_MAX_WIDTH);
+  const columnLeft = Math.max(
+    0,
+    Math.min(
+      rect.left + rect.width / 2 - columnWidth / 2,
+      window.innerWidth - columnWidth,
+    ),
+  );
 
   const forceAbove = steps[step].tooltipPosition === "above";
   const spaceBelow = window.innerHeight - (rect.top + rect.height) - EDGE_MARGIN;

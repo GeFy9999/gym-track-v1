@@ -142,7 +142,7 @@ export default function WorkoutSummary({
   const tile = (index: number) => enter(TILES_AT + index * TILE_STEP);
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[60] px-6 animate-fade-in">
+    <div className="fixed inset-0 bg-black/40 flex items-center-safe justify-center overflow-y-auto py-6 z-[60] px-6 animate-fade-in">
       <div className="bg-white rounded-3xl w-full max-w-sm shadow-2xl animate-summary-card-in overflow-hidden flex flex-col max-h-[90vh]">
         {/* ── Header sombre ── */}
         <div

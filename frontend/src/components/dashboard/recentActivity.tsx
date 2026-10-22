@@ -115,7 +115,7 @@ export default function RecentActivity() {
 
   if (loading) {
     return (
-      <div className="px-5 mt-6">
+      <div className="px-page mt-6">
         <div className="h-4 w-32 bg-gray-200 rounded mb-3 animate-pulse" />
         <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm animate-pulse">
           <div className="h-4 w-40 bg-gray-200 rounded mb-2" />
@@ -145,7 +145,7 @@ export default function RecentActivity() {
   const sets = firstExercise?.sets || [];
 
   return (
-    <div className="px-5 mt-7">
+    <div className="px-page mt-7">
       <p className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-3">
         {t("dashboard.lastSession")}
       </p>

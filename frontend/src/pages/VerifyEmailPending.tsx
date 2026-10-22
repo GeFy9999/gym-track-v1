@@ -129,7 +129,7 @@ export default function VerifyEmailPendingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#faf6f1] flex flex-col pt-8 px-6">
+    <div className="min-h-screen bg-[#faf6f1] flex flex-col pt-8 px-page-narrow">
       <div className="text-center mt-8">
         <img
           src="/LogoGymsTrack5.webp"

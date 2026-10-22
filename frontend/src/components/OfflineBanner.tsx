@@ -18,7 +18,7 @@ export default function OfflineBanner() {
 
   return (
     <div
-      className={`fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-[70] px-4 py-2 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wide text-white ${
+      className={`fixed top-0 inset-x-0 z-[70] px-4 py-2 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wide text-white ${
         isOnline ? "bg-[#3a9e6e]" : "bg-[#191714]"
       }`}
       style={{ paddingTop: "max(0.5rem, env(safe-area-inset-top))" }}

@@ -42,17 +42,17 @@ export default function StatsPage() {
   ];
 
   return (
-    <div className="pb-28 bg-[#faf6f1] min-h-screen px-5">
+    <div className="pb-28 bg-[#faf6f1] min-h-screen">
       <HeaderStats />
 
-      <section ref={tourRef0} className="mt-7">
+      <section ref={tourRef0} className="mt-7 px-page">
         <h2 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-3">
           {t("stats.personalRecords")}
         </h2>
         <PersonalRecordCards />
       </section>
 
-      <section ref={tourRef1} className="mt-8">
+      <section ref={tourRef1} className="mt-8 px-page">
         <h2 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-3">
           {t("stats.oneRepMax")}
         </h2>
@@ -61,14 +61,14 @@ export default function StatsPage() {
         </ProGateOrContent>
       </section>
 
-      <section ref={tourRef2} className="mt-8">
+      <section ref={tourRef2} className="mt-8 px-page">
         <h2 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-3">
           {t("stats.progression")}
         </h2>
         <ProgressChart />
       </section>
 
-      <section ref={tourRef3} className="mt-8 mb-4">
+      <section ref={tourRef3} className="mt-8 mb-4 px-page">
         <h2 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-3">
           {t("stats.muscleVolume")}
         </h2>

@@ -29,7 +29,7 @@ export default function HeaderStats() {
 
   return (
     <div
-      className="-mx-5 px-6 pt-6 pb-6"
+      className="px-page pt-6 pb-6"
       style={{ background: "var(--color-ink)" }}
     >
       <h1 className="text-[32px] font-black text-white uppercase tracking-wide leading-tight">

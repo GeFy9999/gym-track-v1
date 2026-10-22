@@ -212,7 +212,7 @@ function AppShell() {
       <OfflineBanner />
       <NetworkIndicator />
       <div className="min-h-screen bg-[#e8e0d8] flex justify-center">
-        <div className="w-full max-w-[430px] min-h-screen bg-[#faf6f1] relative shadow-2xl">
+        <div className="w-full min-h-screen bg-[#faf6f1] relative">
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />

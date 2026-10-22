@@ -254,7 +254,7 @@ export default function MuscleGroupsCards({
     return (
       <div className="mt-6">
         <div className="h-4 w-36 bg-gray-200 rounded mb-3 mx-5 animate-pulse" />
-        <div className="flex gap-3 px-5 overflow-hidden">
+        <div className="flex gap-3 px-page overflow-hidden">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
@@ -268,7 +268,7 @@ export default function MuscleGroupsCards({
 
   return (
     <div className="mt-7">
-      <p className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-3 px-5">
+      <p className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-3 px-page">
         {t("dashboard.muscleGroups")}
       </p>
       <div
@@ -277,7 +277,7 @@ export default function MuscleGroupsCards({
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
-        className="flex gap-3 overflow-x-auto hide-scrollbar px-5 pt-4 pb-2 cursor-grab active:cursor-grabbing select-none"
+        className="flex gap-3 overflow-x-auto hide-scrollbar px-page pt-4 pb-2 cursor-grab active:cursor-grabbing select-none"
       >
         {groups.map((group) => {
           const isDone = completedGroups.has(group.name);

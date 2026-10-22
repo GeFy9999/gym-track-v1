@@ -1,5 +1,16 @@
 @import "tailwindcss";
 
+/* Page gutters that grow on wide screens (tablets, phones in landscape):
+   20px on a phone, and past a readable width the content stays centered —
+   while full-bleed backgrounds (the dark headers) still span the screen. */
+@utility px-page {
+  padding-inline: max(1.25rem, calc((100% - 48rem) / 2));
+}
+/* Same for forms (login, signup…): a narrower column. */
+@utility px-page-narrow {
+  padding-inline: max(1.5rem, calc((100% - 28rem) / 2));
+}
+
 :root {
   --color-ink: #191714;
   --color-ink-soft: #3d271a;

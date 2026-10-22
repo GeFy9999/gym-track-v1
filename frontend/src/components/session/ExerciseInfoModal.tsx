@@ -22,7 +22,7 @@ export default function ExerciseInfoModal({
   // this `position: fixed` modal into one positioned relative to the card
   // instead of the viewport (a CSS containing-block quirk).
   return createPortal(
-    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-[60] px-6 animate-fade-in">
+    <div className="fixed inset-0 bg-black/30 flex items-center-safe justify-center overflow-y-auto py-6 z-[60] px-6 animate-fade-in">
       <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
         <div className="flex justify-between items-center mb-4">
           <p className="text-base font-bold text-gray-900 uppercase">
