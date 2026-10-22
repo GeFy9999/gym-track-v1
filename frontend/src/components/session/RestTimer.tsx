@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Timer } from "lucide-react";
 
@@ -13,7 +13,6 @@ type Props = {
 const RING_RADIUS = 86;
 const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
 const DRAG_THRESHOLD = 60;
-const TAP_THRESHOLD = 6;
 const DISMISS_DISTANCE = 420;
 
 export default function RestTimer({
@@ -36,6 +35,30 @@ export default function RestTimer({
   const dashOffset = RING_CIRCUMFERENCE * (1 - progress);
   const isUrgent = secondsLeft > 0 && secondsLeft <= 5;
 
+  // Slides the sheet down, then swaps it for the small bar.
+  const minimize = () => {
+    setDragOffset(DISMISS_DISTANCE);
+    window.setTimeout(() => {
+      setMinimized(true);
+      setDragOffset(0);
+    }, 300);
+  };
+
+  // While the full sheet is open the page behind must not scroll (the
+  // backdrop already swallows taps and touch scrolling; this covers the
+  // mouse wheel / trackpad).
+  const sheetOpen = !minimized && !exiting;
+  useEffect(() => {
+    if (!sheetOpen) return;
+    const html = document.documentElement;
+    const previous = html.style.overflow;
+    html.style.overflow = "hidden";
+    return () => {
+      html.style.overflow = previous;
+    };
+  }, [sheetOpen]);
+
+  // Only the full sheet is draggable (down, to fold it into the small bar).
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     // Without this, a mouse drag starting on text (e.g. the "Repos" label)
     // makes the browser begin a native text-selection drag, which fires a
@@ -45,15 +68,11 @@ export default function RestTimer({
     e.preventDefault();
     const pointerId = e.pointerId;
     const startY = e.clientY;
-    const wasMinimized = minimized;
-    let maxMove = 0;
     setDragging(true);
 
     const handleMove = (ev: PointerEvent) => {
       if (ev.pointerId !== pointerId) return;
-      const delta = ev.clientY - startY;
-      maxMove = Math.max(maxMove, Math.abs(delta));
-      setDragOffset(wasMinimized ? Math.min(0, delta) : Math.max(0, delta));
+      setDragOffset(Math.max(0, ev.clientY - startY));
     };
 
     const handleUp = (ev: PointerEvent) => {
@@ -61,25 +80,15 @@ export default function RestTimer({
       window.removeEventListener("pointermove", handleMove);
       window.removeEventListener("pointerup", handleUp);
       window.removeEventListener("pointercancel", handleUp);
-      const delta = ev.clientY - startY;
+      setDragging(false);
 
-      if (!wasMinimized && delta > DRAG_THRESHOLD) {
+      if (ev.clientY - startY > DRAG_THRESHOLD) {
         // Let go past the dismiss threshold: finish the slide down
         // smoothly (transition back on) instead of snapping offscreen.
-        setDragging(false);
-        setDragOffset(DISMISS_DISTANCE);
-        window.setTimeout(() => {
-          setMinimized(true);
-          setDragOffset(0);
-        }, 300);
+        minimize();
         return;
       }
 
-      if (wasMinimized && (delta < -DRAG_THRESHOLD || maxMove < TAP_THRESHOLD)) {
-        setMinimized(false);
-      }
-
-      setDragging(false);
       setDragOffset(0);
     };
 
@@ -91,18 +100,11 @@ export default function RestTimer({
   if (minimized) {
     return (
       <div
-        onPointerDown={exiting ? undefined : handlePointerDown}
-        style={{
-          bottom: "var(--bottom-nav-height, 0px)",
-          ...(exiting
-            ? undefined
-            : {
-                transform: `translateY(${dragOffset}px)`,
-                transition: dragging ? "none" : "transform 0.3s ease-out",
-                touchAction: "none",
-              }),
-        }}
-        className={`fixed inset-x-0 z-40 touch-none select-none cursor-grab active:cursor-grabbing ${
+        role="button"
+        aria-label={t("session.restTimer.expandAria")}
+        onClick={exiting ? undefined : () => setMinimized(false)}
+        style={{ bottom: "var(--bottom-nav-height, 0px)" }}
+        className={`fixed inset-x-0 z-40 select-none cursor-pointer ${
           exiting ? "pointer-events-none" : ""
         }`}
       >
@@ -136,7 +138,6 @@ export default function RestTimer({
             </span>
           </div>
           <button
-            onPointerDown={(e) => e.stopPropagation()}
             onClick={(e) => {
               e.stopPropagation();
               onSkip();
@@ -153,79 +154,93 @@ export default function RestTimer({
   const closing = exiting;
 
   return (
-    <div
-      style={{
-        bottom: "var(--bottom-nav-height, 0px)",
-        transform: `translateY(${dragOffset}px)`,
-        transition: dragging ? "none" : "transform 0.3s ease-out",
-      }}
-      className={`fixed inset-x-0 z-40 ${
-        closing ? "animate-sheet-slide-down pointer-events-none" : "animate-sheet-slide-up"
-      }`}
-    >
-      <div className="mx-auto max-w-md bg-[#faf6f1] rounded-t-[1.75rem] shadow-2xl pb-8">
-        <div
-          onPointerDown={closing ? undefined : handlePointerDown}
-          style={{ touchAction: "none" }}
-          className="touch-none select-none cursor-grab active:cursor-grabbing"
-          role="button"
-          aria-label={t("session.restTimer.expandAria")}
-        >
-          <div className="flex justify-center pt-3 pb-2">
-            <div className="w-10 h-1.5 rounded-full bg-[#191714]/15" />
+    <>
+      {/* Blocks the page behind (taps, scrolling); tapping it folds the sheet
+          into the small bar, like the app's other bottom sheets. */}
+      <div
+        onClick={closing ? undefined : minimize}
+        style={{ touchAction: "none" }}
+        className={`fixed inset-0 z-[60] bg-black/30 transition-opacity duration-300 ${
+          closing || dragOffset >= DISMISS_DISTANCE
+            ? "opacity-0 pointer-events-none"
+            : "animate-fade-in"
+        }`}
+      />
+      <div
+        style={{
+          bottom: "var(--bottom-nav-height, 0px)",
+          transform: `translateY(${dragOffset}px)`,
+          transition: dragging ? "none" : "transform 0.3s ease-out",
+          touchAction: "none",
+        }}
+        className={`fixed inset-x-0 z-[60] ${
+          closing ? "animate-sheet-slide-down pointer-events-none" : "animate-sheet-slide-up"
+        }`}
+      >
+        <div className="mx-auto max-w-md bg-[#faf6f1] rounded-t-[1.75rem] shadow-2xl pb-8">
+          <div
+            onPointerDown={closing ? undefined : handlePointerDown}
+            style={{ touchAction: "none" }}
+            className="touch-none select-none cursor-grab active:cursor-grabbing"
+            role="button"
+            aria-label={t("session.restTimer.expandAria")}
+          >
+            <div className="flex justify-center pt-3 pb-2">
+              <div className="w-10 h-1.5 rounded-full bg-[#191714]/15" />
+            </div>
+            <p className="text-center text-xs font-bold text-[#191714]/40 uppercase tracking-widest mb-6 pb-1">
+              {t("session.restTimer.label")}
+            </p>
           </div>
-          <p className="text-center text-xs font-bold text-[#191714]/40 uppercase tracking-widest mb-6 pb-1">
-            {t("session.restTimer.label")}
-          </p>
-        </div>
 
-        <div
-          className={`relative w-48 h-48 mx-auto flex items-center justify-center mb-7 ${
-            isUrgent ? "animate-timer-urgent" : ""
-          }`}
-        >
-          <svg viewBox="0 0 192 192" className="absolute inset-0 -rotate-90">
-            <circle cx="96" cy="96" r={RING_RADIUS} fill="none" stroke="#ece7dd" strokeWidth="10" />
-            <circle
-              cx="96"
-              cy="96"
-              r={RING_RADIUS}
-              fill="none"
-              stroke={isUrgent ? "#e2703a" : "#c9552c"}
-              strokeWidth="10"
-              strokeLinecap="round"
-              strokeDasharray={RING_CIRCUMFERENCE}
-              strokeDashoffset={dashOffset}
-              className="transition-[stroke-dashoffset] duration-[1000ms] ease-linear"
-            />
-          </svg>
-          <span className="text-5xl font-black text-[#191714] tabular-nums">{label}</span>
-        </div>
+          <div
+            className={`relative w-48 h-48 mx-auto flex items-center justify-center mb-7 ${
+              isUrgent ? "animate-timer-urgent" : ""
+            }`}
+          >
+            <svg viewBox="0 0 192 192" className="absolute inset-0 -rotate-90">
+              <circle cx="96" cy="96" r={RING_RADIUS} fill="none" stroke="#ece7dd" strokeWidth="10" />
+              <circle
+                cx="96"
+                cy="96"
+                r={RING_RADIUS}
+                fill="none"
+                stroke={isUrgent ? "#e2703a" : "#c9552c"}
+                strokeWidth="10"
+                strokeLinecap="round"
+                strokeDasharray={RING_CIRCUMFERENCE}
+                strokeDashoffset={dashOffset}
+                className="transition-[stroke-dashoffset] duration-[1000ms] ease-linear"
+              />
+            </svg>
+            <span className="text-5xl font-black text-[#191714] tabular-nums">{label}</span>
+          </div>
 
-        <div className="flex items-center gap-3 px-6">
-          <button
-            onClick={() => onAdjust(-15)}
-            aria-label={t("session.restTimer.removeAria")}
-            className="flex-1 bg-[#ece7dd] active:bg-[#e2dccf] text-[#191714] font-bold text-sm rounded-full py-3.5 transition-colors"
-          >
-            {t("session.restTimer.remove")}
-          </button>
-          <button
-            onClick={() => onAdjust(15)}
-            aria-label={t("session.restTimer.addAria")}
-            className="flex-1 bg-[#ece7dd] active:bg-[#e2dccf] text-[#191714] font-bold text-sm rounded-full py-3.5 transition-colors"
-          >
-            {t("session.restTimer.add")}
-          </button>
-          <button
-            onClick={onSkip}
-            aria-label={t("session.restTimer.skipAria")}
-            className="flex-1 bg-[#191714] active:bg-[#191714]/85 text-white font-bold text-sm rounded-full py-3.5 transition-colors"
-          >
-            {t("session.restTimer.skip")}
-          </button>
+          <div className="flex items-center gap-3 px-6">
+            <button
+              onClick={() => onAdjust(-15)}
+              aria-label={t("session.restTimer.removeAria")}
+              className="flex-1 bg-[#ece7dd] active:bg-[#e2dccf] text-[#191714] font-bold text-sm rounded-full py-3.5 transition-colors"
+            >
+              {t("session.restTimer.remove")}
+            </button>
+            <button
+              onClick={() => onAdjust(15)}
+              aria-label={t("session.restTimer.addAria")}
+              className="flex-1 bg-[#ece7dd] active:bg-[#e2dccf] text-[#191714] font-bold text-sm rounded-full py-3.5 transition-colors"
+            >
+              {t("session.restTimer.add")}
+            </button>
+            <button
+              onClick={onSkip}
+              aria-label={t("session.restTimer.skipAria")}
+              className="flex-1 bg-[#191714] active:bg-[#191714]/85 text-white font-bold text-sm rounded-full py-3.5 transition-colors"
+            >
+              {t("session.restTimer.skip")}
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
