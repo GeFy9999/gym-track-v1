@@ -17,6 +17,7 @@ import {
 } from "../../utils/loadingType";
 import type { TrackingType } from "../../utils/trackingType";
 import { playSetCompleteSound } from "../../utils/sound";
+import { keepScrollOnFocus } from "../../utils/keepScrollOnFocus";
 import PlateRow from "./PlateRow";
 import SetTypeMenu from "./SetTypeMenu";
 
@@ -159,7 +160,10 @@ export default function SetRow({
                       toSeconds(e.target.value, String(durationSecs)),
                     )
                   }
-                  onFocus={(e) => e.target.select()}
+                  onFocus={(e) => {
+                    keepScrollOnFocus(e.target);
+                    e.target.select();
+                  }}
                   onBlur={() => onCommitDuration(set.durationSeconds ?? 0)}
                   disabled={readOnly}
                   className="w-16 min-w-0 bg-transparent text-3xl font-black text-gray-900 focus:outline-none text-right"
@@ -177,7 +181,10 @@ export default function SetRow({
                       toSeconds(String(durationMinutes), e.target.value),
                     )
                   }
-                  onFocus={(e) => e.target.select()}
+                  onFocus={(e) => {
+                    keepScrollOnFocus(e.target);
+                    e.target.select();
+                  }}
                   onBlur={() => onCommitDuration(set.durationSeconds ?? 0)}
                   disabled={readOnly}
                   className="w-12 min-w-0 bg-transparent text-3xl font-black text-gray-900 focus:outline-none text-right"
@@ -232,6 +239,7 @@ export default function SetRow({
                   onLocalWeightChange(toTotal(num));
                 }}
                 onFocus={(e) => {
+                  keepScrollOnFocus(e.target);
                   e.target.select();
                   weightOnFocusRef.current = displayedWeight;
                 }}
@@ -282,7 +290,10 @@ export default function SetRow({
                   val === "" ? 0 : clamp(Number(val), MIN_REPS, MAX_REPS);
                 onLocalRepsChange(num);
               }}
-              onFocus={(e) => e.target.select()}
+              onFocus={(e) => {
+                keepScrollOnFocus(e.target);
+                e.target.select();
+              }}
               onBlur={(e) => {
                 const num =
                   e.target.value === ""
