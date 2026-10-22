@@ -7,6 +7,7 @@ import {
   buildExerciseSearchIndex,
   searchExercises,
 } from "../../utils/exerciseSearch";
+import ExerciseInfoModal from "./ExerciseInfoModal";
 
 type Props = {
   muscleGroup: string;
@@ -22,6 +23,9 @@ export default function AddExercisePanel({
   const { t } = useTranslation();
   const [showExerciseList, setShowExerciseList] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  // Exercise whose demo GIF is open — lets the user check what a movement
+  // looks like before adding it.
+  const [infoFor, setInfoFor] = useState<AvailableExercise | null>(null);
 
   // Other names, typos, word order and accents all match — see
   // utils/exerciseSearch.ts. Best match first.
@@ -77,17 +81,32 @@ export default function AddExercisePanel({
 
           <div className="max-h-64 overflow-y-auto px-3 pb-3 space-y-1">
             {filtered.map((ex) => (
-              <button
+              <div
                 key={ex.id}
-                onClick={() => {
-                  onAdd(ex.id);
-                  setShowExerciseList(false);
-                  setSearchQuery("");
-                }}
-                className="w-full text-left hover:bg-white/40 rounded-xl px-3 py-2.5 text-sm font-semibold text-gray-700 transition-colors"
+                className="flex items-center gap-2 hover:bg-white/40 rounded-xl pr-2 transition-colors"
               >
-                {ex.name}
-              </button>
+                <button
+                  onClick={() => {
+                    onAdd(ex.id);
+                    setShowExerciseList(false);
+                    setSearchQuery("");
+                  }}
+                  className="flex-1 min-w-0 text-left px-3 py-2.5 text-sm font-semibold text-gray-700"
+                >
+                  {ex.name}
+                </button>
+                <button
+                  onClick={() => setInfoFor(ex)}
+                  aria-label={t("session.exerciseInfo.aria")}
+                  className="w-7 h-7 rounded-full bg-[#191714]/10 flex items-center justify-center flex-shrink-0 active:bg-[#191714]/20 transition-colors"
+                >
+                  {/* Same plain "i" glyph as the exercise card's info button. */}
+                  <svg width="4" height="14" viewBox="0 0 4 14" fill="#191714" className="block">
+                    <circle cx="2" cy="2" r="2" />
+                    <rect x="0" y="6" width="4" height="8" rx="2" />
+                  </svg>
+                </button>
+              </div>
             ))}
             {filtered.length === 0 && (
               <p className="text-xs text-gray-500 text-center py-3">
@@ -100,6 +119,15 @@ export default function AddExercisePanel({
             )}
           </div>
         </div>
+      )}
+
+      {infoFor && (
+        <ExerciseInfoModal
+          exerciseId={infoFor.id}
+          name={infoFor.name}
+          image={infoFor.image}
+          onClose={() => setInfoFor(null)}
+        />
       )}
     </div>
   );
