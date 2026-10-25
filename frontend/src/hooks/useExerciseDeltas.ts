@@ -1,15 +1,17 @@
 import { useState, useEffect } from "react";
 import { API_URL } from "../lib/api";
 import i18n from "../i18n";
+import { formatDuration } from "../utils/units";
+import { hasSetData } from "../utils/trackingType";
 
 type SetData = {
   weight: number;
   reps: number;
+  durationSeconds?: number | null;
   type?: string;
 };
 
-const isWorkingSet = (s: SetData) =>
-  s.type !== "warmup" && (s.weight > 0 || s.reps > 0);
+const isWorkingSet = (s: SetData) => s.type !== "warmup" && hasSetData(s);
 
 type SessionExercise = {
   exercise: { id: string; name: string };
@@ -133,7 +135,30 @@ export function formatLastTime(lastTime: LastTime): string {
     const max = Math.max(...values);
     return min === max ? `${min}` : `${min}–${max}`;
   };
+
+  // Timed exercise (treadmill, bike…): "2 séries de 12:00".
+  const durations = sets.map((s) => s.durationSeconds ?? 0);
+  if (durations.some((d) => d > 0)) {
+    const min = Math.min(...durations);
+    const max = Math.max(...durations);
+    return i18n.t("session.lastTimeDuration", {
+      count: sets.length,
+      duration:
+        min === max
+          ? formatDuration(max)
+          : `${formatDuration(min)}–${formatDuration(max)}`,
+    });
+  }
+
   const maxReps = Math.max(...sets.map((s) => s.reps));
+
+  // Bodyweight (no weight logged): "3 séries de 12 reps au poids de corps".
+  if (sets.every((s) => s.weight === 0)) {
+    return i18n.t("session.lastTimeBodyweight", {
+      count: sets.length,
+      reps: range(sets.map((s) => s.reps)),
+    });
+  }
 
   return i18n.t("session.lastTimeUniform", {
     count: sets.length,

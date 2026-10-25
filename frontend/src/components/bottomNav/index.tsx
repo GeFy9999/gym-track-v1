@@ -35,12 +35,19 @@ export default function BottomNav() {
   const activeIndex = links.findIndex((l) => l.to === location.pathname);
 
   useLayoutEffect(() => {
-    const el = itemRefs.current[activeIndex];
-    if (el) {
-      setIndicator({ left: el.offsetLeft, width: el.offsetWidth });
-    } else {
-      setIndicator(null);
-    }
+    const measure = () => {
+      const el = itemRefs.current[activeIndex];
+      if (el) {
+        setIndicator({ left: el.offsetLeft, width: el.offsetWidth });
+      } else {
+        setIndicator(null);
+      }
+    };
+    measure();
+    // Rotating the device (or resizing a tablet window) changes the tabs'
+    // widths — re-place the active tab's highlight.
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
   }, [activeIndex]);
 
   // Exposes this nav's real rendered height (which already bakes in the
@@ -69,13 +76,15 @@ export default function BottomNav() {
     <nav
       ref={navRef}
       aria-label="Navigation"
-      className="fixed bottom-0 left-1/2 w-full max-w-[430px] -translate-x-1/2 z-50"
+      className="fixed bottom-0 inset-x-0 z-50"
     >
       <div
         className="bg-[#ece7dd] px-2 pt-2 shadow-[0_-2px_8px_rgba(0,0,0,0.04)]"
         style={{ paddingBottom: "max(0.5rem, env(safe-area-inset-bottom))" }}
       >
-        <ul className="relative flex items-center justify-between">
+        {/* Tabs stay grouped in the middle on wide screens (tablets,
+            landscape) instead of spreading edge to edge. */}
+        <ul className="relative flex items-center justify-between max-w-xl mx-auto">
           {indicator && (
             <div
               className="absolute top-0 h-full bg-[#191714] rounded-xl transition-all duration-300 ease-out"

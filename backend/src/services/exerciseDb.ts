@@ -34,6 +34,45 @@ export type ExerciseDbEntry = {
   description: string;
 };
 
+// Cardio machines, logged as a duration rather than weight × reps.
+const TIME_EQUIPMENT = new Set([
+  "treadmill",
+  "stationary bike",
+  "elliptical machine",
+  "stepmill machine",
+  "skierg machine",
+  "air bike",
+  "upper body ergometer",
+  "jump rope",
+]);
+const TIMED_CARDIO_NAME = /\b(run|running|walk|walking|jog|jogging|cycling|skipping)\b|jump rope/;
+// Static bodyweight holds (plank, wall sit, L-sit, levers, planche…) are
+// held for a time — but not their moving variants (plank shoulder taps,
+// wall sit march, side plank hip lifts…), which are counted in reps.
+const HOLD_NAME = /\bhold\b|\bhang\b|plank|wall sit|l-sit|hollow body|isometric/;
+const MOVING_VARIANT =
+  /pike|rotation|jack|tap|raise|lift|push-up|march|alternating|extension|bend|touch/;
+
+// What a set of this exercise records (see Exercise.trackingType): a
+// duration for cardio machines, running/walking/cycling/jump-rope cardio
+// and static bodyweight holds, reps only for other bodyweight moves,
+// otherwise weight × reps.
+// "weighted" equipment (weighted pull-ups…) is its own category and keeps
+// its weight input.
+export function trackingTypeFor(entry: ExerciseDbEntry): "TIME" | "REPS" | null {
+  if (
+    TIME_EQUIPMENT.has(entry.equipment) ||
+    (entry.target === "cardiovascular system" && TIMED_CARDIO_NAME.test(entry.name)) ||
+    (entry.equipment === "body weight" &&
+      HOLD_NAME.test(entry.name) &&
+      !MOVING_VARIANT.test(entry.name))
+  ) {
+    return "TIME";
+  }
+  if (entry.equipment === "body weight") return "REPS";
+  return null;
+}
+
 // ExerciseDB ids are 4 digits; anything else must never reach a file path.
 const VALID_ID = /^\d{4}$/;
 
@@ -212,7 +251,7 @@ export async function importExerciseDb(
 
   const builtIns = await prisma.exercise.findMany({
     where: { isCustom: false },
-    select: { id: true, name: true, exerciseDbId: true },
+    select: { id: true, name: true, exerciseDbId: true, trackingType: true },
   });
 
   const claims = new Map<string, typeof builtIns>();
@@ -248,7 +287,13 @@ export async function importExerciseDb(
       const muscleGroupId = groupIdByName.get(muscleGroupNameFor(entry));
       if (!muscleGroupId) continue;
       await prisma.exercise.create({
-        data: { name, muscleGroupId, exerciseDbId: entry.id, isCustom: false },
+        data: {
+          name,
+          muscleGroupId,
+          exerciseDbId: entry.id,
+          isCustom: false,
+          trackingType: trackingTypeFor(entry),
+        },
       });
       stats.created++;
       continue;
@@ -272,6 +317,13 @@ export async function importExerciseDb(
           data: { exerciseDbId: entry.id, name, image: null },
         });
         if (ex.name !== name) stats.renamed++;
+      }
+      const trackingType = trackingTypeFor(entry);
+      if (ex.trackingType !== trackingType) {
+        await prisma.exercise.update({
+          where: { id: ex.id },
+          data: { trackingType },
+        });
       }
       stats.linked++;
     }

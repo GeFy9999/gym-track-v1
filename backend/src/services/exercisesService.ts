@@ -9,8 +9,8 @@ import {
   getExerciseDbThumbnailPath,
 } from "./exerciseDb.js";
 
-export async function getExercises() {
-  return await getAllExercises();
+export async function getExercises(userId: string) {
+  return await getAllExercises(userId);
 }
 
 async function getExerciseDbId(exerciseId: string): Promise<string | null> {
@@ -34,14 +34,17 @@ export async function getExerciseThumbnailPath(exerciseId: string): Promise<stri
   return exerciseDbId ? await getExerciseDbThumbnailPath(exerciseDbId) : null;
 }
 
-export async function getExercisesForMuscleGroup(muscleGroupId: string) {
-  return await getExercisesByMuscleGroup(muscleGroupId);
+export async function getExercisesForMuscleGroup(
+  muscleGroupId: string,
+  userId: string,
+) {
+  return await getExercisesByMuscleGroup(muscleGroupId, userId);
 }
 
 export async function createExercise(exercise: {
   name: string;
   muscleGroupId: string;
-  isCustom?: boolean;
+  userId: string;
 }) {
   return await insertExercise(exercise);
 }

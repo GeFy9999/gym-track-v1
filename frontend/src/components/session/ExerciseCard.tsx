@@ -5,6 +5,7 @@ import type { SessionExercise, SetData } from "../../types/session";
 import { formatDuration } from "../../utils/units";
 import { formatLastTime, type Delta as DeltaType, type LastTime as LastTimeType } from "../../hooks/useExerciseDeltas";
 import type { LoadingType } from "../../utils/loadingType";
+import type { TrackingType } from "../../utils/trackingType";
 import LoadingTypeSheet from "./LoadingTypeSheet";
 import BarbellSelector from "./BarbellSelector";
 import RestTimerPicker from "./RestTimerPicker";
@@ -21,6 +22,7 @@ type Props = {
   // null when loading-type inputs are off (free plan or disabled in the
   // profile) — the card then shows a plain weight input.
   loadingType: LoadingType | null;
+  trackingType: TrackingType;
   isLoadingTypeOverridden: boolean;
   barWeight: number;
   unit: string;
@@ -53,6 +55,8 @@ type Props = {
   onCommitWeight: (setId: string, weight: number) => void;
   onLocalRepsChange: (setId: string, reps: number) => void;
   onCommitReps: (setId: string, reps: number) => void;
+  onLocalDurationChange: (setId: string, seconds: number) => void;
+  onCommitDuration: (setId: string, seconds: number) => void;
   onToggleSetCompleted: (set: SetData) => void;
   onDeleteSet: (setId: string) => void;
   onAddSet: () => void;
@@ -64,6 +68,7 @@ export default function ExerciseCard({
   seIndex,
   totalExercises,
   loadingType,
+  trackingType,
   isLoadingTypeOverridden,
   barWeight,
   unit,
@@ -96,6 +101,8 @@ export default function ExerciseCard({
   onCommitWeight,
   onLocalRepsChange,
   onCommitReps,
+  onLocalDurationChange,
+  onCommitDuration,
   onToggleSetCompleted,
   onDeleteSet,
   onAddSet,
@@ -349,7 +356,9 @@ export default function ExerciseCard({
           />
         )}
 
-        {!readOnly && se.sets.length === 0 && (
+        {/* Warm-up sets are ramped-up loads — nothing to ramp without a
+            weight to enter (bodyweight, timed). */}
+        {!readOnly && se.sets.length === 0 && trackingType === "WEIGHT_REPS" && (
           <button
             data-tour="session-warmup"
             onClick={onOpenWarmupModal}
@@ -367,6 +376,7 @@ export default function ExerciseCard({
               set={set}
               index={i}
               loadingType={loadingType}
+              trackingType={trackingType}
               barWeight={barWeight}
               unit={unit}
               readOnly={readOnly}
@@ -381,6 +391,10 @@ export default function ExerciseCard({
               onCommitWeight={(weight) => onCommitWeight(set.id, weight)}
               onLocalRepsChange={(reps) => onLocalRepsChange(set.id, reps)}
               onCommitReps={(reps) => onCommitReps(set.id, reps)}
+              onLocalDurationChange={(seconds) =>
+                onLocalDurationChange(set.id, seconds)
+              }
+              onCommitDuration={(seconds) => onCommitDuration(set.id, seconds)}
               onToggleCompleted={() => onToggleSetCompleted(set)}
               onDelete={() => onDeleteSet(set.id)}
             />

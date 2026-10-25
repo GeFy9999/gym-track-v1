@@ -9,7 +9,7 @@ export default function DeleteExerciseModal({ onCancel, onConfirm }: Props) {
   const { t } = useTranslation();
 
   return (
-    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6 animate-fade-in">
+    <div className="fixed inset-0 bg-black/30 flex items-center-safe justify-center overflow-y-auto py-6 z-50 px-6 animate-fade-in">
       <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
         <p className="text-base font-semibold text-gray-900 text-center mb-2">
           {t("session.deleteExercise.title")}

@@ -2,17 +2,14 @@
 
 import { Suspense, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { CheckCircle2, XCircle } from "lucide-react";
 import { useLocaleDict } from "@/lib/useLocaleDict";
 import { API_URL } from "@/lib/api";
-import { consumePendingPlan } from "@/lib/pendingPlan";
-import { startCheckoutForPendingPlan } from "@/lib/checkout";
 
 function VerifyEmailInner() {
   const { locale, dict } = useLocaleDict();
   const t = dict.auth.verifyEmail;
-  const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
 
@@ -44,19 +41,10 @@ function VerifyEmailInner() {
         const result = await res.json();
         if (!res.ok) throw new Error(result.error || t.errorGeneric);
 
-        localStorage.setItem("token", result.token);
-        localStorage.setItem("user", JSON.stringify(result.user));
+        // Confirming doesn't log in: the user heads back to the app (or to
+        // the tab where they signed up, whose "I confirmed" button continues
+        // to checkout), or logs in here.
         setStatus("success");
-
-        const checkout = await startCheckoutForPendingPlan(result.token);
-        setTimeout(() => {
-          if (checkout && "url" in checkout) {
-            window.location.href = checkout.url;
-          } else {
-            consumePendingPlan();
-            router.push(`/${locale}#tarifs`);
-          }
-        }, 1200);
       } catch (err) {
         setStatus("error");
         setErrorMessage(err instanceof Error ? err.message : t.errorGeneric);
@@ -76,7 +64,13 @@ function VerifyEmailInner() {
             <CheckCircle2 size={24} className="text-[#3a9e6e]" />
           </div>
           <h1 className="text-xl font-bold text-gray-900 mb-2">{t.success}</h1>
-          <p className="text-sm text-gray-500">{t.redirecting}</p>
+          <p className="text-sm text-gray-500 max-w-xs">{t.backToApp}</p>
+          <Link
+            href={`/${locale}/login`}
+            className="mt-6 text-[#c9552c] font-semibold text-sm"
+          >
+            {t.loginHere}
+          </Link>
         </>
       )}
 

@@ -87,16 +87,18 @@ export default function ProgressPhotosPage() {
     setUploading(true);
     try {
       const data = await compressImage(file);
+      const tempId = `temp-${crypto.randomUUID()}`;
       const result = await offlineAwareFetch(
         "POST",
         "/progress-photos",
         { data },
         "Photo de progression",
+        { localId: tempId },
       );
       if (result.queued) {
         setPhotos((prev) => [
           {
-            id: `temp-${crypto.randomUUID()}`,
+            id: tempId,
             data,
             note: null,
             createdAt: new Date().toISOString(),
@@ -119,10 +121,8 @@ export default function ProgressPhotosPage() {
     setViewPhoto(null);
     setDeleteConfirm(null);
 
-    // A photo added offline only exists locally so far — nothing to delete
-    // on the server, and no real id to queue a DELETE for.
-    if (id.startsWith("temp-")) return;
-
+    // A photo added offline: the delete is queued behind its upload (which
+    // gives it its real id) — otherwise the upload would bring it back.
     try {
       await offlineAwareFetch(
         "DELETE",
@@ -177,7 +177,7 @@ export default function ProgressPhotosPage() {
   if (!isPro) {
     return (
       <div className="min-h-screen bg-[#faf6f1] pb-28">
-        <div className="flex items-center gap-3 px-5 pt-8 pb-6" style={{ background: "#191714" }}>
+        <div className="flex items-center gap-3 px-page pt-8 pb-6" style={{ background: "#191714" }}>
           <button
             onClick={() => navigate(-1)}
             className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center active:bg-white/20 transition-colors flex-shrink-0"
@@ -217,7 +217,7 @@ export default function ProgressPhotosPage() {
 
   return (
     <div className="min-h-screen bg-[#faf6f1] pb-28">
-      <div className="flex items-center gap-3 px-5 pt-8 pb-6" style={{ background: "#191714" }}>
+      <div className="flex items-center gap-3 px-page pt-8 pb-6" style={{ background: "#191714" }}>
         <button
           onClick={() => navigate(-1)}
           className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center active:bg-white/20 transition-colors flex-shrink-0"
@@ -234,7 +234,7 @@ export default function ProgressPhotosPage() {
         </div>
       </div>
 
-      <div className="px-5 pt-5">
+      <div className="px-page pt-5">
 
       {/* Upload button */}
       <div className="mb-6">

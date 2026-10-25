@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { API_URL } from "../../lib/api";
+import { formatSetValue } from "../../utils/trackingType";
 
 type SessionData = {
   id: string;
@@ -9,7 +10,12 @@ type SessionData = {
   completed: boolean;
   sessionExercises: {
     exercise: { id: string; name: string };
-    sets: { weight: number; reps: number; unit: string }[];
+    sets: {
+      weight: number;
+      reps: number;
+      unit: string;
+      durationSeconds?: number | null;
+    }[];
   }[];
 };
 
@@ -109,7 +115,7 @@ export default function RecentActivity() {
 
   if (loading) {
     return (
-      <div className="px-5 mt-6">
+      <div className="px-page mt-6">
         <div className="h-4 w-32 bg-gray-200 rounded mb-3 animate-pulse" />
         <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm animate-pulse">
           <div className="h-4 w-40 bg-gray-200 rounded mb-2" />
@@ -139,7 +145,7 @@ export default function RecentActivity() {
   const sets = firstExercise?.sets || [];
 
   return (
-    <div className="px-5 mt-7">
+    <div className="px-page mt-7">
       <p className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-3">
         {t("dashboard.lastSession")}
       </p>
@@ -154,8 +160,7 @@ export default function RecentActivity() {
                 </p>
                 <p className="text-xs text-white/50 uppercase tracking-wide mt-1">
                   {t("dashboard.setsCount", { count: sets.length })} ·{" "}
-                  {bestSet.weight} {bestSet.unit} × {bestSet.reps}{" "}
-                  {t("dashboard.reps")}
+                  {formatSetValue(bestSet)}
                 </p>
               </div>
               {delta && (
@@ -189,9 +194,7 @@ export default function RecentActivity() {
                   </span>
                 </div>
                 <span className="text-sm font-black text-gray-900">
-                  {set.weight}
-                  {set.unit} <span className="text-gray-400">×</span>{" "}
-                  {set.reps}
+                  {formatSetValue(set)}
                 </span>
               </div>
             ))}

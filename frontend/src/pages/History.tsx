@@ -17,7 +17,8 @@ import {
 import { API_URL } from "../lib/api";
 import { getDateLocale } from "../i18n";
 import { getMuscleGroupLabel } from "../utils/muscleGroupLabel";
-import { formatWorkoutDuration } from "../utils/units";
+import { formatDuration, formatWorkoutDuration } from "../utils/units";
+import { hasSetData } from "../utils/trackingType";
 import TourOverlay from "../components/TourOverlay";
 import Toast from "../components/Toast";
 import { useToast } from "../hooks/useToast";
@@ -39,6 +40,7 @@ type SessionData = {
     sets: {
       weight: number;
       reps: number;
+      durationSeconds?: number | null;
       unit: string;
       completed: boolean;
       type: string;
@@ -67,8 +69,6 @@ const dateKey = (d: Date) =>
 
 const startOfMonth = (d: Date) => new Date(d.getFullYear(), d.getMonth(), 1);
 
-const hasSetData = (s: { weight: number; reps: number }) =>
-  s.weight > 0 || s.reps > 0;
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
@@ -361,6 +361,7 @@ export default function HistoryPage() {
           t("history.csv.weight"),
           t("history.csv.unit"),
           t("history.csv.reps"),
+          t("history.csv.duration"),
           t("history.csv.validated"),
         ]
           .map(escapeCsvField)
@@ -385,6 +386,7 @@ export default function HistoryPage() {
                 set.weight,
                 set.unit,
                 set.reps,
+                set.durationSeconds ? formatDuration(set.durationSeconds) : "",
                 set.completed ? t("history.csv.yes") : t("history.csv.no"),
               ]
                 .map(escapeCsvField)
@@ -415,14 +417,14 @@ export default function HistoryPage() {
     return (
       <div className="pb-28 bg-[#faf6f1] min-h-screen">
         <div
-          className="px-5 pt-8 pb-6 animate-pulse"
+          className="px-page pt-8 pb-6 animate-pulse"
           style={{ background: "#191714" }}
         >
           <div className="h-8 w-40 bg-white/10 rounded mb-2" />
           <div className="h-3 w-52 bg-white/10 rounded mb-5" />
           <div className="h-10 w-full bg-white/10 rounded-2xl" />
         </div>
-        <div className="px-5 pt-4 space-y-3 animate-pulse">
+        <div className="px-page pt-4 space-y-3 animate-pulse">
           {[1, 2, 3].map((i) => (
             <div key={i} className="bg-[#ece7dd] rounded-2xl p-4 shadow-sm">
               <div className="h-4 w-44 bg-white/50 rounded mb-2" />
@@ -436,7 +438,7 @@ export default function HistoryPage() {
 
   return (
     <div className="pb-28 bg-[#faf6f1] min-h-screen">
-      <div className="px-5 pt-8 pb-6" style={{ background: "#191714" }}>
+      <div className="px-page pt-8 pb-6" style={{ background: "#191714" }}>
         <div className="flex items-start justify-between gap-3 mb-5">
           <div>
             <h1 className="text-[26px] font-black text-white uppercase tracking-wide leading-tight">
@@ -503,7 +505,7 @@ export default function HistoryPage() {
         )}
       </div>
 
-      <div className="px-5 pt-5">
+      <div className="px-page pt-5">
       {!isPro && allSessions.length > 0 && (
         <button
           onClick={() => navigate("/upgrade")}
@@ -967,7 +969,7 @@ export default function HistoryPage() {
       )}
 
       {showExportConfirm && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-[60] px-6 animate-fade-in">
+        <div className="fixed inset-0 bg-black/30 flex items-center-safe justify-center overflow-y-auto py-6 z-[60] px-6 animate-fade-in">
           <div className="bg-[#faf6f1] rounded-3xl w-full max-w-sm shadow-2xl animate-scale-in overflow-hidden">
             <div
               className="px-6 pt-7 pb-6 text-center"

@@ -96,7 +96,7 @@ export default function ProfilePage() {
     <div className="pb-28 bg-[#faf6f1] min-h-screen">
       {/* Header card */}
       <div
-        className="px-5 pt-8 pb-6 flex items-center gap-4"
+        className="px-page pt-8 pb-6 flex items-center gap-4"
         style={{ background: "#191714" }}
       >
         <div
@@ -113,7 +113,7 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      <div className="px-5 pt-5">
+      <div className="px-page pt-5">
 
       {success && (
         <div className="bg-[#3a9e6e] text-white text-sm font-medium px-4 py-3 rounded-2xl mb-4 text-center">
@@ -665,7 +665,7 @@ export default function ProfilePage() {
 
       {/* Modal déconnexion */}
       {activeModal === "logout" && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-[60] px-6 animate-fade-in">
+        <div className="fixed inset-0 bg-black/30 flex items-center-safe justify-center overflow-y-auto py-6 z-[60] px-6 animate-fade-in">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
             <p className="text-base font-bold text-gray-900 text-center mb-2">
               {t("profile.logoutModal.title")}
@@ -693,7 +693,7 @@ export default function ProfilePage() {
 
       {/* Modal mot de passe */}
       {activeModal === "password" && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-[60] px-6 animate-fade-in">
+        <div className="fixed inset-0 bg-black/30 flex items-center-safe justify-center overflow-y-auto py-6 z-[60] px-6 animate-fade-in">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
             <div className="flex justify-between items-center mb-4">
               <p className="text-base font-bold text-gray-900">
@@ -752,7 +752,7 @@ export default function ProfilePage() {
 
       {/* Modal supprimer */}
       {activeModal === "delete" && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-[60] px-6 animate-fade-in">
+        <div className="fixed inset-0 bg-black/30 flex items-center-safe justify-center overflow-y-auto py-6 z-[60] px-6 animate-fade-in">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
             <p className="text-base font-bold text-gray-900 text-center mb-2">
               {t("profile.deleteModal.title")}
@@ -793,7 +793,7 @@ export default function ProfilePage() {
 
       {/* Modal recovery */}
       {activeModal === "recovery" && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-[60] px-6 animate-fade-in">
+        <div className="fixed inset-0 bg-black/30 flex items-center-safe justify-center overflow-y-auto py-6 z-[60] px-6 animate-fade-in">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
             <div className="flex justify-between items-center mb-4">
               <p className="text-base font-bold text-gray-900">
@@ -831,7 +831,7 @@ export default function ProfilePage() {
 
       {/* Modal timer de repos */}
       {activeModal === "restTimer" && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-[60] px-6 animate-fade-in">
+        <div className="fixed inset-0 bg-black/30 flex items-center-safe justify-center overflow-y-auto py-6 z-[60] px-6 animate-fade-in">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
             <div className="flex justify-between items-center mb-4">
               <p className="text-base font-bold text-gray-900">

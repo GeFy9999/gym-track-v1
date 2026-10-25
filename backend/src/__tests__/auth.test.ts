@@ -11,22 +11,21 @@ vi.mock("resend", () => ({
 }));
 
 describe("auth", () => {
-  it("registers a new user and returns a token", async () => {
-    const { res } = await registerUser();
+  it("registers a new user without logging them in", async () => {
+    const { res, user } = await registerUser();
     expect(res.status).toBe(201);
-    expect(res.body.token).toBeTypeOf("string");
-    expect(res.body.user.isPro).toBe(false);
-    // Password hash must never leak into the API response.
-    expect(res.body.user.password).toBeUndefined();
+    expect(res.body).toEqual({ pending: true });
+    expect(user.isPro).toBe(false);
   });
 
-  it("rejects duplicate email registration", async () => {
+  it("answers a duplicate signup exactly like a new one", async () => {
     const email = `dup_${randomUUID()}@example.com`;
-    await registerUser({ email });
+    const first = await registerUser({ email });
     const res = await request(app)
       .post("/api/auth/register")
-      .send({ email, password: "testpass123", name: "Dup" });
-    expect(res.status).toBe(400);
+      .send({ email, password: "otherpass123", name: "Dup" });
+    expect(res.status).toBe(first.res.status);
+    expect(res.body).toEqual(first.res.body);
   });
 
   it("logs in with correct credentials", async () => {
@@ -34,6 +33,8 @@ describe("auth", () => {
     const res = await request(app).post("/api/auth/login").send({ email, password });
     expect(res.status).toBe(200);
     expect(res.body.token).toBeTypeOf("string");
+    // Password hash must never leak into the API response.
+    expect(res.body.user.password).toBeUndefined();
   });
 
   it("returns the same generic error for a wrong password and an unknown email", async () => {

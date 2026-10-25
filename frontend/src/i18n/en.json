@@ -1,5 +1,6 @@
 {
   "common": {
+    "loading": "Loading",
     "user": "User",
     "exercise": "Exercise",
     "notEnoughData": "Not enough data yet",
@@ -10,9 +11,16 @@
     "googleLegalPrefix": "By continuing with Google, you confirm you are at least 16 and agree to our"
   },
   "offline": {
+    "finishNeedsConnection": "No connection: your sets are saved — finish the session once you're back online.",
+    "needsConnection": "This needs a connection",
     "offline": "Offline mode",
     "syncing_one": "Syncing... ({{count}})",
     "syncing_other": "Syncing... ({{count}})"
+  },
+  "update": {
+    "title": "Update available",
+    "message": "A new version of GymsTrack is available. Update the app to continue.",
+    "cta": "Update"
   },
   "nav": {
     "home": "Home",
@@ -105,6 +113,7 @@
     "setsCount_other": "{{count}} sets",
     "vsPrevious": "vs previous",
     "finishSession": "Finish session",
+    "finishSessionHint": "Tap here to finish",
     "finishSessionTitle": "Finish the session?",
     "finishSessionBody": "Your ongoing sessions will be marked as completed and filed in your history. You'll be able to start new ones for these muscle groups.",
     "cancel": "Cancel",
@@ -214,6 +223,7 @@
       "weight": "Weight",
       "unit": "Unit",
       "reps": "Reps",
+      "duration": "Duration",
       "validated": "Validated",
       "yes": "Yes",
       "no": "No"
@@ -233,6 +243,13 @@
     "edit": "Edit",
     "done": "Done",
     "finishExercises": "Finish my exercises",
+    "finishChoice": {
+      "title": "{{group}} done!",
+      "subtitle": "Do you want to finish your session or keep going with another muscle group?",
+      "finishSession": "Finish session",
+      "continue": "Keep going",
+      "back": "Back to exercises"
+    },
     "exerciseCountBadge": "{{count}} exercises",
     "emptyTitle": "No exercise yet",
     "emptyDesc": "Add your first exercise to\nstart the session",
@@ -255,6 +272,14 @@
       "autoWarmup": "Auto warm-up",
       "addSet": "Add a set"
     },
+    "duration": "Duration",
+    "durationMinutes": "Minutes",
+    "durationSeconds": "Seconds",
+    "bodyweight": "Body weight",
+    "lastTimeDuration_one": "{{count}} set of {{duration}}",
+    "lastTimeDuration_other": "{{count}} sets of {{duration}}",
+    "lastTimeBodyweight_one": "{{count}} set of {{reps}} reps at body weight",
+    "lastTimeBodyweight_other": "{{count}} sets of {{reps}} reps at body weight",
     "lastTimeUniform_one": "{{count}} set of {{reps}} rep at {{weight}} {{unit}}",
     "lastTimeUniform_plural_one": "{{count}} set of {{reps}} reps at {{weight}} {{unit}}",
     "lastTimeUniform_other": "{{count}} sets of {{reps}} rep at {{weight}} {{unit}}",
@@ -702,6 +727,7 @@
     "resetAction": "Reset"
   },
   "verifyEmailPending": {
+    "backToLogin": "Back to login",
     "title": "Confirm your email",
     "subtitle": "We sent a confirmation link to {{email}}. Click the link to activate your account.",
     "iVerified": "I confirmed, continue",
@@ -716,9 +742,11 @@
     "errorGeneric": "Error"
   },
   "verifyEmail": {
+    "backToApp": "Head back to the app and tap “I confirmed, continue” (or log in) to get started.",
+    "loginHere": "Or log in here",
+    "continue": "Continue",
     "verifying": "Confirming your email...",
     "success": "Email confirmed!",
-    "redirecting": "Redirecting...",
     "invalidLink": "Invalid link",
     "errorGeneric": "Error",
     "backToLogin": "Back to login"

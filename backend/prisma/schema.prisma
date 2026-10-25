@@ -12,162 +12,179 @@ datasource db {
   provider = "sqlite"
 }
 
- model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  name      String   
-  createdAt DateTime @default(now())
-  schedule  Schedule? 
-  sessions Session[]
-  bodyWeights BodyWeight[]
-  trackedExercises TrackedExercise[]
-  progressPhotos   ProgressPhoto[]
-  exerciseNotes    ExerciseNote[]
-  exerciseLoadingTypes ExerciseLoadingType[]
-  recoveryEmail String?
-  weightUnit    String   @default("lb")
-  restTimerSeconds Int   @default(120)
-  restTimerEnabled Boolean @default(false)
-  barbellModeEnabled Boolean @default(false)
-  language      String   @default("fr")
-  authProvider  String   @default("email")
-  resetToken    String?
-  resetTokenExpiry DateTime?
+model User {
+  id                      String                @id @default(uuid())
+  email                   String                @unique
+  password                String
+  name                    String
+  createdAt               DateTime              @default(now())
+  schedule                Schedule?
+  sessions                Session[]
+  bodyWeights             BodyWeight[]
+  trackedExercises        TrackedExercise[]
+  progressPhotos          ProgressPhoto[]
+  exerciseNotes           ExerciseNote[]
+  exerciseLoadingTypes    ExerciseLoadingType[]
+  customExercises         Exercise[]
+  recoveryEmail           String?
+  weightUnit              String                @default("lb")
+  restTimerSeconds        Int                   @default(120)
+  restTimerEnabled        Boolean               @default(false)
+  barbellModeEnabled      Boolean               @default(false)
+  language                String                @default("fr")
+  authProvider            String                @default("email")
+  resetToken              String?
+  resetTokenExpiry        DateTime?
   // Defaults to true at the DB level so this migration doesn't retroactively
   // lock out every existing account — register()/googleLogin() explicitly
   // override this to false for a brand-new email/password signup, since
   // Google sign-ins already have a provider-verified email.
-  emailVerified Boolean @default(true)
+  emailVerified           Boolean               @default(true)
   verificationToken       String?
   verificationTokenExpiry DateTime?
-  isPro                Boolean   @default(false)
-  stripeCustomerId     String?   @unique
-  stripeSubscriptionId String?
-  proCurrentPeriodEnd  DateTime?
-  proInterval          String?
-  loyaltyPeriodsPaid   Int       @default(0)
+  isPro                   Boolean               @default(false)
+  stripeCustomerId        String?               @unique
+  stripeSubscriptionId    String?
+  proCurrentPeriodEnd     DateTime?
+  proInterval             String?
+  loyaltyPeriodsPaid      Int                   @default(0)
   // Last renewal counted toward loyaltyPeriodsPaid (a Stripe invoice id or
   // a RevenueCat event id) — both providers can deliver the same webhook
   // more than once, and a renewal must only ever count once.
-  loyaltyLastInvoiceId String?
+  loyaltyLastInvoiceId    String?
   // Google Play product the user is subscribed to, as RevenueCat reports it
   // ("<subscriptionId>:<basePlanId>") — tells which loyalty price tier
   // they're on. Null for Stripe.
-  proProductId         String?
+  proProductId            String?
   // Google Play loyalty reminders (services/loyaltyReminders.ts): when the
   // last paid renewal happened, and which renewal (loyaltyLastInvoiceId)
   // each of the two "activate your discount" reminders was already sent
   // for — each goes out at most once per renewal.
-  loyaltyLastRenewalAt DateTime?
-  loyaltyReminder1For  String?
-  loyaltyReminder2For  String?
+  loyaltyLastRenewalAt    DateTime?
+  loyaltyReminder1For     String?
+  loyaltyReminder2For     String?
   // Unsubscribed from the reminder emails (one-click link in each email).
-  loyaltyEmailsOptOut  Boolean   @default(false)
+  loyaltyEmailsOptOut     Boolean               @default(false)
   // The 7-day free trial is offered once per account, across both monthly
   // and annual plans and both billing providers. Set as soon as any
   // recurring subscription is created.
-  hasUsedTrial         Boolean   @default(false)
+  hasUsedTrial            Boolean               @default(false)
   // "stripe" (web/default) or "google_play" (Android, via RevenueCat).
   // Loyalty discounts and the Stripe billing portal only apply to "stripe" —
   // Google Play subscriptions are managed entirely through the Play Store.
-  billingProvider      String    @default("stripe")
+  billingProvider         String                @default("stripe")
 }
 
 model Schedule {
-  id        String   @id @default(uuid())
-  userId    String   @unique
+  id        String @id @default(uuid())
+  userId    String @unique
   frequency Int
   days      String
 
-  user      User     @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 }
 
 model Session {
-  id            String   @id @default(uuid())
-  userId        String
-  muscleGroup   String
-  completed     Boolean  @default(false)
-  date          DateTime @default(now())
-  importBatchId String?
+  id               String            @id @default(uuid())
+  userId           String
+  muscleGroup      String
+  completed        Boolean           @default(false)
+  date             DateTime          @default(now())
+  importBatchId    String?
   // Set once, when the session is completed — from the moment the earliest
   // of that day's not-yet-completed sessions was created to "finish
   // session" being tapped. Null for sessions finished via the abandoned-
   // session prompt (days later), where that elapsed time means nothing.
-  durationMinutes Int?
+  durationMinutes  Int?
   sessionExercises SessionExercise[]
-  user        User      @relation(fields: [userId], references: [id])
+  user             User              @relation(fields: [userId], references: [id])
 }
 
 model Exercise {
-  id            String  @id @default(uuid())
-  
-  muscleGroupId String
-  name          String
-  image         String?
+  id String @id @default(uuid())
+
+  muscleGroupId        String
+  name                 String
+  image                String?
   // Real exercise demonstration video (VitalAnimations free pack, licensed
   // for commercial in-app use) — shown in the exercise info modal when
   // available, falling back to the static `image` otherwise.
-  videoUrl      String?
-  isCustom      Boolean @default(false)
+  videoUrl             String?
+  isCustom             Boolean               @default(false)
+  // Owner of a custom exercise (created from the import screen) — only
+  // they see it in the catalog. Null for the shared, built-in exercises.
+  // SetNull: a deleted account's custom exercise can still be referenced by
+  // another user's past session (from before custom exercises were private).
+  userId               String?
+  user                 User?                 @relation(fields: [userId], references: [id], onDelete: SetNull)
   // ExerciseDB id ("0001"…) of the licensed exercise this row comes from —
   // locates its GIFs in the ExerciseDB pack (see services/exerciseDb.ts).
   // Null for custom exercises. Never sent to clients.
-  exerciseDbId  String?
+  exerciseDbId         String?
   // How the weight is loaded (BARBELL, PLATE_LOADED, DUMBBELL, MACHINE,
   // CABLE, BODYWEIGHT, ASSISTED) — drives which weight inputs the session
   // screen shows. Null means "not curated": the app infers it from the
   // exercise name, and each user can still override it per exercise
   // (ExerciseLoadingType).
-  loadingType   String?
-  muscleGroup   MuscleGroup  @relation(fields: [muscleGroupId], references: [id])  
-  sessionExercises SessionExercise[]
-  trackedBy TrackedExercise[]
-  notes     ExerciseNote[]
+  loadingType          String?
+  // What a set of this exercise records: null = weight × reps (default),
+  // "REPS" = bodyweight, reps only (no weight to enter), "TIME" = a
+  // duration (treadmill, bike, stairs…). Set from the ExerciseDB catalog
+  // (services/exerciseDb.ts); the app guesses it from the name when null
+  // on a custom exercise.
+  trackingType         String?
+  muscleGroup          MuscleGroup           @relation(fields: [muscleGroupId], references: [id])
+  sessionExercises     SessionExercise[]
+  trackedBy            TrackedExercise[]
+  notes                ExerciseNote[]
   loadingTypeOverrides ExerciseLoadingType[]
 
   @@index([exerciseDbId])
+  @@index([userId])
 }
 
 model SessionExercise {
-  id            String  @id @default(uuid())
-  sessionId     String
-  exerciseId    String
-  order         Int     @default(0)
-  supersetId    String?
-  sets          Set[]
-  exercise      Exercise @relation(fields: [exerciseId], references: [id])
-  session       Session  @relation(fields: [sessionId], references: [id])
+  id         String   @id @default(uuid())
+  sessionId  String
+  exerciseId String
+  order      Int      @default(0)
+  supersetId String?
+  sets       Set[]
+  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+  session    Session  @relation(fields: [sessionId], references: [id])
 }
 
 model Set {
-  id         String  @id @default(uuid())
+  id                String  @id @default(uuid())
   sessionExerciseId String
-  weight     Float
-  reps       Int
-  unit       String  @default("lb")
-  completed  Boolean @default(false)
-  type       String  @default("normal")
+  weight            Float
+  reps              Int
+  unit              String  @default("lb")
+  completed         Boolean @default(false)
+  type              String  @default("normal")
+  // Timed exercises (Exercise.trackingType = "TIME"): how long, instead of
+  // weight/reps.
+  durationSeconds   Int?
 
-  sessionExercise   SessionExercise @relation(fields: [sessionExerciseId], references: [id])
+  sessionExercise SessionExercise @relation(fields: [sessionExerciseId], references: [id])
 }
 
 model MuscleGroup {
-  id          String @id @default(uuid())
-  name        String @unique
+  id          String  @id @default(uuid())
+  name        String  @unique
   description String?
   image       String?
 
-  exercises   Exercise[]
+  exercises Exercise[]
 }
 
 model BodyWeight {
-  id        String   @id @default(uuid())
-  userId    String
-  value     Float
-  date      DateTime @default(now())
-  
-  user      User     @relation(fields: [userId], references: [id])
+  id     String   @id @default(uuid())
+  userId String
+  value  Float
+  date   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
 }
 
 model TrackedExercise {
@@ -176,8 +193,8 @@ model TrackedExercise {
   exerciseId String
   createdAt  DateTime @default(now())
 
-  user       User     @relation(fields: [userId], references: [id])
-  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+  user     User     @relation(fields: [userId], references: [id])
+  exercise Exercise @relation(fields: [exerciseId], references: [id])
 
   @@unique([userId, exerciseId])
 }
@@ -189,8 +206,8 @@ model ExerciseNote {
   note       String
   updatedAt  DateTime @updatedAt
 
-  user       User     @relation(fields: [userId], references: [id])
-  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+  user     User     @relation(fields: [userId], references: [id])
+  exercise Exercise @relation(fields: [exerciseId], references: [id])
 
   @@unique([userId, exerciseId])
 }
@@ -202,8 +219,9 @@ model ProgressPhoto {
   note      String?
   createdAt DateTime @default(now())
 
-  user      User     @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 }
+
 // A user's own choice of loading type for an exercise (e.g. "Lever Chest
 // Press" is plate-loaded at one gym and pin-loaded at another), taking
 // precedence over Exercise.loadingType and the name-based inference.
@@ -214,8 +232,8 @@ model ExerciseLoadingType {
   loadingType String
   updatedAt   DateTime @updatedAt
 
-  user        User     @relation(fields: [userId], references: [id])
-  exercise    Exercise @relation(fields: [exerciseId], references: [id])
+  user     User     @relation(fields: [userId], references: [id])
+  exercise Exercise @relation(fields: [exerciseId], references: [id])
 
   @@unique([userId, exerciseId])
 }

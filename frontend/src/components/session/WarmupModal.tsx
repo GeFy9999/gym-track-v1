@@ -69,7 +69,7 @@ export default function WarmupModal({
     }`;
 
   return (
-    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6 animate-fade-in">
+    <div className="fixed inset-0 bg-black/30 flex items-center-safe justify-center overflow-y-auto py-6 z-50 px-6 animate-fade-in">
       <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
         <div className="flex items-center justify-center gap-2 mb-1">
           <Flame size={18} className="text-[#c9552c]" />

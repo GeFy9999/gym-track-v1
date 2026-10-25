@@ -3,9 +3,9 @@ import MuscleGroupsCards from "../components/dashboard/muscleGroupGrid";
 import WeekSummaryCard from "../components/dashboard/weekSummaryCard";
 import RecentActivity from "../components/dashboard/recentActivity";
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Scale, ChevronRight, Check } from "lucide-react";
+import { Scale, ChevronRight, Check, ChevronDown } from "lucide-react";
 import { API_URL } from "../lib/api";
 import TourOverlay from "../components/TourOverlay";
 import PRCelebration from "../components/session/PRCelebration";
@@ -14,6 +14,17 @@ import { getWeightUnit } from "../utils/units";
 import { useUiChrome } from "../contexts/UiChromeContext";
 import { getDateLocale } from "../i18n";
 import { getMuscleGroupLabel } from "../utils/muscleGroupLabel";
+import { hasSetData } from "../utils/trackingType";
+import {
+  pendingMutationCount,
+  replayPendingMutations,
+} from "../lib/syncQueue";
+import { useToast } from "../hooks/useToast";
+import Toast from "../components/Toast";
+import {
+  clearFinishedExercises,
+  unmarkExercisesFinished,
+} from "../utils/finishedExercises";
 
 type AbandonedSession = {
   id: string;
@@ -45,8 +56,14 @@ const formatAbandonedDate = (dateStr: string) =>
     day: "numeric",
   });
 
+type DashboardLocationState = {
+  justFinishedGroup?: string;
+  highlightFinishSession?: boolean;
+} | null;
+
 export default function DashboardPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation();
   const stored = localStorage.getItem("user");
   const user = stored ? JSON.parse(stored) : null;
@@ -78,6 +95,40 @@ export default function DashboardPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showWelcome]);
   const [showTour, setShowTour] = useState(false);
+  const [endingSession, setEndingSession] = useState(false);
+  const { toast, closingToast, showToast } = useToast();
+
+  // Coming back from "Terminer mes exercices" on a session page: animate the
+  // group that was just finished and, if the user chose to end the workout,
+  // guide them to the "Terminer la séance" button.
+  const [justFinishedGroup] = useState<string | null>(
+    () => (location.state as DashboardLocationState)?.justFinishedGroup ?? null,
+  );
+  const [highlightFinish, setHighlightFinish] = useState(
+    () => !!(location.state as DashboardLocationState)?.highlightFinishSession,
+  );
+  const finishButtonRef = useRef<HTMLDivElement>(null);
+
+  // Drop the navigation state so a reload doesn't replay the animations.
+  useEffect(() => {
+    if (location.state) navigate(location.pathname, { replace: true, state: null });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!highlightFinish || !hasActiveSession) return;
+    const scroll = setTimeout(() => {
+      finishButtonRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }, 300);
+    const stop = setTimeout(() => setHighlightFinish(false), 6000);
+    return () => {
+      clearTimeout(scroll);
+      clearTimeout(stop);
+    };
+  }, [highlightFinish, hasActiveSession]);
 
   // Detect sessions left unfinished on a previous day
   useEffect(() => {
@@ -200,7 +251,8 @@ export default function DashboardPage() {
         setShowWeightPrompt(true);
       }
     };
-    checkBodyWeight();
+    // Offline: just skip the prompt this time.
+    checkBodyWeight().catch(() => {});
   }, []);
 
   const handleWelcomeNext = () => {
@@ -323,15 +375,26 @@ export default function DashboardPage() {
     } catch (err) {
       console.error(err);
     }
+    unmarkExercisesFinished(session.id);
     setAbandonedQueue((prev) => prev.filter((s) => s.id !== session.id));
     setRefreshKey((prev) => prev + 1);
   };
 
   const handleEndSession = async () => {
     const token = localStorage.getItem("token");
-    if (!token) return;
+    if (!token || endingSession) return;
+    setEndingSession(true);
 
     try {
+      // Sets logged offline must reach the server before the session is
+      // closed — the summary, records and the history are built from it.
+      await replayPendingMutations();
+      if (!navigator.onLine || (await pendingMutationCount()) > 0) {
+        setShowEndConfirm(false);
+        showToast(t("offline.finishNeedsConnection"));
+        return;
+      }
+
       const sessionsRes = await fetch(`${API_URL}/sessions/me`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -361,6 +424,7 @@ export default function DashboardPage() {
             sets: {
               weight: number;
               reps: number;
+              durationSeconds?: number | null;
               completed: boolean;
               type: string;
             }[];
@@ -371,8 +435,12 @@ export default function DashboardPage() {
           .filter((s) => s.completed)
           .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-        const isWorkingSet = (s: { weight: number; reps: number; type: string }) =>
-          s.type !== "warmup" && (s.weight > 0 || s.reps > 0);
+        const isWorkingSet = (s: {
+          weight: number;
+          reps: number;
+          durationSeconds?: number | null;
+          type: string;
+        }) => s.type !== "warmup" && hasSetData(s);
 
         // Baseline: best weight ever validated, from sessions already
         // completed before this one.
@@ -453,13 +521,12 @@ export default function DashboardPage() {
               sets: {
                 weight: number;
                 reps: number;
+                durationSeconds?: number | null;
                 completed: boolean;
                 type: string;
               }[];
             }[]) {
-              const performedSets = se.sets.filter(
-                (s) => s.weight > 0 || s.reps > 0,
-              );
+              const performedSets = se.sets.filter(hasSetData);
               if (performedSets.length > 0) totalExercises += 1;
 
               const workingSets = performedSets.filter(isWorkingSet);
@@ -545,6 +612,7 @@ export default function DashboardPage() {
               };
       }
 
+      clearFinishedExercises();
       setShowEndConfirm(false);
       setRefreshKey((prev) => prev + 1);
 
@@ -558,6 +626,11 @@ export default function DashboardPage() {
       }
     } catch (err) {
       console.error(err);
+      // The connection dropped midway: nothing was lost, it can be retried.
+      setShowEndConfirm(false);
+      showToast(t("offline.finishNeedsConnection"));
+    } finally {
+      setEndingSession(false);
     }
   };
 
@@ -619,6 +692,7 @@ export default function DashboardPage() {
       <div ref={tourRef0}>
         <MuscleGroupsCards
           refreshKey={refreshKey}
+          justFinishedGroup={justFinishedGroup}
           onActiveCountChange={(count) => setHasActiveSession(count > 0)}
           onWeekSummaryChange={(completed, total) =>
             setWeekSummary({ completed, total })
@@ -630,18 +704,38 @@ export default function DashboardPage() {
       </div>
 
       {hasActiveSession && (
-        <div className="px-5 mt-6">
+        <div ref={finishButtonRef} className="px-page mt-6 scroll-mb-28">
+          {highlightFinish && (
+            <div className="flex flex-col items-center mb-2 animate-fade-in">
+              <span className="text-xs font-bold text-[#3a9e6e] uppercase tracking-widest">
+                {t("dashboard.finishSessionHint")}
+              </span>
+              <ChevronDown
+                size={20}
+                strokeWidth={3}
+                className="text-[#3a9e6e] animate-finish-hint-bounce"
+              />
+            </div>
+          )}
           <button
-            onClick={() => setShowEndConfirm(true)}
-            className="w-full bg-[#191714] active:scale-[0.98] text-white py-4 rounded-full font-bold uppercase tracking-wide text-sm transition-all flex items-center justify-center shadow-sm"
+            onClick={() => {
+              setHighlightFinish(false);
+              setShowEndConfirm(true);
+            }}
+            className={`w-full active:scale-[0.98] text-white py-4 rounded-full font-bold uppercase tracking-wide text-sm transition-all flex items-center justify-center gap-1.5 shadow-sm ${
+              highlightFinish
+                ? "bg-[#3a9e6e] animate-finish-highlight"
+                : "bg-[#191714]"
+            }`}
           >
+            {highlightFinish && <Check size={16} strokeWidth={3} />}
             {t("dashboard.finishSession")}
           </button>
         </div>
       )}
 
       {showEndConfirm && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-[60] px-6 animate-fade-in">
+        <div className="fixed inset-0 bg-black/30 flex items-center-safe justify-center overflow-y-auto py-6 z-[60] px-6 animate-fade-in">
           <div className="bg-[#faf6f1] rounded-3xl w-full max-w-sm shadow-2xl animate-scale-in overflow-hidden">
             <div
               className="px-6 pt-7 pb-6 text-center"
@@ -665,9 +759,14 @@ export default function DashboardPage() {
                 </button>
                 <button
                   onClick={handleEndSession}
-                  className="flex-1 bg-[#3a9e6e] text-white py-3.5 rounded-full font-bold uppercase tracking-wide text-sm transition-colors active:opacity-90 flex items-center justify-center gap-1.5"
+                  disabled={endingSession}
+                  className="flex-1 bg-[#3a9e6e] disabled:opacity-80 text-white py-3.5 rounded-full font-bold uppercase tracking-wide text-sm transition-colors active:opacity-90 flex items-center justify-center gap-1.5"
                 >
-                  <Check size={16} strokeWidth={3} />
+                  {endingSession ? (
+                    <span className="inline-block w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
+                  ) : (
+                    <Check size={16} strokeWidth={3} />
+                  )}
                   {t("dashboard.finish")}
                 </button>
               </div>
@@ -677,7 +776,7 @@ export default function DashboardPage() {
       )}
 
       {abandonedQueue.length > 0 && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-[60] px-6 animate-fade-in">
+        <div className="fixed inset-0 bg-black/30 flex items-center-safe justify-center overflow-y-auto py-6 z-[60] px-6 animate-fade-in">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
             <p className="text-base font-semibold text-gray-900 text-center mb-2">
               {t("dashboard.abandoned.title", {
@@ -709,7 +808,7 @@ export default function DashboardPage() {
       )}
 
       {showWeightPrompt && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-[60] px-6 animate-fade-in">
+        <div className="fixed inset-0 bg-black/30 flex items-center-safe justify-center overflow-y-auto py-6 z-[60] px-6 animate-fade-in">
           <div className="bg-[#faf6f1] rounded-3xl w-full max-w-sm shadow-2xl animate-scale-in overflow-hidden">
             <div
               className="px-6 pt-8 pb-6 text-center"
@@ -788,7 +887,7 @@ export default function DashboardPage() {
 
       {/* Welcome overlay */}
       {showWelcome && (
-        <div className="fixed inset-0 bg-[#faf6f1] z-50 flex flex-col items-center justify-center px-8 animate-fade-in">
+        <div className="fixed inset-0 bg-[#faf6f1] z-50 flex flex-col items-center justify-center-safe overflow-y-auto py-8 px-8 animate-fade-in">
           <img
             src="/LogoGymsTrack5.webp"
             alt="GymsTrack"
@@ -812,7 +911,7 @@ export default function DashboardPage() {
 
       {/* Onboarding weight prompt */}
       {showOnboardingWeight && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-[60] px-6 animate-fade-in">
+        <div className="fixed inset-0 bg-black/30 flex items-center-safe justify-center overflow-y-auto py-6 z-[60] px-6 animate-fade-in">
           <div className="bg-[#faf6f1] rounded-3xl w-full max-w-sm shadow-2xl animate-scale-in overflow-hidden">
             <div
               className="px-6 pt-8 pb-6 text-center"
@@ -906,6 +1005,8 @@ export default function DashboardPage() {
           onClose={() => setPrQueue((prev) => prev.slice(1))}
         />
       )}
+
+      {toast && <Toast message={toast} closing={closingToast} />}
 
       {workoutSummary && (
         <WorkoutSummary

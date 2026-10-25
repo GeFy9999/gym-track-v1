@@ -70,17 +70,32 @@ const toPublicUser = (user: {
   ),
 });
 
+// Signing up never logs in and answers the same whether or not the email is
+// already taken — otherwise the form tells anyone which emails have an
+// account. The new account is usable once its email is confirmed (login is
+// refused until then); for an existing address, its owner gets an email
+// instead.
 export const register = async (payload: {
   email: string;
   password: string;
   name: string;
   language?: string;
 }) => {
-  const existing = await getUserByEmail(payload.email);
-  if (existing) throw new Error("Email déjà utilisé");
-
-  const hashed = await bcrypt.hash(payload.password, 10);
   const language = payload.language === "en" ? "en" : "fr";
+  // Hashed whatever happens, so both branches take about as long.
+  const hashed = await bcrypt.hash(payload.password, 10);
+
+  const existing = await getUserByEmail(payload.email);
+  if (existing) {
+    if (!existing.emailVerified) {
+      // Never confirmed: just send a fresh link (the original password stays).
+      await resendVerificationEmail(existing.id);
+    } else {
+      await sendAccountExistsEmail(existing.email, existing.language);
+    }
+    return { pending: true as const };
+  }
+
   const verificationToken = crypto.randomUUID();
   const verificationTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
@@ -98,15 +113,14 @@ export const register = async (payload: {
 
   await sendVerificationEmail(user.email, language, verificationToken);
 
-  const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, {
-    expiresIn: "7d",
-  });
-
-  return {
-    token,
-    user: toPublicUser(user),
-  };
+  return { pending: true as const };
 };
+
+export class EmailNotVerifiedError extends Error {
+  constructor() {
+    super("Confirme ton courriel avant de te connecter. Vérifie ta boîte de réception.");
+  }
+}
 
 export const login = async (payload: { email: string; password: string }) => {
   const user = await getUserByEmail(payload.email);
@@ -114,6 +128,9 @@ export const login = async (payload: { email: string; password: string }) => {
 
   const valid = await bcrypt.compare(payload.password, user.password);
   if (!valid) throw new Error("Email ou mot de passe incorrect");
+  // Only after the password matched, so this reveals nothing to someone
+  // who doesn't already own the account.
+  if (!user.emailVerified) throw new EmailNotVerifiedError();
 
   const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, {
     expiresIn: "7d",
@@ -205,6 +222,18 @@ export const deleteAccount = async (userId: string) => {
   await prisma.exerciseNote.deleteMany({ where: { userId } });
   await prisma.exerciseLoadingType.deleteMany({ where: { userId } });
   await prisma.progressPhoto.deleteMany({ where: { userId } });
+  // Their custom exercises go too — except one another user still
+  // references (possible from before custom exercises were private), which
+  // the foreign key's SetNull just detaches from the deleted account.
+  await prisma.exercise.deleteMany({
+    where: {
+      userId,
+      sessionExercises: { none: {} },
+      trackedBy: { none: {} },
+      notes: { none: {} },
+      loadingTypeOverrides: { none: {} },
+    },
+  });
   await prisma.user.delete({ where: { id: userId } });
 };
 
@@ -355,6 +384,9 @@ export const forgotPassword = async (email: string) => {
 };
 
 export const resetPassword = async (token: string, newPassword: string) => {
+  if (typeof token !== "string" || typeof newPassword !== "string" || !token) {
+    throw new Error("Lien expiré ou invalide");
+  }
   const user = await prisma.user.findFirst({
     where: {
       resetToken: token,
@@ -399,6 +431,42 @@ const VERIFICATION_EMAIL_CONTENT = {
   },
 } as const;
 
+const ACCOUNT_EXISTS_EMAIL_CONTENT = {
+  fr: {
+    subject: "Tu as déjà un compte — GymsTrack",
+    heading: "Tu as déjà un compte GymsTrack",
+    body: "Quelqu'un (probablement toi) a essayé de créer un compte avec cette adresse, mais elle est déjà utilisée. Connecte-toi avec ton mot de passe, ou réinitialise-le si tu l'as oublié.",
+    button: "Réinitialiser mon mot de passe",
+    ignore: "Si ce n'était pas toi, ignore ce courriel : ton compte n'a pas été modifié.",
+  },
+  en: {
+    subject: "You already have an account — GymsTrack",
+    heading: "You already have a GymsTrack account",
+    body: "Someone (probably you) tried to sign up with this address, but it's already in use. Log in with your password, or reset it if you forgot it.",
+    button: "Reset my password",
+    ignore: "If this wasn't you, just ignore this email — your account hasn't changed.",
+  },
+} as const;
+
+const sendAccountExistsEmail = async (email: string, language: string) => {
+  const content = ACCOUNT_EXISTS_EMAIL_CONTENT[language === "en" ? "en" : "fr"];
+  const resetUrl = `${process.env.FRONTEND_URL}/forgot-password`;
+
+  await resend.emails.send({
+    from: "GymsTrack <noreply@gymstrack.com>",
+    to: email,
+    subject: content.subject,
+    html: `
+      <h2>${content.heading}</h2>
+      <p>${content.body}</p>
+      <a href="${resetUrl}" style="display:inline-block;background:#f97316;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;">
+        ${content.button}
+      </a>
+      <p style="color:#888;margin-top:16px;">${content.ignore}</p>
+    `,
+  });
+};
+
 const sendVerificationEmail = async (
   email: string,
   language: string,
@@ -424,6 +492,9 @@ const sendVerificationEmail = async (
 };
 
 export const verifyEmail = async (token: string) => {
+  if (typeof token !== "string" || !token) {
+    throw new Error("Lien expiré ou invalide");
+  }
   const user = await prisma.user.findFirst({
     where: {
       verificationToken: token,
@@ -433,7 +504,11 @@ export const verifyEmail = async (token: string) => {
 
   if (!user) throw new Error("Lien expiré ou invalide");
 
-  const updated = await prisma.user.update({
+  // Confirms the address only — it doesn't log in: the link may be opened
+  // anywhere (another device, a browser instead of the app), and whoever
+  // holds it shouldn't get a session. The user goes back to the app and
+  // signs in there.
+  await prisma.user.update({
     where: { id: user.id },
     data: {
       emailVerified: true,
@@ -442,14 +517,15 @@ export const verifyEmail = async (token: string) => {
     },
   });
 
-  const jwtToken = jwt.sign({ userId: updated.id }, process.env.JWT_SECRET!, {
-    expiresIn: "7d",
-  });
+  return { verified: true as const };
+};
 
-  return {
-    token: jwtToken,
-    user: toPublicUser(updated),
-  };
+// "Didn't get the email?" from the login / pending screens, where there's no
+// session yet. Silent whatever the address, like forgot-password.
+export const resendVerificationEmailByAddress = async (email: string) => {
+  const user = await getUserByEmail(email);
+  if (!user || user.emailVerified) return;
+  await resendVerificationEmail(user.id);
 };
 
 export const resendVerificationEmail = async (userId: string) => {

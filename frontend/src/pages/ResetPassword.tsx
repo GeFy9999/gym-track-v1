@@ -83,7 +83,7 @@ export default function ResetPasswordPage() {
 
   if (!token) {
     return (
-      <div className="min-h-screen bg-[#faf6f1] flex flex-col items-center justify-center px-6">
+      <div className="min-h-screen bg-[#faf6f1] flex flex-col items-center justify-center px-page-narrow">
         <p className="text-red-500 mb-4">{t("resetPassword.invalidLink")}</p>
         <Link to="/login" className="text-[#c9552c] font-semibold text-sm">
           {t("resetPassword.backToLogin")}
@@ -94,7 +94,7 @@ export default function ResetPasswordPage() {
 
   if (done) {
     return (
-      <div className="min-h-screen bg-[#faf6f1] flex flex-col items-center pt-16 px-6">
+      <div className="min-h-screen bg-[#faf6f1] flex flex-col items-center pt-16 px-page-narrow">
         <img
           src="/LogoGymsTrack5.webp"
           alt="GymsTrack"
@@ -120,7 +120,7 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#faf6f1] flex flex-col pt-16 px-6">
+    <div className="min-h-screen bg-[#faf6f1] flex flex-col pt-16 px-page-narrow">
       <div className="text-center mb-8">
         <img
           src="/LogoGymsTrack5.webp"

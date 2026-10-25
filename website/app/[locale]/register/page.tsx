@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff, User, Mail, Lock } from "lucide-react";
 import { useLocaleDict } from "@/lib/useLocaleDict";
 import { API_URL } from "@/lib/api";
+import { setPendingSignup } from "@/lib/pendingSignup";
 import { capturePendingPlan } from "@/lib/pendingPlan";
 import GoogleSignInButton from "@/components/GoogleSignInButton";
 
@@ -82,8 +83,8 @@ function RegisterInner() {
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || t.errors.generic);
 
-      localStorage.setItem("token", result.token);
-      localStorage.setItem("user", JSON.stringify(result.user));
+      // No session yet: the account works once the email is confirmed.
+      setPendingSignup(email, password);
       router.push(`/${locale}/verify-email-pending`);
     } catch (err) {
       setServerError(err instanceof Error ? err.message : t.errors.unknown);

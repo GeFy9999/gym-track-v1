@@ -245,12 +245,12 @@ export default function ExercisesPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#faf6f1] pb-28">
-        <div className="px-5 pt-8 pb-6 animate-pulse" style={{ background: "#191714" }}>
+        <div className="px-page pt-8 pb-6 animate-pulse" style={{ background: "#191714" }}>
           <div className="h-7 w-40 bg-white/10 rounded mb-2" />
           <div className="h-3 w-56 bg-white/10 rounded mb-4" />
           <div className="h-11 w-full bg-white/10 rounded-full" />
         </div>
-        <div className="px-5 pt-4 space-y-2 animate-pulse">
+        <div className="px-page pt-4 space-y-2 animate-pulse">
           {[1, 2, 3, 4, 5].map((i) => (
             <div key={i} className="h-16 bg-[#ece7dd] rounded-2xl" />
           ))}
@@ -261,7 +261,7 @@ export default function ExercisesPage() {
 
   return (
     <div className="min-h-screen bg-[#faf6f1] pb-28">
-      <div className="px-5 pt-8 pb-6" style={{ background: "#191714" }}>
+      <div className="px-page pt-8 pb-6" style={{ background: "#191714" }}>
         <h1 className="text-[26px] font-black text-white uppercase tracking-wide leading-tight">
           {t("exercises.title")}
         </h1>
@@ -284,7 +284,7 @@ export default function ExercisesPage() {
         </div>
       </div>
 
-      <div className="mt-4 mb-4 pl-5 overflow-x-auto hide-scrollbar">
+      <div className="mt-4 mb-4 px-page overflow-x-auto hide-scrollbar">
         <div className="flex gap-2 pr-5 w-max">
           <button
             onClick={() => setSelectedGroup(null)}
@@ -312,7 +312,7 @@ export default function ExercisesPage() {
         </div>
       </div>
 
-      <div className="px-5 space-y-4">
+      <div className="px-page space-y-4">
         {trackedExercises.length > 0 && (
           <div>
             <button
@@ -333,7 +333,7 @@ export default function ExercisesPage() {
               />
             </button>
             {trackedOpen && (
-              <div className="space-y-2">
+              <div className="space-y-2 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-2">
                 {trackedExercises.map((ex) => renderCard(ex))}
               </div>
             )}
@@ -349,11 +349,11 @@ export default function ExercisesPage() {
               {filtered.length}
             </span>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-2 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-2">
             {visible.map((ex) => renderCard(ex))}
             {visible.length === 0 &&
               (loadError ? (
-                <div className="flex flex-col items-center py-8">
+                <div className="flex flex-col items-center py-8 lg:col-span-2">
                   <p className="text-sm font-bold text-gray-900">
                     {t("exercises.loadError")}
                   </p>
@@ -371,12 +371,12 @@ export default function ExercisesPage() {
                   </button>
                 </div>
               ) : (
-                <p className="text-sm text-gray-400 text-center py-8">
+                <p className="text-sm text-gray-400 text-center py-8 lg:col-span-2">
                   {t("exercises.noneFound")}
                 </p>
               ))}
             {hasMore && (
-              <p className="text-xs text-gray-400 text-center py-3">
+              <p className="text-xs text-gray-400 text-center py-3 lg:col-span-2">
                 {t("exercises.scrollForMore")}
               </p>
             )}

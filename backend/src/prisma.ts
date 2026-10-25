@@ -9,9 +9,11 @@ const adapter = new PrismaBetterSqlite3({ url: connectionString });
 // pack, see services/exerciseDb.ts) — omitted from every query by default
 // so it can never leak into an API response; read it with an explicit
 // `select`/`omit: { exerciseDbId: false }` where it's actually needed.
+// Same for Exercise.userId (a custom exercise's owner): filtered on, never
+// sent back.
 const prisma = new PrismaClient({
   adapter,
-  omit: { exercise: { exerciseDbId: true } },
+  omit: { exercise: { exerciseDbId: true, userId: true } },
 });
 
 export { prisma };

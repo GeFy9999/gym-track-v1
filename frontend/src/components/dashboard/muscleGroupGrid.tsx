@@ -2,8 +2,18 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Check } from "lucide-react";
-import { API_URL } from "../../lib/api";
+import { cachedJson } from "../../lib/cachedFetch";
+import { offlineAwareFetch } from "../../lib/offlineFetch";
+import {
+  getLocalOnlySessions,
+  saveLocalSession,
+} from "../../lib/localSessions";
 import { getMuscleGroupLabel } from "../../utils/muscleGroupLabel";
+import { hasSetData } from "../../utils/trackingType";
+import {
+  getFinishedExerciseSessionIds,
+  unmarkExercisesFinished,
+} from "../../utils/finishedExercises";
 
 type MuscleGroup = {
   id: string;
@@ -14,12 +24,15 @@ type Props = {
   refreshKey?: number;
   onActiveCountChange?: (count: number) => void;
   onWeekSummaryChange?: (completed: number, total: number) => void;
+  /** Group whose exercises were just finished — its check mark pops in. */
+  justFinishedGroup?: string | null;
 };
 
 export default function MuscleGroupsCards({
   refreshKey,
   onActiveCountChange,
   onWeekSummaryChange,
+  justFinishedGroup,
 }: Props) {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -53,9 +66,8 @@ export default function MuscleGroupsCards({
   useEffect(() => {
     const fetchGroups = async () => {
       try {
-        const res = await fetch(`${API_URL}/muscleGroups`);
-        if (!res.ok) throw new Error("Erreur fetch muscleGroups");
-        const data = await res.json();
+        // Cached, so the groups still show (and open) without signal.
+        const { data } = await cachedJson<MuscleGroup[]>("/muscleGroups");
         setGroups(data);
       } catch (err) {
         console.error(err);
@@ -79,21 +91,36 @@ export default function MuscleGroupsCards({
       monday.setHours(0, 0, 0, 0);
 
       try {
-        const res = await fetch(
-          `${API_URL}/sessions/me?start=${monday.toISOString()}&end=${now.toISOString()}`,
-          { headers: { Authorization: `Bearer ${token}` } },
-        );
-        if (!res.ok) return;
-        const sessions: {
+        type WeekSession = {
+          id: string;
           muscleGroup: string;
           completed: boolean;
           sessionExercises: {
-            sets: { weight: number; reps: number }[];
+            sets: { weight: number; reps: number; durationSeconds?: number | null }[];
           }[];
-        }[] = await res.json();
+        };
+        const { data: fromServer } = await cachedJson<WeekSession[]>(
+          `/sessions/me?start=${monday.toISOString()}&end=${now.toISOString()}`,
+          { cacheKey: "sessions-this-week" },
+        );
+        // Plus the sessions started offline that haven't synced yet.
+        const sessions: WeekSession[] = [
+          ...fromServer,
+          ...(await getLocalOnlySessions()).filter(
+            (s) => new Date(s.date) >= monday,
+          ),
+        ];
+
+        // Open sessions whose exercises the user already finished show as
+        // done here, while still waiting on "Terminer la séance" server-side.
+        const finishedIds = getFinishedExerciseSessionIds();
+        const isFinishedPending = (s: { id: string; completed: boolean }) =>
+          !s.completed && finishedIds.has(s.id);
 
         const done = new Set(
-          sessions.filter((s) => s.completed).map((s) => s.muscleGroup),
+          sessions
+            .filter((s) => s.completed || isFinishedPending(s))
+            .map((s) => s.muscleGroup),
         );
         setCompletedGroups(done);
 
@@ -102,14 +129,17 @@ export default function MuscleGroupsCards({
             .filter(
               (s) =>
                 !s.completed &&
+                !isFinishedPending(s) &&
                 s.sessionExercises.some((se) =>
-                  se.sets.some((set) => set.weight > 0 || set.reps > 0),
+                  se.sets.some(hasSetData),
                 ),
             )
             .map((s) => s.muscleGroup),
         );
         setActiveGroups(inProgress);
-        onActiveCountChange?.(inProgress.size);
+        onActiveCountChange?.(
+          sessions.filter(isFinishedPending).length + inProgress.size,
+        );
       } catch (err) {
         console.error(err);
       }
@@ -129,36 +159,49 @@ export default function MuscleGroupsCards({
     if (!token) return;
 
     try {
-      const res = await fetch(`${API_URL}/sessions/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      type OpenSession = { id: string; muscleGroup: string; completed: boolean };
+      const fromServer = await cachedJson<OpenSession[]>("/sessions/me", {
+        cacheKey: "sessions-all",
+      })
+        .then((r) => r.data)
+        .catch(() => [] as OpenSession[]);
+      const sessions = [...fromServer, ...(await getLocalOnlySessions())];
+      const existing = sessions.find(
+        (s) => s.muscleGroup === group.name && !s.completed,
+      );
 
-      if (res.ok) {
-        const sessions = await res.json();
-        const existing = sessions.find(
-          (s: { muscleGroup: string; completed: boolean }) =>
-            s.muscleGroup === group.name && !s.completed,
-        );
-
-        if (existing) {
-          navigate(`/session/${existing.id}`);
-          return;
-        }
+      if (existing) {
+        // Reopening a group marked finished means the user is resuming it.
+        unmarkExercisesFinished(existing.id);
+        navigate(`/session/${existing.id}`);
+        return;
       }
 
-      const createRes = await fetch(`${API_URL}/sessions`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          muscleGroup: group.name,
-        }),
-      });
+      // Works offline too: the session is created on this device under a
+      // temporary id, and on the server once the connection is back.
+      const tempId = `temp-${crypto.randomUUID()}`;
+      const result = await offlineAwareFetch(
+        "POST",
+        "/sessions",
+        { muscleGroup: group.name },
+        "Nouvelle séance",
+        { localId: tempId },
+      );
 
-      if (!createRes.ok) throw new Error("Erreur création session");
-      const session = await createRes.json();
+      if (result.queued) {
+        await saveLocalSession({
+          id: tempId,
+          muscleGroup: group.name,
+          completed: false,
+          date: new Date().toISOString(),
+          sessionExercises: [],
+        });
+        navigate(`/session/${tempId}`);
+        return;
+      }
+
+      if (!result.response.ok) throw new Error("Erreur création session");
+      const session = await result.response.json();
       navigate(`/session/${session.id}`);
     } catch (err) {
       console.error(err);
@@ -169,6 +212,25 @@ export default function MuscleGroupsCards({
   const isDragging = useRef(false);
   const startX = useRef(0);
   const scrollLeft = useRef(0);
+
+  // Bring the just-finished group into view so its check animation is seen
+  // (the row scrolls horizontally). Only moves the row, never the page.
+  useEffect(() => {
+    if (!justFinishedGroup || groups.length === 0 || !scrollRef.current) return;
+    const container = scrollRef.current;
+    const card = container.querySelector<HTMLElement>(
+      `[data-group="${CSS.escape(justFinishedGroup)}"]`,
+    );
+    if (!card) return;
+    container.scrollTo({
+      left:
+        container.scrollLeft +
+        card.getBoundingClientRect().left -
+        container.getBoundingClientRect().left -
+        (container.clientWidth - card.offsetWidth) / 2,
+      behavior: "smooth",
+    });
+  }, [justFinishedGroup, groups]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     isDragging.current = true;
@@ -192,7 +254,7 @@ export default function MuscleGroupsCards({
     return (
       <div className="mt-6">
         <div className="h-4 w-36 bg-gray-200 rounded mb-3 mx-5 animate-pulse" />
-        <div className="flex gap-3 px-5 overflow-hidden">
+        <div className="flex gap-3 px-page overflow-hidden">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
@@ -206,7 +268,7 @@ export default function MuscleGroupsCards({
 
   return (
     <div className="mt-7">
-      <p className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-3 px-5">
+      <p className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-3 px-page">
         {t("dashboard.muscleGroups")}
       </p>
       <div
@@ -215,7 +277,7 @@ export default function MuscleGroupsCards({
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
-        className="flex gap-3 overflow-x-auto hide-scrollbar px-5 pt-4 pb-2 cursor-grab active:cursor-grabbing select-none"
+        className="flex gap-3 overflow-x-auto hide-scrollbar px-page pt-4 pb-2 cursor-grab active:cursor-grabbing select-none lg:grid lg:grid-cols-5 lg:overflow-visible lg:cursor-default"
       >
         {groups.map((group) => {
           const isDone = completedGroups.has(group.name);
@@ -224,16 +286,28 @@ export default function MuscleGroupsCards({
           return (
             <button
               key={group.id}
+              data-group={group.name}
               onClick={() => handleClick(group)}
-              className={`relative flex-shrink-0 w-36 rounded-2xl pt-6 pb-3 flex flex-col items-center transition-all shadow-sm ${
+              className={`relative flex-shrink-0 w-36 lg:w-auto rounded-2xl pt-6 pb-3 flex flex-col items-center transition-all shadow-sm ${
                 isActive
                   ? "bg-[#ece7dd] border-2 border-[#c9552c] active:scale-[0.97]"
                   : "bg-[#ece7dd] active:scale-[0.97]"
               }`}
             >
               {isDone && (
-                <div className="absolute top-2.5 right-2.5 w-6 h-6 rounded-full bg-[#3a9e6e] flex items-center justify-center">
-                  <Check size={14} className="text-white" strokeWidth={3} />
+                <div className="absolute top-2.5 right-2.5 w-6 h-6">
+                  {group.name === justFinishedGroup && (
+                    <div className="absolute inset-0 rounded-full bg-[#3a9e6e] animate-set-check-ring [animation-delay:350ms]" />
+                  )}
+                  <div
+                    className={`relative w-6 h-6 rounded-full bg-[#3a9e6e] flex items-center justify-center ${
+                      group.name === justFinishedGroup
+                        ? "animate-set-check-pop [animation-delay:350ms]"
+                        : ""
+                    }`}
+                  >
+                    <Check size={14} className="text-white" strokeWidth={3} />
+                  </div>
                 </div>
               )}
               {isActive && (

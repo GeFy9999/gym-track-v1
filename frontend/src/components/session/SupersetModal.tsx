@@ -23,7 +23,7 @@ export default function SupersetModal({
   const target = exercises.find((s) => s.id === supersetModalFor);
 
   return (
-    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 px-6 animate-fade-in">
+    <div className="fixed inset-0 bg-black/30 flex items-center-safe justify-center overflow-y-auto py-6 z-50 px-6 animate-fade-in">
       <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
         <p className="text-base font-bold text-gray-900 text-center mb-1">
           {t("session.superset.title")}

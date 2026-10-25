@@ -71,7 +71,7 @@ export default function AccountDeletionPage() {
 
   if (done) {
     return (
-      <div className="min-h-screen bg-[#faf6f1] flex flex-col items-center justify-center px-6 text-center">
+      <div className="min-h-screen bg-[#faf6f1] flex flex-col items-center justify-center px-page-narrow text-center">
         <div className="w-14 h-14 rounded-2xl bg-[#3a9e6e]/10 flex items-center justify-center mb-4">
           <CheckCircle2 size={24} className="text-[#3a9e6e]" />
         </div>
@@ -88,7 +88,7 @@ export default function AccountDeletionPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#faf6f1] flex flex-col pt-8 px-6 pb-16">
+    <div className="min-h-screen bg-[#faf6f1] flex flex-col pt-8 px-page-narrow pb-16">
       <Link
         to="/login"
         className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center mb-4"

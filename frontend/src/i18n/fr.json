@@ -1,5 +1,6 @@
 {
   "common": {
+    "loading": "Chargement",
     "user": "Utilisateur",
     "exercise": "Exercice",
     "notEnoughData": "Pas encore assez de données",
@@ -10,9 +11,16 @@
     "googleLegalPrefix": "En continuant avec Google, tu confirmes avoir au moins 16 ans et tu acceptes nos"
   },
   "offline": {
+    "finishNeedsConnection": "Pas de connexion : tes séries sont gardées, termine la séance une fois reconnecté.",
+    "needsConnection": "Connexion requise pour cette action",
     "offline": "Mode hors ligne",
     "syncing_one": "Synchronisation... ({{count}})",
     "syncing_other": "Synchronisation... ({{count}})"
+  },
+  "update": {
+    "title": "Mise à jour disponible",
+    "message": "Une nouvelle version de GymsTrack est disponible. Mets l'app à jour pour continuer.",
+    "cta": "Mettre à jour"
   },
   "nav": {
     "home": "Accueil",
@@ -105,6 +113,7 @@
     "setsCount_other": "{{count}} séries",
     "vsPrevious": "vs précédente",
     "finishSession": "Terminer la séance",
+    "finishSessionHint": "Appuie ici pour terminer",
     "finishSessionTitle": "Terminer la séance ?",
     "finishSessionBody": "Tes séances en cours seront marquées comme terminées et rangées dans ton historique. Tu pourras en recommencer de nouvelles pour ces groupes musculaires.",
     "cancel": "Annuler",
@@ -214,6 +223,7 @@
       "weight": "Poids",
       "unit": "Unité",
       "reps": "Reps",
+      "duration": "Durée",
       "validated": "Validé",
       "yes": "Oui",
       "no": "Non"
@@ -233,6 +243,13 @@
     "edit": "Modifier",
     "done": "Terminé",
     "finishExercises": "Terminer mes exercices",
+    "finishChoice": {
+      "title": "{{group}} terminé !",
+      "subtitle": "Tu veux terminer ta séance ou continuer avec un autre groupe musculaire ?",
+      "finishSession": "Terminer la séance",
+      "continue": "Continuer la séance",
+      "back": "Retour aux exercices"
+    },
     "exerciseCountBadge": "{{count}} exo",
     "emptyTitle": "Aucun exercice pour l'instant",
     "emptyDesc": "Ajoute ton premier exercice pour\ncommencer la séance",
@@ -255,6 +272,14 @@
       "autoWarmup": "Échauffement auto",
       "addSet": "Ajouter un set"
     },
+    "duration": "Durée",
+    "durationMinutes": "Minutes",
+    "durationSeconds": "Secondes",
+    "bodyweight": "Poids de corps",
+    "lastTimeDuration_one": "{{count}} série de {{duration}}",
+    "lastTimeDuration_other": "{{count}} séries de {{duration}}",
+    "lastTimeBodyweight_one": "{{count}} série de {{reps}} reps au poids de corps",
+    "lastTimeBodyweight_other": "{{count}} séries de {{reps}} reps au poids de corps",
     "lastTimeUniform_one": "{{count}} série de {{reps}} rep à {{weight}} {{unit}}",
     "lastTimeUniform_plural_one": "{{count}} série de {{reps}} reps à {{weight}} {{unit}}",
     "lastTimeUniform_other": "{{count}} séries de {{reps}} rep à {{weight}} {{unit}}",
@@ -702,6 +727,7 @@
     "resetAction": "Réinitialiser"
   },
   "verifyEmailPending": {
+    "backToLogin": "Retour à la connexion",
     "title": "Confirme ton courriel",
     "subtitle": "On a envoyé un lien de confirmation à {{email}}. Clique sur le lien pour activer ton compte.",
     "iVerified": "J'ai confirmé, continuer",
@@ -716,9 +742,11 @@
     "errorGeneric": "Erreur"
   },
   "verifyEmail": {
+    "backToApp": "Retourne sur l'application et appuie sur « J'ai confirmé, continuer » (ou connecte-toi) pour commencer.",
+    "loginHere": "Ou se connecter ici",
+    "continue": "Continuer",
     "verifying": "Confirmation de ton courriel...",
     "success": "Courriel confirmé !",
-    "redirecting": "Redirection...",
     "invalidLink": "Lien invalide",
     "errorGeneric": "Erreur",
     "backToLogin": "Retour à la connexion"

@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ChevronLeft, Dumbbell, Crown } from "lucide-react";
+import { ChevronLeft, Dumbbell, Crown, Check } from "lucide-react";
 import {
   getWeightUnit,
   getRestTimerSeconds,
@@ -9,7 +9,6 @@ import {
   getBarbellModeEnabled,
 } from "../utils/units";
 import { API_URL } from "../lib/api";
-import { fetchWithRetry } from "../lib/fetchWithRetry";
 import { getDateLocale } from "../i18n";
 import { useExerciseHistory } from "../hooks/useExerciseDeltas";
 import { useRestTimerContext } from "../contexts/RestTimerContext";
@@ -21,6 +20,7 @@ import { useIsPro } from "../hooks/useIsPro";
 import { getDefaultBarWeight } from "../utils/plates";
 import { inferLoadingType, isLoadingType, type LoadingType } from "../utils/loadingType";
 import { useExerciseLoadingTypes } from "../hooks/useExerciseLoadingTypes";
+import { getTrackingType, type TrackingType } from "../utils/trackingType";
 import type { WarmupSetPlan } from "../utils/warmup";
 import PRCelebration from "../components/session/PRCelebration";
 import Toast from "../components/Toast";
@@ -37,7 +37,17 @@ import { POPULAR_EXERCISES_BY_MUSCLE_GROUP } from "../utils/popularExercises";
 import { getMuscleGroupLabel } from "../utils/muscleGroupLabel";
 import { offlineAwareFetch } from "../lib/offlineFetch";
 import { getOfflineDb } from "../lib/offlineDb";
-import { onSyncQueueChange } from "../lib/syncQueue";
+import {
+  isLocalId,
+  onSyncQueueChange,
+  pendingMutationCount,
+  replayPendingMutations,
+  resolveLocalId,
+} from "../lib/syncQueue";
+import { cachedJson } from "../lib/cachedFetch";
+import { useOnlineStatus } from "../hooks/useOnlineStatus";
+import { FullPageSpinner } from "../components/Spinner";
+import { markExercisesFinished } from "../utils/finishedExercises";
 import type {
   SetData,
   SessionExercise,
@@ -86,8 +96,14 @@ export default function SessionPage() {
   );
   const [warmupModalFor, setWarmupModalFor] = useState<string | null>(null);
   const [showSetRowTour, setShowSetRowTour] = useState(false);
+  const [showFinishChoice, setShowFinishChoice] = useState(false);
   const sessionRef = useRef<SessionData | null>(null);
   const exerciseRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  // FLIP animation for the page's main column: positions captured just
+  // before a layout change (an exercise removed), then everything that
+  // moved glides from where it was instead of jumping there.
+  const listRef = useRef<HTMLDivElement>(null);
+  const flipRectsRef = useRef<Map<Element, DOMRect> | null>(null);
   const { deltas, lastTimes } = useExerciseHistory(sessionId);
   const restTimer = useRestTimerContext();
   const { isPro } = useIsPro();
@@ -111,13 +127,47 @@ export default function SessionPage() {
     saveNote,
   } = useExerciseNotes();
 
+  const loadCachedSession = async () => {
+    if (!sessionId) return false;
+    const db = await getOfflineDb();
+    const cached = await db.get("sessionCache", sessionId);
+    if (cached) setSession(cached.data as SessionData);
+    return !!cached;
+  };
+
   const fetchSession = async () => {
     if (!sessionId) return;
+
+    // Created offline and synced since: continue on its real id.
+    const realId = resolveLocalId(sessionId);
+    if (realId !== sessionId) {
+      navigate(`/session/${realId}${readOnly ? "?readonly=true" : ""}`, {
+        replace: true,
+      });
+      return;
+    }
+
     try {
+      // Still only on this device (created offline): nothing to ask the
+      // server yet. Same while edits made offline are waiting to sync —
+      // the server's copy doesn't have them, and would make them vanish
+      // from the screen until the sync is done.
+      if (isLocalId(sessionId) || (await pendingMutationCount()) > 0) {
+        if (await loadCachedSession()) {
+          replayPendingMutations();
+          return;
+        }
+      }
+
       const token = localStorage.getItem("token");
+      // A hanging request on a bad signal falls back to the cached copy
+      // instead of leaving the page on a spinner.
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), 8000);
       const res = await fetch(`${API_URL}/sessions/${sessionId}`, {
         headers: { Authorization: `Bearer ${token}` },
-      });
+        signal: controller.signal,
+      }).finally(() => window.clearTimeout(timeout));
       // Completed sessions past the free plan's 90-day window are Pro-only
       // (reachable e.g. from an exercise's history list) — send the user to
       // the upgrade page rather than falling back to a cached copy below.
@@ -131,19 +181,11 @@ export default function SessionPage() {
       if (!res.ok) throw new Error("Session introuvable");
       const data = await res.json();
       setSession(data);
-      const db = await getOfflineDb();
-      await db.put("sessionCache", {
-        sessionId,
-        data,
-        cachedAt: Date.now(),
-      });
     } catch (err) {
       console.error(err);
       // No connection — fall back to whatever we last saw for this session
-      // instead of leaving the page stuck on a spinner.
-      const db = await getOfflineDb();
-      const cached = await db.get("sessionCache", sessionId);
-      if (cached) setSession(cached.data as SessionData);
+      // (kept up to date with every local change, see below).
+      await loadCachedSession();
     } finally {
       setLoading(false);
     }
@@ -159,6 +201,17 @@ export default function SessionPage() {
   } = useSupersetManager(session, fetchSession);
 
   const { toast, closingToast, showToast } = useToast();
+  const isOnline = useOnlineStatus();
+
+  // Actions that only make sense against the server (they reshape several
+  // records at once): explain instead of failing silently when offline.
+  const whenOnline = (action: () => void) => () => {
+    if (!isOnline) {
+      showToast(t("offline.needsConnection"));
+      return;
+    }
+    action();
+  };
 
   const getExerciseDuration = (sessionExerciseId: string) =>
     exerciseDurations[sessionExerciseId] ?? getRestTimerSeconds();
@@ -179,6 +232,21 @@ export default function SessionPage() {
     (isLoadingType(se.exercise.loadingType)
       ? se.exercise.loadingType
       : inferLoadingType(se.exercise.name));
+
+  // Bodyweight exercises have no weight to enter by default — unless a Pro
+  // user explicitly picked a loading type for it (e.g. added weight on
+  // dips), which brings the weight input back.
+  const getEffectiveTrackingType = (se: SessionExercise): TrackingType => {
+    const tracking = getTrackingType(se.exercise);
+    if (
+      tracking === "REPS" &&
+      loadingTypesEnabled &&
+      se.exercise.id in loadingTypeOverrides
+    ) {
+      return "WEIGHT_REPS";
+    }
+    return tracking;
+  };
 
   const getBarWeight = (sessionExerciseId: string) =>
     barWeights[sessionExerciseId] ?? getDefaultBarWeight(getWeightUnit());
@@ -204,11 +272,8 @@ export default function SessionPage() {
 
   const fetchExercises = async (muscleGroupName: string) => {
     try {
-      const res = await fetchWithRetry(`${API_URL}/exercises`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-      if (!res.ok) return;
-      const all: AvailableExercise[] = await res.json();
+      // Cached: exercises can still be added to a session offline.
+      const { data: all } = await cachedJson<AvailableExercise[]>("/exercises");
       setExercises(
         all.filter(
           (e) =>
@@ -291,6 +356,48 @@ export default function SessionPage() {
     sessionRef.current = session;
   }, [session]);
 
+  // The cached copy follows what's on screen — offline edits included — so
+  // reopening the session (or the app) without signal shows them.
+  useEffect(() => {
+    if (!session || readOnly) return;
+    getOfflineDb()
+      .then((db) =>
+        db.put("sessionCache", {
+          sessionId: session.id,
+          data: session,
+          cachedAt: Date.now(),
+        }),
+      )
+      .catch(() => {});
+  }, [session, readOnly]);
+
+  useLayoutEffect(() => {
+    const before = flipRectsRef.current;
+    const list = listRef.current;
+    if (!before || !list) return;
+    flipRectsRef.current = null;
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+
+    for (const el of Array.from(list.children)) {
+      const old = before.get(el);
+      if (!old) continue;
+      const dy = old.top - el.getBoundingClientRect().top;
+      if (Math.abs(dy) < 1) continue;
+      el.animate(
+        [{ transform: `translateY(${dy}px)` }, { transform: "translateY(0)" }],
+        { duration: 350, easing: "cubic-bezier(0.22, 1, 0.36, 1)" },
+      );
+    }
+  }, [session]);
+
+  const captureListLayout = () => {
+    const list = listRef.current;
+    if (!list) return;
+    flipRectsRef.current = new Map(
+      Array.from(list.children).map((el) => [el, el.getBoundingClientRect()]),
+    );
+  };
+
   const saveExerciseOrder = async (order: string[]) => {
     try {
       const token = localStorage.getItem("token");
@@ -309,21 +416,52 @@ export default function SessionPage() {
   };
 
   const addExercise = async (exerciseId: string) => {
-    try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`${API_URL}/session-exercises`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ sessionId, exerciseId }),
-      });
-      if (!res.ok) throw new Error("Erreur ajout exercice");
-      fetchSession();
-    } catch (err) {
-      console.error(err);
+    if (!session) return;
+    const tempId = `temp-${crypto.randomUUID()}`;
+    const result = await offlineAwareFetch(
+      "POST",
+      "/session-exercises",
+      { sessionId: session.id, exerciseId },
+      "Nouvel exercice",
+      { localId: tempId },
+    );
+
+    if (result.queued) {
+      // Offline: show it right away with a temporary id (rewritten in the
+      // queue, then replaced on screen, once it syncs).
+      const exercise = exercises.find((e) => e.id === exerciseId);
+      if (!exercise) return;
+      setSession((prev) =>
+        prev
+          ? {
+              ...prev,
+              sessionExercises: [
+                ...prev.sessionExercises,
+                {
+                  id: tempId,
+                  exercise: {
+                    id: exercise.id,
+                    name: exercise.name,
+                    image: exercise.image,
+                    loadingType: exercise.loadingType,
+                    trackingType: exercise.trackingType,
+                    isCustom: exercise.isCustom,
+                  },
+                  sets: [],
+                  supersetId: null,
+                },
+              ],
+            }
+          : prev,
+      );
+      return;
     }
+
+    if (!result.response.ok) {
+      console.error("Erreur ajout exercice");
+      return;
+    }
+    fetchSession();
   };
 
   const addSet = async (sessionExerciseId: string, sets: SetData[]) => {
@@ -333,16 +471,22 @@ export default function SessionPage() {
       weight: lastSet ? lastSet.weight : 0,
       reps: lastSet ? lastSet.reps : 0,
       unit: lastSet ? lastSet.unit : getWeightUnit(),
+      ...(lastSet?.durationSeconds
+        ? { durationSeconds: lastSet.durationSeconds }
+        : {}),
     };
 
-    const result = await offlineAwareFetch("POST", "/sets", payload, "Nouveau set");
+    const tempId = `temp-${crypto.randomUUID()}`;
+    const result = await offlineAwareFetch("POST", "/sets", payload, "Nouveau set", {
+      localId: tempId,
+    });
 
     if (result.queued) {
       // No connection — insert locally with a temporary id so the set shows
-      // up right away; a real id replaces it once the queued request syncs
-      // and we refetch (see syncQueue.ts).
+      // up right away; edits to it are queued under that id, which the sync
+      // rewrites to the real one once the create goes through.
       const tempSet: SetData = {
-        id: `temp-${crypto.randomUUID()}`,
+        id: tempId,
         ...payload,
         completed: false,
         type: "normal",
@@ -436,28 +580,19 @@ export default function SessionPage() {
     // Start the timer synchronously (same click) so browsers still treat
     // sound/vibration triggered later as originating from a user gesture.
     // A drop set chains immediately into the next weight with no rest, so
-    // it never starts the timer. In a superset, the timer only starts once
-    // every exercise in the group has a completed set for this "round".
+    // it never starts the timer. In a superset, the exercises are chained
+    // with no rest in between: only a set of the chain's last exercise (in
+    // the order shown) starts the timer — the rest comes after the round.
     if (nextCompleted && restTimerEnabled && set.type !== "dropset") {
       const group = se.supersetId
         ? (session?.sessionExercises.filter(
             (s) => s.supersetId === se.supersetId,
           ) ?? [])
         : [];
+      const isLastOfChain = group[group.length - 1]?.id === se.id;
 
-      if (group.length < 2) {
+      if (group.length < 2 || isLastOfChain) {
         restTimer.start(getExerciseDuration(se.id));
-      } else {
-        const myCount =
-          se.sets.filter((s) => s.completed).length + 1; // this toggle isn't reflected in `session` yet
-        const roundComplete = group.every(
-          (g) =>
-            g.id === se.id ||
-            g.sets.filter((s) => s.completed).length >= myCount,
-        );
-        if (roundComplete) {
-          restTimer.start(getExerciseDuration(se.id));
-        }
       }
     }
 
@@ -499,11 +634,8 @@ export default function SessionPage() {
       }
     }
 
-    // A set created offline only exists locally so far (see addSet) — there's
-    // no real id yet to send a PATCH for; the local toggle above is enough,
-    // it'll be included whenever the create itself finally syncs.
-    if (set.id.startsWith("temp-")) return;
-
+    // A set created offline still has its temporary id: offlineAwareFetch
+    // queues this behind its create, which gives it the real id.
     offlineAwareFetch(
       "PATCH",
       `/sets/${set.id}`,
@@ -520,7 +652,12 @@ export default function SessionPage() {
 
   const updateSet = async (
     setId: string,
-    data: { weight?: number; reps?: number; type?: string },
+    data: {
+      weight?: number;
+      reps?: number;
+      type?: string;
+      durationSeconds?: number;
+    },
   ) => {
     // Optimistic update first for instant UI feedback
     setSession((prev) => {
@@ -534,10 +671,7 @@ export default function SessionPage() {
       };
     });
 
-    // Same reasoning as toggleSetCompleted — a not-yet-synced set has no
-    // real id on the server to PATCH.
-    if (setId.startsWith("temp-")) return;
-
+    // Not-yet-synced set: queued behind its create (see toggleSetCompleted).
     const result = await offlineAwareFetch(
       "PATCH",
       `/sets/${setId}`,
@@ -558,6 +692,21 @@ export default function SessionPage() {
           ...s,
           sets: s.sets.map((st) =>
             st.id === setId ? { ...st, weight } : st,
+          ),
+        })),
+      };
+    });
+  };
+
+  const setLocalDuration = (setId: string, durationSeconds: number) => {
+    setSession((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        sessionExercises: prev.sessionExercises.map((s) => ({
+          ...s,
+          sets: s.sets.map((st) =>
+            st.id === setId ? { ...st, durationSeconds } : st,
           ),
         })),
       };
@@ -590,10 +739,7 @@ export default function SessionPage() {
       };
     });
 
-    // A set added while offline only ever existed locally — there's nothing
-    // to delete on the server, and no real id to queue a DELETE for.
-    if (setId.startsWith("temp-")) return;
-
+    // A set added offline: the delete is queued behind its create.
     const result = await offlineAwareFetch(
       "DELETE",
       `/sets/${setId}`,
@@ -609,11 +755,7 @@ export default function SessionPage() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-[#faf6f1] flex items-center justify-center">
-        <p className="text-gray-400">{t("session.loading")}</p>
-      </div>
-    );
+    return <FullPageSpinner label={t("session.loading")} />;
   }
 
   if (!session) {
@@ -744,7 +886,7 @@ export default function SessionPage() {
   return (
     <div className="min-h-screen bg-[#faf6f1] pb-8">
       <div
-        className="flex items-center justify-between gap-3 px-5 pt-8 pb-6"
+        className="flex items-center justify-between gap-3 px-page-focus pt-8 pb-6"
         style={{ background: "#191714" }}
       >
         <div className="flex items-center gap-3 min-w-0">
@@ -769,7 +911,9 @@ export default function SessionPage() {
           <button
             data-tour="session-edit-toggle"
             onClick={() =>
-              isPro ? setIsEditMode((v) => !v) : navigate("/upgrade")
+              isPro
+                ? whenOnline(() => setIsEditMode((v) => !v))()
+                : navigate("/upgrade")
             }
             className={`flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide px-3.5 py-2 rounded-full transition-colors flex-shrink-0 ${
               isEditMode ? "bg-[#c9552c] text-white" : "bg-white/10 text-white"
@@ -787,7 +931,7 @@ export default function SessionPage() {
         )}
       </div>
 
-      <div className="px-5 pt-5 space-y-4">
+      <div ref={listRef} className="px-page-focus pt-5 space-y-4">
         {!readOnly && !isEditMode && (
           <AddExercisePanel
             muscleGroup={session.muscleGroup}
@@ -822,7 +966,18 @@ export default function SessionPage() {
 
         {!isEditMode &&
           session.sessionExercises.map((se, seIndex) => {
-            const loadingType = loadingTypesEnabled ? getLoadingType(se) : null;
+            const trackingType = getEffectiveTrackingType(se);
+            // No loading type for a timed exercise. A bodyweight one left
+            // on its default shows "Bodyweight" on its chip — picking a
+            // loading type there brings the weight input back (added
+            // weight, assistance…).
+            const loadingType: LoadingType | null = !loadingTypesEnabled
+              ? null
+              : trackingType === "TIME"
+                ? null
+                : trackingType === "REPS"
+                  ? "BODYWEIGHT"
+                  : getLoadingType(se);
             const barWeight = getBarWeight(se.id);
             const delta = deltas.get(se.exercise.id);
             const lastTime = lastTimes.get(se.exercise.id);
@@ -845,6 +1000,7 @@ export default function SessionPage() {
                 seIndex={seIndex}
                 totalExercises={session.sessionExercises.length}
                 loadingType={loadingType}
+                trackingType={trackingType}
                 barWeight={barWeight}
                 unit={unit}
                 readOnly={readOnly}
@@ -879,7 +1035,9 @@ export default function SessionPage() {
                 }}
                 onOpenNoteModal={() => openNoteModal(se.exercise.id)}
                 onOpenSupersetModal={() =>
-                  isPro ? openSupersetModal(se) : navigate("/upgrade")
+                  isPro
+                    ? whenOnline(() => openSupersetModal(se))()
+                    : navigate("/upgrade")
                 }
                 onRequestDelete={() => setConfirmDelete(se.id)}
                 onSelectLoadingType={(type) =>
@@ -909,11 +1067,17 @@ export default function SessionPage() {
                 }
                 onLocalRepsChange={setLocalReps}
                 onCommitReps={(setId, reps) => updateSet(setId, { reps })}
+                onLocalDurationChange={setLocalDuration}
+                onCommitDuration={(setId, durationSeconds) =>
+                  updateSet(setId, { durationSeconds })
+                }
                 onToggleSetCompleted={(set) => toggleSetCompleted(set, se)}
                 onDeleteSet={deleteSet}
                 onAddSet={() => addSet(se.id, se.sets)}
                 onOpenWarmupModal={() =>
-                  isPro ? setWarmupModalFor(se.id) : navigate("/upgrade")
+                  isPro
+                    ? whenOnline(() => setWarmupModalFor(se.id))()
+                    : navigate("/upgrade")
                 }
               />
             );
@@ -922,7 +1086,7 @@ export default function SessionPage() {
         {!readOnly && !isEmpty && !isEditMode && (
           <button
             data-tour="session-finish-exercises"
-            onClick={() => navigate("/dashboard")}
+            onClick={() => setShowFinishChoice(true)}
             className="w-full bg-[#191714] active:bg-[#191714]/85 text-white font-bold uppercase text-sm tracking-wide py-4 rounded-2xl transition-colors"
           >
             {t("session.finishExercises")}
@@ -943,25 +1107,110 @@ export default function SessionPage() {
       {confirmDelete && (
         <DeleteExerciseModal
           onCancel={() => setConfirmDelete(null)}
-          onConfirm={async () => {
-            try {
-              const token = localStorage.getItem("token");
-              await fetch(`${API_URL}/session-exercises/${confirmDelete}`, {
-                method: "DELETE",
-                headers: { Authorization: `Bearer ${token}` },
-              });
-              setConfirmDelete(null);
-              setRemovingId(confirmDelete);
-              showToast(t("session.exerciseDeleted"));
+          onConfirm={() => {
+            const removedId = confirmDelete;
+            // Sent right away, alongside the slide-out — the card doesn't
+            // wait on the network to leave. Queued when offline.
+            const request = offlineAwareFetch(
+              "DELETE",
+              `/session-exercises/${removedId}`,
+              undefined,
+              "Suppression exercice",
+            );
+            setConfirmDelete(null);
+            setRemovingId(removedId);
+            showToast(t("session.exerciseDeleted"));
+            const slidOut = new Promise<void>((resolve) =>
               setTimeout(() => {
+                // Drop the card locally as soon as it has slid out, so the
+                // rest of the page glides up into its place (see the FLIP
+                // effect above) instead of jumping once the server answers.
+                captureListLayout();
+                setSession((prev) =>
+                  prev
+                    ? {
+                        ...prev,
+                        sessionExercises: prev.sessionExercises.filter(
+                          (se) => se.id !== removedId,
+                        ),
+                      }
+                    : prev,
+                );
                 setRemovingId(null);
-                fetchSession();
-              }, 300);
-            } catch (err) {
-              console.error(err);
-            }
+                resolve();
+              }, 300),
+            );
+            // Then sync with the server (superset unlinking, or bringing
+            // the exercise back if the delete actually failed) — never
+            // before the card is gone, or a fast answer would yank it out
+            // mid-slide.
+            Promise.all([
+              request.catch((err) => console.error(err)),
+              slidOut,
+            ]).finally(() => fetchSession());
           }}
         />
+      )}
+
+      {showFinishChoice && (
+        <div className="fixed inset-0 bg-black/30 flex items-center-safe justify-center overflow-y-auto py-6 z-[60] px-6 animate-fade-in">
+          <div className="bg-[#faf6f1] rounded-3xl w-full max-w-sm shadow-2xl animate-scale-in overflow-hidden">
+            <div
+              className="px-6 pt-8 pb-6 text-center"
+              style={{ background: "#191714" }}
+            >
+              <div className="relative w-14 h-14 mx-auto mb-4">
+                <div className="absolute inset-0 rounded-full bg-[#3a9e6e] animate-set-check-ring" />
+                <div className="relative w-14 h-14 rounded-full bg-[#3a9e6e] flex items-center justify-center animate-set-check-pop">
+                  <Check size={26} className="text-white" strokeWidth={3} />
+                </div>
+              </div>
+              <h2 className="text-xl font-black text-white uppercase tracking-wide">
+                {t("session.finishChoice.title", {
+                  group: getMuscleGroupLabel(session.muscleGroup, t),
+                })}
+              </h2>
+              <p className="text-sm text-white/50 mt-1">
+                {t("session.finishChoice.subtitle")}
+              </p>
+            </div>
+
+            <div className="px-5 pt-5 pb-6 flex flex-col gap-3">
+              <button
+                onClick={() => {
+                  markExercisesFinished(session.id);
+                  navigate("/dashboard", {
+                    state: {
+                      justFinishedGroup: session.muscleGroup,
+                      highlightFinishSession: true,
+                    },
+                  });
+                }}
+                className="w-full bg-[#3a9e6e] text-white py-3.5 rounded-full font-bold uppercase tracking-wide text-sm transition-colors active:opacity-90 flex items-center justify-center gap-1.5"
+              >
+                <Check size={16} strokeWidth={3} />
+                {t("session.finishChoice.finishSession")}
+              </button>
+              <button
+                onClick={() => {
+                  markExercisesFinished(session.id);
+                  navigate("/dashboard", {
+                    state: { justFinishedGroup: session.muscleGroup },
+                  });
+                }}
+                className="w-full bg-[#191714] text-white py-3.5 rounded-full font-bold uppercase tracking-wide text-sm transition-colors active:opacity-90"
+              >
+                {t("session.finishChoice.continue")}
+              </button>
+              <button
+                onClick={() => setShowFinishChoice(false)}
+                className="w-full text-gray-500 py-2 font-bold uppercase tracking-wide text-xs active:opacity-70"
+              >
+                {t("session.finishChoice.back")}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {prCelebration && (

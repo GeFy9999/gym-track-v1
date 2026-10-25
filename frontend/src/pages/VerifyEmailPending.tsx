@@ -6,11 +6,17 @@ import { API_URL } from "../lib/api";
 import { consumePendingPlan } from "../utils/pendingPlan";
 import { useRestTimerContext } from "../contexts/RestTimerContext";
 import { syncLoyaltyReminders } from "../lib/loyaltyReminders";
+import {
+  clearPendingSignup,
+  getPendingSignupEmail,
+  loginWithPendingSignup,
+  resendVerificationEmail,
+} from "../utils/pendingSignup";
 
 const COOLDOWN_SECONDS = 300;
 
 export default function VerifyEmailPendingPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [cooldown, setCooldown] = useState(0);
@@ -20,7 +26,16 @@ export default function VerifyEmailPendingPage() {
   const [serverError, setServerError] = useState<string | null>(null);
   const { skip: stopRestTimer } = useRestTimerContext();
 
+  // Normally a fresh signup (no session yet). An account created before
+  // signup stopped logging in may still be here with a session, though.
+  const hasSession = !!localStorage.getItem("token");
+
   useEffect(() => {
+    const pendingEmail = getPendingSignupEmail();
+    if (pendingEmail) {
+      setEmail(pendingEmail);
+      return;
+    }
     const stored = localStorage.getItem("user");
     if (stored) setEmail(JSON.parse(stored).email ?? "");
   }, []);
@@ -38,37 +53,54 @@ export default function VerifyEmailPendingPage() {
   };
 
   const handleResend = useCallback(async () => {
-    const token = localStorage.getItem("token");
-    if (!token || cooldown > 0 || sending) return;
+    if (!email || cooldown > 0 || sending) return;
 
     setServerError(null);
     setSending(true);
     try {
-      const res = await fetch(`${API_URL}/auth/resend-verification`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const result = await res.json();
-      if (!res.ok) throw new Error(result.error || t("verifyEmailPending.errorGeneric"));
+      await resendVerificationEmail(email);
 
       setCooldown(COOLDOWN_SECONDS);
       setResendSuccess(true);
       setTimeout(() => setResendSuccess(false), 3000);
     } catch (err) {
-      setServerError(err instanceof Error ? err.message : t("verifyEmailPending.errorGeneric"));
+      setServerError(
+        (err instanceof Error && err.message) || t("verifyEmailPending.errorGeneric"),
+      );
     } finally {
       setSending(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cooldown, sending]);
+  }, [email, cooldown, sending]);
+
+  const continueIntoApp = () => {
+    const plan = consumePendingPlan();
+    navigate(plan ? `/upgrade?plan=${plan}` : "/dashboard");
+  };
 
   const handleCheckVerified = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
     setServerError(null);
     setChecking(true);
     try {
+      if (!hasSession) {
+        const result = await loginWithPendingSignup();
+        if (result.status === "ok") {
+          localStorage.setItem("token", result.token);
+          localStorage.setItem("user", JSON.stringify(result.user));
+          if (result.user.language) i18n.changeLanguage(result.user.language);
+          continueIntoApp();
+        } else if (result.status === "notVerified") {
+          setServerError(t("verifyEmailPending.stillNotVerified"));
+        } else if (result.status === "noCredentials") {
+          // App reloaded since signup — the password isn't kept anywhere.
+          navigate("/login");
+        } else {
+          setServerError(result.message || t("verifyEmailPending.errorGeneric"));
+        }
+        return;
+      }
+
+      const token = localStorage.getItem("token");
       const res = await fetch(`${API_URL}/auth/me`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -77,8 +109,7 @@ export default function VerifyEmailPendingPage() {
       localStorage.setItem("user", JSON.stringify(user));
 
       if (user.emailVerified) {
-        const plan = consumePendingPlan();
-        navigate(plan ? `/upgrade?plan=${plan}` : "/dashboard");
+        continueIntoApp();
       } else {
         setServerError(t("verifyEmailPending.stillNotVerified"));
       }
@@ -90,6 +121,7 @@ export default function VerifyEmailPendingPage() {
   };
 
   const handleLogout = () => {
+    clearPendingSignup();
     stopRestTimer();
     syncLoyaltyReminders(null);
     localStorage.clear();
@@ -97,7 +129,7 @@ export default function VerifyEmailPendingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#faf6f1] flex flex-col pt-8 px-6">
+    <div className="min-h-screen bg-[#faf6f1] flex flex-col pt-8 px-page-narrow">
       <div className="text-center mt-8">
         <img
           src="/LogoGymsTrack5.webp"
@@ -162,7 +194,9 @@ export default function VerifyEmailPendingPage() {
         className="flex items-center justify-center gap-2 text-sm text-gray-400 py-6"
       >
         <LogOut size={14} />
-        {t("verifyEmailPending.logout")}
+        {hasSession
+          ? t("verifyEmailPending.logout")
+          : t("verifyEmailPending.backToLogin")}
       </button>
     </div>
   );
