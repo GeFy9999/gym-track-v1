@@ -29,6 +29,7 @@ import { UiChromeProvider, useUiChrome } from "./contexts/UiChromeContext";
 import RestTimer from "./components/session/RestTimer";
 import OfflineBanner from "./components/OfflineBanner";
 import NetworkIndicator from "./components/NetworkIndicator";
+import UpdateGate from "./components/UpdateGate";
 import { FullPageSpinner } from "./components/Spinner";
 import { Capacitor } from "@capacitor/core";
 import { App as CapacitorApp } from "@capacitor/app";
@@ -211,6 +212,7 @@ function AppShell() {
       <GlobalRestTimer />
       <OfflineBanner />
       <NetworkIndicator />
+      <UpdateGate />
       <div className="min-h-screen bg-[#e8e0d8] flex justify-center">
         <div className="w-full min-h-screen bg-[#faf6f1] relative">
           <Routes>

@@ -17,6 +17,11 @@
     "syncing_one": "Synchronisation... ({{count}})",
     "syncing_other": "Synchronisation... ({{count}})"
   },
+  "update": {
+    "title": "Mise à jour disponible",
+    "message": "Une nouvelle version de GymsTrack est disponible. Mets l'app à jour pour continuer.",
+    "cta": "Mettre à jour"
+  },
   "nav": {
     "home": "Accueil",
     "stats": "Stats",
