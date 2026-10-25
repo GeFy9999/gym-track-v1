@@ -17,6 +17,11 @@
     "syncing_one": "Syncing... ({{count}})",
     "syncing_other": "Syncing... ({{count}})"
   },
+  "update": {
+    "title": "Update available",
+    "message": "A new version of GymsTrack is available. Update the app to continue.",
+    "cta": "Update"
+  },
   "nav": {
     "home": "Home",
     "stats": "Stats",
