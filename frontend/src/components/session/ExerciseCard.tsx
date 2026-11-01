@@ -39,8 +39,6 @@ type Props = {
   supersetGroupLength: number;
   isRemoving: boolean;
   animationDelay?: number;
-  openSetTypeMenuId: string | null;
-  closingSetTypeMenuId: string | null;
   cardRef: (el: HTMLDivElement | null) => void;
   onToggleTracked: () => void;
   onOpenNoteModal: () => void;
@@ -49,7 +47,6 @@ type Props = {
   onSelectLoadingType: (type: LoadingType | null) => void;
   onSelectDuration: (seconds: number) => void;
   onSelectBarWeight: (weight: number) => void;
-  onToggleSetTypeMenu: (setId: string) => void;
   onSelectSetType: (setId: string, type: string) => void;
   onLocalWeightChange: (setId: string, weight: number) => void;
   onCommitWeight: (setId: string, weight: number) => void;
@@ -85,8 +82,6 @@ export default function ExerciseCard({
   supersetGroupLength,
   isRemoving,
   animationDelay,
-  openSetTypeMenuId,
-  closingSetTypeMenuId,
   cardRef,
   onToggleTracked,
   onOpenNoteModal,
@@ -95,7 +90,6 @@ export default function ExerciseCard({
   onSelectLoadingType,
   onSelectDuration,
   onSelectBarWeight,
-  onToggleSetTypeMenu,
   onSelectSetType,
   onLocalWeightChange,
   onCommitWeight,
@@ -381,9 +375,6 @@ export default function ExerciseCard({
               unit={unit}
               readOnly={readOnly}
               previousBest={previousBest}
-              isTypeMenuOpen={openSetTypeMenuId === set.id}
-              isTypeMenuClosing={closingSetTypeMenuId === set.id}
-              onToggleTypeMenu={() => onToggleSetTypeMenu(set.id)}
               onSelectType={(type) => onSelectSetType(set.id, type)}
               onLocalWeightChange={(weight) =>
                 onLocalWeightChange(set.id, weight)

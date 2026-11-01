@@ -301,6 +301,23 @@ export async function getUserExerciseHistory(userId: string, exerciseId: string)
     .filter((p): p is { date: Date; oneRepMax: number } => p !== null)
     .sort((a, b) => a.date.getTime() - b.date.getTime());
 
+  // Heaviest working set of each session — the plain "how much did I lift"
+  // line. Built from the whole history, so sessions logged before this
+  // chart existed show up on it too.
+  const weightOverTime = history
+    .map((entry) => {
+      const working = entry.sets.filter(
+        (s) => s.type !== "warmup" && s.weight > 0,
+      );
+      if (working.length === 0) return null;
+      return {
+        date: entry.date,
+        weight: Math.max(...working.map((s) => s.weight)),
+      };
+    })
+    .filter((p): p is { date: Date; weight: number } => p !== null)
+    .sort((a, b) => a.date.getTime() - b.date.getTime());
+
   return {
     history: history.map((entry) => ({
       ...entry,
@@ -319,6 +336,10 @@ export async function getUserExerciseHistory(userId: string, exerciseId: string)
         date: p.date.toISOString(),
       })),
       oneRepMaxOverTime: oneRepMaxOverTime.map((p) => ({
+        ...p,
+        date: p.date.toISOString(),
+      })),
+      weightOverTime: weightOverTime.map((p) => ({
         ...p,
         date: p.date.toISOString(),
       })),

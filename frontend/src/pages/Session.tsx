@@ -1,7 +1,16 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ChevronLeft, Dumbbell, Crown, Check } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronDown,
+  Dumbbell,
+  Crown,
+  Check,
+  Layers,
+  Loader2,
+  Pencil,
+} from "lucide-react";
 import {
   getWeightUnit,
   getRestTimerSeconds,
@@ -15,6 +24,8 @@ import { useRestTimerContext } from "../contexts/RestTimerContext";
 import { useTrackedExercises } from "../hooks/useTrackedExercises";
 import { useExerciseNotes } from "../hooks/useExerciseNotes";
 import { useSupersetManager } from "../hooks/useSupersetManager";
+import { useSessionPresets } from "../hooks/useSessionPresets";
+import PresetPickerSheet from "../components/presets/PresetPickerSheet";
 import { useToast } from "../hooks/useToast";
 import { useIsPro } from "../hooks/useIsPro";
 import { getDefaultBarWeight } from "../utils/plates";
@@ -69,7 +80,13 @@ export default function SessionPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
-  const readOnly = searchParams.get("readonly") === "true";
+  // Opened from History (or an exercise's history): a finished session,
+  // shown read-only until "Edit" is tapped — then its weights, reps and
+  // sets can be fixed in place, without anything that only makes sense
+  // mid-workout (rest timer, PR celebration, adding exercises, finishing).
+  const openedReadOnly = searchParams.get("readonly") === "true";
+  const [editingPast, setEditingPast] = useState(false);
+  const readOnly = openedReadOnly && !editingPast;
 
   const [session, setSession] = useState<SessionData | null>(null);
   const [exercises, setExercises] = useState<AvailableExercise[]>([]);
@@ -90,10 +107,6 @@ export default function SessionPage() {
     unit: string;
   } | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
-  const [openSetTypeMenu, setOpenSetTypeMenu] = useState<string | null>(null);
-  const [closingSetTypeMenu, setClosingSetTypeMenu] = useState<string | null>(
-    null,
-  );
   const [warmupModalFor, setWarmupModalFor] = useState<string | null>(null);
   const [showSetRowTour, setShowSetRowTour] = useState(false);
   const [showFinishChoice, setShowFinishChoice] = useState(false);
@@ -141,7 +154,7 @@ export default function SessionPage() {
     // Created offline and synced since: continue on its real id.
     const realId = resolveLocalId(sessionId);
     if (realId !== sessionId) {
-      navigate(`/session/${realId}${readOnly ? "?readonly=true" : ""}`, {
+      navigate(`/session/${realId}${openedReadOnly ? "?readonly=true" : ""}`, {
         replace: true,
       });
       return;
@@ -202,6 +215,25 @@ export default function SessionPage() {
 
   const { toast, closingToast, showToast } = useToast();
   const isOnline = useOnlineStatus();
+  const sessionPresets = useSessionPresets(
+    session,
+    fetchSession,
+    t("presets.defaultName"),
+  );
+  const [showPresetPicker, setShowPresetPicker] = useState(false);
+
+  const runPresetAction = async (
+    action: () => Promise<unknown>,
+    doneMessage: string,
+  ) => {
+    try {
+      await action();
+      showToast(doneMessage);
+    } catch (err) {
+      console.error(err);
+      showToast(t("presets.saveError"));
+    }
+  };
 
   // Actions that only make sense against the server (they reshape several
   // records at once): explain instead of failing silently when offline.
@@ -215,15 +247,6 @@ export default function SessionPage() {
 
   const getExerciseDuration = (sessionExerciseId: string) =>
     exerciseDurations[sessionExerciseId] ?? getRestTimerSeconds();
-
-  const closeSetTypeMenu = () => {
-    setOpenSetTypeMenu((current) => {
-      if (!current) return current;
-      setClosingSetTypeMenu(current);
-      setTimeout(() => setClosingSetTypeMenu(null), 150);
-      return null;
-    });
-  };
 
   // The user's own choice for this exercise wins, then the curated type
   // stored on the exercise, then a guess from its name.
@@ -417,6 +440,7 @@ export default function SessionPage() {
 
   const addExercise = async (exerciseId: string) => {
     if (!session) return;
+    sessionPresets.syncAdded(exerciseId);
     const tempId = `temp-${crypto.randomUUID()}`;
     const result = await offlineAwareFetch(
       "POST",
@@ -583,7 +607,12 @@ export default function SessionPage() {
     // it never starts the timer. In a superset, the exercises are chained
     // with no rest in between: only a set of the chain's last exercise (in
     // the order shown) starts the timer — the rest comes after the round.
-    if (nextCompleted && restTimerEnabled && set.type !== "dropset") {
+    if (
+      nextCompleted &&
+      restTimerEnabled &&
+      !editingPast &&
+      set.type !== "dropset"
+    ) {
       const group = se.supersetId
         ? (session?.sessionExercises.filter(
             (s) => s.supersetId === se.supersetId,
@@ -616,7 +645,12 @@ export default function SessionPage() {
     // Warm-up sets don't count toward personal records. And the very first
     // time an exercise is ever logged, there's no prior record to beat, so
     // it shouldn't trigger a celebration — only genuine improvements should.
-    if (nextCompleted && set.type !== "warmup" && set.weight > 0) {
+    if (
+      nextCompleted &&
+      !editingPast &&
+      set.type !== "warmup" &&
+      set.weight > 0
+    ) {
       const hadPreviousRecord = se.exercise.id in personalRecords;
       const previousBest = personalRecords[se.exercise.id] ?? 0;
       if (set.weight > previousBest) {
@@ -907,7 +941,20 @@ export default function SessionPage() {
           </div>
         </div>
 
-        {!readOnly && !isEmpty ? (
+        {openedReadOnly && !isEmpty ? (
+          <button
+            onClick={() => {
+              if (editingPast) showToast(t("session.pastSessionUpdated"));
+              setEditingPast((v) => !v);
+            }}
+            className={`flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide px-3.5 py-2 rounded-full transition-colors flex-shrink-0 ${
+              editingPast ? "bg-[#c9552c] text-white" : "bg-white/10 text-white"
+            }`}
+          >
+            {editingPast ? <Check size={12} /> : <Pencil size={12} />}
+            {editingPast ? t("session.done") : t("session.edit")}
+          </button>
+        ) : !readOnly && !isEmpty ? (
           <button
             data-tour="session-edit-toggle"
             onClick={() =>
@@ -932,7 +979,37 @@ export default function SessionPage() {
       </div>
 
       <div ref={listRef} className="px-page-focus pt-5 space-y-4">
-        {!readOnly && !isEditMode && (
+        {editingPast && (
+          <p className="text-xs font-semibold text-[#c9552c] bg-[#c9552c]/10 rounded-2xl px-4 py-3">
+            {t("session.editingPastHint")}
+          </p>
+        )}
+
+        {!readOnly && !editingPast && !isEditMode && (
+          <button
+            data-tour="session-presets"
+            onClick={whenOnline(() => setShowPresetPicker(true))}
+            disabled={sessionPresets.busy}
+            className="w-full bg-[#191714] rounded-full px-5 py-3.5 flex items-center justify-between gap-3 shadow-sm active:scale-[0.99] transition-transform disabled:opacity-60"
+          >
+            <span className="flex items-center gap-2 min-w-0 text-sm font-bold uppercase tracking-wide text-white">
+              {sessionPresets.busy ? (
+                <Loader2 size={16} className="animate-spin flex-shrink-0" />
+              ) : (
+                <Layers size={16} className="flex-shrink-0" />
+              )}
+              <span className="flex-shrink-0">{t("presets.button")}</span>
+              {sessionPresets.activePreset && (
+                <span className="truncate normal-case font-semibold text-[#c9552c]">
+                  · {sessionPresets.activePreset.name}
+                </span>
+              )}
+            </span>
+            <ChevronDown size={18} className="text-white/60 flex-shrink-0" />
+          </button>
+        )}
+
+        {!readOnly && !editingPast && !isEditMode && (
           <AddExercisePanel
             muscleGroup={session.muscleGroup}
             availableExercises={availableExercises}
@@ -1008,7 +1085,7 @@ export default function SessionPage() {
                 isLoadingTypeOverridden={
                   se.exercise.id in loadingTypeOverrides
                 }
-                restTimerEnabled={restTimerEnabled}
+                restTimerEnabled={restTimerEnabled && !editingPast}
                 exerciseDuration={getExerciseDuration(se.id)}
                 delta={delta}
                 lastTime={lastTime}
@@ -1019,8 +1096,6 @@ export default function SessionPage() {
                 supersetGroupLength={supersetGroup.length}
                 isRemoving={removingId === se.id}
                 animationDelay={seIndex * 80}
-                openSetTypeMenuId={openSetTypeMenu}
-                closingSetTypeMenuId={closingSetTypeMenu}
                 cardRef={(el) => {
                   exerciseRefs.current[se.id] = el;
                 }}
@@ -1052,15 +1127,7 @@ export default function SessionPage() {
                 onSelectBarWeight={(weight) =>
                   setBarWeights((prev) => ({ ...prev, [se.id]: weight }))
                 }
-                onToggleSetTypeMenu={(setId) =>
-                  openSetTypeMenu === setId
-                    ? closeSetTypeMenu()
-                    : setOpenSetTypeMenu(setId)
-                }
-                onSelectSetType={(setId, type) => {
-                  updateSet(setId, { type });
-                  closeSetTypeMenu();
-                }}
+                onSelectSetType={(setId, type) => updateSet(setId, { type })}
                 onLocalWeightChange={setLocalWeight}
                 onCommitWeight={(setId, weight) =>
                   updateSet(setId, { weight })
@@ -1083,7 +1150,7 @@ export default function SessionPage() {
             );
           })}
 
-        {!readOnly && !isEmpty && !isEditMode && (
+        {!readOnly && !editingPast && !isEmpty && !isEditMode && (
           <button
             data-tour="session-finish-exercises"
             onClick={() => setShowFinishChoice(true)}
@@ -1094,7 +1161,7 @@ export default function SessionPage() {
         )}
       </div>
 
-      {isEmpty && suggestions.length > 0 && !readOnly && (
+      {isEmpty && suggestions.length > 0 && !readOnly && !editingPast && (
         <ExerciseSuggestions
           muscleGroup={session.muscleGroup}
           suggestions={suggestions}
@@ -1104,11 +1171,37 @@ export default function SessionPage() {
         />
       )}
 
+      {showPresetPicker && (
+        <PresetPickerSheet
+          muscleGroup={session.muscleGroup}
+          presets={sessionPresets.presets}
+          activePresetId={sessionPresets.activePreset?.id ?? null}
+          onSelect={(preset) =>
+            runPresetAction(
+              () => sessionPresets.switchTo(preset),
+              t("presets.switched", { name: preset.name }),
+            )
+          }
+          onCreate={() =>
+            runPresetAction(
+              () => sessionPresets.startNewPreset(),
+              t("presets.created"),
+            )
+          }
+          onRename={sessionPresets.renamePreset}
+          onClose={() => setShowPresetPicker(false)}
+        />
+      )}
+
       {confirmDelete && (
         <DeleteExerciseModal
           onCancel={() => setConfirmDelete(null)}
           onConfirm={() => {
             const removedId = confirmDelete;
+            const removedExerciseId = session.sessionExercises.find(
+              (se) => se.id === removedId,
+            )?.exercise.id;
+            if (removedExerciseId) sessionPresets.syncRemoved(removedExerciseId);
             // Sent right away, alongside the slide-out — the card doesn't
             // wait on the network to leave. Queued when offline.
             const request = offlineAwareFetch(
@@ -1265,12 +1358,12 @@ export default function SessionPage() {
 
       {toast && <Toast message={toast} closing={closingToast} />}
 
-      {!readOnly && !isEmpty && (
+      {!openedReadOnly && !isEmpty && (
         <TourOverlay tourKey="session" steps={sessionTourSteps} />
       )}
 
       {/* Only once the main page tour is done, so the two never overlap. */}
-      {!readOnly && showSetRowTour && localStorage.getItem("tour_session") && (
+      {!openedReadOnly && showSetRowTour && localStorage.getItem("tour_session") && (
         <TourOverlay tourKey="session-set-row" steps={setRowTourSteps} />
       )}
     </div>

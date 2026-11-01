@@ -77,8 +77,10 @@ export default function VerifyEmailPage() {
     <div className="min-h-screen bg-[#faf6f1] flex flex-col items-center justify-center px-page-narrow text-center">
       <img
         src="/LogoGymsTrack5.webp"
+        width={506}
+        height={192}
         alt="GymsTrack"
-        className="h-14 mx-auto mb-6"
+        className="h-14 w-auto mx-auto mb-6"
       />
 
       {status === "verifying" && (

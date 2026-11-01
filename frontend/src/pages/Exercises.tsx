@@ -2,13 +2,19 @@ import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getMuscleGroupLabel } from "../utils/muscleGroupLabel";
-import { Search, Dumbbell, Trophy, ChevronDown } from "lucide-react";
+import { Search, Dumbbell, Trophy, ChevronDown, Layers, Plus } from "lucide-react";
 import { buildExerciseSearchIndex, searchExercises } from "../utils/exerciseSearch";
 import { API_URL } from "../lib/api";
 import { fetchWithRetry } from "../lib/fetchWithRetry";
 import { useTrackedExercises } from "../hooks/useTrackedExercises";
 import { useToast } from "../hooks/useToast";
+import { useOnlineStatus } from "../hooks/useOnlineStatus";
+import {
+  useExercisePresets,
+  type ExercisePreset,
+} from "../hooks/useExercisePresets";
 import Toast from "../components/Toast";
+import PresetEditorSheet from "../components/presets/PresetEditorSheet";
 
 type Exercise = {
   id: string;
@@ -93,6 +99,25 @@ export default function ExercisesPage() {
   const [trackedOpen, setTrackedOpen] = useState(true);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [poppingId, setPoppingId] = useState<string | null>(null);
+  const isOnline = useOnlineStatus();
+  const {
+    presets,
+    createPreset,
+    updatePreset,
+    deletePreset,
+    nextDefaultName,
+  } = useExercisePresets(selectedGroup);
+  // The preset open in the editor; "new" while creating one.
+  const [editingPreset, setEditingPreset] = useState<
+    ExercisePreset | "new" | null
+  >(null);
+  const openPresetEditor = (preset: ExercisePreset | "new") => {
+    if (!isOnline) {
+      showToast(t("offline.needsConnection"));
+      return;
+    }
+    setEditingPreset(preset);
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -168,6 +193,14 @@ export default function ExercisesPage() {
     () => exercises.filter((e) => isTracked(e.id)),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [exercises, tracked],
+  );
+
+  const groupExercises = useMemo(
+    () =>
+      selectedGroup
+        ? exercises.filter((e) => e.muscleGroup.name === selectedGroup)
+        : [],
+    [exercises, selectedGroup],
   );
 
   const visible = filtered.slice(0, visibleCount);
@@ -313,6 +346,60 @@ export default function ExercisesPage() {
       </div>
 
       <div className="px-page space-y-4">
+        {selectedGroup && !search && (
+          <div>
+            <div className="flex items-center justify-between mb-2 px-1">
+              <p className="text-xs font-bold text-gray-900 uppercase tracking-widest">
+                {t("presets.title")}{" "}
+                <span className="text-gray-400">({presets.length})</span>
+              </p>
+              <button
+                onClick={() => openPresetEditor("new")}
+                className="flex items-center gap-1 text-xs font-bold uppercase tracking-wide text-[#c9552c]"
+              >
+                <Plus size={14} /> {t("presets.new")}
+              </button>
+            </div>
+            {presets.length === 0 ? (
+              <button
+                onClick={() => openPresetEditor("new")}
+                className="w-full border border-dashed border-[#c9552c]/40 rounded-2xl px-4 py-4 text-xs text-gray-500 text-center active:bg-[#c9552c]/5"
+              >
+                {t("presets.emptyGroup", {
+                  group: getMuscleGroupLabel(selectedGroup, t),
+                })}
+              </button>
+            ) : (
+              <div className="space-y-2 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-2">
+                {presets.map((preset) => (
+                  <button
+                    key={preset.id}
+                    onClick={() => openPresetEditor(preset)}
+                    className="w-full flex items-center gap-3 rounded-2xl px-3.5 py-3 shadow-sm bg-[#ece7dd] active:scale-[0.99] transition-all text-left"
+                  >
+                    <div className="w-12 h-12 rounded-xl bg-[#191714] flex items-center justify-center flex-shrink-0">
+                      <Layers size={18} className="text-[#c9552c]" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold uppercase truncate text-gray-900">
+                        {preset.name}
+                      </p>
+                      <p className="text-xs text-gray-500 truncate">
+                        {preset.exercises.length === 0
+                          ? t("presets.exercisesCount", { count: 0 })
+                          : preset.exercises.map((e) => e.name).join(" · ")}
+                      </p>
+                    </div>
+                    <span className="text-[11px] font-semibold text-[#c9552c] flex-shrink-0">
+                      {preset.exercises.length}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {trackedExercises.length > 0 && (
           <div>
             <button
@@ -383,6 +470,33 @@ export default function ExercisesPage() {
           </div>
         </div>
       </div>
+
+      {selectedGroup && editingPreset && (
+        <PresetEditorSheet
+          muscleGroup={selectedGroup}
+          preset={editingPreset === "new" ? null : editingPreset}
+          defaultName={nextDefaultName(t("presets.defaultName"))}
+          groupExercises={groupExercises}
+          onSave={async (name, exerciseIds) => {
+            if (editingPreset === "new") {
+              await createPreset(name, exerciseIds);
+              showToast(t("presets.created"));
+            } else {
+              await updatePreset(editingPreset.id, { name, exerciseIds });
+              showToast(t("presets.saved"));
+            }
+          }}
+          onDelete={
+            editingPreset === "new"
+              ? undefined
+              : async () => {
+                  await deletePreset(editingPreset.id);
+                  showToast(t("presets.deleted"));
+                }
+          }
+          onClose={() => setEditingPreset(null)}
+        />
+      )}
 
       {toast && <Toast message={toast} closing={closingToast} />}
     </div>

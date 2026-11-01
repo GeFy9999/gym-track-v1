@@ -101,7 +101,7 @@ export default function AddExercisePanel({
                   className="w-7 h-7 rounded-full bg-[#191714]/10 flex items-center justify-center flex-shrink-0 active:bg-[#191714]/20 transition-colors"
                 >
                   {/* Same plain "i" glyph as the exercise card's info button. */}
-                  <svg width="4" height="14" viewBox="0 0 4 14" fill="#191714" className="block">
+                  <svg width="4" height="14" viewBox="0 0 4 14" fill="var(--glyph-ink)" className="block">
                     <circle cx="2" cy="2" r="2" />
                     <rect x="0" y="6" width="4" height="8" rx="2" />
                   </svg>

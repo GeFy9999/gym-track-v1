@@ -25,18 +25,40 @@
       content="black-translucent"
     />
     <meta name="apple-mobile-web-app-title" content="GymsTrack" />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="512x512"
-      href="/icon512_rounded.png"
-    />
-    <link rel="apple-touch-icon" href="/icon512_rounded.png" />
+    <!-- Small icons for the tab and home screen: the 512px PNG (125 KB) was
+         downloaded on every first visit just for a 16-48px favicon. -->
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180.png" />
+    <!-- The login screen's largest element: fetched with the HTML instead
+         of only once the page's JS has run. -->
+    <link rel="preload" as="image" href="/LogoGymsTrack5.webp" fetchpriority="high" />
     <link rel="manifest" href="/manifest.json" />
+    <!-- Dark mode before first paint, so a dark-theme user never sees a
+         flash of the light page (same logic as src/lib/theme.ts). -->
+    <script>
+      try {
+        var t = localStorage.getItem("theme") || "light";
+        if (t === "dark" || (t === "system" && matchMedia("(prefers-color-scheme: dark)").matches)) {
+          document.documentElement.classList.add("dark");
+        }
+      } catch (e) {}
+    </script>
+    <style>
+      html, body { margin: 0; background: #faf6f1; }
+      html.dark, html.dark body { background: #1e1b18; }
+      .boot-splash { min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+      .boot-splash img { height: 64px; width: auto; }
+    </style>
     <title>GymsTrack — Suivi d'entraînement</title>
   </head>
   <body>
-    <div id="root"></div>
+    <!-- Shown from the HTML alone while the app's JS loads, instead of a
+         blank page; React replaces it on its first render. -->
+    <div id="root">
+      <div class="boot-splash">
+        <img src="/LogoGymsTrack5.webp" width="506" height="192" alt="GymsTrack" />
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { formatAmount } from "../utils/units";
 import { useTranslation } from "react-i18next";
@@ -19,9 +20,15 @@ import {
   Calendar,
   ArrowRight,
   Sparkles,
+  Moon,
 } from "lucide-react";
 import { getDateLocale } from "../i18n";
 import { useProfileSettings } from "../hooks/useProfileSettings";
+import {
+  getThemePreference,
+  setThemePreference,
+  type ThemePreference,
+} from "../lib/theme";
 import TourOverlay from "../components/TourOverlay";
 import LoyaltyTierBanner from "../components/LoyaltyTierBanner";
 
@@ -39,9 +46,12 @@ const ANNUAL_PRICE_CENTS = 2999;
 const LOYALTY_MAX_PERIODS_MONTHLY = 10;
 const LOYALTY_MAX_PERIODS_YEARLY = 3;
 
+const THEME_OPTIONS: ThemePreference[] = ["light", "dark", "system"];
+
 export default function ProfilePage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const [theme, setTheme] = useState<ThemePreference>(getThemePreference);
   const {
     user,
     initials,
@@ -503,7 +513,7 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <div className="w-full flex items-center gap-3 px-4 py-4">
+        <div className="w-full flex items-center gap-3 px-4 py-4 border-b border-black/5">
           <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <Globe size={16} className="text-[#c9552c]" />
           </div>
@@ -536,6 +546,37 @@ export default function ProfilePage() {
             </button>
           </div>
         </div>
+
+        <div className="w-full flex items-center gap-3 px-4 py-4">
+          <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
+            <Moon size={16} className="text-[#c9552c]" />
+          </div>
+          <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
+            {t("profile.theme")}
+          </p>
+          <div className="relative flex w-44 bg-gray-300 rounded-full p-1 flex-shrink-0">
+            <div
+              className="absolute top-1 bottom-1 left-1 w-[calc(33.333%-2.667px)] rounded-full bg-[#191714] transition-transform duration-200 ease-out"
+              style={{
+                transform: `translateX(${THEME_OPTIONS.indexOf(theme) * 100}%)`,
+              }}
+            />
+            {THEME_OPTIONS.map((option) => (
+              <button
+                key={option}
+                onClick={() => {
+                  setThemePreference(option);
+                  setTheme(option);
+                }}
+                className={`relative z-10 flex-1 py-1.5 rounded-full text-[11px] font-bold uppercase transition-colors ${
+                  theme === option ? "text-white" : "text-gray-500"
+                }`}
+              >
+                {t(`profile.themeOptions.${option}`)}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Entraînement */}
@@ -563,7 +604,7 @@ export default function ProfilePage() {
             aria-label={t("profile.restTimerAutoAria")}
           >
             <span
-              className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${
+              className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white stay-light shadow transition-transform ${
                 restTimerEnabled ? "translate-x-5" : "translate-x-0"
               }`}
             />
@@ -616,7 +657,7 @@ export default function ProfilePage() {
             aria-label={t("profile.barModeAria")}
           >
             <span
-              className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${
+              className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white stay-light shadow transition-transform ${
                 barbellModeEnabled && isPro ? "translate-x-5" : "translate-x-0"
               }`}
             />

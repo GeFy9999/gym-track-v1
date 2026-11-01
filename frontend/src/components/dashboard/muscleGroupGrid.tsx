@@ -51,8 +51,8 @@ export default function MuscleGroupsCards({
     Épaules: "/imgEpaules-Photoroom.webp",
     Epaules: "/imgEpaules-Photoroom.webp",
     Legs: "/imgLegs-Photoroom.webp",
-    Chest: "/imgPec3.png",
-    Pectoraux: "/imgPec3.png",
+    Chest: "/imgPec3.webp",
+    Pectoraux: "/imgPec3.webp",
     Trapèze: "/imgTrapeze-Photoroom.webp",
     Trapeze: "/imgTrapeze-Photoroom.webp",
     Triceps: "/imgTriceps-Photoroom.webp",
@@ -312,7 +312,7 @@ export default function MuscleGroupsCards({
               )}
               {isActive && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10 bg-[#c9552c] text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full flex items-center gap-1.5 whitespace-nowrap">
-                  <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-white stay-light animate-pulse" />
                   {t("dashboard.inProgress")}
                 </div>
               )}

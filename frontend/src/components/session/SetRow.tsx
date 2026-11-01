@@ -47,9 +47,6 @@ type Props = {
   unit: string;
   readOnly: boolean;
   previousBest: number;
-  isTypeMenuOpen: boolean;
-  isTypeMenuClosing: boolean;
-  onToggleTypeMenu: () => void;
   onSelectType: (type: string) => void;
   onLocalWeightChange: (weight: number) => void;
   onCommitWeight: (weight: number) => void;
@@ -70,9 +67,6 @@ export default function SetRow({
   unit,
   readOnly,
   previousBest,
-  isTypeMenuOpen,
-  isTypeMenuClosing,
-  onToggleTypeMenu,
   onSelectType,
   onLocalWeightChange,
   onCommitWeight,
@@ -110,6 +104,7 @@ export default function SetRow({
     ? calculatePlates(displayedWeight, unit)
     : { plates: [], remainder: 0 };
 
+  const [showTypeMenu, setShowTypeMenu] = useState(false);
   const [justCompleted, setJustCompleted] = useState(false);
   const [weightGain, setWeightGain] = useState<{ amount: number; key: number } | null>(
     null,
@@ -133,7 +128,7 @@ export default function SetRow({
       <div className="flex gap-2 mb-2">
         <button
           data-tour="session-set-type"
-          onClick={onToggleTypeMenu}
+          onClick={() => setShowTypeMenu(true)}
           className={`w-11 h-11 self-center rounded-lg flex items-center justify-center text-xs font-bold transition-colors flex-shrink-0 ${getSetTypeColor(
             set.type,
           )}`}
@@ -338,11 +333,11 @@ export default function SetRow({
         )}
       </div>
 
-      {(isTypeMenuOpen || isTypeMenuClosing) && (
+      {showTypeMenu && (
         <SetTypeMenu
           currentType={set.type}
-          isClosing={isTypeMenuClosing}
           onSelect={onSelectType}
+          onClose={() => setShowTypeMenu(false)}
         />
       )}
 

@@ -17,7 +17,8 @@ const EXIT_MS = 300;
 const DRAG_THRESHOLD = 60;
 const DISMISS_DISTANCE = 600;
 
-// A sheet that slides up from the bottom of the screen, above everything
+// A sheet that slides up from the bottom of the screen (floating a bit
+// above it on a tablet — see .sheet-panel), above everything
 // (bottom nav included), closed by tapping the backdrop or dragging the
 // header down. Portaled to <body> because an ancestor with a transform
 // (e.g. a card's entrance animation) would otherwise turn `position:
@@ -104,8 +105,7 @@ export default function BottomSheet({
         }`}
       >
         <div
-          className="mx-auto max-w-md bg-white rounded-t-[1.75rem] shadow-2xl pt-3 px-4 max-h-[100dvh] overflow-y-auto"
-          style={{ paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))" }}
+          className="sheet-panel bg-white shadow-2xl pt-3 px-4 md:px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] md:pb-6"
         >
           <div
             onPointerDown={handlePointerDown}

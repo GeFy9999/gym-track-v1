@@ -496,7 +496,7 @@ export default function UpgradePage() {
                 {t("upgrade.loyaltyHint")}
               </p>
             </div>
-            <div className="bg-white rounded-2xl px-3.5 py-2 flex flex-col items-center flex-shrink-0">
+            <div className="bg-white stay-light rounded-2xl px-3.5 py-2 flex flex-col items-center flex-shrink-0">
               <span className="text-[9px] font-bold text-[#3a9e6e] uppercase tracking-widest whitespace-nowrap">
                 {t("profile.upTo")}
               </span>
