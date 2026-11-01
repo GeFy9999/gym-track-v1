@@ -26,6 +26,7 @@ model User {
   exerciseNotes           ExerciseNote[]
   exerciseLoadingTypes    ExerciseLoadingType[]
   customExercises         Exercise[]
+  exercisePresets         ExercisePreset[]
   recoveryEmail           String?
   weightUnit              String                @default("lb")
   restTimerSeconds        Int                   @default(120)
@@ -138,6 +139,7 @@ model Exercise {
   trackedBy            TrackedExercise[]
   notes                ExerciseNote[]
   loadingTypeOverrides ExerciseLoadingType[]
+  presetItems          ExercisePresetItem[]
 
   @@index([exerciseDbId])
   @@index([userId])
@@ -236,4 +238,35 @@ model ExerciseLoadingType {
   exercise Exercise @relation(fields: [exerciseId], references: [id])
 
   @@unique([userId, exerciseId])
+}
+
+// A named list of exercises the user saved for one muscle group ("Push A",
+// "Chest — machines"…), loaded into a session in one tap. muscleGroup is the
+// group's name, like Session.muscleGroup.
+model ExercisePreset {
+  id          String               @id @default(uuid())
+  userId      String
+  muscleGroup String
+  name        String
+  createdAt   DateTime             @default(now())
+  items       ExercisePresetItem[]
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, muscleGroup])
+}
+
+model ExercisePresetItem {
+  id         String @id @default(uuid())
+  presetId   String
+  exerciseId String
+  order      Int
+
+  preset   ExercisePreset @relation(fields: [presetId], references: [id], onDelete: Cascade)
+  // Cascade: an exercise going away (a deleted account's custom exercise,
+  // the catalog being rebuilt) just drops out of the presets that had it.
+  exercise Exercise       @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@index([presetId])
+  @@index([exerciseId])
 }

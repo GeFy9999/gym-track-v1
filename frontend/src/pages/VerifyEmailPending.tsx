@@ -133,8 +133,10 @@ export default function VerifyEmailPendingPage() {
       <div className="text-center mt-8">
         <img
           src="/LogoGymsTrack5.webp"
+          width={506}
+          height={192}
           alt="GymsTrack"
-          className="h-14 mx-auto mb-6"
+          className="h-14 w-auto mx-auto mb-6"
         />
         <div className="w-16 h-16 rounded-full bg-[#c9552c]/10 flex items-center justify-center mx-auto mb-4">
           <Mail size={28} className="text-[#c9552c]" />

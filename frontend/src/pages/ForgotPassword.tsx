@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ArrowLeft, Lock, Mail } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+// zod/mini: same checks as classic zod, a fraction of the bundle size.
+import * as z from "zod/mini";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { API_URL } from "../lib/api";
 
@@ -23,10 +24,10 @@ export default function ForgotPasswordPage() {
   const [resendSuccess, setResendSuccess] = useState(false);
 
   const forgotSchema = z.object({
-    email: z
-      .string()
-      .min(1, t("forgotPassword.errors.emailRequired"))
-      .email(t("forgotPassword.errors.emailInvalid")),
+    email: z.string().check(
+      z.minLength(1, t("forgotPassword.errors.emailRequired")),
+      z.email(t("forgotPassword.errors.emailInvalid")),
+    ),
   });
 
   const {
@@ -157,8 +158,10 @@ export default function ForgotPasswordPage() {
       <div className="text-center mb-6">
         <img
           src="/LogoGymsTrack5.webp"
+          width={506}
+          height={192}
           alt="GymsTrack"
-          className="h-14 mx-auto"
+          className="h-14 w-auto mx-auto"
         />
       </div>
 

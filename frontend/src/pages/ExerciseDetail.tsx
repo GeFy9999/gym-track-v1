@@ -8,6 +8,7 @@ import {
   TrendingUp,
   Trophy,
   Crown,
+  ChevronRight,
 } from "lucide-react";
 import { API_URL } from "../lib/api";
 import { useTrackedExercises } from "../hooks/useTrackedExercises";
@@ -19,7 +20,6 @@ import { ProGateOrContent } from "../components/ProGate";
 import { getMuscleGroupLabel } from "../utils/muscleGroupLabel";
 import { useToast } from "../hooks/useToast";
 import Toast from "../components/Toast";
-import { formatSetValue } from "../utils/trackingType";
 
 type Exercise = {
   id: string;
@@ -56,6 +56,10 @@ type ExerciseHistoryResponse = {
     byReps: { reps: number; weight: number }[];
     volumeOverTime: { date: string; volume: number }[];
     oneRepMaxOverTime: { date: string; oneRepMax: number }[];
+    // Heaviest working set per session. Free for the last 90 days; older
+    // points are only sent to Pro — a free user gets their count instead.
+    weightOverTime: { date: string; weight: number }[];
+    weightOverTimeLockedCount?: number;
   };
 };
 
@@ -85,28 +89,26 @@ function buildDemoRecords() {
   };
 }
 
+// "mer. · octobre 2026" — what follows the day number on a history card.
+function formatBandDate(iso: string): string {
+  const date = new Date(iso);
+  const locale = getDateLocale();
+  const weekday = date
+    .toLocaleDateString(locale, { weekday: "short" })
+    .replace(".", "");
+  const monthYear = date.toLocaleDateString(locale, {
+    month: "long",
+    year: "numeric",
+  });
+  return `${weekday} · ${monthYear}`;
+}
+
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString(getDateLocale(), {
     day: "numeric",
     month: "short",
     year: "numeric",
   });
-}
-
-function summarizeSets(sets: HistorySet[]): string {
-  if (sets.length === 0) return "";
-  const [first] = sets;
-  // Timed or bodyweight sets: no weight to show.
-  if ((first.durationSeconds ?? 0) > 0 || first.weight <= 0) {
-    return sets.map(formatSetValue).join(", ");
-  }
-  const allSame = sets.every(
-    (s) => s.weight === first.weight && s.reps === first.reps,
-  );
-  if (allSame) {
-    return `${sets.length}×${first.reps} @ ${first.weight} ${first.unit}`;
-  }
-  return sets.map((s) => `${s.weight}×${s.reps}`).join(", ");
 }
 
 function RecordRow({
@@ -241,6 +243,13 @@ export default function ExerciseDetailPage() {
     : convertedHistory.slice(0, 5);
 
   const demoRecords = buildDemoRecords();
+
+  // The user's real data (the last 90 days of it on the free plan), never
+  // the demo series. `?? []` covers an API that doesn't send it yet.
+  const weightOverTime = (records.weightOverTime ?? []).map((p) => ({
+    date: p.date,
+    value: conv(p.weight),
+  }));
 
   const convertedRecords = {
     bestWeight: records.bestWeight
@@ -445,10 +454,38 @@ export default function ExerciseDetailPage() {
         </div>
 
         <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
+          <ProgressLineChart
+            title={t("exerciseDetail.weightTitle")}
+            subtitle={t("exerciseDetail.heaviestSet", { unit })}
+            points={weightOverTime}
+            unit={unit}
+            locked={
+              !isPro && (records.weightOverTimeLockedCount ?? 0) > 0
+                ? {
+                    count: records.weightOverTimeLockedCount ?? 0,
+                    label: t("exerciseDetail.weightFreeLimit"),
+                    buttonLabel: "Pro",
+                    onUnlock: () => navigate("/upgrade"),
+                  }
+                : undefined
+            }
+          />
+          {!isPro && (
+            <div className="flex items-center gap-1 mt-2">
+              <Crown size={11} className="text-[#c9552c]" />
+              <span className="text-[10px] text-[#c9552c]">
+                {t("exerciseDetail.weightFreeMention")}
+              </span>
+            </div>
+          )}
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
           <ProGateOrContent isPro={isPro} goProLabel={t("exerciseDetail.goPro")}>
             <ProgressLineChart
               title={t("exerciseDetail.volumeTotal")}
               subtitle={t("exerciseDetail.perSession", { unit })}
+              unit={unit}
               points={convertedRecords.volumeOverTime.map((p) => ({
                 date: p.date,
                 value: p.volume,
@@ -468,6 +505,7 @@ export default function ExerciseDetailPage() {
             <ProgressLineChart
               title={t("exerciseDetail.oneRepMaxTitle")}
               subtitle={t("exerciseDetail.bestSet", { unit })}
+              unit={unit}
               points={convertedRecords.oneRepMaxOverTime.map((p) => ({
                 date: p.date,
                 value: p.oneRepMax,
@@ -498,19 +536,36 @@ export default function ExerciseDetailPage() {
                   onClick={() =>
                     navigate(`/session/${entry.sessionId}?readonly=true`)
                   }
-                  className="w-full bg-white border border-gray-200 rounded-2xl p-3.5 text-left shadow-sm active:scale-[0.99] transition-all"
+                  className="w-full bg-white rounded-2xl text-left shadow-sm overflow-hidden active:scale-[0.99] transition-all"
                 >
-                  <div className="flex items-center justify-between mb-1">
-                    <p className="text-sm font-semibold text-gray-900">
-                      {formatDate(entry.date)}
-                    </p>
-                    <p className="text-xs text-gray-400">
-                      {entry.sets.length} {t("exerciseDetail.set", { count: entry.sets.length })}
+                  {/* Same day card as the History page, its date on a dark
+                      band across the top. */}
+                  <div
+                    className="flex items-center gap-3 px-3 py-2.5"
+                    style={{ background: "#191714" }}
+                  >
+                    <p className="flex items-baseline gap-2 min-w-0 uppercase">
+                      <span className="text-lg font-black text-white leading-none">
+                        {new Date(entry.date).getDate()}
+                      </span>
+                      <span className="text-xs font-bold text-white/60 tracking-wide truncate">
+                        {formatBandDate(entry.date)}
+                      </span>
                     </p>
                   </div>
-                  <p className="text-xs text-gray-500">
-                    {summarizeSets(entry.sets)}
-                  </p>
+                  {/* Under the band, the History page's session row:
+                      muscle group, count, arrow. */}
+                  <div className="flex items-center gap-3 px-3 py-2.5">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold text-gray-900 uppercase truncate">
+                        {getMuscleGroupLabel(entry.muscleGroup, t)}
+                      </p>
+                      <p className="text-xs font-semibold text-gray-400 mt-0.5 uppercase">
+                        {entry.sets.length} {t("exerciseDetail.set", { count: entry.sets.length })}
+                      </p>
+                    </div>
+                    <ChevronRight size={18} className="text-[#c9552c] flex-shrink-0" />
+                  </div>
                 </button>
               ))}
               {!isPro && history.length > 5 && (

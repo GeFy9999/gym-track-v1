@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+// zod/mini: same checks as classic zod, a fraction of the bundle size.
+import * as z from "zod/mini";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "react-i18next";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
@@ -22,11 +23,13 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   const loginSchema = z.object({
-    email: z
-      .string()
-      .min(1, t("login.errors.emailRequired"))
-      .email(t("login.errors.emailInvalid")),
-    password: z.string().min(1, t("login.errors.passwordRequired")),
+    email: z.string().check(
+      z.minLength(1, t("login.errors.emailRequired")),
+      z.email(t("login.errors.emailInvalid")),
+    ),
+    password: z.string().check(
+      z.minLength(1, t("login.errors.passwordRequired")),
+    ),
   });
 
   const {
@@ -87,8 +90,10 @@ export default function LoginPage() {
       >
         <img
           src="/LogoGymsTrack5.webp"
+          width={506}
+          height={192}
           alt="GymsTrack"
-          className="h-16 mx-auto mb-3"
+          className="h-16 w-auto mx-auto mb-3"
         />
         <p className="text-xs font-bold text-white/60 uppercase tracking-widest">
           {t("login.subtitle")}

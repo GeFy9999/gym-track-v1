@@ -16,6 +16,7 @@ import { trackedExerciseRouter } from "./controllers/trackedExerciseController.j
 import { progressPhotoRouter } from "./controllers/progressPhotoController.js";
 import { exerciseNoteRouter } from "./controllers/exerciseNoteController.js";
 import { exerciseLoadingTypeRouter } from "./controllers/exerciseLoadingTypeController.js";
+import { exercisePresetRouter } from "./controllers/exercisePresetController.js";
 import { emailRouter } from "./controllers/emailController.js";
 import { contactRouter } from "./controllers/contactController.js";
 import { importRouter } from "./controllers/importController.js";
@@ -71,6 +72,7 @@ app.use("/api/tracked-exercises", trackedExerciseRouter);
 app.use("/api/progress-photos", progressPhotoRouter);
 app.use("/api/exercise-notes", exerciseNoteRouter);
 app.use("/api/exercise-loading-types", exerciseLoadingTypeRouter);
+app.use("/api/exercise-presets", exercisePresetRouter);
 app.use("/api/email", emailRouter);
 app.use("/api/contact", contactRouter);
 app.use("/api/import", importRouter);

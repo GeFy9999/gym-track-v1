@@ -109,7 +109,7 @@ export default function RestTimer({
         }`}
       >
         <div
-          className={`mx-auto max-w-md bg-[#191714] text-white rounded-t-2xl shadow-2xl px-5 py-3 flex items-center gap-3 ${
+          className={`sheet-bar bg-[#191714] text-white rounded-t-2xl shadow-2xl px-5 py-3 flex items-center gap-3 ${
             exiting ? "animate-bar-slide-down" : "animate-bar-slide-up"
           }`}
         >
@@ -177,8 +177,14 @@ export default function RestTimer({
         }`}
       >
         {/* Scrolls instead of being cut off on a short screen (phone in
-            landscape is ~390px tall). */}
-        <div className="mx-auto max-w-md bg-[#faf6f1] rounded-t-[1.75rem] shadow-2xl pb-8 max-h-[100dvh] overflow-y-auto">
+            landscape is ~390px tall). It sits on top of the bottom nav, so
+            the nav's height comes off too, or its top would be cut off. */}
+        <div
+          className="sheet-panel bg-[#faf6f1] shadow-2xl pb-8"
+          style={
+            { "--sheet-offset": "var(--bottom-nav-height, 0px)" } as React.CSSProperties
+          }
+        >
           <div
             onPointerDown={closing ? undefined : handlePointerDown}
             style={{ touchAction: "none" }}
@@ -200,7 +206,7 @@ export default function RestTimer({
             }`}
           >
             <svg viewBox="0 0 192 192" className="absolute inset-0 -rotate-90">
-              <circle cx="96" cy="96" r={RING_RADIUS} fill="none" stroke="#ece7dd" strokeWidth="10" />
+              <circle cx="96" cy="96" r={RING_RADIUS} fill="none" stroke="var(--ring-track)" strokeWidth="10" />
               <circle
                 cx="96"
                 cy="96"

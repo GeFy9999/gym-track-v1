@@ -127,28 +127,47 @@ export default function TourOverlay({ tourKey, steps, refs }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
 
+  // A rotation or window resize moves the layout under the highlight: bring
+  // the target back on-screen (it can end up below the fold after rotating)
+  // and re-measure it.
   useEffect(() => {
     const handleResize = () => {
       if (step === null) return;
       const el = findTarget(steps[step]);
       if (!el) return;
+      const before = el.getBoundingClientRect();
+      if (
+        before.top < EDGE_MARGIN ||
+        before.bottom > window.innerHeight - EDGE_MARGIN
+      ) {
+        el.scrollIntoView({ behavior: "auto", block: "center" });
+      }
       const r = el.getBoundingClientRect();
       setRect({ top: r.top, left: r.left, width: r.width, height: r.height });
     };
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    window.addEventListener("orientationchange", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("orientationchange", handleResize);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step, steps, refs]);
 
   // Measure the tooltip's real height (it varies with text length and
   // screen width) before paint, so the position calculation below never has
   // to guess — a guess is what let the tooltip cover the highlighted zone
-  // on narrower/shorter phone screens.
+  // on narrower/shorter phone screens. A ResizeObserver also catches the
+  // height changing when the tooltip itself gets narrower or wider (moved
+  // beside the target, screen rotated).
   useLayoutEffect(() => {
-    if (tooltipRef.current) {
-      setTooltipHeight(tooltipRef.current.offsetHeight);
-    }
-  }, [step, rect]);
+    const el = tooltipRef.current;
+    if (!el) return;
+    setTooltipHeight(el.offsetHeight);
+    const observer = new ResizeObserver(() => setTooltipHeight(el.offsetHeight));
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [step, rect === null]);
 
   const next = () => {
     if (step === null) return;
@@ -165,30 +184,57 @@ export default function TourOverlay({ tourKey, steps, refs }: Props) {
   // window, where it would float far from it. On a phone it simply spans
   // the screen. The highlighted box needs none of this: its rect comes from
   // getBoundingClientRect(), already viewport-relative.
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
   const TOOLTIP_COLUMN_MAX_WIDTH = 430;
-  const columnWidth = Math.min(window.innerWidth, TOOLTIP_COLUMN_MAX_WIDTH);
-  const columnLeft = Math.max(
+  const columnWidth = Math.min(viewportWidth, TOOLTIP_COLUMN_MAX_WIDTH);
+  let columnLeft = Math.max(
     0,
     Math.min(
       rect.left + rect.width / 2 - columnWidth / 2,
-      window.innerWidth - columnWidth,
+      viewportWidth - columnWidth,
     ),
   );
 
   const forceAbove = steps[step].tooltipPosition === "above";
-  const spaceBelow = window.innerHeight - (rect.top + rect.height) - EDGE_MARGIN;
+  const spaceBelow = viewportHeight - (rect.top + rect.height) - EDGE_MARGIN;
   const spaceAbove = rect.top - EDGE_MARGIN;
+  const fitsAbove = spaceAbove >= tooltipHeight + EDGE_MARGIN;
+  const fitsBelow = spaceBelow >= tooltipHeight + EDGE_MARGIN;
   const placeAbove =
-    forceAbove || (spaceBelow < tooltipHeight && spaceAbove > spaceBelow);
+    forceAbove || (!fitsBelow && (fitsAbove || spaceAbove > spaceBelow));
 
   let tooltipTop = placeAbove
     ? rect.top - tooltipHeight - EDGE_MARGIN
     : rect.top + rect.height + EDGE_MARGIN;
+
+  // On a short, wide screen (phone in landscape) the tooltip often fits
+  // neither above nor below the target, and clamping it on-screen would
+  // cover what it points at. Put it beside the target instead, when there's
+  // room for a readable column on that side.
+  const SIDE_MIN_WIDTH = 280;
+  const spaceRight = viewportWidth - (rect.left + rect.width) - EDGE_MARGIN;
+  const spaceLeft = rect.left - EDGE_MARGIN;
+  const sideSpace = Math.max(spaceLeft, spaceRight);
+  const placeBeside =
+    !fitsAbove && !fitsBelow && sideSpace >= SIDE_MIN_WIDTH;
+  let tooltipWidth = columnWidth;
+  if (placeBeside) {
+    // 384 = the card's own max-w-sm, so it sits right against the target.
+    tooltipWidth = Math.min(sideSpace, 384);
+    columnLeft =
+      spaceRight >= spaceLeft
+        ? rect.left + rect.width + EDGE_MARGIN / 2
+        : rect.left - tooltipWidth - EDGE_MARGIN / 2;
+    tooltipTop = rect.top + rect.height / 2 - tooltipHeight / 2;
+  }
+
   // Final clamp so the tooltip always stays fully on-screen, even if it's
-  // taller than the space on either side (a short/narrow phone viewport).
+  // taller than the space on either side (a short/narrow phone viewport) —
+  // and past that, it scrolls (maxHeight below) rather than overflowing.
   tooltipTop = Math.max(
     EDGE_MARGIN,
-    Math.min(tooltipTop, window.innerHeight - tooltipHeight - EDGE_MARGIN),
+    Math.min(tooltipTop, viewportHeight - tooltipHeight - EDGE_MARGIN),
   );
 
   return (
@@ -205,12 +251,15 @@ export default function TourOverlay({ tourKey, steps, refs }: Props) {
       />
 
       <div
-        className="absolute px-5 transition-all duration-300"
-        style={{ top: tooltipTop, left: columnLeft, width: columnWidth }}
+        className={`absolute transition-all duration-300 ${
+          placeBeside ? "" : "px-5"
+        }`}
+        style={{ top: tooltipTop, left: columnLeft, width: tooltipWidth }}
       >
         <div
           ref={tooltipRef}
-          className="bg-white rounded-2xl p-5 max-w-sm mx-auto shadow-xl"
+          className="bg-white rounded-2xl p-5 max-w-sm mx-auto shadow-xl overflow-y-auto overscroll-contain"
+          style={{ maxHeight: viewportHeight - EDGE_MARGIN * 2 }}
         >
           <div className="flex items-center gap-2 mb-1">
             {steps.map((_, i) => (

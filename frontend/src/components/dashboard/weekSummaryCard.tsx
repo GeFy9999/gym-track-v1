@@ -30,7 +30,7 @@ export default function WeekSummaryCard({ completed, total }: Props) {
               cy="40"
               r={ringRadius}
               fill="none"
-              stroke="#d6d0c1"
+              stroke="var(--ring-track-soft)"
               strokeWidth="8"
             />
             <circle

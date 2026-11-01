@@ -890,8 +890,10 @@ export default function DashboardPage() {
         <div className="fixed inset-0 bg-[#faf6f1] z-50 flex flex-col items-center justify-center-safe overflow-y-auto py-8 px-8 animate-fade-in">
           <img
             src="/LogoGymsTrack5.webp"
+            width={506}
+            height={192}
             alt="GymsTrack"
-            className="h-20 mb-6"
+            className="h-20 w-auto mb-6"
           />
           <h1 className="text-2xl font-black text-gray-900 text-center mb-2">
             {t("dashboard.welcome.title", { name: userName })}
