@@ -5,10 +5,12 @@ import { BrowserRouter } from "react-router-dom";
 // every visitor's IP address to Google.
 import "@fontsource-variable/outfit";
 import "./index.css";
+import "./theme-dark.css";
 import i18n from "./i18n";
 import App from "./App.tsx";
 import { initSyncQueue } from "./lib/syncQueue";
 import { trackApiRequests } from "./lib/networkActivity";
+import { initTheme } from "./lib/theme";
 
 // A signed-in account's saved language always wins over whatever the browser
 // locale detector guessed, so a returning user sees their own preference
@@ -23,6 +25,7 @@ try {
   // Corrupt localStorage shouldn't block the app from booting.
 }
 
+initTheme();
 trackApiRequests();
 initSyncQueue();
 

@@ -218,7 +218,33 @@ sessionsRouter.get(
       const userId = req.userId!;
       const exerciseId = req.params.exerciseId as string;
       const history = await getUserExerciseHistory(userId, exerciseId);
-      return res.status(200).json(history);
+
+      // The weight chart is free for the last 90 days, like History. Older
+      // points never leave the server for a free user — only how many there
+      // are, so the app can show a locked section in their place. The
+      // Pro-only records (by reps, volume and 1RM charts) aren't sent at
+      // all: the app shows a fixed example behind the blur instead.
+      const user = await prisma.user.findUnique({ where: { id: userId } });
+      if (!user?.isPro) {
+        const cutoff = freeHistoryCutoff().getTime();
+        const all = history.records.weightOverTime;
+        const recent = all.filter((p) => new Date(p.date).getTime() >= cutoff);
+        return res.status(200).json({
+          ...history,
+          records: {
+            ...history.records,
+            byReps: [],
+            volumeOverTime: [],
+            oneRepMaxOverTime: [],
+            weightOverTime: recent,
+            weightOverTimeLockedCount: all.length - recent.length,
+          },
+        });
+      }
+      return res.status(200).json({
+        ...history,
+        records: { ...history.records, weightOverTimeLockedCount: 0 },
+      });
     } catch (error) {
       return sendServerError(res, error);
     }

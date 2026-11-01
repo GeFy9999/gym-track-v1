@@ -23,8 +23,10 @@ export default function PrivacyPolicyPage() {
       <div className="text-center mb-6">
         <img
           src="/LogoGymsTrack5.webp"
+          width={506}
+          height={192}
           alt="GymsTrack"
-          className="h-14 mx-auto"
+          className="h-14 w-auto mx-auto"
         />
       </div>
 

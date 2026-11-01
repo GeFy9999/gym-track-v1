@@ -374,6 +374,9 @@
       "progressionTitle": "Progression vs dernière fois",
       "continue": "Continuer"
     },
+    "editingPastHint": "Modification d'une séance passée : corrige les poids, reps et sets. Tout est enregistré automatiquement.",
+    "pastSessionUpdated": "Séance mise à jour",
+    "setTypeTitle": "Type de set",
     "setTypeOptions": {
       "normal": "Set normal",
       "warmup": "Set d'échauffement",
@@ -424,6 +427,12 @@
     "preferences": "Préférences",
     "weightUnit": "Unité de poids",
     "language": "Langue",
+    "theme": "Thème",
+    "themeOptions": {
+      "light": "Clair",
+      "dark": "Sombre",
+      "system": "Auto"
+    },
     "training": "Entraînement",
     "restTimerAuto": "Minuteur de repos automatique",
     "restTimerAutoDesc": "Démarre dès qu'un set est marqué complété",
@@ -553,6 +562,10 @@
     "rep_one": "rep",
     "rep_other": "reps",
     "volumeTotal": "Volume total",
+    "weightTitle": "Poids",
+    "heaviestSet": "Set le plus lourd ({{unit}})",
+    "weightFreeLimit": "3 mois max",
+    "weightFreeMention": "Gratuit : 3 derniers mois · Pro : tout l'historique",
     "perSession": "Par séance ({{unit}})",
     "oneRepMaxTitle": "1RM estimé",
     "bestSet": "Meilleur set ({{unit}})",
@@ -820,5 +833,32 @@
       "privacy": "Politique de confidentialité"
     },
     "restoreNone": "Aucun achat actif trouvé pour ce compte."
+  },
+  "presets": {
+    "title": "Presets",
+    "button": "Preset",
+    "new": "Nouveau preset",
+    "newTitle": "Nouveau preset",
+    "editTitle": "Modifier le preset",
+    "defaultName": "Preset",
+    "name": "Nom",
+    "exercisesCount_one": "{{count}} exercice",
+    "exercisesCount_other": "{{count}} exercices",
+    "emptyHint": "Ajoute des exercices depuis la liste ci-dessous.",
+    "emptyGroup": "Aucun preset pour {{group}}. Crée une liste d'exercices à charger en un tap dans tes séances.",
+    "noneYet": "Aucun preset pour ce groupe. Crée-en un : les exercices déjà dans la séance seront gardés dans « Preset 1 ».",
+    "switchHint": "Changer de preset remplace les exercices pas encore commencés. Ceux de la séance sont gardés dans un preset s'ils n'en ont pas.",
+    "moveUp": "Monter",
+    "moveDown": "Descendre",
+    "remove": "Retirer",
+    "rename": "Renommer",
+    "delete": "Supprimer le preset",
+    "confirmDelete": "Confirmer la suppression",
+    "save": "Enregistrer",
+    "saveError": "Impossible d'enregistrer le preset. Réessaie.",
+    "created": "Preset créé",
+    "saved": "Preset enregistré",
+    "deleted": "Preset supprimé",
+    "switched": "Preset « {{name}} » chargé"
   }
 }

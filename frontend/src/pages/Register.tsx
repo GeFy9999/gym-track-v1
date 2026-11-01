@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+// zod/mini: same checks as classic zod, a fraction of the bundle size.
+import * as z from "zod/mini";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "react-i18next";
 import { Eye, EyeOff, User, Mail, Lock } from "lucide-react";
@@ -56,27 +57,31 @@ export default function RegisterPage() {
 
   const registerSchema = z
     .object({
-      name: z
-        .string()
-        .min(2, t("register.errors.nameMin"))
-        .max(50, t("register.errors.nameMax")),
-      email: z
-        .string()
-        .min(1, t("register.errors.emailRequired"))
-        .email(t("register.errors.emailInvalid")),
-      password: z
-        .string()
-        .min(8, t("register.errors.passwordMin"))
-        .regex(/[A-Z]/, t("register.errors.passwordUppercase"))
-        .regex(/[a-z]/, t("register.errors.passwordLowercase"))
-        .regex(/[0-9]/, t("register.errors.passwordDigit"))
-        .regex(/[^A-Za-z0-9]/, t("register.errors.passwordSpecial")),
-      confirmPassword: z.string().min(1, t("register.errors.confirmRequired")),
+      name: z.string().check(
+        z.minLength(2, t("register.errors.nameMin")),
+        z.maxLength(50, t("register.errors.nameMax")),
+      ),
+      email: z.string().check(
+        z.minLength(1, t("register.errors.emailRequired")),
+        z.email(t("register.errors.emailInvalid")),
+      ),
+      password: z.string().check(
+        z.minLength(8, t("register.errors.passwordMin")),
+        z.regex(/[A-Z]/, t("register.errors.passwordUppercase")),
+        z.regex(/[a-z]/, t("register.errors.passwordLowercase")),
+        z.regex(/[0-9]/, t("register.errors.passwordDigit")),
+        z.regex(/[^A-Za-z0-9]/, t("register.errors.passwordSpecial")),
+      ),
+      confirmPassword: z.string().check(
+        z.minLength(1, t("register.errors.confirmRequired")),
+      ),
     })
-    .refine((data) => data.password === data.confirmPassword, {
-      message: t("register.errors.passwordMismatch"),
-      path: ["confirmPassword"],
-    });
+    .check(
+      z.refine((data) => data.password === data.confirmPassword, {
+        message: t("register.errors.passwordMismatch"),
+        path: ["confirmPassword"],
+      }),
+    );
 
   const {
     register,
@@ -136,8 +141,10 @@ export default function RegisterPage() {
       >
         <img
           src="/LogoGymsTrack5.webp"
+          width={506}
+          height={192}
           alt="GymsTrack"
-          className="h-16 mx-auto mb-3"
+          className="h-16 w-auto mx-auto mb-3"
         />
         <p className="text-xs font-bold text-white/60 uppercase tracking-widest">
           {t("register.subtitle")}

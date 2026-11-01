@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+// zod/mini: same checks as classic zod, a fraction of the bundle size.
+import * as z from "zod/mini";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Lock } from "lucide-react";
 import { API_URL } from "../lib/api";
@@ -33,19 +34,23 @@ export default function ResetPasswordPage() {
 
   const resetSchema = z
     .object({
-      password: z
-        .string()
-        .min(8, t("resetPassword.errors.minLength"))
-        .regex(/[A-Z]/, t("resetPassword.errors.uppercase"))
-        .regex(/[a-z]/, t("resetPassword.errors.lowercase"))
-        .regex(/[0-9]/, t("resetPassword.errors.digit"))
-        .regex(/[^A-Za-z0-9]/, t("resetPassword.errors.special")),
-      confirm: z.string().min(1, t("resetPassword.errors.confirmRequired")),
+      password: z.string().check(
+        z.minLength(8, t("resetPassword.errors.minLength")),
+        z.regex(/[A-Z]/, t("resetPassword.errors.uppercase")),
+        z.regex(/[a-z]/, t("resetPassword.errors.lowercase")),
+        z.regex(/[0-9]/, t("resetPassword.errors.digit")),
+        z.regex(/[^A-Za-z0-9]/, t("resetPassword.errors.special")),
+      ),
+      confirm: z.string().check(
+        z.minLength(1, t("resetPassword.errors.confirmRequired")),
+      ),
     })
-    .refine((data) => data.password === data.confirm, {
-      message: t("resetPassword.errors.mismatch"),
-      path: ["confirm"],
-    });
+    .check(
+      z.refine((data) => data.password === data.confirm, {
+        message: t("resetPassword.errors.mismatch"),
+        path: ["confirm"],
+      }),
+    );
 
   const {
     register,
@@ -97,8 +102,10 @@ export default function ResetPasswordPage() {
       <div className="min-h-screen bg-[#faf6f1] flex flex-col items-center pt-16 px-page-narrow">
         <img
           src="/LogoGymsTrack5.webp"
+          width={506}
+          height={192}
           alt="GymsTrack"
-          className="h-14 mx-auto mb-6"
+          className="h-14 w-auto mx-auto mb-6"
         />
         <div className="w-14 h-14 rounded-full bg-[#3a9e6e]/10 flex items-center justify-center mb-4">
           <Lock size={24} className="text-[#3a9e6e]" />
@@ -124,8 +131,10 @@ export default function ResetPasswordPage() {
       <div className="text-center mb-8">
         <img
           src="/LogoGymsTrack5.webp"
+          width={506}
+          height={192}
           alt="GymsTrack"
-          className="h-14 mx-auto mb-6"
+          className="h-14 w-auto mx-auto mb-6"
         />
       </div>
 

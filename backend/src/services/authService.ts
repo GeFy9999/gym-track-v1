@@ -221,6 +221,8 @@ export const deleteAccount = async (userId: string) => {
   await prisma.trackedExercise.deleteMany({ where: { userId } });
   await prisma.exerciseNote.deleteMany({ where: { userId } });
   await prisma.exerciseLoadingType.deleteMany({ where: { userId } });
+  // Their items go with them (cascade).
+  await prisma.exercisePreset.deleteMany({ where: { userId } });
   await prisma.progressPhoto.deleteMany({ where: { userId } });
   // Their custom exercises go too — except one another user still
   // references (possible from before custom exercises were private), which

@@ -196,7 +196,7 @@ export default function ProgressChart() {
             y1={0}
             x2={getX(activeIndex)}
             y2={chartHeight}
-            stroke="#d1d5db"
+            stroke="var(--chart-guide)"
             strokeWidth="1"
             strokeDasharray="4 4"
           />
@@ -208,8 +208,8 @@ export default function ProgressChart() {
             cx={getX(i)}
             cy={getY(e.value)}
             r={activeIndex === i ? 6 : 4}
-            fill={activeIndex === i ? "white" : "#c9552c"}
-            stroke={activeIndex === i ? "#c9552c" : "#faf6f1"}
+            fill={activeIndex === i ? "var(--chart-dot-ring)" : "#c9552c"}
+            stroke={activeIndex === i ? "#c9552c" : "var(--chart-dot-ring)"}
             strokeWidth="2"
           />
         ))}

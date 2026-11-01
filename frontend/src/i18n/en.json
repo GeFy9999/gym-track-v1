@@ -374,6 +374,9 @@
       "progressionTitle": "Progress vs last time",
       "continue": "Continue"
     },
+    "editingPastHint": "Editing a past session: fix weights, reps and sets. Everything is saved automatically.",
+    "pastSessionUpdated": "Session updated",
+    "setTypeTitle": "Set type",
     "setTypeOptions": {
       "normal": "Normal set",
       "warmup": "Warm-up set",
@@ -424,6 +427,12 @@
     "preferences": "Preferences",
     "weightUnit": "Weight unit",
     "language": "Language",
+    "theme": "Theme",
+    "themeOptions": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "Auto"
+    },
     "training": "Training",
     "restTimerAuto": "Automatic rest timer",
     "restTimerAutoDesc": "Starts as soon as a set is marked complete",
@@ -553,6 +562,10 @@
     "rep_one": "rep",
     "rep_other": "reps",
     "volumeTotal": "Total volume",
+    "weightTitle": "Weight",
+    "heaviestSet": "Heaviest set ({{unit}})",
+    "weightFreeLimit": "3 months max",
+    "weightFreeMention": "Free: last 3 months · Pro: full history",
     "perSession": "Per session ({{unit}})",
     "oneRepMaxTitle": "Estimated 1RM",
     "bestSet": "Best set ({{unit}})",
@@ -820,5 +833,32 @@
       "privacy": "Privacy Policy"
     },
     "restoreNone": "No active purchase found for this account."
+  },
+  "presets": {
+    "title": "Presets",
+    "button": "Preset",
+    "new": "New preset",
+    "newTitle": "New preset",
+    "editTitle": "Edit preset",
+    "defaultName": "Preset",
+    "name": "Name",
+    "exercisesCount_one": "{{count}} exercise",
+    "exercisesCount_other": "{{count}} exercises",
+    "emptyHint": "Add exercises from the list below.",
+    "emptyGroup": "No presets for {{group}} yet. Create a list of exercises to load into your sessions in one tap.",
+    "noneYet": "No presets for this group yet. Create one: the exercises already in the session are kept in “Preset 1”.",
+    "switchHint": "Switching presets replaces the exercises you haven't started. The session's current exercises are kept in a preset if they aren't in one.",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "remove": "Remove",
+    "rename": "Rename",
+    "delete": "Delete preset",
+    "confirmDelete": "Confirm delete",
+    "save": "Save",
+    "saveError": "Couldn't save the preset. Try again.",
+    "created": "Preset created",
+    "saved": "Preset saved",
+    "deleted": "Preset deleted",
+    "switched": "Preset “{{name}}” loaded"
   }
 }
