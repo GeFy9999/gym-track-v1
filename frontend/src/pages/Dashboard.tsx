@@ -21,6 +21,7 @@ import {
 } from "../lib/syncQueue";
 import { useToast } from "../hooks/useToast";
 import Toast from "../components/Toast";
+import { askForReview, shouldAskForReview } from "../lib/appReview";
 import {
   clearFinishedExercises,
   unmarkExercisesFinished,
@@ -108,6 +109,9 @@ export default function DashboardPage() {
     () => !!(location.state as DashboardLocationState)?.highlightFinishSession,
   );
   const finishButtonRef = useRef<HTMLDivElement>(null);
+  // Set when the workout just ended earns a store review request, asked once
+  // its recap is closed rather than on top of it.
+  const askReviewAfterSummary = useRef(false);
 
   // Drop the navigation state so a reload doesn't replay the animations.
   useEffect(() => {
@@ -460,6 +464,12 @@ export default function DashboardPage() {
         // done before has no prior record to beat, so it shouldn't count
         // as a PR the very first time it's logged.
         const hadPriorRecord = new Set(Object.keys(bestByExercise));
+
+        const workoutDays = new Set(
+          completedSessions.map((s) => new Date(s.date).toDateString()),
+        );
+        workoutDays.add(new Date().toDateString());
+        askReviewAfterSummary.current = shouldAskForReview(workoutDays.size);
 
         const findPreviousMax = (exerciseId: string): number | null => {
           for (const session of completedSessions) {
@@ -1019,7 +1029,13 @@ export default function DashboardPage() {
           totalExercises={workoutSummary.totalExercises}
           prs={workoutSummary.prs}
           exerciseDeltas={workoutSummary.exerciseDeltas}
-          onClose={() => setWorkoutSummary(null)}
+          onClose={() => {
+            setWorkoutSummary(null);
+            if (askReviewAfterSummary.current) {
+              askReviewAfterSummary.current = false;
+              askForReview();
+            }
+          }}
         />
       )}
     </div>
