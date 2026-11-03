@@ -21,6 +21,7 @@ import {
   ArrowRight,
   Sparkles,
   Moon,
+  Star,
 } from "lucide-react";
 import { getDateLocale } from "../i18n";
 import { useProfileSettings } from "../hooks/useProfileSettings";
@@ -31,6 +32,7 @@ import {
 } from "../lib/theme";
 import TourOverlay from "../components/TourOverlay";
 import LoyaltyTierBanner from "../components/LoyaltyTierBanner";
+import { canRateApp, openStoreListing } from "../lib/appReview";
 
 // Annual renewals are worth far more than monthly ones, so the loyalty
 // discount scales up accordingly: -$0.10/renewal (max -$1) monthly,
@@ -391,7 +393,9 @@ export default function ProfilePage() {
       <div className="bg-[#ece7dd] rounded-2xl mb-6 shadow-sm">
         <button
           onClick={() => navigate("/import")}
-          className="w-full flex items-center gap-3 px-4 py-4"
+          className={`w-full flex items-center gap-3 px-4 py-4 ${
+            canRateApp() ? "border-b border-black/5" : ""
+          }`}
         >
           <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <Download size={16} className="text-[#c9552c]" />
@@ -404,6 +408,21 @@ export default function ProfilePage() {
           </span>
           <ChevronRight size={16} className="text-[#c9552c] flex-shrink-0" />
         </button>
+
+        {canRateApp() && (
+          <button
+            onClick={openStoreListing}
+            className="w-full flex items-center gap-3 px-4 py-4"
+          >
+            <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
+              <Star size={16} className="text-[#c9552c]" />
+            </div>
+            <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
+              {t("profile.rateApp")}
+            </p>
+            <ChevronRight size={16} className="text-[#c9552c] flex-shrink-0" />
+          </button>
+        )}
       </div>
 
       {/* Compte */}
