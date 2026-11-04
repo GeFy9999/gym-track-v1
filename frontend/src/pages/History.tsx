@@ -12,7 +12,6 @@ import {
   Calendar as CalendarIcon,
   List,
   Crown,
-  Clock,
 } from "lucide-react";
 import { API_URL } from "../lib/api";
 import { getPageCache, setPageCache } from "../lib/pageCache";
@@ -654,38 +653,37 @@ export default function HistoryPage() {
                       <button
                         onClick={() => setOpenWeek(isOpen ? null : week.label)}
                         className="w-full flex items-center justify-between px-4 py-4"
+                        style={{ background: "#191714" }}
                       >
                         <div className="text-left">
                           <p
                             className={`text-sm font-black uppercase tracking-wide ${
-                              totalSessions > 0
-                                ? "text-gray-900"
-                                : "text-gray-400"
+                              totalSessions > 0 ? "text-white" : "text-white/40"
                             }`}
                           >
                             {week.label}
                           </p>
                           {totalSessions > 0 ? (
                             <div className="flex items-center gap-1.5 mt-2">
-                              <span className="text-[10px] font-bold uppercase tracking-wide text-gray-600 bg-white/60 px-2.5 py-1 rounded-full">
+                              <span className="text-[10px] font-bold uppercase tracking-wide text-white/80 bg-white/10 px-2.5 py-1 rounded-full">
                                 {t("history.sessionsCount", {
                                   count: totalSessions,
                                 })}
                               </span>
-                              <span className="text-[10px] font-bold uppercase tracking-wide text-gray-600 bg-white/60 px-2.5 py-1 rounded-full">
+                              <span className="text-[10px] font-bold uppercase tracking-wide text-white/80 bg-white/10 px-2.5 py-1 rounded-full">
                                 {t("history.setsCount", { count: totalSets })}
                               </span>
                             </div>
                           ) : (
-                            <p className="text-xs text-gray-400 mt-1">
+                            <p className="text-xs text-white/40 mt-1">
                               {t("history.noSession")}
                             </p>
                           )}
                         </div>
-                        <div className="w-8 h-8 rounded-full bg-white/60 flex items-center justify-center flex-shrink-0">
+                        <div className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
                           <ChevronDown
                             size={16}
-                            className={`text-gray-500 transition-transform duration-200 ${
+                            className={`text-white transition-transform duration-200 ${
                               isOpen ? "rotate-180" : ""
                             }`}
                           />
@@ -693,7 +691,7 @@ export default function HistoryPage() {
                       </button>
 
                       {isOpen && totalSessions > 0 && (
-                        <div className="px-3 pb-3 space-y-2">
+                        <div className="p-3 space-y-2">
                           {groupSessionsByDay(week.sessions).map(
                             (day, di) => {
                               const dayNum = day.date.getDate();
@@ -704,70 +702,30 @@ export default function HistoryPage() {
                                   })
                                   .replace(".", ""),
                               );
-                              const fullDateStr = capitalize(
-                                day.date.toLocaleDateString(getDateLocale(), {
-                                  day: "numeric",
-                                  month: "long",
-                                }),
-                              );
-                              // Every muscle-group session finished together
-                              // in the same "finish session" tap carries the
-                              // same elapsed time — take the max so one
-                              // missing/older value (e.g. finished via the
-                              // abandoned-session prompt, which has none)
-                              // can't zero out the rest.
-                              const dayDurationMinutes = day.sessions.reduce(
-                                (max, s) =>
-                                  s.durationMinutes && s.durationMinutes > max
-                                    ? s.durationMinutes
-                                    : max,
-                                0,
-                              );
-
                               return (
                                 <div
                                   key={day.dateKey}
                                   ref={
                                     wi === 0 && di === 0 ? ref2 : undefined
                                   }
-                                  className="bg-white rounded-2xl shadow-sm overflow-hidden"
+                                  className="bg-white rounded-2xl shadow-sm overflow-hidden flex items-stretch"
                                 >
-                                  {/* The dark date block spans the card's
-                                      whole top, as a band. */}
-                                  <div
-                                    className="flex items-center gap-3 px-3 py-2"
-                                    style={{ background: "#191714" }}
-                                  >
-                                    <div className="w-11 flex flex-col items-center justify-center flex-shrink-0">
-                                      <span className="text-sm font-black text-white leading-none">
-                                        {dayNum}
-                                      </span>
-                                      <span className="text-[8px] font-bold text-white/50 uppercase leading-none mt-0.5">
-                                        {dayAbbrev}
-                                      </span>
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                      <p className="text-xs font-semibold text-white/60 uppercase">
-                                        {fullDateStr}
-                                      </p>
-                                      {dayDurationMinutes > 0 && (
-                                        <p className="flex items-center gap-1 text-[11px] font-bold text-[#c9552c] uppercase mt-0.5">
-                                          <Clock size={11} />
-                                          {formatWorkoutDuration(
-                                            dayDurationMinutes,
-                                          )}
-                                        </p>
-                                      )}
-                                    </div>
+                                  <div className="w-14 flex flex-col items-center justify-center flex-shrink-0 py-3 border-r border-gray-100">
+                                    <span className="text-xl font-black text-gray-900 leading-none">
+                                      {dayNum}
+                                    </span>
+                                    <span className="text-[9px] font-bold text-[#c9552c] uppercase leading-none mt-1">
+                                      {dayAbbrev}
+                                    </span>
                                   </div>
 
-                                  <div className="divide-y divide-gray-100">
+                                  <div className="flex-1 min-w-0 divide-y divide-gray-100">
                                     {day.sessions.map((session) => {
                                       if (session.locked) {
                                         return (
                                           <div
                                             key={session.id}
-                                            className="relative flex items-center gap-3 px-3 py-2.5"
+                                            className="relative flex items-center gap-3 px-4 py-3"
                                           >
                                             <div
                                               aria-hidden
@@ -813,7 +771,7 @@ export default function HistoryPage() {
                                               `/session/${session.id}?readonly=true`,
                                             )
                                           }
-                                          className="w-full flex items-center gap-3 px-3 py-2.5 active:bg-gray-50 transition-colors"
+                                          className="w-full flex items-center gap-3 px-4 py-3 active:bg-gray-50 transition-colors"
                                         >
                                           <div className="text-left flex-1 min-w-0">
                                             <p className="text-sm font-bold text-gray-900 uppercase truncate">
@@ -826,6 +784,14 @@ export default function HistoryPage() {
                                               {t("history.exerciseCount", {
                                                 count: exerciseCount,
                                               })}
+                                              {session.durationMinutes ? (
+                                                <span className="text-[#c9552c] font-bold">
+                                                  {" · "}
+                                                  {formatWorkoutDuration(
+                                                    session.durationMinutes,
+                                                  )}
+                                                </span>
+                                              ) : null}
                                             </p>
                                           </div>
                                           <ChevronRight
