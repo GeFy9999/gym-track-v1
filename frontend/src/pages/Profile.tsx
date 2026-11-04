@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { formatAmount } from "../utils/units";
+import {
+  BASE_PRICES,
+  formatMoney,
+  useStorePrices,
+} from "../lib/storePrices";
 import { useTranslation } from "react-i18next";
 import {
   Mail,
@@ -41,10 +45,6 @@ const LOYALTY_CENTS_PER_PERIOD_MONTHLY = 10;
 const LOYALTY_MAX_CENTS_MONTHLY = 100;
 const LOYALTY_CENTS_PER_PERIOD_YEARLY = 100;
 const LOYALTY_MAX_CENTS_YEARLY = 300;
-// Regular prices, for the Google Play loyalty tier's new price (kept in sync
-// with pages/Upgrade.tsx).
-const MONTHLY_PRICE_CENTS = 499;
-const ANNUAL_PRICE_CENTS = 2999;
 const LOYALTY_MAX_PERIODS_MONTHLY = 10;
 const LOYALTY_MAX_PERIODS_YEARLY = 3;
 
@@ -54,6 +54,8 @@ export default function ProfilePage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [theme, setTheme] = useState<ThemePreference>(getThemePreference);
+  // Loyalty amounts in the currency Google Play charges this user.
+  const storePrices = useStorePrices();
   const {
     user,
     initials,
@@ -137,7 +139,7 @@ export default function ProfilePage() {
       {isPro ? (
         <div className="bg-[#ece7dd] rounded-2xl mb-6 shadow-sm px-4 py-4">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
+            <div className="icon-tile w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
               <Crown size={16} className="text-[#c9552c]" />
             </div>
             <div className="flex-1 min-w-0">
@@ -186,7 +188,7 @@ export default function ProfilePage() {
                   {t("profile.upTo")}
                 </span>
                 <span className="text-2xl font-black text-white leading-none whitespace-nowrap">
-                  -3,00$
+                  -{formatMoney(3, storePrices, "annual")}
                 </span>
               </div>
               <p className="text-sm font-bold text-white leading-snug relative">
@@ -194,7 +196,7 @@ export default function ProfilePage() {
               </p>
             </div>
             <div className="bg-[#ece7dd] px-4 py-4 flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
+              <div className="icon-tile w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
                 <Crown size={16} className="text-[#c9552c]" />
               </div>
               <p className="flex-1 text-sm font-bold text-gray-900 uppercase">
@@ -216,6 +218,8 @@ export default function ProfilePage() {
         user?.proCurrentPeriodEnd &&
         (() => {
           const isYearly = user?.proInterval === "year";
+          const money = (cents: number) =>
+            formatMoney(cents / 100, storePrices, isYearly ? "annual" : "monthly");
           const loyaltyCentsPerPeriod = isYearly
             ? LOYALTY_CENTS_PER_PERIOD_YEARLY
             : LOYALTY_CENTS_PER_PERIOD_MONTHLY;
@@ -297,7 +301,7 @@ export default function ProfilePage() {
                   </p>
                   <p className="flex items-baseline gap-2 mt-0.5">
                     <span className="text-[34px] leading-tight font-black text-white whitespace-nowrap">
-                      -{formatAmount(loyaltyActiveDiscountCents / 100)}$
+                      -{money(loyaltyActiveDiscountCents)}
                     </span>
                     <span className="text-[10px] font-bold text-white/80 uppercase tracking-wide">
                       {t("profile.loyaltyActuel")}
@@ -306,13 +310,13 @@ export default function ProfilePage() {
                   <p className="text-xs text-white/85 mt-1">
                     {atMax ? (
                       t("profile.loyaltyMaxed", {
-                        amount: formatAmount(loyaltyMaxCents / 100),
+                        amount: money(loyaltyMaxCents),
                       })
                     ) : (
                       <>
                         {t("profile.loyaltyRemainingLead", { count: remainingCount })}{" "}
                         <span className="font-black text-white">
-                          -{formatAmount(loyaltyMaxCents / 100)}$
+                          -{money(loyaltyMaxCents)}
                         </span>
                       </>
                     )}
@@ -340,11 +344,11 @@ export default function ProfilePage() {
                       </div>
                       <div className="flex items-center gap-2 flex-shrink-0">
                         <span className="text-xs font-semibold text-gray-400 line-through">
-                          -{formatAmount(loyaltyDiscountCents / 100)}$
+                          -{money(loyaltyDiscountCents)}
                         </span>
                         <ArrowRight size={13} className="text-gray-700 flex-shrink-0" />
                         <span className="text-sm font-black text-white bg-[#23784d] px-3 py-1.5 rounded-full whitespace-nowrap">
-                          -{formatAmount(nextDiscountCents / 100)}$
+                          -{money(nextDiscountCents)}
                         </span>
                       </div>
                     </div>
@@ -355,7 +359,12 @@ export default function ProfilePage() {
                       upgradeProductId={user.loyaltyUpgradeProductId}
                       onActivated={() => refreshUntilOnProduct(user.loyaltyUpgradeProductId)}
                       currentProductId={user.proProductId}
-                      newPriceLabel={`${formatAmount(((isYearly ? ANNUAL_PRICE_CENTS : MONTHLY_PRICE_CENTS) - loyaltyDiscountCents) / 100)}$${isYearly ? t("upgrade.perYear") : t("upgrade.perMonth")}`}
+                      newPriceLabel={`${formatMoney(
+                        BASE_PRICES[isYearly ? "annual" : "monthly"] -
+                          loyaltyDiscountCents / 100,
+                        storePrices,
+                        isYearly ? "annual" : "monthly",
+                      )}${isYearly ? t("upgrade.perYear") : t("upgrade.perMonth")}`}
                     />
                   )}
                 </div>
@@ -373,7 +382,7 @@ export default function ProfilePage() {
           onClick={() => navigate(isPro ? "/progression" : "/upgrade")}
           className="w-full flex items-center gap-3 px-4 py-4"
         >
-          <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
+          <div className="icon-tile w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <Camera size={16} className="text-[#c9552c]" />
           </div>
           <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
@@ -397,7 +406,7 @@ export default function ProfilePage() {
             canRateApp() ? "border-b border-black/5" : ""
           }`}
         >
-          <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
+          <div className="icon-tile w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <Download size={16} className="text-[#c9552c]" />
           </div>
           <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
@@ -414,7 +423,7 @@ export default function ProfilePage() {
             onClick={openStoreListing}
             className="w-full flex items-center gap-3 px-4 py-4"
           >
-            <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
+            <div className="icon-tile w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
               <Star size={16} className="text-[#c9552c]" />
             </div>
             <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
@@ -431,7 +440,7 @@ export default function ProfilePage() {
       </p>
       <div ref={tourRef1} className="bg-[#ece7dd] rounded-2xl mb-6 shadow-sm">
         <div className="w-full flex items-center gap-3 px-4 py-4 border-b border-black/5">
-          <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
+          <div className="icon-tile w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <Mail size={16} className="text-[#c9552c]" />
           </div>
           <div className="flex-1 text-left min-w-0">
@@ -451,13 +460,13 @@ export default function ProfilePage() {
           }}
           className="w-full flex items-center gap-3 px-4 py-4 border-b border-black/5"
         >
-          <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
+          <div className="icon-tile w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <Lock size={16} className="text-[#c9552c]" />
           </div>
           <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
             {t("profile.password")}
           </p>
-          <span className="text-[10px] font-bold uppercase bg-[#c9552c]/10 text-[#c9552c] px-2.5 py-1 rounded-full whitespace-nowrap">
+          <span className="text-[10px] font-bold uppercase bg-white/60 text-gray-600 px-2.5 py-1 rounded-full whitespace-nowrap">
             {user?.authProvider === "google"
               ? t("profile.notSet")
               : t("profile.edit")}
@@ -472,19 +481,13 @@ export default function ProfilePage() {
           }}
           className="w-full flex items-center gap-3 px-4 py-4"
         >
-          <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
+          <div className="icon-tile w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <MailPlus size={16} className="text-[#c9552c]" />
           </div>
           <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
             {t("profile.recoveryEmail")}
           </p>
-          <span
-            className={`text-[10px] font-bold uppercase px-2.5 py-1 rounded-full whitespace-nowrap ${
-              user?.recoveryEmail
-                ? "bg-white/60 text-gray-600"
-                : "bg-[#c9552c]/10 text-[#c9552c]"
-            }`}
-          >
+          <span className="text-[10px] font-bold uppercase bg-white/60 text-gray-600 px-2.5 py-1 rounded-full whitespace-nowrap">
             {user?.recoveryEmail
               ? t("profile.configured")
               : t("profile.notConfigured")}
@@ -499,7 +502,7 @@ export default function ProfilePage() {
       </p>
       <div ref={tourRef2} className="bg-[#ece7dd] rounded-2xl mb-6 shadow-sm">
         <div className="w-full flex items-center gap-3 px-4 py-4 border-b border-black/5">
-          <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
+          <div className="icon-tile w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <Scale size={16} className="text-[#c9552c]" />
           </div>
           <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
@@ -533,7 +536,7 @@ export default function ProfilePage() {
         </div>
 
         <div className="w-full flex items-center gap-3 px-4 py-4 border-b border-black/5">
-          <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
+          <div className="icon-tile w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <Globe size={16} className="text-[#c9552c]" />
           </div>
           <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
@@ -567,7 +570,7 @@ export default function ProfilePage() {
         </div>
 
         <div className="w-full flex items-center gap-3 px-4 py-4">
-          <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
+          <div className="icon-tile w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <Moon size={16} className="text-[#c9552c]" />
           </div>
           <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
@@ -604,7 +607,7 @@ export default function ProfilePage() {
       </p>
       <div ref={tourRef3} className="bg-[#ece7dd] rounded-2xl mb-6 shadow-sm">
         <div className="w-full flex items-center gap-3 px-4 py-4 border-b border-black/5">
-          <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
+          <div className="icon-tile w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <Timer size={16} className="text-[#c9552c]" />
           </div>
           <div className="flex-1 text-left">
@@ -635,7 +638,7 @@ export default function ProfilePage() {
           disabled={!restTimerEnabled}
           className="w-full flex items-center gap-3 px-4 py-4 border-b border-black/5 disabled:opacity-50"
         >
-          <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
+          <div className="icon-tile w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <Timer size={16} className="text-[#c9552c]" />
           </div>
           <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
@@ -648,15 +651,15 @@ export default function ProfilePage() {
         </button>
 
         <div className="w-full flex items-center gap-3 px-4 py-4">
-          <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
+          <div className="icon-tile w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <Dumbbell size={16} className="text-[#c9552c]" />
           </div>
           <div className="flex-1 text-left">
             <p className="text-sm font-bold text-gray-900 uppercase flex items-center gap-1.5">
               {t("profile.barModeTitle")}
               {!isPro && (
-                <span className="text-[9px] font-bold text-[#c9552c] bg-[#c9552c]/10 px-1.5 py-0.5 rounded-full normal-case">
-                  PRO
+                <span className="inline-flex items-center bg-white/60 text-gray-600 px-2 py-1 rounded-full">
+                  <Crown size={10} />
                 </span>
               )}
             </p>
@@ -696,7 +699,7 @@ export default function ProfilePage() {
           }}
           className="w-full flex items-center gap-3 px-4 py-4"
         >
-          <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
+          <div className="icon-tile w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <Trash2 size={16} className="text-[#dc2626]" />
           </div>
           <div className="flex-1 text-left">

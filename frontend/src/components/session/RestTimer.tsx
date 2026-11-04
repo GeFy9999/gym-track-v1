@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Timer } from "lucide-react";
+import { Timer, BellRing } from "lucide-react";
+import { App as CapacitorApp } from "@capacitor/app";
+import { isExactAlarmDenied, openExactAlarmSettings } from "../../hooks/useRestTimer";
 
 type Props = {
   secondsLeft: number;
@@ -26,6 +28,23 @@ export default function RestTimer({
   const [minimized, setMinimized] = useState(false);
   const [dragOffset, setDragOffset] = useState(0);
   const [dragging, setDragging] = useState(false);
+  const [exactAlarmDenied, setExactAlarmDenied] = useState(false);
+
+  // Re-checked when coming back to the app, so the hint goes away once the
+  // permission has been granted in the system settings.
+  useEffect(() => {
+    let cancelled = false;
+    const check = () =>
+      isExactAlarmDenied().then((denied) => {
+        if (!cancelled) setExactAlarmDenied(denied);
+      });
+    check();
+    const listener = CapacitorApp.addListener("resume", check);
+    return () => {
+      cancelled = true;
+      listener.then((l) => l.remove()).catch(() => {});
+    };
+  }, []);
 
   const minutes = Math.floor(secondsLeft / 60);
   const seconds = secondsLeft % 60;
@@ -166,9 +185,11 @@ export default function RestTimer({
             : "animate-fade-in"
         }`}
       />
+      {/* Comes up from the very bottom over the nav, like the other sheets;
+          only the folded bar sits above the nav. */}
       <div
         style={{
-          bottom: "var(--bottom-nav-height, 0px)",
+          bottom: 0,
           transform: `translateY(${dragOffset}px)`,
           transition: dragging ? "none" : "transform 0.3s ease-out",
         }}
@@ -177,14 +198,8 @@ export default function RestTimer({
         }`}
       >
         {/* Scrolls instead of being cut off on a short screen (phone in
-            landscape is ~390px tall). It sits on top of the bottom nav, so
-            the nav's height comes off too, or its top would be cut off. */}
-        <div
-          className="sheet-panel bg-[#faf6f1] shadow-2xl pb-8"
-          style={
-            { "--sheet-offset": "var(--bottom-nav-height, 0px)" } as React.CSSProperties
-          }
-        >
+            landscape is ~390px tall). */}
+        <div className="sheet-panel bg-[#faf6f1] shadow-2xl pb-[max(2rem,env(safe-area-inset-bottom))] md:pb-8">
           <div
             onPointerDown={closing ? undefined : handlePointerDown}
             style={{ touchAction: "none" }}
@@ -246,6 +261,21 @@ export default function RestTimer({
               {t("session.restTimer.skip")}
             </button>
           </div>
+
+          {exactAlarmDenied && (
+            <div className="mx-6 mt-5 flex items-center gap-3 bg-[#ece7dd] rounded-2xl px-4 py-3">
+              <BellRing size={18} className="text-[#c9552c] flex-shrink-0" />
+              <p className="flex-1 text-xs text-gray-600">
+                {t("session.restTimer.exactAlarmHint")}
+              </p>
+              <button
+                onClick={openExactAlarmSettings}
+                className="text-xs font-bold uppercase text-[#c9552c] flex-shrink-0"
+              >
+                {t("session.restTimer.exactAlarmAllow")}
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </>

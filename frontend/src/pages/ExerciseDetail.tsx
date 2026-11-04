@@ -11,6 +11,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { API_URL } from "../lib/api";
+import { getPageCache, setPageCache } from "../lib/pageCache";
 import { useTrackedExercises } from "../hooks/useTrackedExercises";
 import { useIsPro } from "../hooks/useIsPro";
 import { getWeightUnit, convertWeight, roundWeight } from "../utils/units";
@@ -138,6 +139,21 @@ function RecordRow({
   );
 }
 
+function findCachedExercise(exerciseId: string | undefined): Exercise | null {
+  return (
+    getPageCache<Exercise[]>("exercises")?.find((e) => e.id === exerciseId) ??
+    null
+  );
+}
+
+function findCachedNote(exerciseId: string | undefined): string {
+  return (
+    getPageCache<ExerciseNote[]>("exerciseNotes")?.find(
+      (n) => n.exerciseId === exerciseId,
+    )?.note ?? ""
+  );
+}
+
 export default function ExerciseDetailPage() {
   const { t } = useTranslation();
   const { exerciseId } = useParams();
@@ -146,10 +162,20 @@ export default function ExerciseDetailPage() {
   const { isPro } = useIsPro();
   const { toast, closingToast, showToast } = useToast();
 
-  const [exercise, setExercise] = useState<Exercise | null>(null);
-  const [note, setNote] = useState<string>("");
-  const [data, setData] = useState<ExerciseHistoryResponse | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [exercise, setExercise] = useState<Exercise | null>(() =>
+    findCachedExercise(exerciseId),
+  );
+  const [note, setNote] = useState<string>(() => findCachedNote(exerciseId));
+  const [data, setData] = useState<ExerciseHistoryResponse | null>(
+    () =>
+      getPageCache<ExerciseHistoryResponse>(`exerciseHistory:${exerciseId}`) ??
+      null,
+  );
+  const [loading, setLoading] = useState(
+    () =>
+      !findCachedExercise(exerciseId) ||
+      getPageCache(`exerciseHistory:${exerciseId}`) === undefined,
+  );
   const [trophyPopping, setTrophyPopping] = useState(false);
   const [gifFailed, setGifFailed] = useState(false);
 
@@ -179,14 +205,18 @@ export default function ExerciseDetailPage() {
 
         if (exRes.ok) {
           const all: Exercise[] = await exRes.json();
+          setPageCache("exercises", all);
           setExercise(all.find((e) => e.id === exerciseId) ?? null);
         }
         if (notesRes && notesRes.ok) {
           const notes: ExerciseNote[] = await notesRes.json();
+          setPageCache("exerciseNotes", notes);
           setNote(notes.find((n) => n.exerciseId === exerciseId)?.note ?? "");
         }
         if (historyRes.ok) {
-          setData(await historyRes.json());
+          const history: ExerciseHistoryResponse = await historyRes.json();
+          setPageCache(`exerciseHistory:${exerciseId}`, history);
+          setData(history);
         }
       } catch (err) {
         console.error(err);

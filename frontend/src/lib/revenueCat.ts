@@ -74,6 +74,34 @@ export async function getCustomerInfo(): Promise<CustomerInfo> {
   return customerInfo;
 }
 
+export type StorePlanPrice = { price: number; label: string };
+export type StorePlanPrices = {
+  currency: string;
+  monthly?: StorePlanPrice;
+  annual?: StorePlanPrice;
+  lifetime?: StorePlanPrice;
+};
+
+// The plans' prices as Google Play charges them to this user: in their
+// currency, taxes included where applicable, already formatted ("4,99 €").
+export async function fetchStorePlanPrices(): Promise<StorePlanPrices | null> {
+  if (!Capacitor.isNativePlatform() || !ANDROID_API_KEY) return null;
+  await ensureConfiguredForStoredUser();
+  const { current } = await Purchases.getOfferings();
+  if (!current) return null;
+
+  const prices: StorePlanPrices = { currency: "" };
+  for (const plan of ["monthly", "annual", "lifetime"] as const) {
+    const pkg = current.availablePackages.find(
+      (p) => p.packageType === packageTypeForPlan(plan),
+    );
+    if (!pkg) continue;
+    prices[plan] = { price: pkg.product.price, label: pkg.product.priceString };
+    prices.currency ||= pkg.product.currencyCode;
+  }
+  return prices.currency ? prices : null;
+}
+
 // Distinguishes "the user backed out of the Play Store purchase sheet" (not
 // an error — dismiss silently) from actual failures (network, misconfigured
 // product, etc. — show the user something went wrong).

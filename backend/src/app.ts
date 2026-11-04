@@ -25,6 +25,7 @@ import {
   stripeWebhookHandler,
 } from "./controllers/stripeController.js";
 import { revenueCatRouter } from "./controllers/revenueCatController.js";
+import { pricingRouter } from "./controllers/pricingController.js";
 
 export const app = express();
 
@@ -45,6 +46,11 @@ app.use(compression());
 app.use(
   cors({
     origin: allowedOrigins,
+    // Every authenticated call from the app is cross-origin with an
+    // Authorization header, so the browser sends a preflight OPTIONS first.
+    // Without this it redoes it on every request (a full extra round trip);
+    // browsers cap the value (Chrome: 2 h), which is still plenty.
+    maxAge: 86400,
   }),
 );
 
@@ -78,3 +84,4 @@ app.use("/api/contact", contactRouter);
 app.use("/api/import", importRouter);
 app.use("/api/stripe", stripeRouter);
 app.use("/api/revenuecat", revenueCatRouter);
+app.use("/api/pricing", pricingRouter);

@@ -114,3 +114,7 @@
 :root.dark .active\:bg-\[\#c9552c\]\/5:active {
   background-color: var(--dk-raised-2);
 }
+
+/* Profile's row icons sit on a warm gray a step lighter than their card
+   (--dk-sand), so the tile reads without fighting the orange icon. */
+:root.dark .icon-tile:not(.stay-light) { background-color: var(--dk-raised-2); }

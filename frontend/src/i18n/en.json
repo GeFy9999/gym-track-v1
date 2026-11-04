@@ -105,7 +105,7 @@
       "desc": "{{completed}} of {{total}} muscle groups trained"
     },
     "inProgress": "In progress",
-    "lastSession": "Last session",
+    "lastWeek": "Last week",
     "noSessionLastWeek": "No session last week",
     "reps": "reps",
     "setLabel": "Set {{number}}",
@@ -180,7 +180,8 @@
     "sessionsTotal_other": "{{count}} sessions total",
     "noHistoryYet": "No history yet",
     "export": "Export",
-    "freePlanBanner": "Free plan: last {{days}} days only — Go Pro for full history",
+    "freePlanHint": "Free plan: last {{days}} days shown ·",
+    "freePlanHintCta": "See all with Pro",
     "lockedSession": "Session older than {{days}} days — Go Pro to view it",
     "list": "List",
     "calendar": "Calendar",
@@ -351,6 +352,8 @@
       "add": "+15 s",
       "skip": "Skip",
       "skipAria": "Skip the rest time",
+      "exactAlarmHint": "Turn on \"Alarms & reminders\" to be alerted right when your rest ends, even outside the app.",
+      "exactAlarmAllow": "Turn on",
       "expandAria": "Expand the rest timer",
       "custom": "Custom (s)"
     },
@@ -467,7 +470,7 @@
     "loyaltyToday": "Today",
     "loyaltyRenewalsShort": "Renew.",
     "loyaltyActuel": "Current",
-    "loyaltyMaxed": "Maximum discount reached: -${{amount}} on every renewal!",
+    "loyaltyMaxed": "Maximum discount reached: -{{amount}} on every renewal!",
     "loyaltyInDays_one": "In {{count}} day",
     "loyaltyInDays_other": "In {{count}} days",
     "proManage": "Manage",
@@ -503,13 +506,13 @@
       },
       "pro": {
         "title": "Go Pro",
-        "description": "Unlock unlimited history, supersets, automatic warmup, barbell mode, progress photos and more — starting at -$3.00 off every renewal."
+        "description": "Unlock unlimited history, supersets, automatic warmup, barbell mode, progress photos and more — up to -{{amount}} off every renewal."
       }
     },
     "cancelWarning": {
       "title": "Are you sure?",
       "desc": "You'll lose access to unlimited history, supersets, automatic warmup, barbell mode, progress photos, and advanced charts.",
-      "descWithDiscount": "You'll lose your -${{amount}} loyalty discount, as well as access to unlimited history, supersets, automatic warmup, barbell mode, progress photos, and advanced charts. A future resubscription will start back at the base price.",
+      "descWithDiscount": "You'll lose your -{{amount}} loyalty discount, as well as access to unlimited history, supersets, automatic warmup, barbell mode, progress photos, and advanced charts. A future resubscription will start back at the base price.",
       "stay": "Stay subscribed",
       "continue": "Continue"
     },
@@ -771,6 +774,7 @@
     "monthly": "Monthly",
     "annual": "Annual",
     "lifetime": "Lifetime",
+    "localEquivalent": "{{amount}} · exact amount at checkout",
     "perMonth": "/mo",
     "perYear": "/yr",
     "save": "Save {{pct}}%",
@@ -778,10 +782,10 @@
     "lifetimeNote": "One-time payment, lifetime access, no subscription.",
     "switchNote": "Plan changes are prorated, with no new free trial. Your loyalty discount starts over from zero.",
     "noTrialNote": "You've already used your free trial. Cancel anytime.",
-    "switchLoyaltyReminder": "Changing plan makes you lose your -${{amount}} loyalty discount: it starts over from zero on the new plan.",
+    "switchLoyaltyReminder": "Changing plan makes you lose your -{{amount}} loyalty discount: it starts over from zero on the new plan.",
     "switchWarning": {
       "title": "Lose your discount?",
-      "desc": "You've earned a -${{amount}} loyalty discount on your current plan. Changing plan removes it and starts it over from zero.",
+      "desc": "You've earned a -{{amount}} loyalty discount on your current plan. Changing plan removes it and starts it over from zero.",
       "keep": "Keep my plan",
       "continue": "Change anyway"
     },
