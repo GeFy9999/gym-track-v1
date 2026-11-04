@@ -137,7 +137,7 @@ export default function ProfilePage() {
       {isPro ? (
         <div className="bg-[#ece7dd] rounded-2xl mb-6 shadow-sm px-4 py-4">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
+            <div className="icon-tile w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
               <Crown size={16} className="text-[#c9552c]" />
             </div>
             <div className="flex-1 min-w-0">
@@ -194,7 +194,7 @@ export default function ProfilePage() {
               </p>
             </div>
             <div className="bg-[#ece7dd] px-4 py-4 flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
+              <div className="icon-tile w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
                 <Crown size={16} className="text-[#c9552c]" />
               </div>
               <p className="flex-1 text-sm font-bold text-gray-900 uppercase">
@@ -373,7 +373,7 @@ export default function ProfilePage() {
           onClick={() => navigate(isPro ? "/progression" : "/upgrade")}
           className="w-full flex items-center gap-3 px-4 py-4"
         >
-          <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
+          <div className="icon-tile w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <Camera size={16} className="text-[#c9552c]" />
           </div>
           <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
@@ -397,7 +397,7 @@ export default function ProfilePage() {
             canRateApp() ? "border-b border-black/5" : ""
           }`}
         >
-          <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
+          <div className="icon-tile w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <Download size={16} className="text-[#c9552c]" />
           </div>
           <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
@@ -414,7 +414,7 @@ export default function ProfilePage() {
             onClick={openStoreListing}
             className="w-full flex items-center gap-3 px-4 py-4"
           >
-            <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
+            <div className="icon-tile w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
               <Star size={16} className="text-[#c9552c]" />
             </div>
             <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
@@ -431,7 +431,7 @@ export default function ProfilePage() {
       </p>
       <div ref={tourRef1} className="bg-[#ece7dd] rounded-2xl mb-6 shadow-sm">
         <div className="w-full flex items-center gap-3 px-4 py-4 border-b border-black/5">
-          <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
+          <div className="icon-tile w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <Mail size={16} className="text-[#c9552c]" />
           </div>
           <div className="flex-1 text-left min-w-0">
@@ -451,7 +451,7 @@ export default function ProfilePage() {
           }}
           className="w-full flex items-center gap-3 px-4 py-4 border-b border-black/5"
         >
-          <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
+          <div className="icon-tile w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <Lock size={16} className="text-[#c9552c]" />
           </div>
           <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
@@ -472,7 +472,7 @@ export default function ProfilePage() {
           }}
           className="w-full flex items-center gap-3 px-4 py-4"
         >
-          <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
+          <div className="icon-tile w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <MailPlus size={16} className="text-[#c9552c]" />
           </div>
           <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
@@ -493,7 +493,7 @@ export default function ProfilePage() {
       </p>
       <div ref={tourRef2} className="bg-[#ece7dd] rounded-2xl mb-6 shadow-sm">
         <div className="w-full flex items-center gap-3 px-4 py-4 border-b border-black/5">
-          <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
+          <div className="icon-tile w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <Scale size={16} className="text-[#c9552c]" />
           </div>
           <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
@@ -527,7 +527,7 @@ export default function ProfilePage() {
         </div>
 
         <div className="w-full flex items-center gap-3 px-4 py-4 border-b border-black/5">
-          <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
+          <div className="icon-tile w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <Globe size={16} className="text-[#c9552c]" />
           </div>
           <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
@@ -561,7 +561,7 @@ export default function ProfilePage() {
         </div>
 
         <div className="w-full flex items-center gap-3 px-4 py-4">
-          <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
+          <div className="icon-tile w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <Moon size={16} className="text-[#c9552c]" />
           </div>
           <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
@@ -598,7 +598,7 @@ export default function ProfilePage() {
       </p>
       <div ref={tourRef3} className="bg-[#ece7dd] rounded-2xl mb-6 shadow-sm">
         <div className="w-full flex items-center gap-3 px-4 py-4 border-b border-black/5">
-          <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
+          <div className="icon-tile w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <Timer size={16} className="text-[#c9552c]" />
           </div>
           <div className="flex-1 text-left">
@@ -629,7 +629,7 @@ export default function ProfilePage() {
           disabled={!restTimerEnabled}
           className="w-full flex items-center gap-3 px-4 py-4 border-b border-black/5 disabled:opacity-50"
         >
-          <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
+          <div className="icon-tile w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <Timer size={16} className="text-[#c9552c]" />
           </div>
           <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
@@ -642,7 +642,7 @@ export default function ProfilePage() {
         </button>
 
         <div className="w-full flex items-center gap-3 px-4 py-4">
-          <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
+          <div className="icon-tile w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <Dumbbell size={16} className="text-[#c9552c]" />
           </div>
           <div className="flex-1 text-left">
@@ -690,7 +690,7 @@ export default function ProfilePage() {
           }}
           className="w-full flex items-center gap-3 px-4 py-4"
         >
-          <div className="w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
+          <div className="icon-tile w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
             <Trash2 size={16} className="text-[#dc2626]" />
           </div>
           <div className="flex-1 text-left">
