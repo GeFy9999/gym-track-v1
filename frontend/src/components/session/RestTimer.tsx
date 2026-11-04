@@ -185,9 +185,11 @@ export default function RestTimer({
             : "animate-fade-in"
         }`}
       />
+      {/* Comes up from the very bottom over the nav, like the other sheets;
+          only the folded bar sits above the nav. */}
       <div
         style={{
-          bottom: "var(--bottom-nav-height, 0px)",
+          bottom: 0,
           transform: `translateY(${dragOffset}px)`,
           transition: dragging ? "none" : "transform 0.3s ease-out",
         }}
@@ -196,14 +198,8 @@ export default function RestTimer({
         }`}
       >
         {/* Scrolls instead of being cut off on a short screen (phone in
-            landscape is ~390px tall). It sits on top of the bottom nav, so
-            the nav's height comes off too, or its top would be cut off. */}
-        <div
-          className="sheet-panel bg-[#faf6f1] shadow-2xl pb-8"
-          style={
-            { "--sheet-offset": "var(--bottom-nav-height, 0px)" } as React.CSSProperties
-          }
-        >
+            landscape is ~390px tall). */}
+        <div className="sheet-panel bg-[#faf6f1] shadow-2xl pb-[max(2rem,env(safe-area-inset-bottom))] md:pb-8">
           <div
             onPointerDown={closing ? undefined : handlePointerDown}
             style={{ touchAction: "none" }}
