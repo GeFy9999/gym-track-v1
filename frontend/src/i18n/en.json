@@ -105,7 +105,7 @@
       "desc": "{{completed}} of {{total}} muscle groups trained"
     },
     "inProgress": "In progress",
-    "lastSession": "Last session",
+    "lastWeek": "Last week",
     "noSessionLastWeek": "No session last week",
     "reps": "reps",
     "setLabel": "Set {{number}}",

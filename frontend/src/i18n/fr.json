@@ -105,7 +105,7 @@
       "desc": "{{completed}} sur {{total}} groupes musculaires travaillés"
     },
     "inProgress": "En cours",
-    "lastSession": "Dernière séance",
+    "lastWeek": "Semaine dernière",
     "noSessionLastWeek": "Aucune séance la semaine dernière",
     "reps": "reps",
     "setLabel": "Série {{number}}",
