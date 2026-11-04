@@ -457,7 +457,7 @@ export default function ProfilePage() {
           <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
             {t("profile.password")}
           </p>
-          <span className="text-[10px] font-bold uppercase bg-[#c9552c]/10 text-[#c9552c] px-2.5 py-1 rounded-full whitespace-nowrap">
+          <span className="text-[10px] font-bold uppercase bg-white/60 text-gray-600 px-2.5 py-1 rounded-full whitespace-nowrap">
             {user?.authProvider === "google"
               ? t("profile.notSet")
               : t("profile.edit")}
@@ -478,13 +478,7 @@ export default function ProfilePage() {
           <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
             {t("profile.recoveryEmail")}
           </p>
-          <span
-            className={`text-[10px] font-bold uppercase px-2.5 py-1 rounded-full whitespace-nowrap ${
-              user?.recoveryEmail
-                ? "bg-white/60 text-gray-600"
-                : "bg-[#c9552c]/10 text-[#c9552c]"
-            }`}
-          >
+          <span className="text-[10px] font-bold uppercase bg-white/60 text-gray-600 px-2.5 py-1 rounded-full whitespace-nowrap">
             {user?.recoveryEmail
               ? t("profile.configured")
               : t("profile.notConfigured")}
@@ -655,8 +649,8 @@ export default function ProfilePage() {
             <p className="text-sm font-bold text-gray-900 uppercase flex items-center gap-1.5">
               {t("profile.barModeTitle")}
               {!isPro && (
-                <span className="text-[9px] font-bold text-[#c9552c] bg-[#c9552c]/10 px-1.5 py-0.5 rounded-full normal-case">
-                  PRO
+                <span className="inline-flex items-center bg-white/60 text-gray-600 px-2 py-1 rounded-full">
+                  <Crown size={10} />
                 </span>
               )}
             </p>

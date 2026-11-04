@@ -980,9 +980,12 @@ export default function SessionPage() {
 
       <div ref={listRef} className="px-page-focus pt-5 space-y-4">
         {editingPast && (
-          <p className="text-xs font-semibold text-[#c9552c] bg-[#c9552c]/10 rounded-2xl px-4 py-3">
-            {t("session.editingPastHint")}
-          </p>
+          <div className="flex items-center gap-3 bg-[#ece7dd] rounded-2xl px-4 py-3 shadow-sm">
+            <Pencil size={14} className="text-[#c9552c] flex-shrink-0" />
+            <p className="text-xs font-semibold text-gray-700">
+              {t("session.editingPastHint")}
+            </p>
+          </div>
         )}
 
         {!readOnly && !editingPast && !isEditMode && (
