@@ -514,20 +514,6 @@ export default function HistoryPage() {
       </div>
 
       <div className="px-page pt-5">
-      {!isPro && allSessions.length > 0 && (
-        <button
-          onClick={() => navigate("/upgrade")}
-          className="w-full flex items-center gap-3 bg-[#ece7dd] px-3 py-3 rounded-2xl mb-4 text-left shadow-sm active:scale-[0.99] transition-transform"
-        >
-          <span className="w-8 h-8 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
-            <Crown size={15} className="text-[#c9552c]" />
-          </span>
-          <span className="flex-1 text-xs font-semibold text-gray-700 leading-snug">
-            {t("history.freePlanBanner", { days: FREE_HISTORY_DAYS })}
-          </span>
-          <ChevronRight size={16} className="text-[#c9552c] flex-shrink-0" />
-        </button>
-      )}
       {loadError ? (
         <div className="flex flex-col items-center justify-center py-24">
           <div className="w-14 h-14 rounded-full bg-red-50 shadow-sm flex items-center justify-center mb-4">
@@ -606,6 +592,23 @@ export default function HistoryPage() {
               </button>
             </div>
           </div>
+
+          {/* A side note, not a section: the free plan's limit, with a way
+              to lift it. */}
+          {!isPro && (
+            <button
+              onClick={() => navigate("/upgrade")}
+              className="w-full flex items-center justify-center gap-1.5 text-[11px] text-gray-500 mb-3 -mt-0.5"
+            >
+              <Crown size={12} className="text-[#c9552c] flex-shrink-0" />
+              <span>
+                {t("history.freePlanHint", { days: FREE_HISTORY_DAYS })}{" "}
+                <span className="font-bold text-[#c9552c]">
+                  {t("history.freePlanHintCta")}
+                </span>
+              </span>
+            </button>
+          )}
 
           {viewMode === "list" ? (
             selectedMonthWeeks.length === 0 ? (
