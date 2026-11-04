@@ -115,6 +115,6 @@
   background-color: var(--dk-raised-2);
 }
 
-/* Profile's row icons sit on the brand's near-black (the app's dark
-   bands), darker than the card, so the orange icons stand out. */
-:root.dark .icon-tile:not(.stay-light) { background-color: #191714; }
+/* Profile's row icons sit on a warm gray a step lighter than their card
+   (--dk-sand), so the tile reads without fighting the orange icon. */
+:root.dark .icon-tile:not(.stay-light) { background-color: var(--dk-raised-2); }
