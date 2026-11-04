@@ -188,7 +188,7 @@ export default function ProfilePage() {
                   {t("profile.upTo")}
                 </span>
                 <span className="text-2xl font-black text-white leading-none whitespace-nowrap">
-                  -3,00$
+                  -{formatMoney(3, storePrices, "annual")}
                 </span>
               </div>
               <p className="text-sm font-bold text-white leading-snug relative">
