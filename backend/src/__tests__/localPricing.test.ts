@@ -11,6 +11,8 @@ const CANADA_IP = "24.48.0.1";
 describe("GET /api/pricing/local", () => {
   beforeEach(() => {
     resetRatesCacheForTests();
+    // A developer's local .env may set it; each test opts in explicitly.
+    vi.stubEnv("DEV_FAKE_IP", "");
     vi.stubGlobal(
       "fetch",
       vi.fn(async () =>
@@ -21,6 +23,7 @@ describe("GET /api/pricing/local", () => {
 
   afterEach(() => {
     vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
   });
 
   it("gives a foreign visitor their currency and the CAD rate", async () => {
@@ -46,16 +49,12 @@ describe("GET /api/pricing/local", () => {
 
   it("uses DEV_FAKE_IP for a local request, not for a real visitor", async () => {
     vi.stubEnv("DEV_FAKE_IP", "90.84.0.1"); // France
-    try {
-      const local = await request(app).get("/api/pricing/local");
-      expect(local.body).toEqual({ currency: "EUR", rate: 0.64 });
-      const visitor = await request(app)
-        .get("/api/pricing/local")
-        .set("X-Forwarded-For", CANADA_IP);
-      expect(visitor.body).toEqual({ currency: "CAD", rate: 1 });
-    } finally {
-      vi.unstubAllEnvs();
-    }
+    const local = await request(app).get("/api/pricing/local");
+    expect(local.body).toEqual({ currency: "EUR", rate: 0.64 });
+    const visitor = await request(app)
+      .get("/api/pricing/local")
+      .set("X-Forwarded-For", CANADA_IP);
+    expect(visitor.body).toEqual({ currency: "CAD", rate: 1 });
   });
 
   it("returns no rate when the rates service is down", async () => {
