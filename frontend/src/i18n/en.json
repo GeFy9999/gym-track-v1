@@ -774,6 +774,7 @@
     "monthly": "Monthly",
     "annual": "Annual",
     "lifetime": "Lifetime",
+    "localEquivalent": "{{amount}} · exact amount at checkout",
     "perMonth": "/mo",
     "perYear": "/yr",
     "save": "Save {{pct}}%",
