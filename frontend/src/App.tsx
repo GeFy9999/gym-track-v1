@@ -106,75 +106,93 @@ function GlobalRestTimer() {
   );
 }
 
+// The session check, made once per token rather than by every protected
+// page: each page mounts its own ProtectedRoute, so checking there put a
+// full-page spinner (and a server round trip) in front of every navigation.
+let sessionCheck: { token: string; result: Promise<"ok" | "expired"> } | null =
+  null;
+
+function checkSessionOnce(token: string): Promise<"ok" | "expired"> {
+  if (sessionCheck?.token === token) return sessionCheck.result;
+
+  // A bad gym signal can leave this hanging: past a few seconds, treat it
+  // like being offline.
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), 6000);
+
+  const result = fetch(`${API_URL}/sessions/me/streak`, {
+    headers: { Authorization: `Bearer ${token}` },
+    signal: controller.signal,
+  })
+    .then((res): "ok" | "expired" => {
+      if (res.status === 401 || res.status === 403) {
+        // The session really is over (expired / revoked token).
+        syncLoyaltyReminders(null);
+        localStorage.clear();
+        return "expired";
+      }
+      if (res.ok) {
+        // Fresh user data on every launch — also (re)schedules the
+        // loyalty reminders for people who never open their Profile.
+        fetch(`${API_URL}/auth/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+          .then((meRes) => (meRes.ok ? meRes.json() : null))
+          .then((data) => {
+            if (!data?.user) return;
+            localStorage.setItem("user", JSON.stringify(data.user));
+            syncLoyaltyReminders(data.user);
+          })
+          .catch(() => {});
+      }
+      // Server error: not the user's fault — keep them signed in.
+      return "ok";
+    })
+    // No connection (or it timed out): stay signed in and let the app work
+    // offline from what it has cached. Logging out here used to wipe the
+    // session on every launch without signal — and strand any workout
+    // logged offline, since syncing needs the token.
+    .catch((): "ok" => "ok")
+    .finally(() => window.clearTimeout(timeout));
+
+  sessionCheck = { token, result };
+  return result;
+}
+
+function needsEmailVerification(): boolean {
+  try {
+    const stored = localStorage.getItem("user");
+    return !!stored && JSON.parse(stored).emailVerified === false;
+  } catch {
+    return false;
+  }
+}
+
+// Signed in = a token is stored: the page shows right away, while the
+// session is checked in the background and the user sent to the login
+// screen only if the server says it's over.
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const [checking, setChecking] = useState(true);
-  const [valid, setValid] = useState(false);
-  const [needsVerification, setNeedsVerification] = useState(false);
+  const token = localStorage.getItem("token");
+  const [expired, setExpired] = useState(false);
   const { skip: stopRestTimer } = useRestTimerContext();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setChecking(false);
-      return;
-    }
+    if (!token) return;
+    let active = true;
+    checkSessionOnce(token).then((status) => {
+      if (status !== "expired") return;
+      stopRestTimer();
+      if (active) setExpired(true);
+    });
+    return () => {
+      active = false;
+    };
+  }, [token, stopRestTimer]);
 
-    // A bad gym signal can leave this hanging: past a few seconds, treat it
-    // like being offline rather than keeping the user on a spinner.
-    const controller = new AbortController();
-    const timeout = window.setTimeout(() => controller.abort(), 6000);
-
-    fetch(`${API_URL}/sessions/me/streak`, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: controller.signal,
-    })
-      .then((res) => {
-        if (res.ok) {
-          setValid(true);
-          // Fresh user data on every launch — also (re)schedules the
-          // loyalty reminders for people who never open their Profile.
-          fetch(`${API_URL}/auth/me`, {
-            headers: { Authorization: `Bearer ${token}` },
-          })
-            .then((meRes) => (meRes.ok ? meRes.json() : null))
-            .then((data) => {
-              if (!data?.user) return;
-              localStorage.setItem("user", JSON.stringify(data.user));
-              syncLoyaltyReminders(data.user);
-            })
-            .catch(() => {});
-          // A stored user predating this check (or one that hasn't verified
-          // yet) might not have this flag cached — read it fresh here
-          // rather than trusting a possibly-stale localStorage snapshot.
-          const stored = localStorage.getItem("user");
-          if (stored && JSON.parse(stored).emailVerified === false) {
-            setNeedsVerification(true);
-          }
-        } else if (res.status === 401 || res.status === 403) {
-          // The session really is over (expired / revoked token).
-          syncLoyaltyReminders(null);
-          localStorage.clear();
-          stopRestTimer();
-        } else {
-          // Server error: not the user's fault — keep them signed in.
-          setValid(true);
-        }
-        setChecking(false);
-      })
-      .catch(() => {
-        // No connection (or it timed out): stay signed in and let the app
-        // work offline from what it has cached. Logging out here used to
-        // wipe the session on every launch without signal — and strand
-        // any workout logged offline, since syncing needs the token.
-        setValid(true);
-        setChecking(false);
-      })
-      .finally(() => window.clearTimeout(timeout));
-  }, [stopRestTimer]);
-
-  if (checking) return <FullPageSpinner />;
-  if (!valid) return <Navigate to="/login" replace />;
-  if (needsVerification) return <Navigate to="/verify-email-pending" replace />;
+  if (!token || expired) return <Navigate to="/login" replace />;
+  if (needsEmailVerification()) {
+    return <Navigate to="/verify-email-pending" replace />;
+  }
   return <>{children}</>;
 }
 

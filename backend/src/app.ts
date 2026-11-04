@@ -45,6 +45,11 @@ app.use(compression());
 app.use(
   cors({
     origin: allowedOrigins,
+    // Every authenticated call from the app is cross-origin with an
+    // Authorization header, so the browser sends a preflight OPTIONS first.
+    // Without this it redoes it on every request (a full extra round trip);
+    // browsers cap the value (Chrome: 2 h), which is still plenty.
+    maxAge: 86400,
   }),
 );
 

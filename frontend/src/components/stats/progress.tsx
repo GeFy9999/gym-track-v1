@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { getWeightUnit } from "../../utils/units";
 import { getDateLocale } from "../../i18n";
 import { API_URL } from "../../lib/api";
+import { getPageCache, setPageCache } from "../../lib/pageCache";
 import ProgressLineChart from "../charts/ProgressLineChart";
 
 type BodyWeightEntry = {
@@ -44,9 +45,13 @@ const MONTHS_EN = [
 export default function ProgressChart() {
   const { t, i18n } = useTranslation();
   const MONTHS = i18n.language?.startsWith("en") ? MONTHS_EN : MONTHS_FR;
-  const [entries, setEntries] = useState<BodyWeightEntry[]>([]);
+  const [entries, setEntries] = useState<BodyWeightEntry[]>(
+    () => getPageCache<BodyWeightEntry[]>("bodyWeight") ?? [],
+  );
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(
+    () => getPageCache("bodyWeight") === undefined,
+  );
 
   useEffect(() => {
     const fetchWeights = async () => {
@@ -59,6 +64,7 @@ export default function ProgressChart() {
 
       if (res.ok) {
         const data = await res.json();
+        setPageCache("bodyWeight", data);
         setEntries(data);
       }
       setLoading(false);
