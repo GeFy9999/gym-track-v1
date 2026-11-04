@@ -15,6 +15,7 @@ import {
   Clock,
 } from "lucide-react";
 import { API_URL } from "../lib/api";
+import { getPageCache, setPageCache } from "../lib/pageCache";
 import { getDateLocale } from "../i18n";
 import { getMuscleGroupLabel } from "../utils/muscleGroupLabel";
 import { formatDuration, formatWorkoutDuration } from "../utils/units";
@@ -112,9 +113,13 @@ export default function HistoryPage() {
     dropset: t("history.setTypes.dropset"),
     failure: t("history.setTypes.failure"),
   };
-  const [allSessions, setAllSessions] = useState<SessionData[]>([]);
+  const [allSessions, setAllSessions] = useState<SessionData[]>(
+    () => getPageCache<SessionData[]>("history") ?? [],
+  );
   const [openWeek, setOpenWeek] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(
+    () => getPageCache("history") === undefined,
+  );
   const [loadError, setLoadError] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
   const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
@@ -173,7 +178,10 @@ export default function HistoryPage() {
 
   useEffect(() => {
     const fetchHistory = async () => {
-      setLoading(true);
+      // Already shown from the last visit: refresh it without a skeleton,
+      // and keep it on screen if the refresh fails.
+      const shown = getPageCache("history") !== undefined;
+      if (!shown) setLoading(true);
       setLoadError(false);
       const token = localStorage.getItem("token");
       if (!token) {
@@ -195,7 +203,7 @@ export default function HistoryPage() {
         );
 
         if (!res.ok) {
-          setLoadError(true);
+          if (!shown) setLoadError(true);
           setLoading(false);
           return;
         }
@@ -203,21 +211,21 @@ export default function HistoryPage() {
         const sessions: SessionData[] = await res.json();
         // Skip sessions that only ever got empty, never-filled-in set rows —
         // nothing real was performed, so there's nothing to show in history.
-        setAllSessions(
-          sessions.filter(
-            (s) =>
-              s.locked ||
-              (s.completed &&
-                s.sessionExercises.some((se) => se.sets.some(hasSetData))),
-          ),
+        const visible = sessions.filter(
+          (s) =>
+            s.locked ||
+            (s.completed &&
+              s.sessionExercises.some((se) => se.sets.some(hasSetData))),
         );
+        setPageCache("history", visible);
+        setAllSessions(visible);
         setLoading(false);
       } catch (err) {
         // A network hiccup or bad response must never leave the user
         // staring at a silent "no history" screen with no way to tell
         // whether their data is actually gone or the request just failed.
         console.error(err);
-        setLoadError(true);
+        if (!shown) setLoadError(true);
         setLoading(false);
       }
     };

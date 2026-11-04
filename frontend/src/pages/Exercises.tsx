@@ -5,6 +5,7 @@ import { getMuscleGroupLabel } from "../utils/muscleGroupLabel";
 import { Search, Dumbbell, Trophy, ChevronDown, Layers, Plus } from "lucide-react";
 import { buildExerciseSearchIndex, searchExercises } from "../utils/exerciseSearch";
 import { API_URL } from "../lib/api";
+import { getPageCache, setPageCache } from "../lib/pageCache";
 import { fetchWithRetry } from "../lib/fetchWithRetry";
 import { useTrackedExercises } from "../hooks/useTrackedExercises";
 import { useToast } from "../hooks/useToast";
@@ -83,10 +84,18 @@ export default function ExercisesPage() {
   const { isTracked, fetchTracked, toggleTracked, tracked } = useTrackedExercises();
   const { toast, closingToast, showToast } = useToast();
 
-  const [exercises, setExercises] = useState<Exercise[]>([]);
-  const [muscleGroups, setMuscleGroups] = useState<MuscleGroup[]>([]);
-  const [stats, setStats] = useState<Record<string, ExerciseStat>>({});
-  const [loading, setLoading] = useState(true);
+  const [exercises, setExercises] = useState<Exercise[]>(
+    () => getPageCache<Exercise[]>("exercises") ?? [],
+  );
+  const [muscleGroups, setMuscleGroups] = useState<MuscleGroup[]>(
+    () => getPageCache<MuscleGroup[]>("muscleGroups") ?? [],
+  );
+  const [stats, setStats] = useState<Record<string, ExerciseStat>>(
+    () => getPageCache<Record<string, ExerciseStat>>("exerciseStats") ?? {},
+  );
+  const [loading, setLoading] = useState(
+    () => getPageCache("exercises") === undefined,
+  );
   // The list couldn't be loaded (as opposed to genuinely empty) — shown with
   // a retry button instead of a misleading "0 exercises".
   const [loadError, setLoadError] = useState(false);
@@ -125,6 +134,8 @@ export default function ExercisesPage() {
 
     const fetchData = async () => {
       setLoadError(false);
+      // Already shown from the last visit: keep it if the refresh fails.
+      const shown = getPageCache("exercises") !== undefined;
       try {
         const [exRes, mgRes, statsRes] = await Promise.all([
           fetchWithRetry(`${API_URL}/exercises`, {
@@ -136,18 +147,26 @@ export default function ExercisesPage() {
           }),
         ]);
 
-        if (exRes.ok) setExercises(await exRes.json());
-        else setLoadError(true);
-        if (mgRes.ok) setMuscleGroups(await mgRes.json());
+        if (exRes.ok) {
+          const list: Exercise[] = await exRes.json();
+          setPageCache("exercises", list);
+          setExercises(list);
+        } else if (!shown) setLoadError(true);
+        if (mgRes.ok) {
+          const groups: MuscleGroup[] = await mgRes.json();
+          setPageCache("muscleGroups", groups);
+          setMuscleGroups(groups);
+        }
         if (statsRes.ok) {
           const statsList: ExerciseStat[] = await statsRes.json();
           const map: Record<string, ExerciseStat> = {};
           for (const s of statsList) map[s.exerciseId] = s;
+          setPageCache("exerciseStats", map);
           setStats(map);
         }
       } catch (err) {
         console.error(err);
-        setLoadError(true);
+        if (!shown) setLoadError(true);
       } finally {
         setLoading(false);
       }

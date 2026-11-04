@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
 import { getWeightUnit } from "../../utils/units";
 import { API_URL } from "../../lib/api";
+import { getPageCache, setPageCache } from "../../lib/pageCache";
 
 type Record = {
   name: string;
@@ -12,8 +13,12 @@ type Record = {
 
 export default function PersonalRecordCards() {
   const navigate = useNavigate();
-  const [records, setRecords] = useState<Record[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [records, setRecords] = useState<Record[]>(
+    () => getPageCache<Record[]>("trackedRecords") ?? [],
+  );
+  const [loading, setLoading] = useState(
+    () => getPageCache("trackedRecords") === undefined,
+  );
 
   useEffect(() => {
     const fetchRecords = async () => {
@@ -39,9 +44,11 @@ export default function PersonalRecordCards() {
           (t: { exerciseId: string }) => t.exerciseId,
         );
 
-        setRecords(
-          allRecords.filter((r: Record) => trackedIds.includes(r.exerciseId)),
+        const trackedRecords = allRecords.filter((r: Record) =>
+          trackedIds.includes(r.exerciseId),
         );
+        setPageCache("trackedRecords", trackedRecords);
+        setRecords(trackedRecords);
       }
       setLoading(false);
     };
