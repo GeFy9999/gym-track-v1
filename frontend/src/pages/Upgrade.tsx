@@ -299,7 +299,7 @@ export default function UpgradePage() {
       <div className="min-h-screen bg-[#faf6f1] flex flex-col items-center justify-center px-page-narrow text-center">
         {isPro ? (
           <>
-            <div className="w-16 h-16 rounded-full bg-[#3a9e6e]/10 flex items-center justify-center mb-4">
+            <div className="w-16 h-16 rounded-full bg-[#ece7dd] flex items-center justify-center mb-4">
               <Check size={28} className="text-[#3a9e6e]" />
             </div>
             <h1 className="text-xl font-black text-gray-900 mb-2">
@@ -317,7 +317,7 @@ export default function UpgradePage() {
           </>
         ) : activationTimedOut ? (
           <>
-            <div className="w-16 h-16 rounded-full bg-[#c9552c]/10 flex items-center justify-center mb-4">
+            <div className="w-16 h-16 rounded-full bg-[#ece7dd] flex items-center justify-center mb-4">
               <RefreshCw size={28} className="text-[#c9552c]" />
             </div>
             <h1 className="text-xl font-black text-gray-900 mb-2">
@@ -340,7 +340,7 @@ export default function UpgradePage() {
           </>
         ) : (
           <>
-            <div className="w-16 h-16 rounded-full bg-[#c9552c]/10 flex items-center justify-center mb-4 animate-pulse">
+            <div className="w-16 h-16 rounded-full bg-[#ece7dd] flex items-center justify-center mb-4 animate-pulse">
               <Crown size={28} className="text-[#c9552c]" />
             </div>
             <h1 className="text-xl font-black text-gray-900 mb-2">
@@ -395,7 +395,7 @@ export default function UpgradePage() {
 
         {isPro && (
           <div className="bg-[#ece7dd] rounded-2xl p-4 shadow-sm flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#3a9e6e]/10 flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
               <Crown size={18} className="text-[#3a9e6e]" />
             </div>
             <div className="flex-1 min-w-0">
@@ -466,7 +466,7 @@ export default function UpgradePage() {
             )}
           </p>
           {plan === "annual" && plan !== currentPlan && (
-            <span className="inline-block mt-2 text-[10px] font-bold uppercase tracking-wide bg-[#3a9e6e]/10 text-[#3a9e6e] px-2.5 py-1 rounded-full">
+            <span className="inline-block mt-2 text-[10px] font-bold uppercase tracking-wide bg-[#3a9e6e] text-white px-2.5 py-1 rounded-full">
               {t("upgrade.save", { pct: ANNUAL_SAVINGS_PCT })}
             </span>
           )}
@@ -514,7 +514,7 @@ export default function UpgradePage() {
           <div className="space-y-2.5">
             {FEATURE_KEYS.map((key) => (
               <div key={key} className="flex items-center gap-2.5">
-                <div className="w-5 h-5 rounded-full bg-[#3a9e6e]/10 flex items-center justify-center flex-shrink-0">
+                <div className="w-5 h-5 rounded-full bg-white/60 flex items-center justify-center flex-shrink-0">
                   <Check size={12} className="text-[#3a9e6e]" />
                 </div>
                 <p className="text-sm text-gray-700">
@@ -526,9 +526,9 @@ export default function UpgradePage() {
         </div>
 
         {isPro && !isCurrentSelection && loyaltyDiscountCents > 0 && (
-          <div className="flex items-start gap-2.5 bg-[#c9552c]/10 rounded-2xl px-4 py-3">
+          <div className="flex items-start gap-2.5 bg-[#ece7dd] rounded-2xl px-4 py-3 shadow-sm">
             <TrendingDown size={16} className="text-[#c9552c] flex-shrink-0 mt-0.5" />
-            <p className="text-xs font-semibold text-[#c9552c]">
+            <p className="text-xs font-semibold text-gray-700">
               {t("upgrade.switchLoyaltyReminder", {
                 amount: formatAmount(loyaltyDiscountCents / 100),
               })}
@@ -615,7 +615,7 @@ export default function UpgradePage() {
       {showSwitchWarning && (
         <div className="fixed inset-0 bg-black/30 flex items-center-safe justify-center overflow-y-auto py-6 z-[60] px-6 animate-fade-in">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
-            <div className="w-12 h-12 rounded-full bg-[#c9552c]/10 flex items-center justify-center mx-auto mb-3">
+            <div className="w-12 h-12 rounded-full bg-[#ece7dd] flex items-center justify-center mx-auto mb-3">
               <TrendingDown size={22} className="text-[#c9552c]" />
             </div>
             <p className="text-base font-bold text-gray-900 text-center mb-2">
@@ -650,7 +650,7 @@ export default function UpgradePage() {
       {showCancelWarning && (
         <div className="fixed inset-0 bg-black/30 flex items-center-safe justify-center overflow-y-auto py-6 z-[60] px-6 animate-fade-in">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-scale-in">
-            <div className="w-12 h-12 rounded-full bg-[#c9552c]/10 flex items-center justify-center mx-auto mb-3">
+            <div className="w-12 h-12 rounded-full bg-[#ece7dd] flex items-center justify-center mx-auto mb-3">
               <TrendingDown size={22} className="text-[#c9552c]" />
             </div>
             <p className="text-base font-bold text-gray-900 text-center mb-2">
