@@ -116,6 +116,11 @@ function LegalContentFr() {
         </Link>
         .
       </p>
+
+      <p className="text-[10px] text-gray-400">
+        Ce produit inclut des données GeoLite2 créées par MaxMind, disponibles
+        sur maxmind.com.
+      </p>
     </div>
   );
 }
@@ -196,6 +201,11 @@ function LegalContentEn() {
           terms of service
         </Link>
         .
+      </p>
+
+      <p className="text-[10px] text-gray-400">
+        This product includes GeoLite2 data created by MaxMind, available
+        from maxmind.com.
       </p>
     </div>
   );

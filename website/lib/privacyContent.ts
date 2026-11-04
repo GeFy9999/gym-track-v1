@@ -4,7 +4,7 @@
 // Written to cover Quebec's Law 25, Canada's PIPEDA, the EU/UK GDPR and the
 // California CCPA for a small app with no ads and no tracking.
 
-export const PRIVACY_LAST_UPDATED = "2026-10-09";
+export const PRIVACY_LAST_UPDATED = "2026-11-04";
 
 // A piece of text, or a link inside it. Links starting with "/" are app
 // routes; the site turns them into https://gymstrack.com links.
@@ -47,7 +47,7 @@ export const PRIVACY_CONTENT: Record<"fr" | "en", PrivacyContent> = {
           ["Poids corporel et photos de progression, seulement si tu choisis de les ajouter."],
           ["Abonnement : statut Pro, formule, dates de renouvellement, historique de fidélité et identifiants d'achat (Stripe ou Google Play). Nous ne voyons jamais ton numéro de carte."],
           ["Formulaire de contact : nom, courriel et message que tu nous envoies."],
-          ["Données techniques : adresse IP et informations de requête, traitées par notre serveur pour la sécurité (par exemple limiter les abus), sans profilage."],
+          ["Données techniques : adresse IP et informations de requête, traitées par notre serveur pour la sécurité (par exemple limiter les abus) et, sur le web, pour estimer ta monnaie afin d'afficher un équivalent des prix (recherche faite sur notre serveur, adresse non conservée), sans profilage."],
         ],
         paragraphs: [
           ["Nous ne collectons pas ta localisation ni tes contacts, n'affichons aucune publicité et n'utilisons aucun outil de suivi, de statistiques ou d'enregistrement de session."],
@@ -160,7 +160,7 @@ export const PRIVACY_CONTENT: Record<"fr" | "en", PrivacyContent> = {
           ["Body weight and progress photos, only if you choose to add them."],
           ["Subscription: Pro status, plan, renewal dates, loyalty history and purchase identifiers (Stripe or Google Play). We never see your card number."],
           ["Contact form: the name, email and message you send us."],
-          ["Technical data: IP address and request information, processed by our server for security (for example to limit abuse), without profiling."],
+          ["Technical data: IP address and request information, processed by our server for security (for example to limit abuse) and, on the web, to estimate your currency so prices can show an equivalent (looked up on our server, address not stored), without profiling."],
         ],
         paragraphs: [
           ["We do not collect your location or contacts, show no ads, and use no tracking, analytics or session-recording tools."],
