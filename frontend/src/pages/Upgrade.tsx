@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { formatAmount } from "../utils/units";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Capacitor } from "@capacitor/core";
@@ -17,15 +16,13 @@ import {
   PurchaseCancelledError,
   restorePurchases,
 } from "../lib/revenueCat";
-
-type Plan = "monthly" | "annual" | "lifetime";
-
-const MONTHLY_PRICE = 4.99;
-const ANNUAL_PRICE = 29.99;
-const LIFETIME_PRICE = 79.99;
-const ANNUAL_SAVINGS_PCT = Math.round(
-  (1 - ANNUAL_PRICE / (MONTHLY_PRICE * 12)) * 100,
-);
+import {
+  formatMoney,
+  formatPlanPrice,
+  planPriceValue,
+  useStorePrices,
+  type Plan,
+} from "../lib/storePrices";
 
 const PLAN_ORDER: Plan[] = ["monthly", "annual", "lifetime"];
 
@@ -89,6 +86,23 @@ export default function UpgradePage() {
   const attemptsRef = useRef(0);
 
   const isCurrentSelection = isPro && plan === currentPlan;
+
+  // On Android, Google Play's own prices (the user's currency, taxes
+  // included); the CAD prices Stripe charges otherwise.
+  const storePrices = useStorePrices();
+  const annualSavingsPct = Math.round(
+    (1 -
+      planPriceValue("annual", storePrices) /
+        (planPriceValue("monthly", storePrices) * 12)) *
+      100,
+  );
+  // The plan the loyalty discount is counted on (the one subscribed to).
+  const discountBasis = currentPlan === "annual" ? "annual" : "monthly";
+  const loyaltyDiscountLabel = formatMoney(
+    loyaltyDiscountCents / 100,
+    storePrices,
+    discountBasis,
+  );
 
   // Play Store policy requires Android purchases to go through Google Play
   // Billing (via RevenueCat) instead of Stripe — get the SDK ready as soon as
@@ -453,12 +467,7 @@ export default function UpgradePage() {
 
         <div className="bg-[#ece7dd] rounded-2xl p-6 shadow-sm text-center">
           <p className="text-4xl font-black text-gray-900">
-            $
-            {plan === "monthly"
-              ? MONTHLY_PRICE
-              : plan === "annual"
-                ? ANNUAL_PRICE
-                : LIFETIME_PRICE}
+            {formatPlanPrice(plan, storePrices)}
             {plan !== "lifetime" && (
               <span className="text-base font-bold text-gray-500">
                 {plan === "monthly" ? t("upgrade.perMonth") : t("upgrade.perYear")}
@@ -467,7 +476,7 @@ export default function UpgradePage() {
           </p>
           {plan === "annual" && plan !== currentPlan && (
             <span className="inline-block mt-2 text-[10px] font-bold uppercase tracking-wide bg-[#3a9e6e] text-white px-2.5 py-1 rounded-full">
-              {t("upgrade.save", { pct: ANNUAL_SAVINGS_PCT })}
+              {t("upgrade.save", { pct: annualSavingsPct })}
             </span>
           )}
           <p className="text-xs text-gray-500 mt-3">
@@ -501,7 +510,11 @@ export default function UpgradePage() {
                 {t("profile.upTo")}
               </span>
               <span className="text-lg font-black text-[#3a9e6e] leading-none whitespace-nowrap">
-                -{formatAmount(plan === "annual" ? 3 : 1)}$
+                -{formatMoney(
+                  plan === "annual" ? 3 : 1,
+                  storePrices,
+                  plan === "annual" ? "annual" : "monthly",
+                )}
               </span>
             </div>
           </div>
@@ -530,7 +543,7 @@ export default function UpgradePage() {
             <TrendingDown size={16} className="text-[#c9552c] flex-shrink-0 mt-0.5" />
             <p className="text-xs font-semibold text-gray-700">
               {t("upgrade.switchLoyaltyReminder", {
-                amount: formatAmount(loyaltyDiscountCents / 100),
+                amount: loyaltyDiscountLabel,
               })}
             </p>
           </div>
@@ -590,7 +603,7 @@ export default function UpgradePage() {
           {plan === "lifetime"
             ? t("upgrade.legal.lifetime")
             : t("upgrade.legal.renewal", {
-                price: `${formatAmount(plan === "monthly" ? MONTHLY_PRICE : ANNUAL_PRICE)}$${
+                price: `${formatPlanPrice(plan, storePrices)}${
                   plan === "monthly" ? t("upgrade.perMonth") : t("upgrade.perYear")
                 }`,
                 trial: !isPro && !hasUsedTrial ? t("upgrade.legal.trial") : "",
@@ -623,7 +636,7 @@ export default function UpgradePage() {
             </p>
             <p className="text-sm text-gray-500 text-center mb-6">
               {t("upgrade.switchWarning.desc", {
-                amount: formatAmount(loyaltyDiscountCents / 100),
+                amount: loyaltyDiscountLabel,
               })}
             </p>
             <div className="flex flex-col gap-2">
@@ -659,7 +672,7 @@ export default function UpgradePage() {
             <p className="text-sm text-gray-500 text-center mb-6">
               {loyaltyDiscountCents > 0
                 ? t("profile.cancelWarning.descWithDiscount", {
-                    amount: formatAmount(loyaltyDiscountCents / 100),
+                    amount: loyaltyDiscountLabel,
                   })
                 : t("profile.cancelWarning.desc")}
             </p>

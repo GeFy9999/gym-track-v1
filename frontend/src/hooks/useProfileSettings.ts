@@ -7,6 +7,7 @@ import { API_URL } from "../lib/api";
 import { useIsPro } from "./useIsPro";
 import { useRestTimerContext } from "../contexts/RestTimerContext";
 import { syncLoyaltyReminders } from "../lib/loyaltyReminders";
+import { formatMoney, getCachedStorePrices } from "../lib/storePrices";
 
 export function useProfileSettings() {
   const navigate = useNavigate();
@@ -98,7 +99,9 @@ export function useProfileSettings() {
       ? [
           {
             title: t("profile.tour.pro.title"),
-            description: t("profile.tour.pro.description"),
+            description: t("profile.tour.pro.description", {
+              amount: formatMoney(3, getCachedStorePrices(), "annual"),
+            }),
             refIndex: 5,
           },
         ]

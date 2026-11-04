@@ -1,7 +1,7 @@
 import { Capacitor } from "@capacitor/core";
 import { LocalNotifications } from "@capacitor/local-notifications";
 import i18n from "../i18n";
-import { formatAmount } from "../utils/units";
+import { BASE_PRICES, formatMoney, getCachedStorePrices } from "./storePrices";
 
 // Phone reminders to activate an earned Google Play loyalty tier (the
 // server also emails them, backend services/loyaltyReminders.ts):
@@ -13,8 +13,6 @@ import { formatAmount } from "../utils/units";
 const FIRST_ID = 7101;
 const FINAL_ID = 7102;
 const DAY = 24 * 60 * 60 * 1000;
-// Regular prices (CAD cents), kept in sync with Play Console / Profile.
-const BASE_PRICE_CENTS = { month: 499, year: 2999 };
 
 type StoredUser = {
   isPro?: boolean;
@@ -47,9 +45,12 @@ export async function syncLoyaltyReminders(user: StoredUser | null) {
     const finalAt = new Date(user.proCurrentPeriodEnd).getTime() - 2 * DAY;
 
     const yearly = user.proInterval === "year";
-    const priceCents =
-      BASE_PRICE_CENTS[yearly ? "year" : "month"] - (user.loyaltyDiscountCents ?? 0);
-    const price = `${formatAmount(priceCents / 100)}$${
+    const basis = yearly ? "annual" : "monthly";
+    const price = `${formatMoney(
+      BASE_PRICES[basis] - (user.loyaltyDiscountCents ?? 0) / 100,
+      getCachedStorePrices(),
+      basis,
+    )}${
       yearly ? i18n.t("upgrade.perYear") : i18n.t("upgrade.perMonth")
     }`;
 
