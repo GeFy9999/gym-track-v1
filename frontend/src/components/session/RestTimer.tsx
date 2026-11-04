@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Timer } from "lucide-react";
+import { Timer, BellRing } from "lucide-react";
+import { App as CapacitorApp } from "@capacitor/app";
+import { isExactAlarmDenied, openExactAlarmSettings } from "../../hooks/useRestTimer";
 
 type Props = {
   secondsLeft: number;
@@ -26,6 +28,23 @@ export default function RestTimer({
   const [minimized, setMinimized] = useState(false);
   const [dragOffset, setDragOffset] = useState(0);
   const [dragging, setDragging] = useState(false);
+  const [exactAlarmDenied, setExactAlarmDenied] = useState(false);
+
+  // Re-checked when coming back to the app, so the hint goes away once the
+  // permission has been granted in the system settings.
+  useEffect(() => {
+    let cancelled = false;
+    const check = () =>
+      isExactAlarmDenied().then((denied) => {
+        if (!cancelled) setExactAlarmDenied(denied);
+      });
+    check();
+    const listener = CapacitorApp.addListener("resume", check);
+    return () => {
+      cancelled = true;
+      listener.then((l) => l.remove()).catch(() => {});
+    };
+  }, []);
 
   const minutes = Math.floor(secondsLeft / 60);
   const seconds = secondsLeft % 60;
@@ -246,6 +265,21 @@ export default function RestTimer({
               {t("session.restTimer.skip")}
             </button>
           </div>
+
+          {exactAlarmDenied && (
+            <div className="mx-6 mt-5 flex items-center gap-3 bg-[#ece7dd] rounded-2xl px-4 py-3">
+              <BellRing size={18} className="text-[#c9552c] flex-shrink-0" />
+              <p className="flex-1 text-xs text-gray-600">
+                {t("session.restTimer.exactAlarmHint")}
+              </p>
+              <button
+                onClick={openExactAlarmSettings}
+                className="text-xs font-bold uppercase text-[#c9552c] flex-shrink-0"
+              >
+                {t("session.restTimer.exactAlarmAllow")}
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </>

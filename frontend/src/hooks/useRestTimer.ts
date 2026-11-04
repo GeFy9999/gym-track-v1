@@ -34,13 +34,36 @@ async function scheduleNativeRestOverNotification(seconds: number) {
           id: REST_TIMER_NOTIFICATION_ID,
           title: i18n.t("session.restOverNotification.title"),
           body: i18n.t("session.restOverNotification.body"),
-          schedule: { at: new Date(Date.now() + seconds * 1000) },
+          // Without allowWhileIdle the alarm doesn't wake the phone, and
+          // Android holds it back while the app sits in the background —
+          // the notification only showed up once the app was reopened.
+          schedule: {
+            at: new Date(Date.now() + seconds * 1000),
+            allowWhileIdle: true,
+          },
         },
       ],
     });
   } catch {
     // Scheduling is a best-effort enhancement — never let it break the timer.
   }
+}
+
+// Since Android 14, "Alarms & reminders" is off by default: the plugin then
+// falls back to an inexact alarm, which Android batches and can delay by
+// minutes. Only the user can turn it on, from the system settings.
+export async function isExactAlarmDenied(): Promise<boolean> {
+  if (Capacitor.getPlatform() !== "android") return false;
+  try {
+    const { exact_alarm } = await LocalNotifications.checkExactNotificationSetting();
+    return exact_alarm !== "granted";
+  } catch {
+    return false;
+  }
+}
+
+export function openExactAlarmSettings() {
+  LocalNotifications.changeExactNotificationSetting().catch(() => {});
 }
 
 function cancelNativeRestOverNotification() {
@@ -181,7 +204,16 @@ export function useRestTimer(defaultSeconds: number) {
     let disposed = false;
     let removeResume: (() => void) | undefined;
     if (Capacitor.isNativePlatform()) {
-      CapacitorApp.addListener("resume", () => sync(true))
+      CapacitorApp.addListener("resume", () => {
+        sync(true);
+        // Back from the system settings where exact alarms may have just
+        // been allowed: reschedule, so the running rest gets an exact alarm
+        // instead of the inexact one it was given.
+        const endAt = endAtRef.current;
+        if (endAt !== null) {
+          scheduleNativeRestOverNotification(Math.ceil((endAt - Date.now()) / 1000));
+        }
+      })
         .then((handle) => {
           // Unmounted before the listener finished registering.
           if (disposed) handle.remove();
