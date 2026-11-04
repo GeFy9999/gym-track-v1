@@ -114,3 +114,7 @@
 :root.dark .active\:bg-\[\#c9552c\]\/5:active {
   background-color: var(--dk-raised-2);
 }
+
+/* Profile's row icons sit on a plain white tile in dark mode, so the
+   orange icons stand out instead of fading into the dark card. */
+:root.dark .icon-tile:not(.stay-light) { background-color: #ffffff; }
