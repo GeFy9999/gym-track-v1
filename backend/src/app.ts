@@ -25,6 +25,7 @@ import {
   stripeWebhookHandler,
 } from "./controllers/stripeController.js";
 import { revenueCatRouter } from "./controllers/revenueCatController.js";
+import { pricingRouter } from "./controllers/pricingController.js";
 
 export const app = express();
 
@@ -83,3 +84,4 @@ app.use("/api/contact", contactRouter);
 app.use("/api/import", importRouter);
 app.use("/api/stripe", stripeRouter);
 app.use("/api/revenuecat", revenueCatRouter);
+app.use("/api/pricing", pricingRouter);

@@ -774,6 +774,7 @@
     "monthly": "Mensuel",
     "annual": "Annuel",
     "lifetime": "À vie",
+    "localEquivalent": "{{amount}} · montant exact au paiement",
     "perMonth": "/mois",
     "perYear": "/an",
     "save": "Économise {{pct}}%",

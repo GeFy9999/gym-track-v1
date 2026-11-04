@@ -17,6 +17,8 @@ import {
   restorePurchases,
 } from "../lib/revenueCat";
 import {
+  BASE_PRICES,
+  formatLocalEquivalent,
   formatMoney,
   formatPlanPrice,
   planPriceValue,
@@ -474,6 +476,13 @@ export default function UpgradePage() {
               </span>
             )}
           </p>
+          {!storePrices && formatLocalEquivalent(BASE_PRICES[plan]) && (
+            <p className="text-sm font-bold text-gray-500 mt-1">
+              {t("upgrade.localEquivalent", {
+                amount: formatLocalEquivalent(BASE_PRICES[plan]),
+              })}
+            </p>
+          )}
           {plan === "annual" && plan !== currentPlan && (
             <span className="inline-block mt-2 text-[10px] font-bold uppercase tracking-wide bg-[#3a9e6e] text-white px-2.5 py-1 rounded-full">
               {t("upgrade.save", { pct: annualSavingsPct })}
