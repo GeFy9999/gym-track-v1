@@ -470,7 +470,7 @@
     "loyaltyToday": "Aujourd'hui",
     "loyaltyRenewalsShort": "Renouv.",
     "loyaltyActuel": "Actuel",
-    "loyaltyMaxed": "Réduction maximale atteinte : -{{amount}}$ à chaque renouvellement !",
+    "loyaltyMaxed": "Réduction maximale atteinte : -{{amount}} à chaque renouvellement !",
     "loyaltyInDays_one": "Dans {{count}} jour",
     "loyaltyInDays_other": "Dans {{count}} jours",
     "proManage": "Gérer",
@@ -506,13 +506,13 @@
       },
       "pro": {
         "title": "Passe Pro",
-        "description": "Débloque l'historique illimité, les supersets, l'échauffement auto, le mode barre, les photos de progression et bien plus — dès -3,00$ à chaque renouvellement."
+        "description": "Débloque l'historique illimité, les supersets, l'échauffement auto, le mode barre, les photos de progression et bien plus — jusqu'à -{{amount}} à chaque renouvellement."
       }
     },
     "cancelWarning": {
       "title": "Es-tu sûr(e) ?",
       "desc": "Tu perdras l'accès à l'historique illimité, aux supersets, à l'échauffement auto, au mode barre, aux photos de progression et aux graphiques avancés.",
-      "descWithDiscount": "Tu perdras ta réduction de fidélité de -{{amount}}$, ainsi que l'accès à l'historique illimité, aux supersets, à l'échauffement auto, au mode barre, aux photos de progression et aux graphiques avancés. Un futur réabonnement repartira au prix de base.",
+      "descWithDiscount": "Tu perdras ta réduction de fidélité de -{{amount}}, ainsi que l'accès à l'historique illimité, aux supersets, à l'échauffement auto, au mode barre, aux photos de progression et aux graphiques avancés. Un futur réabonnement repartira au prix de base.",
       "stay": "Rester abonné",
       "continue": "Continuer"
     },
@@ -781,10 +781,10 @@
     "lifetimeNote": "Paiement unique, accès à vie, aucun abonnement.",
     "switchNote": "Le changement de plan est calculé au prorata, sans nouvel essai gratuit. Ta réduction de fidélité repart à zéro.",
     "noTrialNote": "Tu as déjà profité de ton essai gratuit. Annule à tout moment.",
-    "switchLoyaltyReminder": "Changer de plan te fait perdre ta réduction de fidélité de -{{amount}}$ : elle repart à zéro sur le nouveau plan.",
+    "switchLoyaltyReminder": "Changer de plan te fait perdre ta réduction de fidélité de -{{amount}} : elle repart à zéro sur le nouveau plan.",
     "switchWarning": {
       "title": "Perdre ta réduction ?",
-      "desc": "Tu as gagné une réduction de fidélité de -{{amount}}$ sur ton abonnement actuel. En changeant de plan, elle disparaît et repart à zéro.",
+      "desc": "Tu as gagné une réduction de fidélité de -{{amount}} sur ton abonnement actuel. En changeant de plan, elle disparaît et repart à zéro.",
       "keep": "Garder mon plan",
       "continue": "Changer quand même"
     },

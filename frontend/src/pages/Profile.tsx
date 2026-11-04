@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { formatAmount } from "../utils/units";
+import {
+  BASE_PRICES,
+  formatMoney,
+  useStorePrices,
+} from "../lib/storePrices";
 import { useTranslation } from "react-i18next";
 import {
   Mail,
@@ -41,10 +45,6 @@ const LOYALTY_CENTS_PER_PERIOD_MONTHLY = 10;
 const LOYALTY_MAX_CENTS_MONTHLY = 100;
 const LOYALTY_CENTS_PER_PERIOD_YEARLY = 100;
 const LOYALTY_MAX_CENTS_YEARLY = 300;
-// Regular prices, for the Google Play loyalty tier's new price (kept in sync
-// with pages/Upgrade.tsx).
-const MONTHLY_PRICE_CENTS = 499;
-const ANNUAL_PRICE_CENTS = 2999;
 const LOYALTY_MAX_PERIODS_MONTHLY = 10;
 const LOYALTY_MAX_PERIODS_YEARLY = 3;
 
@@ -54,6 +54,8 @@ export default function ProfilePage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [theme, setTheme] = useState<ThemePreference>(getThemePreference);
+  // Loyalty amounts in the currency Google Play charges this user.
+  const storePrices = useStorePrices();
   const {
     user,
     initials,
@@ -216,6 +218,8 @@ export default function ProfilePage() {
         user?.proCurrentPeriodEnd &&
         (() => {
           const isYearly = user?.proInterval === "year";
+          const money = (cents: number) =>
+            formatMoney(cents / 100, storePrices, isYearly ? "annual" : "monthly");
           const loyaltyCentsPerPeriod = isYearly
             ? LOYALTY_CENTS_PER_PERIOD_YEARLY
             : LOYALTY_CENTS_PER_PERIOD_MONTHLY;
@@ -297,7 +301,7 @@ export default function ProfilePage() {
                   </p>
                   <p className="flex items-baseline gap-2 mt-0.5">
                     <span className="text-[34px] leading-tight font-black text-white whitespace-nowrap">
-                      -{formatAmount(loyaltyActiveDiscountCents / 100)}$
+                      -{money(loyaltyActiveDiscountCents)}
                     </span>
                     <span className="text-[10px] font-bold text-white/80 uppercase tracking-wide">
                       {t("profile.loyaltyActuel")}
@@ -306,13 +310,13 @@ export default function ProfilePage() {
                   <p className="text-xs text-white/85 mt-1">
                     {atMax ? (
                       t("profile.loyaltyMaxed", {
-                        amount: formatAmount(loyaltyMaxCents / 100),
+                        amount: money(loyaltyMaxCents),
                       })
                     ) : (
                       <>
                         {t("profile.loyaltyRemainingLead", { count: remainingCount })}{" "}
                         <span className="font-black text-white">
-                          -{formatAmount(loyaltyMaxCents / 100)}$
+                          -{money(loyaltyMaxCents)}
                         </span>
                       </>
                     )}
@@ -340,11 +344,11 @@ export default function ProfilePage() {
                       </div>
                       <div className="flex items-center gap-2 flex-shrink-0">
                         <span className="text-xs font-semibold text-gray-400 line-through">
-                          -{formatAmount(loyaltyDiscountCents / 100)}$
+                          -{money(loyaltyDiscountCents)}
                         </span>
                         <ArrowRight size={13} className="text-gray-700 flex-shrink-0" />
                         <span className="text-sm font-black text-white bg-[#23784d] px-3 py-1.5 rounded-full whitespace-nowrap">
-                          -{formatAmount(nextDiscountCents / 100)}$
+                          -{money(nextDiscountCents)}
                         </span>
                       </div>
                     </div>
@@ -355,7 +359,12 @@ export default function ProfilePage() {
                       upgradeProductId={user.loyaltyUpgradeProductId}
                       onActivated={() => refreshUntilOnProduct(user.loyaltyUpgradeProductId)}
                       currentProductId={user.proProductId}
-                      newPriceLabel={`${formatAmount(((isYearly ? ANNUAL_PRICE_CENTS : MONTHLY_PRICE_CENTS) - loyaltyDiscountCents) / 100)}$${isYearly ? t("upgrade.perYear") : t("upgrade.perMonth")}`}
+                      newPriceLabel={`${formatMoney(
+                        BASE_PRICES[isYearly ? "annual" : "monthly"] -
+                          loyaltyDiscountCents / 100,
+                        storePrices,
+                        isYearly ? "annual" : "monthly",
+                      )}${isYearly ? t("upgrade.perYear") : t("upgrade.perMonth")}`}
                     />
                   )}
                 </div>
