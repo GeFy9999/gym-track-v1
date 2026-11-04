@@ -351,6 +351,8 @@
       "add": "+15 s",
       "skip": "Skip",
       "skipAria": "Skip the rest time",
+      "exactAlarmHint": "Turn on \"Alarms & reminders\" to be alerted right when your rest ends, even outside the app.",
+      "exactAlarmAllow": "Turn on",
       "expandAria": "Expand the rest timer",
       "custom": "Custom (s)"
     },

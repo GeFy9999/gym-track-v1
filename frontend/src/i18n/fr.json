@@ -351,6 +351,8 @@
       "add": "+15 s",
       "skip": "Passer",
       "skipAria": "Passer le temps de repos",
+      "exactAlarmHint": "Active « Alarmes et rappels » pour être averti pile à la fin du repos, même hors de l'app.",
+      "exactAlarmAllow": "Activer",
       "expandAria": "Agrandir le minuteur de repos",
       "custom": "Perso (s)"
     },
