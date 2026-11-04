@@ -299,8 +299,8 @@ export default function UpgradePage() {
       <div className="min-h-screen bg-[#faf6f1] flex flex-col items-center justify-center px-page-narrow text-center">
         {isPro ? (
           <>
-            <div className="w-16 h-16 rounded-full bg-[#ece7dd] flex items-center justify-center mb-4">
-              <Check size={28} className="text-[#3a9e6e]" />
+            <div className="w-16 h-16 rounded-full bg-[#3a9e6e] flex items-center justify-center mb-4">
+              <Check size={28} strokeWidth={3} className="text-white" />
             </div>
             <h1 className="text-xl font-black text-gray-900 mb-2">
               {t("upgrade.activated")}
@@ -514,8 +514,8 @@ export default function UpgradePage() {
           <div className="space-y-2.5">
             {FEATURE_KEYS.map((key) => (
               <div key={key} className="flex items-center gap-2.5">
-                <div className="w-5 h-5 rounded-full bg-white/60 flex items-center justify-center flex-shrink-0">
-                  <Check size={12} className="text-[#3a9e6e]" />
+                <div className="w-5 h-5 rounded-full bg-[#3a9e6e] flex items-center justify-center flex-shrink-0">
+                  <Check size={12} strokeWidth={3} className="text-white" />
                 </div>
                 <p className="text-sm text-gray-700">
                   {t(`upgrade.featureList.${key}`)}
