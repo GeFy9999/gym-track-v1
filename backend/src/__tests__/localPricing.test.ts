@@ -44,6 +44,20 @@ describe("GET /api/pricing/local", () => {
     expect(res.body).toEqual({ currency: "CAD", rate: 1 });
   });
 
+  it("uses DEV_FAKE_IP for a local request, not for a real visitor", async () => {
+    vi.stubEnv("DEV_FAKE_IP", "90.84.0.1"); // France
+    try {
+      const local = await request(app).get("/api/pricing/local");
+      expect(local.body).toEqual({ currency: "EUR", rate: 0.64 });
+      const visitor = await request(app)
+        .get("/api/pricing/local")
+        .set("X-Forwarded-For", CANADA_IP);
+      expect(visitor.body).toEqual({ currency: "CAD", rate: 1 });
+    } finally {
+      vi.unstubAllEnvs();
+    }
+  });
+
   it("returns no rate when the rates service is down", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => new Response("", { status: 503 })));
     const res = await request(app)
