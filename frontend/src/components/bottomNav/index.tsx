@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Home, BarChart3, History, User, Dumbbell } from "lucide-react";
+import { Home, BarChart3, History, Settings, Dumbbell } from "lucide-react";
 
 const links = [
   { to: "/dashboard", labelKey: "nav.home", tourKey: "accueil", icon: Home },
@@ -19,7 +19,7 @@ const links = [
     tourKey: "historique",
     icon: History,
   },
-  { to: "/profil", labelKey: "nav.profile", tourKey: "profil", icon: User },
+  { to: "/profil", labelKey: "nav.profile", tourKey: "profil", icon: Settings },
 ];
 
 export default function BottomNav() {

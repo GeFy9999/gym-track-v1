@@ -27,7 +27,7 @@
     "stats": "Stats",
     "exercises": "Exercices",
     "history": "Histo.",
-    "profile": "Profil"
+    "profile": "Paramètres"
   },
   "login": {
     "subtitle": "Connecte-toi à ton compte",
@@ -124,10 +124,10 @@
       "muscleGroups": { "title": "Groupes musculaires", "desc": "Clique sur un groupe musculaire pour créer une session et ajouter des exercices. Un badge orange apparaîtra quand une session est en cours." },
       "activity": { "title": "Activité récente", "desc": "Ici tu retrouves tes dernières sessions avec les exercices et sets que tu as faits." },
       "home": { "title": "Accueil", "desc": "C'est ici, ton tableau de bord principal. Tu y verras ta semaine, tes groupes musculaires et ton activité récente." },
-      "stats": { "title": "Statistiques", "desc": "Consulte tes records personnels, ta progression et le volume de travail par groupe musculaire." },
+      "stats": { "title": "Statistiques", "desc": "Consulte tes records personnels, ta progression, tes photos de progression et le volume de travail par groupe musculaire." },
       "exercises": { "title": "Exercices", "desc": "Parcours tous les exercices et ouvre-en un pour voir sa démonstration, ta progression et tes records. Appuie sur le trophée pour le suivre en record personnel dans Stats." },
       "history": { "title": "Historique", "desc": "Retrouve toutes tes séances passées, mois par mois, regroupées par semaine et par jour. Clique sur une séance pour revoir les détails." },
-      "profile": { "title": "Profil", "desc": "Gère ton compte, change ton mot de passe, suis ton poids corporel et consulte tes photos de progression." }
+      "profile": { "title": "Paramètres", "desc": "Gère ton compte, ton abonnement, tes préférences et tes réglages d'entraînement." }
     },
     "abandoned": {
       "title": "Séance {{group}} en cours",
@@ -163,11 +163,14 @@
     "noData": "Pas encore de données",
     "weightWillBeSaved": "Ton poids sera enregistré chaque semaine",
     "bodyWeight": "Poids corporel",
+    "progressPhotos": "Photos de progression",
+    "view": "Voir",
     "oneRepMaxEmpty": "Active le trophée sur un exercice et enregistre un set pour voir son 1RM estimé ici.",
     "tour": {
       "records": { "title": "Records personnels", "desc": "Le meilleur poids jamais soulevé pour chaque exercice que tu suis (active le trophée sur une carte d'exercice pour l'ajouter ici)." },
       "oneRepMax": { "title": "Force maximale estimée par 1 répétition", "desc": "Ton 1RM estimé (formule d'Epley) pour chaque exercice suivi et sa progression. Touche un exercice pour voir son graphique complet." },
       "progression": { "title": "Progression", "desc": "L'évolution de ton poids corporel au fil des semaines." },
+      "progressPhotos": { "title": "Photos de progression", "desc": "Prends des photos régulièrement pour visualiser ta progression physique dans le temps." },
       "volume": { "title": "Volume par groupe musculaire", "desc": "Le nombre de sets effectués par groupe musculaire, pour voir où va ton volume d'entraînement." }
     }
   },
@@ -413,10 +416,7 @@
     }
   },
   "profile": {
-    "title": "Profil",
-    "progression": "Progression",
-    "progressPhotos": "Photos de progression",
-    "view": "Voir",
+    "title": "Paramètres",
     "data": "Données",
     "importData": "Importer des données",
     "rateApp": "Noter GymsTrack",
@@ -460,7 +460,7 @@
       "doneBody": "Tu paieras {{price}} à partir de ton prochain renouvellement.",
       "activate": "Activer ma réduction",
       "notifFirstTitle": "Ta réduction est prête 🎉",
-      "notifFirstBody": "Active-la dans ton Profil pour payer {{price}} à partir de ton prochain renouvellement.",
+      "notifFirstBody": "Active-la dans tes Paramètres pour payer {{price}} à partir de ton prochain renouvellement.",
       "notifFinalTitle": "Plus que 2 jours pour ta réduction",
       "notifFinalBody": "Ton abonnement se renouvelle bientôt : active ta réduction pour payer {{price}}."
     },
@@ -484,10 +484,6 @@
     "restTimerAutoAria": "Activer le minuteur de repos automatique",
     "barModeAria": "Activer la saisie selon le type de chargement",
     "tour": {
-      "progressPhotos": {
-        "title": "Photos de progression",
-        "description": "Prends des photos régulièrement pour visualiser ta progression physique dans le temps."
-      },
       "account": {
         "title": "Compte",
         "description": "Gère ton courriel, ton mot de passe et un courriel de récupération en cas de perte d'accès."
@@ -688,6 +684,9 @@
     "photoAlt": "Progression",
     "tipTitle": "Une photo par semaine",
     "tipDesc": "Même pose, même éclairage : la comparaison sera bien plus parlante dans un mois.",
+    "addNote": "Ajouter une note",
+    "notePlaceholder": "Poids, phase (bulk, sèche), ressenti…",
+    "saveNote": "Enregistrer",
     "deletePhotoTitle": "Supprimer cette photo ?",
     "deletePhotoDesc": "Cette action est irréversible.",
     "cancel": "Annuler",
@@ -830,7 +829,7 @@
       "renewal": "Abonnement à renouvellement automatique : {{price}}{{trial}}, débité à chaque période jusqu'à annulation. Annule à tout moment, au moins 24 h avant la date de renouvellement, depuis {{where}} ; l'accès Pro reste actif jusqu'à la fin de la période payée.",
       "trial": ", après l'essai gratuit de 7 jours (aucuns frais si tu annules avant la fin de l'essai)",
       "wherePlay": "les abonnements de ton compte Google Play",
-      "whereWeb": "ton profil GymsTrack",
+      "whereWeb": "tes paramètres GymsTrack",
       "lifetime": "Paiement unique, non récurrent : aucun renouvellement.",
       "taxes": "Prix en dollars canadiens, taxes applicables en sus selon ta région.",
       "taxesPlay": "Le prix final, dans ta devise et taxes incluses, est affiché par Google Play avant la confirmation de l'achat.",

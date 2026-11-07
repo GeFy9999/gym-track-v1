@@ -106,7 +106,7 @@ export const PRIVACY_CONTENT: Record<"fr" | "en", PrivacyContent> = {
       {
         title: "Suppression de ton compte",
         paragraphs: [
-          ["Tu peux supprimer ton compte et toutes les données associées à tout moment dans l'application (Profil → Zone de danger → Supprimer le compte), ou sans l'application via ", { href: "/account-deletion", label: "cette page web" }, ". Cette action est définitive et immédiate. Pense à annuler aussi ton abonnement dans Google Play si tu en as un."],
+          ["Tu peux supprimer ton compte et toutes les données associées à tout moment dans l'application (Paramètres → Zone de danger → Supprimer le compte), ou sans l'application via ", { href: "/account-deletion", label: "cette page web" }, ". Cette action est définitive et immédiate. Pense à annuler aussi ton abonnement dans Google Play si tu en as un."],
         ],
       },
       {
@@ -219,7 +219,7 @@ export const PRIVACY_CONTENT: Record<"fr" | "en", PrivacyContent> = {
       {
         title: "Deleting your account",
         paragraphs: [
-          ["You can delete your account and all associated data at any time in the app (Profile → Danger zone → Delete account), or without the app via ", { href: "/account-deletion", label: "this web page" }, ". This is permanent and immediate. Remember to also cancel your Google Play subscription if you have one."],
+          ["You can delete your account and all associated data at any time in the app (Settings → Danger zone → Delete account), or without the app via ", { href: "/account-deletion", label: "this web page" }, ". This is permanent and immediate. Remember to also cancel your Google Play subscription if you have one."],
         ],
       },
       {

@@ -1,12 +1,15 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ChevronLeft, Camera, Trash2, X, Crown } from "lucide-react";
+import { ChevronLeft, Camera, Trash2, X, Crown, Pencil } from "lucide-react";
 import { API_URL } from "../lib/api";
 import { getDateLocale } from "../i18n";
 import { useIsPro } from "../hooks/useIsPro";
 import { offlineAwareFetch } from "../lib/offlineFetch";
 import { onSyncQueueChange } from "../lib/syncQueue";
+
+// Same limit as the backend (progressPhotoController NOTE_MAX_LENGTH).
+const NOTE_MAX_LENGTH = 300;
 
 type PhotoMeta = {
   id: string;
@@ -51,6 +54,8 @@ export default function ProgressPhotosPage() {
   const [uploading, setUploading] = useState(false);
   const [viewPhoto, setViewPhoto] = useState<PhotoMeta | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [editingNote, setEditingNote] = useState(false);
+  const [noteDraft, setNoteDraft] = useState("");
 
   const token = localStorage.getItem("token");
 
@@ -116,6 +121,45 @@ export default function ProgressPhotosPage() {
     }
   };
 
+  const openPhoto = (photo: PhotoMeta) => {
+    setViewPhoto(photo);
+    setEditingNote(false);
+  };
+
+  const closePhoto = () => {
+    setViewPhoto(null);
+    setDeleteConfirm(null);
+    setEditingNote(false);
+  };
+
+  const startEditingNote = () => {
+    setNoteDraft(viewPhoto?.note ?? "");
+    setEditingNote(true);
+  };
+
+  const handleSaveNote = async () => {
+    if (!viewPhoto) return;
+    const id = viewPhoto.id;
+    const note = noteDraft.trim() || null;
+    setEditingNote(false);
+    if (note === viewPhoto.note) return;
+
+    setPhotos((prev) => prev.map((p) => (p.id === id ? { ...p, note } : p)));
+    setViewPhoto((prev) => (prev && prev.id === id ? { ...prev, note } : prev));
+
+    // A photo added offline: queued behind its upload, like a delete.
+    try {
+      await offlineAwareFetch(
+        "PATCH",
+        `/progress-photos/${id}`,
+        { note },
+        "Note de photo",
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const handleDelete = async (id: string) => {
     setPhotos(photos.filter((p) => p.id !== id));
     setViewPhoto(null);
@@ -133,15 +177,6 @@ export default function ProgressPhotosPage() {
     } catch (err) {
       console.error(err);
     }
-  };
-
-  const formatDate = (dateStr: string) => {
-    const d = new Date(dateStr);
-    return d.toLocaleDateString(getDateLocale(), {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
   };
 
   const formatShortDate = (dateStr: string) => {
@@ -290,17 +325,24 @@ export default function ProgressPhotosPage() {
                 {group.map((photo) => (
                   <button
                     key={photo.id}
-                    onClick={() => setViewPhoto(photo)}
-                    className="relative aspect-square bg-[#ece7dd] border-2 border-dashed border-[#d6d0c1] rounded-2xl overflow-hidden active:scale-[0.97] transition-transform shadow-sm"
+                    onClick={() => openPhoto(photo)}
+                    className="flex flex-col text-left active:scale-[0.97] transition-transform"
                   >
-                    <img
-                      src={photo.data}
-                      alt={t("progressPhotos.photoAlt")}
-                      className="w-full h-full object-cover"
-                    />
-                    <span className="absolute bottom-1.5 left-1/2 -translate-x-1/2 text-[9px] font-bold text-white uppercase tracking-wide bg-[#191714] px-2 py-1 rounded-full whitespace-nowrap">
+                    <div className="w-full aspect-square bg-[#ece7dd] border-2 border-dashed border-[#d6d0c1] rounded-2xl overflow-hidden shadow-sm">
+                      <img
+                        src={photo.data}
+                        alt={t("progressPhotos.photoAlt")}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <span className="mt-1.5 px-0.5 text-[10px] font-bold text-gray-900 uppercase tracking-wide">
                       {formatShortDate(photo.createdAt)}
                     </span>
+                    {photo.note && (
+                      <span className="px-0.5 text-[11px] leading-snug text-gray-500 line-clamp-2 break-words">
+                        {photo.note}
+                      </span>
+                    )}
                   </button>
                 ))}
               </div>
@@ -326,17 +368,11 @@ export default function ProgressPhotosPage() {
         <div className="fixed inset-0 bg-black/90 z-50 flex flex-col animate-fade-in">
           <div className="flex items-center justify-between px-5 pt-6 pb-4">
             <button
-              onClick={() => {
-                setViewPhoto(null);
-                setDeleteConfirm(null);
-              }}
+              onClick={closePhoto}
               className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center"
             >
               <X size={18} className="text-white" />
             </button>
-            <p className="text-sm text-white/70 font-medium">
-              {formatDate(viewPhoto.createdAt)}
-            </p>
             <button
               onClick={() => setDeleteConfirm(viewPhoto.id)}
               className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center"
@@ -345,12 +381,65 @@ export default function ProgressPhotosPage() {
             </button>
           </div>
 
-          <div className="flex-1 flex items-center justify-center px-4">
+          <div className="flex-1 min-h-0 flex items-center justify-center px-4">
             <img
               src={viewPhoto.data}
               alt={t("progressPhotos.photoAlt")}
               className="max-w-full max-h-full object-contain rounded-lg"
             />
+          </div>
+
+          {/* Date + note */}
+          <div className="px-5 pt-4 pb-8">
+            <p className="text-xs font-bold text-white uppercase tracking-widest mb-2">
+              {formatGroupLabel(viewPhoto.createdAt)}
+            </p>
+            {editingNote ? (
+              <div>
+                <textarea
+                  value={noteDraft}
+                  onChange={(e) => setNoteDraft(e.target.value)}
+                  maxLength={NOTE_MAX_LENGTH}
+                  rows={3}
+                  autoFocus
+                  placeholder={t("progressPhotos.notePlaceholder")}
+                  className="w-full bg-white/10 text-white text-sm rounded-xl px-3 py-2.5 placeholder:text-white/40 outline-none focus:ring-2 focus:ring-[#c9552c] resize-none"
+                />
+                <div className="flex items-center justify-between mt-2">
+                  <span className="text-[10px] text-white/40">
+                    {noteDraft.length}/{NOTE_MAX_LENGTH}
+                  </span>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setEditingNote(false)}
+                      className="px-4 py-2 rounded-full bg-white/10 text-white text-xs font-bold uppercase"
+                    >
+                      {t("progressPhotos.cancel")}
+                    </button>
+                    <button
+                      onClick={handleSaveNote}
+                      className="px-4 py-2 rounded-full bg-[#c9552c] text-white text-xs font-bold uppercase"
+                    >
+                      {t("progressPhotos.saveNote")}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={startEditingNote}
+                className="w-full flex items-start gap-2 text-left"
+              >
+                <p
+                  className={`flex-1 text-sm leading-relaxed whitespace-pre-wrap break-words ${
+                    viewPhoto.note ? "text-white/90" : "text-white/40 italic"
+                  }`}
+                >
+                  {viewPhoto.note ?? t("progressPhotos.addNote")}
+                </p>
+                <Pencil size={14} className="text-white/60 mt-1 flex-shrink-0" />
+              </button>
+            )}
           </div>
 
           {/* Delete confirmation */}

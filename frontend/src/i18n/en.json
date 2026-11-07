@@ -27,7 +27,7 @@
     "stats": "Stats",
     "exercises": "Exercises",
     "history": "History",
-    "profile": "Profile"
+    "profile": "Settings"
   },
   "login": {
     "subtitle": "Log in to your account",
@@ -124,10 +124,10 @@
       "muscleGroups": { "title": "Muscle groups", "desc": "Tap a muscle group to create a session and add exercises. An orange badge appears while a session is in progress." },
       "activity": { "title": "Recent activity", "desc": "Here you'll find your latest sessions with the exercises and sets you did." },
       "home": { "title": "Home", "desc": "This is your main dashboard. You'll see your week, your muscle groups, and your recent activity here." },
-      "stats": { "title": "Stats", "desc": "Check your personal records, your progression, and your training volume by muscle group." },
+      "stats": { "title": "Stats", "desc": "Check your personal records, your progression, your progress photos, and your training volume by muscle group." },
       "exercises": { "title": "Exercises", "desc": "Browse every exercise and open one to see its demo, your progress and your records. Tap the trophy to track it as a personal record in Stats." },
       "history": { "title": "History", "desc": "Find all your past sessions, month by month, grouped by week and by day. Tap a session to review the details." },
-      "profile": { "title": "Profile", "desc": "Manage your account, change your password, track your body weight, and check your progress photos." }
+      "profile": { "title": "Settings", "desc": "Manage your account, your subscription, your preferences and your training settings." }
     },
     "abandoned": {
       "title": "{{group}} session in progress",
@@ -163,11 +163,14 @@
     "noData": "No data yet",
     "weightWillBeSaved": "Your weight will be recorded every week",
     "bodyWeight": "Body weight",
+    "progressPhotos": "Progress photos",
+    "view": "View",
     "oneRepMaxEmpty": "Enable the trophy on an exercise and log a set to see its estimated 1RM here.",
     "tour": {
       "records": { "title": "Personal records", "desc": "The best weight you've ever lifted for each exercise you track (enable the trophy on an exercise card to add it here)." },
       "oneRepMax": { "title": "Estimated 1-rep max strength", "desc": "Your estimated 1RM (Epley formula) for each tracked exercise and how it changed. Tap an exercise to see its full chart." },
       "progression": { "title": "Progression", "desc": "How your body weight has evolved week by week." },
+      "progressPhotos": { "title": "Progress photos", "desc": "Take photos regularly to see your physical progress over time." },
       "volume": { "title": "Volume by muscle group", "desc": "The number of sets done per muscle group, to see where your training volume goes." }
     }
   },
@@ -413,10 +416,7 @@
     }
   },
   "profile": {
-    "title": "Profile",
-    "progression": "Progression",
-    "progressPhotos": "Progress photos",
-    "view": "View",
+    "title": "Settings",
     "data": "Data",
     "importData": "Import data",
     "rateApp": "Rate GymsTrack",
@@ -460,7 +460,7 @@
       "doneBody": "You'll pay {{price}} from your next renewal.",
       "activate": "Activate my discount",
       "notifFirstTitle": "Your discount is ready 🎉",
-      "notifFirstBody": "Activate it in your Profile to pay {{price}} from your next renewal.",
+      "notifFirstBody": "Activate it in your Settings to pay {{price}} from your next renewal.",
       "notifFinalTitle": "2 days left for your discount",
       "notifFinalBody": "Your subscription renews soon: activate your discount to pay {{price}}."
     },
@@ -484,10 +484,6 @@
     "restTimerAutoAria": "Enable the automatic rest timer",
     "barModeAria": "Enable loading-type inputs",
     "tour": {
-      "progressPhotos": {
-        "title": "Progress photos",
-        "description": "Take photos regularly to visualize your physical progress over time."
-      },
       "account": {
         "title": "Account",
         "description": "Manage your email, password, and a recovery email in case you lose access."
@@ -688,6 +684,9 @@
     "photoAlt": "Progress",
     "tipTitle": "One photo a week",
     "tipDesc": "Same pose, same lighting: the comparison will be much clearer in a month.",
+    "addNote": "Add a note",
+    "notePlaceholder": "Weight, phase (bulk, cut), how you feel…",
+    "saveNote": "Save",
     "deletePhotoTitle": "Delete this photo?",
     "deletePhotoDesc": "This action cannot be undone.",
     "cancel": "Cancel",
@@ -830,7 +829,7 @@
       "renewal": "Auto-renewing subscription: {{price}}{{trial}}, charged each period until cancelled. Cancel anytime, at least 24 hours before the renewal date, from {{where}}; Pro access stays active until the end of the paid period.",
       "trial": ", after the 7-day free trial (no charge if you cancel before the trial ends)",
       "wherePlay": "the subscriptions in your Google Play account",
-      "whereWeb": "your GymsTrack profile",
+      "whereWeb": "your GymsTrack settings",
       "lifetime": "One-time payment, non-recurring: no renewal.",
       "taxes": "Prices in Canadian dollars, plus applicable taxes depending on your region.",
       "taxesPlay": "The final price, in your currency and including taxes, is shown by Google Play before you confirm the purchase.",
