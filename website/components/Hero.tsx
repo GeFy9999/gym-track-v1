@@ -1,6 +1,9 @@
 import Image from "next/image";
 import type { Dictionary, Locale } from "@/dictionaries";
 
+const GOOGLE_PLAY_URL =
+  "https://play.google.com/store/apps/details?id=com.gymstrack.app";
+
 type Props = {
   dict: Dictionary["hero"];
   locale: Locale;
@@ -34,8 +37,7 @@ export default function Hero({ dict, locale }: Props) {
         </p>
 
         <div id="telecharger" className="flex flex-wrap items-center justify-center gap-4 mt-9">
-          {/* Real store links will replace "#" once GymsTrack is actually published.
-              Apple's badge SVG and Google's PNG have different native aspect ratios
+          {/* Apple's badge SVG and Google's PNG have different native aspect ratios
               (and Google's reads visually smaller at an equal height), so these use
               independently tuned heights rather than one shared height/width. */}
           {/* Not on the App Store yet: greyed out, not clickable, with a
@@ -56,7 +58,12 @@ export default function Hero({ dict, locale }: Props) {
               {dict.appStoreSoon}
             </span>
           </div>
-          <a href="#" className="block opacity-90 hover:opacity-100 transition-opacity">
+          <a
+            href={GOOGLE_PLAY_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block opacity-90 hover:opacity-100 transition-opacity"
+          >
             <Image src={googlePlayBadge} alt="Google Play" width={160} height={62} />
           </a>
         </div>
