@@ -8,24 +8,24 @@ export type Dictionary = {
   hero: {
     title: [string, string];
     subtitle: string;
+    appStoreSoon: string;
   };
-  demos: {
+  bodyWeight: {
     eyebrow: string;
     title: string;
-    subtitle: string;
-    free: { label: string; description: string };
-    pro: { label: string; description: string };
-    comingSoon: string;
+    body: string;
+    imageAlt: string;
+    points: { title: string; description: string }[];
   };
-  phoneMock: {
-    thisWeek: string;
-    completed: string;
-    backBiceps: string;
-    exercises: string;
-    benchPress: string;
-    weeklyGain: string;
-    currentStreak: string;
-    streakWeeks: string;
+  demos: {
+    badge: string;
+    eyebrow: string;
+    title: string;
+    body: string;
+    videoLabel: string;
+    points: { title: string; description: string }[];
+    alsoInPro: string;
+    cta: string;
   };
   features: {
     eyebrow: string;
@@ -37,6 +37,7 @@ export type Dictionary = {
     eyebrow: string;
     title: string;
     body: string;
+    videoLabel: string;
     points: { title: string; description: string }[];
   };
   pricing: {

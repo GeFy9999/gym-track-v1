@@ -1,58 +1,71 @@
-import { Play } from "lucide-react";
-import PhoneMockup from "./PhoneMockup";
+import { ArrowRight, Calculator, Disc3, Layers } from "lucide-react";
+import PhoneVideo from "./PhoneVideo";
 import type { Dictionary } from "@/dictionaries";
+
+const icons = [Disc3, Calculator, Layers];
 
 type Props = {
   dict: Dictionary["demos"];
-  phoneDict: Dictionary["phoneMock"];
 };
 
-// Real screen-recorded demos (free + Pro) will replace these placeholder
-// frames once they exist — see conversation notes. The illustrative phone
-// mockup stands in for a video thumbnail in the meantime.
-export default function Demos({ dict, phoneDict }: Props) {
-  const cards = [
-    { ...dict.free, accent: "#3a9e6e" },
-    { ...dict.pro, accent: "#c9552c" },
-  ];
-
+// Pro spotlight: a short screen recording of bar mode / plate loading, the
+// Pro feature that reads best on its own in a few seconds.
+export default function Demos({ dict }: Props) {
   return (
-    <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20 md:py-28">
-      <div className="text-center max-w-xl mx-auto mb-14">
-        <p className="text-xs font-bold uppercase tracking-widest text-[#c9552c] mb-3">
-          {dict.eyebrow}
-        </p>
-        <h2 className="text-4xl sm:text-5xl font-black text-[#191714] tracking-tight">
-          {dict.title}
-        </h2>
-        <p className="text-[#191714]/60 mt-4">{dict.subtitle}</p>
-      </div>
-
-      <div className="grid md:grid-cols-2 gap-6 md:gap-8">
-        {cards.map((card) => (
-          <div key={card.label} className="bg-[#ece7dd] rounded-3xl p-5 sm:p-8">
-            <div className="relative flex items-center justify-center py-6 sm:py-8">
-              <div className="opacity-50 w-full max-w-[200px] sm:max-w-[260px]">
-                <PhoneMockup dict={phoneDict} />
-              </div>
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-                <div
-                  className="w-16 h-16 rounded-full flex items-center justify-center shadow-lg"
-                  style={{ backgroundColor: card.accent }}
-                >
-                  <Play size={24} className="text-white ml-1" fill="currentColor" />
-                </div>
-                <p className="text-xs font-bold uppercase tracking-widest text-[#191714]/50 bg-[#faf6f1] px-3 py-1.5 rounded-full">
-                  {dict.comingSoon}
-                </p>
-              </div>
-            </div>
-            <h3 className="text-sm font-bold text-[#191714] uppercase tracking-wide mt-4">
-              {card.label}
-            </h3>
-            <p className="text-sm text-[#191714]/60 mt-1">{card.description}</p>
+    <section className="py-16 sm:py-20 md:py-28 overflow-hidden">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+        <div>
+          <div className="flex items-center gap-2.5 mb-3">
+            <span className="text-[10px] font-bold uppercase tracking-wide bg-[#c9552c] text-white px-2.5 py-1 rounded-full">
+              {dict.badge}
+            </span>
+            <p className="text-xs font-bold uppercase tracking-widest text-[#c9552c]">
+              {dict.eyebrow}
+            </p>
           </div>
-        ))}
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#191714] tracking-tight leading-[1.05]">
+            {dict.title}
+          </h2>
+          <p className="text-[#191714]/70 text-lg mt-5 leading-relaxed">{dict.body}</p>
+
+          <div className="space-y-6 mt-10">
+            {dict.points.map((point, i) => {
+              const Icon = icons[i];
+              return (
+                <div key={point.title} className="flex gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center flex-shrink-0">
+                    <Icon size={17} className="text-[#c9552c]" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-[#191714] mb-1">{point.title}</h3>
+                    <p className="text-sm text-[#191714]/60 leading-relaxed">
+                      {point.description}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <p className="text-sm text-[#191714]/50 mt-8">{dict.alsoInPro}</p>
+          <a
+            href="#tarifs"
+            className="inline-flex items-center gap-2 mt-4 bg-[#c9552c] text-white text-sm font-bold uppercase tracking-wide px-6 py-3 rounded-full shadow-sm hover:bg-[#b44a25] transition-colors"
+          >
+            {dict.cta}
+            <ArrowRight size={16} />
+          </a>
+        </div>
+
+        <div className="relative flex justify-center">
+          <div
+            aria-hidden
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[420px] h-[420px] rounded-full bg-[#f0994a]/15 blur-3xl"
+          />
+          <div className="relative w-full">
+            <PhoneVideo src="/demo-mode-barre.mp4" label={dict.videoLabel} />
+          </div>
+        </div>
       </div>
     </section>
   );

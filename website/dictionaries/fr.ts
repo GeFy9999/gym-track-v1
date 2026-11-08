@@ -11,30 +11,56 @@ const fr: Dictionary = {
     title: ["Soulève plus.", "Devine moins."],
     subtitle:
       "GymsTrack est l'app de suivi de musculation qui garde tes poids, tes répétitions et tes records en un seul endroit — pour que tu voies vraiment ta progression, séance après séance.",
+    appStoreSoon: "Bientôt",
+  },
+  bodyWeight: {
+    eyebrow: "Poids corporel",
+    title: "Vois ton corps changer, semaine après semaine.",
+    body: "GymsTrack te demande ton poids une fois par semaine et trace ta courbe tout seul. Tu vois d'un coup d'œil où tu en es et combien tu as perdu ou pris depuis le début.",
+    imageAlt: "Écran Statistiques de GymsTrack avec le graphique du poids corporel",
+    points: [
+      {
+        title: "Une pesée par semaine",
+        description:
+          "Au début de la semaine, l'app te demande ton poids. Dix secondes, et c'est noté.",
+      },
+      {
+        title: "Ta tendance, pas juste un chiffre",
+        description:
+          "La courbe montre ta direction et le total gagné ou perdu, pour garder le cap en bulk comme en sèche.",
+      },
+      {
+        title: "En lb ou en kg",
+        description:
+          "Choisis ton unité dans les paramètres : le graphique et toute l'app s'adaptent.",
+      },
+    ],
   },
   demos: {
-    eyebrow: "En action",
-    title: "Vois GymsTrack en action",
-    subtitle: "Du suivi de base aux outils avancés de Pro.",
-    free: {
-      label: "Version gratuite",
-      description: "Suivi de séances, exercices, poids et répétitions",
-    },
-    pro: {
-      label: "Version Pro",
-      description: "Graphiques avancés, mode barre, historique illimité",
-    },
-    comingSoon: "Vidéo à venir",
-  },
-  phoneMock: {
-    thisWeek: "Cette semaine",
-    completed: "séances complétées",
-    backBiceps: "Dos & Biceps",
-    exercises: "6 exercices",
-    benchPress: "Développé couché",
-    weeklyGain: "+5 lb cette semaine",
-    currentStreak: "Série en cours",
-    streakWeeks: "12 semaines d'affilée",
+    badge: "Pro",
+    eyebrow: "Mode barre",
+    title: "Entre tes plaques. L'app fait le calcul.",
+    body: "Plus besoin d'additionner dans ta tête : tu entres ce que tu mets de chaque côté et GymsTrack calcule le total, barre comprise. La saisie s'adapte aussi à l'équipement de chaque exercice.",
+    videoLabel: "Vidéo du mode barre de GymsTrack : choix de la barre, poids par côté et total calculé",
+    points: [
+      {
+        title: "Choisis ta barre",
+        description:
+          "45, 35 ou 15 lb : le poids de la barre est compté automatiquement dans le total.",
+      },
+      {
+        title: "Poids par côté, total calculé",
+        description:
+          "Entre 25 lb par côté, l'app affiche les plaques à charger et le total de 95 lb.",
+      },
+      {
+        title: "Selon l'équipement",
+        description:
+          "Barre, machine à plaques ou poulie : chaque exercice garde sa façon de se charger.",
+      },
+    ],
+    alsoInPro: "Aussi dans Pro : supersets, échauffement auto, graphiques avancés, historique illimité et plus.",
+    cta: "Voir les forfaits Pro",
   },
   features: {
     eyebrow: "Fonctionnalités",
@@ -75,7 +101,7 @@ const fr: Dictionary = {
       {
         title: "Français et anglais",
         description:
-          "Toute l'app est disponible dans les deux langues, change en un clic dans ton profil.",
+          "Toute l'app est disponible dans les deux langues, change en un clic dans tes paramètres.",
       },
       {
         title: "iOS et Android",
@@ -85,24 +111,30 @@ const fr: Dictionary = {
     ],
   },
   about: {
-    eyebrow: "Comment nous fonctionnons",
-    title: "Des séances, pas des routines figées",
-    body: "La plupart des apps comme Strong ou Hevy te demandent de construire une routine d'avance, exercice par exercice, avant même de commencer à t'entraîner. GymsTrack fonctionne différemment : tu choisis un groupe musculaire, tu démarres ta séance, et tu ajoutes tes exercices au fur et à mesure — exactement comme tu t'entraînes vraiment.",
+    eyebrow: "Comment ça marche",
+    title: "Tu t'entraînes. L'app suit.",
+    body: "Pas besoin de bâtir une routine avant d'entrer au gym. Choisis un groupe musculaire, lance ta séance et ajoute tes exercices au fil de l'entraînement — GymsTrack s'occupe du reste.",
+    videoLabel: "Vidéo de l'application GymsTrack pendant une séance",
     points: [
       {
-        title: "Par séance, pas par exercice",
+        title: "Une séance lancée en un toucher",
         description:
-          "Organise-toi autour de tes journées d'entraînement (Dos, Jambes, Push...) plutôt que de routines rigides à préparer d'avance.",
+          "Dos, Jambes, Push… Choisis ta journée et c'est parti, sans rien préparer d'avance.",
       },
       {
-        title: "Flexible dès le départ",
+        title: "Change d'idée en cours de route",
         description:
-          "Improvise ta séance en temps réel — ajoute, retire ou réordonne tes exercices sans jamais être bloqué par un plan figé.",
+          "Machine prise ? Ajoute, retire ou réordonne tes exercices à tout moment, sans jamais être bloqué par un plan figé.",
       },
       {
-        title: "Le suivi suit, sans friction",
+        title: "Ta progression, automatiquement",
         description:
-          "Poids, répétitions et progression sont enregistrés automatiquement, peu importe comment ta séance évolue.",
+          "Poids et répétitions sont enregistrés à chaque set, et tes statistiques se mettent à jour toutes seules.",
+      },
+      {
+        title: "Tout sous la main pendant ta séance",
+        description:
+          "Minuteur de repos, type de set (échauffement, dégressif, à l'échec), note personnelle, démo animée de l'exercice avec le « i » et le trophée pour l'ajouter à ton suivi.",
       },
     ],
   },
@@ -140,7 +172,7 @@ const fr: Dictionary = {
     mostPopular: "Le plus populaire",
     cta: "Commencer",
     legalNote:
-      "Annule à tout moment depuis ton profil. Les abonnements se renouvellent automatiquement sauf annulation avant la fin de la période en cours.",
+      "Annule à tout moment depuis tes paramètres. Les abonnements se renouvellent automatiquement sauf annulation avant la fin de la période en cours.",
     loyalty: {
       title: "Plus tu restes, plus tu économises",
       subtitle:
@@ -183,11 +215,11 @@ const fr: Dictionary = {
       },
       {
         q: "Puis-je annuler mon abonnement Pro à tout moment ?",
-        a: "Oui, directement depuis ton profil dans l'app. Tu gardes l'accès Pro jusqu'à la fin de ta période payée, sans engagement.",
+        a: "Oui, directement depuis les paramètres de l'app. Tu gardes l'accès Pro jusqu'à la fin de ta période payée, sans engagement.",
       },
       {
         q: "L'app est-elle disponible en anglais ?",
-        a: "Oui, GymsTrack est entièrement bilingue français et anglais — change de langue en un clic dans les paramètres de ton profil.",
+        a: "Oui, GymsTrack est entièrement bilingue français et anglais — change de langue en un clic dans tes paramètres.",
       },
     ],
   },
