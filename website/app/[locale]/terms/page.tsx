@@ -65,7 +65,7 @@ function ContentFr() {
           </li>
           <li>
             Si tu t&apos;abonnes via le site web, le paiement est traité par
-            Stripe et géré depuis ton profil GymsTrack. Si tu t&apos;abonnes
+            Stripe et géré depuis tes paramètres GymsTrack. Si tu t&apos;abonnes
             via l&apos;application Android, le paiement est traité par
             Google Play et se gère depuis les paramètres d&apos;abonnement de
             ton compte Google Play.
@@ -200,7 +200,7 @@ function ContentEn() {
           </li>
           <li>
             If you subscribe through the website, payment is processed by
-            Stripe and managed from your GymsTrack profile. If you subscribe
+            Stripe and managed from your GymsTrack settings. If you subscribe
             through the Android app, payment is processed by Google Play and
             managed from your Google Play account&apos;s subscription
             settings.
