@@ -11,30 +11,56 @@ const en: Dictionary = {
     title: ["Lift more.", "Guess less."],
     subtitle:
       "GymsTrack is the strength-training app that keeps your weights, reps, and records in one place — so you can actually see your progress, workout after workout.",
+    appStoreSoon: "Soon",
+  },
+  bodyWeight: {
+    eyebrow: "Body weight",
+    title: "Watch your body change, week after week.",
+    body: "GymsTrack asks for your weight once a week and draws your curve for you. See at a glance where you stand and how much you've lost or gained since the start.",
+    imageAlt: "GymsTrack Stats screen with the body weight chart",
+    points: [
+      {
+        title: "One weigh-in a week",
+        description:
+          "At the start of the week, the app asks for your weight. Ten seconds and it's logged.",
+      },
+      {
+        title: "Your trend, not just a number",
+        description:
+          "The curve shows your direction and the total gained or lost, so you stay on track whether you're bulking or cutting.",
+      },
+      {
+        title: "In lb or kg",
+        description:
+          "Pick your unit in settings: the chart and the whole app follow.",
+      },
+    ],
   },
   demos: {
-    eyebrow: "In action",
-    title: "See GymsTrack in action",
-    subtitle: "From basic tracking to Pro's advanced tools.",
-    free: {
-      label: "Free version",
-      description: "Workout, exercise, weight, and rep tracking",
-    },
-    pro: {
-      label: "Pro version",
-      description: "Advanced charts, barbell mode, unlimited history",
-    },
-    comingSoon: "Video coming soon",
-  },
-  phoneMock: {
-    thisWeek: "This week",
-    completed: "workouts completed",
-    backBiceps: "Back & Biceps",
-    exercises: "6 exercises",
-    benchPress: "Bench Press",
-    weeklyGain: "+5 lb this week",
-    currentStreak: "Current streak",
-    streakWeeks: "12 weeks in a row",
+    badge: "Pro",
+    eyebrow: "Bar mode",
+    title: "Enter your plates. The app does the math.",
+    body: "No more adding it up in your head: enter what you load on each side and GymsTrack works out the total, bar included. Input also adapts to each exercise's equipment.",
+    videoLabel: "Video of GymsTrack's bar mode: picking the bar, weight per side and the calculated total",
+    points: [
+      {
+        title: "Pick your bar",
+        description:
+          "45, 35 or 15 lb: the bar's weight is added to the total automatically.",
+      },
+      {
+        title: "Weight per side, total worked out",
+        description:
+          "Enter 25 lb per side and the app shows the plates to load and the 95 lb total.",
+      },
+      {
+        title: "Matched to the equipment",
+        description:
+          "Barbell, plate-loaded machine or cable: each exercise keeps the way it's loaded.",
+      },
+    ],
+    alsoInPro: "Also in Pro: supersets, auto warm-up, advanced charts, unlimited history and more.",
+    cta: "See Pro plans",
   },
   features: {
     eyebrow: "Features",
@@ -75,7 +101,7 @@ const en: Dictionary = {
       {
         title: "French and English",
         description:
-          "The whole app is available in both languages — switch in one tap from your profile.",
+          "The whole app is available in both languages — switch in one tap from your settings.",
       },
       {
         title: "iOS and Android",
@@ -85,24 +111,30 @@ const en: Dictionary = {
     ],
   },
   about: {
-    eyebrow: "How we work",
-    title: "Workouts, not rigid routines",
-    body: "Most apps like Strong or Hevy ask you to build a routine ahead of time, exercise by exercise, before you even start training. GymsTrack works differently: pick a muscle group, start your workout, and add exercises as you go — exactly how you actually train.",
+    eyebrow: "How it works",
+    title: "You train. The app keeps up.",
+    body: "No need to build a routine before you hit the gym. Pick a muscle group, start your workout and add exercises as you go — GymsTrack handles the rest.",
+    videoLabel: "Video of the GymsTrack app during a workout",
     points: [
       {
-        title: "By workout, not by exercise",
+        title: "Start a workout in one tap",
         description:
-          "Organize around your training days (Back, Legs, Push...) instead of rigid routines prepared in advance.",
+          "Back, Legs, Push… Pick your day and go, with nothing to set up in advance.",
       },
       {
-        title: "Flexible from the start",
+        title: "Change your mind mid-workout",
         description:
-          "Improvise your workout in real time — add, remove, or reorder exercises without ever being locked into a fixed plan.",
+          "Machine taken? Add, remove or reorder exercises at any time, never locked into a fixed plan.",
       },
       {
-        title: "Tracking that keeps up",
+        title: "Your progress, automatically",
         description:
-          "Weight, reps, and progress are logged automatically, no matter how your workout evolves.",
+          "Weight and reps are logged with every set, and your stats update on their own.",
+      },
+      {
+        title: "Everything at hand mid-workout",
+        description:
+          "Rest timer, set type (warm-up, drop set, to failure), personal notes, an animated demo of the exercise behind the “i” and the trophy to add it to your tracking.",
       },
     ],
   },
@@ -140,7 +172,7 @@ const en: Dictionary = {
     mostPopular: "Most popular",
     cta: "Get started",
     legalNote:
-      "Cancel anytime from your profile. Subscriptions renew automatically unless cancelled before the end of the current period.",
+      "Cancel anytime from your settings. Subscriptions renew automatically unless cancelled before the end of the current period.",
     loyalty: {
       title: "The longer you stay, the more you save",
       subtitle:
@@ -183,11 +215,11 @@ const en: Dictionary = {
       },
       {
         q: "Can I cancel my Pro subscription anytime?",
-        a: "Yes, directly from your profile in the app. You keep Pro access until the end of your paid period, no commitment.",
+        a: "Yes, directly from the app's settings. You keep Pro access until the end of your paid period, no commitment.",
       },
       {
         q: "Is the app available in English?",
-        a: "Yes, GymsTrack is fully bilingual in French and English — switch languages in one tap from your profile settings.",
+        a: "Yes, GymsTrack is fully bilingual in French and English — switch languages in one tap from your settings.",
       },
     ],
   },
