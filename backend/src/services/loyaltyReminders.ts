@@ -34,7 +34,10 @@ export type ReminderEmail = {
 // and an easy way out keeps people from hitting "report spam" instead. The
 // link is signed so it can't be forged to unsubscribe someone else.
 export function unsubscribeToken(userId: string): string {
-  return createHmac("sha256", process.env.JWT_SECRET ?? "")
+  const secret = process.env.JWT_SECRET;
+  // Never sign with an empty key: anyone could then forge these links.
+  if (!secret) throw new Error("JWT_SECRET manquant");
+  return createHmac("sha256", secret)
     .update(`loyalty-reminders:${userId}`)
     .digest("hex");
 }

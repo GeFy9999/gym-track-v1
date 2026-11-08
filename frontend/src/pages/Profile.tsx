@@ -15,7 +15,6 @@ import {
   Scale,
   MailPlus,
   X,
-  Camera,
   Timer,
   Dumbbell,
   Download,
@@ -372,28 +371,6 @@ export default function ProfilePage() {
             </div>
           );
         })()}
-
-      {/* Progression */}
-      <p className="text-xs text-gray-900 uppercase tracking-widest font-bold mb-2 px-1">
-        {t("profile.progression")}
-      </p>
-      <div ref={tourRef0} className="bg-[#ece7dd] rounded-2xl mb-6 shadow-sm">
-        <button
-          onClick={() => navigate(isPro ? "/progression" : "/upgrade")}
-          className="w-full flex items-center gap-3 px-4 py-4"
-        >
-          <div className="icon-tile w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
-            <Camera size={16} className="text-[#c9552c]" />
-          </div>
-          <p className="flex-1 text-left text-sm font-bold text-gray-900 uppercase">
-            {t("profile.progressPhotos")}
-          </p>
-          <span className="text-[10px] font-bold text-gray-600 uppercase bg-white/60 px-2.5 py-1 rounded-full flex items-center gap-1">
-            {isPro ? t("profile.view") : <Crown size={10} />}
-          </span>
-          <ChevronRight size={16} className="text-[#c9552c] flex-shrink-0" />
-        </button>
-      </div>
 
       {/* Données */}
       <p className="text-xs text-gray-900 uppercase tracking-widest font-bold mb-2 px-1">

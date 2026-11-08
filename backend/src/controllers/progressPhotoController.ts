@@ -8,6 +8,18 @@ import { sendServerError } from "../utils/errorResponse.js";
 
 export const progressPhotoRouter = express.Router();
 
+export const NOTE_MAX_LENGTH = 300;
+
+// A note is optional: anything blank becomes null. Returns undefined when the
+// value isn't a string/null or is too long, so the caller can reject it.
+function parseNote(value: unknown): string | null | undefined {
+  if (value === undefined || value === null) return null;
+  if (typeof value !== "string") return undefined;
+  const trimmed = value.trim();
+  if (trimmed.length > NOTE_MAX_LENGTH) return undefined;
+  return trimmed || null;
+}
+
 // GET /api/progress-photos
 progressPhotoRouter.get("/", authMiddleware, async (req: AuthRequest, res) => {
   try {
@@ -53,8 +65,13 @@ progressPhotoRouter.post("/", authMiddleware, async (req: AuthRequest, res) => {
       return res.status(400).json({ error: "Image requise (base64)" });
     }
 
+    const parsedNote = parseNote(note);
+    if (parsedNote === undefined) {
+      return res.status(400).json({ error: "Note invalide" });
+    }
+
     const photo = await prisma.progressPhoto.create({
-      data: { userId, data, note: note || null },
+      data: { userId, data, note: parsedNote },
       select: { id: true, note: true, createdAt: true },
     });
     return res.status(201).json(photo);
@@ -62,6 +79,31 @@ progressPhotoRouter.post("/", authMiddleware, async (req: AuthRequest, res) => {
     return sendServerError(res, error);
   }
 });
+
+// PATCH /api/progress-photos/:id — only the note can be edited.
+progressPhotoRouter.patch(
+  "/:id",
+  authMiddleware,
+  async (req: AuthRequest, res) => {
+    try {
+      const userId = req.userId!;
+      const id = req.params.id as string;
+      const note = parseNote(req.body?.note);
+      if (note === undefined) {
+        return res.status(400).json({ error: "Note invalide" });
+      }
+
+      const { count } = await prisma.progressPhoto.updateMany({
+        where: { id, userId },
+        data: { note },
+      });
+      if (count === 0) return res.status(404).json({ error: "Photo non trouvée" });
+      return res.status(200).json({ id, note });
+    } catch (error) {
+      return sendServerError(res, error);
+    }
+  },
+);
 
 // DELETE /api/progress-photos/:id
 progressPhotoRouter.delete(

@@ -107,11 +107,6 @@ export function useProfileSettings() {
         ]
       : []),
     {
-      title: t("profile.tour.progressPhotos.title"),
-      description: t("profile.tour.progressPhotos.description"),
-      refIndex: 0,
-    },
-    {
       title: t("profile.tour.account.title"),
       description: t("profile.tour.account.description"),
       refIndex: 1,
