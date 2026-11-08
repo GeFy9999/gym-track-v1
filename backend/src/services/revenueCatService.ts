@@ -1,3 +1,4 @@
+import { createHash, timingSafeEqual } from "crypto";
 import { prisma } from "../prisma.js";
 import { getUserById } from "../repositories/databaseRepository.js";
 import { googlePlayTierOf } from "../utils/loyalty.js";
@@ -30,6 +31,15 @@ type RevenueCatEvent = {
   environment?: string;
 };
 
+// Constant-time comparison, so response timing can't leak the secret one
+// character at a time. Hashing first gives both sides the same length.
+function secretsMatch(given: string | undefined, expected: string): boolean {
+  if (!given) return false;
+  const a = createHash("sha256").update(given).digest();
+  const b = createHash("sha256").update(expected).digest();
+  return timingSafeEqual(a, b);
+}
+
 export async function handleRevenueCatWebhook(
   authHeader: string | undefined,
   body: { event?: RevenueCatEvent },
@@ -37,7 +47,7 @@ export async function handleRevenueCatWebhook(
   if (!process.env.REVENUECAT_WEBHOOK_SECRET) {
     throw new Error("RevenueCat n'est pas configuré (REVENUECAT_WEBHOOK_SECRET manquant)");
   }
-  if (authHeader !== process.env.REVENUECAT_WEBHOOK_SECRET) {
+  if (!secretsMatch(authHeader, process.env.REVENUECAT_WEBHOOK_SECRET)) {
     throw new Error("Authentification webhook invalide");
   }
 

@@ -230,8 +230,17 @@ export const handleWebhookEvent = async (rawBody: Buffer, signature: string) => 
   );
 
   switch (event.type) {
-    case "checkout.session.completed": {
+    // "completed" fires as soon as the customer finishes checkout — for a
+    // delayed payment method (e.g. Canadian pre-authorized debit) that's
+    // before the money arrives, with payment_status "unpaid". Pro is only
+    // granted once it's actually paid: right away for a card ("paid"), on
+    // async_payment_succeeded for a delayed method, and with nothing to pay
+    // ("no_payment_required") for a subscription starting on its free trial.
+    case "checkout.session.completed":
+    case "checkout.session.async_payment_succeeded": {
       const session = event.data.object as Stripe.Checkout.Session;
+      if (session.payment_status === "unpaid") break;
+
       const customerId =
         typeof session.customer === "string" ? session.customer : session.customer?.id;
       if (!customerId) break;
