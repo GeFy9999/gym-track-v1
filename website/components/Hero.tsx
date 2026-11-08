@@ -38,9 +38,24 @@ export default function Hero({ dict, locale }: Props) {
               Apple's badge SVG and Google's PNG have different native aspect ratios
               (and Google's reads visually smaller at an equal height), so these use
               independently tuned heights rather than one shared height/width. */}
-          <a href="#" className="block opacity-90 hover:opacity-100 transition-opacity">
-            <Image src={appStoreBadge} alt="App Store" width={144} height={48} />
-          </a>
+          {/* Not on the App Store yet: greyed out, not clickable, with a
+              "coming soon" tag. */}
+          <div
+            aria-disabled="true"
+            className="relative block cursor-default select-none"
+            title={dict.appStoreSoon}
+          >
+            <Image
+              src={appStoreBadge}
+              alt={`App Store — ${dict.appStoreSoon}`}
+              width={144}
+              height={48}
+              className="grayscale opacity-40"
+            />
+            <span className="absolute -top-2.5 -right-2.5 text-[10px] font-bold uppercase tracking-wide bg-[#c9552c] text-white px-2 py-0.5 rounded-full shadow-sm">
+              {dict.appStoreSoon}
+            </span>
+          </div>
           <a href="#" className="block opacity-90 hover:opacity-100 transition-opacity">
             <Image src={googlePlayBadge} alt="Google Play" width={160} height={62} />
           </a>

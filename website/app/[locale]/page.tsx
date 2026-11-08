@@ -4,6 +4,7 @@ import Hero from "@/components/Hero";
 import Features from "@/components/Features";
 import About from "@/components/About";
 import Demos from "@/components/Demos";
+import BodyWeight from "@/components/BodyWeight";
 import FeatureComparison from "@/components/FeatureComparison";
 import Faq from "@/components/Faq";
 import Footer from "@/components/Footer";
@@ -22,8 +23,9 @@ export default async function Home({
       <main className="flex-1">
         <Hero dict={dict.hero} locale={locale as Locale} />
         <Features dict={dict.features} />
-        <About dict={dict.about} phoneDict={dict.phoneMock} />
-        <Demos dict={dict.demos} phoneDict={dict.phoneMock} />
+        <About dict={dict.about} />
+        <Demos dict={dict.demos} />
+        <BodyWeight dict={dict.bodyWeight} />
         <FeatureComparison
           dict={dict.comparison}
           pricingDict={dict.pricing}

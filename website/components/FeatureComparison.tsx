@@ -34,7 +34,7 @@ export default function FeatureComparison({ dict, pricingDict, locale }: Props) 
             <span className="text-lg font-black tracking-tight text-white">
               GymsTrack
             </span>
-            <span className="text-[10px] font-bold uppercase tracking-wide bg-[#f0994a] text-[#191714] px-2.5 py-1 rounded-full">
+            <span className="text-[10px] font-bold uppercase tracking-wide bg-[#c9552c] text-white px-2.5 py-1 rounded-full">
               {dict.badge}
             </span>
           </div>
@@ -51,7 +51,7 @@ export default function FeatureComparison({ dict, pricingDict, locale }: Props) 
                   <th className="pb-3 w-20 sm:w-28 text-[11px] sm:text-sm font-bold text-white/50 uppercase tracking-wide">
                     {dict.columns.free}
                   </th>
-                  <th className="pb-3 w-20 sm:w-28 text-[11px] sm:text-sm font-bold text-[#f0994a] uppercase tracking-wide">
+                  <th className="pb-3 w-20 sm:w-28 text-[11px] sm:text-sm font-bold text-[#c9552c] uppercase tracking-wide">
                     {dict.columns.pro}
                   </th>
                 </tr>
@@ -75,7 +75,11 @@ export default function FeatureComparison({ dict, pricingDict, locale }: Props) 
           </div>
         </div>
 
-        <PlanSelector dict={pricingDict} locale={locale} />
+        {/* Side by side, the plans follow the scroll (below the sticky nav)
+            until the end of the comparison list on the left. */}
+        <div className="lg:sticky lg:top-24">
+          <PlanSelector dict={pricingDict} locale={locale} />
+        </div>
       </div>
     </section>
   );
