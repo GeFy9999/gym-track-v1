@@ -1,7 +1,18 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import LegalLayout from "@/components/LegalLayout";
 import { getDictionary, locales, type Locale } from "@/dictionaries";
+import { pageMetadata } from "@/lib/seo";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return pageMetadata(locale as Locale, "/legal");
+}
 
 export default async function LegalPage({
   params,

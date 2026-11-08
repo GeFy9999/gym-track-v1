@@ -1,7 +1,18 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import LegalLayout from "@/components/LegalLayout";
 import ContactForm from "@/components/ContactForm";
 import { getDictionary, locales, type Locale } from "@/dictionaries";
+import { pageMetadata } from "@/lib/seo";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return pageMetadata(locale as Locale, "/contact");
+}
 
 export default async function ContactPage({
   params,

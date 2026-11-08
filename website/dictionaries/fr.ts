@@ -104,9 +104,9 @@ const fr: Dictionary = {
           "Toute l'app est disponible dans les deux langues, change en un clic dans tes paramètres.",
       },
       {
-        title: "iOS et Android",
+        title: "Android, web et bientôt iPhone",
         description:
-          "Une seule app, tes données synchronisées, peu importe le téléphone que tu utilises.",
+          "Un seul compte, tes données synchronisées partout : sur Android et dans ton navigateur dès maintenant, sur iPhone bientôt.",
       },
     ],
   },
@@ -270,7 +270,7 @@ const fr: Dictionary = {
   meta: {
     title: "GymsTrack — Suis tes séances, progresse chaque semaine",
     description:
-      "L'app de suivi de musculation simple et puissante : séances guidées, graphiques de progression, records personnels et photos de progrès. Disponible sur iOS et Android.",
+      "L'app de suivi de musculation simple et puissante : séances guidées, graphiques de progression, records personnels et photos de progrès. Sur Android et le web, bientôt sur iPhone.",
   },
   auth: {
     continueWithGoogle: "Continuer avec Google",
