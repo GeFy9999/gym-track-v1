@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Nav from "@/components/Nav";
 import Hero from "@/components/Hero";
@@ -9,6 +10,16 @@ import FeatureComparison from "@/components/FeatureComparison";
 import Faq from "@/components/Faq";
 import Footer from "@/components/Footer";
 import { getDictionary, locales, type Locale } from "@/dictionaries";
+import { pageMetadata } from "@/lib/seo";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return pageMetadata(locale as Locale, "");
+}
 
 export default async function Home({
   params,
