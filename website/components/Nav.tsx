@@ -17,13 +17,15 @@ export default function Nav({ dict, locale }: Props) {
           <Image
             src="/logo.webp"
             alt="GymsTrack"
-            width={179}
-            height={68}
-            className="w-[127px] h-12 sm:w-[179px] sm:h-[68px]"
+            width={158}
+            height={60}
+            className="w-[116px] h-11 sm:w-[158px] sm:h-[60px]"
           />
         </Link>
 
-        <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-white/70">
+        {/* Centred on the whole bar, not on the space left between the logo
+            and the right-hand block (which aren't the same width). */}
+        <nav className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-8 text-sm font-semibold text-white/70">
           <a href="#fonctionnalites" className="hover:text-white transition-colors">
             {dict.features}
           </a>
