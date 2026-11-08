@@ -48,7 +48,7 @@ export default function PlanSelector({ dict, locale }: Props) {
                   </span>
                   <div>
                     <p className="text-sm">
-                      <span className="font-bold text-[#f0994a]">{dict.proLabel}</span>{" "}
+                      <span className="font-bold text-[#c9552c]">{dict.proLabel}</span>{" "}
                       <span className="font-bold text-white">{plan.name}</span>
                     </p>
                     <p className="text-lg font-black text-white mt-0.5">
