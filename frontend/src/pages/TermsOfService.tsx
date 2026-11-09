@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ArrowLeft, FileText } from "lucide-react";
 
-const LAST_UPDATED = "2026-10-09";
+const LAST_UPDATED = "2026-11-09";
 
 export default function TermsOfServicePage() {
   const { i18n } = useTranslation();
@@ -136,6 +136,20 @@ function TermsContentFr() {
       </section>
 
       <section>
+        <h2 className="font-bold text-gray-900 mb-1">Tes données et confidentialité</h2>
+        <p>
+          Le traitement de tes données personnelles est décrit dans notre{" "}
+          <Link to="/privacy" className="text-[#c9552c] underline">politique de confidentialité</Link>. En résumé : nous ne vendons jamais tes données et
+          n'affichons aucune publicité. Les statistiques d'utilisation
+          anonymes sont facultatives : elles ne sont activées que si tu les
+          acceptes, et tu peux les désactiver à tout moment dans Paramètres →
+          Confidentialité. Pour corriger les bugs, l'app peut nous envoyer
+          des rapports d'erreur techniques, sans ton nom, ton courriel ni
+          le contenu de tes séances.
+        </p>
+      </section>
+
+      <section>
         <h2 className="font-bold text-gray-900 mb-1">
           Limitation de responsabilité
         </h2>
@@ -162,7 +176,8 @@ function TermsContentFr() {
         <p>
           Nous pouvons mettre à jour ces conditions occasionnellement. La date
           de dernière mise à jour en haut de cette page reflète la version
-          actuelle.
+          actuelle ; en cas de changement important, nous t'en informerons
+          dans l'app ou par courriel.
         </p>
       </section>
 
@@ -277,6 +292,18 @@ function TermsContentEn() {
       </section>
 
       <section>
+        <h2 className="font-bold text-gray-900 mb-1">Your data and privacy</h2>
+        <p>
+          How we handle your personal data is described in our{" "}
+          <Link to="/privacy" className="text-[#c9552c] underline">privacy policy</Link>. In short: we never sell your data and show no ads.
+          Anonymous usage statistics are optional: they only turn on if you
+          agree to them, and you can turn them off anytime in Settings →
+          Privacy. To fix bugs, the app may send us technical error reports,
+          without your name, your email or the content of your workouts.
+        </p>
+      </section>
+
+      <section>
         <h2 className="font-bold text-gray-900 mb-1">Limitation of liability</h2>
         <p>
           GymsTrack is a workout-tracking tool and does not provide medical
@@ -299,7 +326,8 @@ function TermsContentEn() {
         <h2 className="font-bold text-gray-900 mb-1">Changes</h2>
         <p>
           We may update these terms from time to time. The "last updated"
-          date at the top of this page reflects the current version.
+          date at the top of this page reflects the current version; for
+          significant changes, we will let you know in the app or by email.
         </p>
       </section>
 
