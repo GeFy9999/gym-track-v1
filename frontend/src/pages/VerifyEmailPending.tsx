@@ -6,6 +6,7 @@ import { API_URL } from "../lib/api";
 import { consumePendingPlan } from "../utils/pendingPlan";
 import { useRestTimerContext } from "../contexts/RestTimerContext";
 import { syncLoyaltyReminders } from "../lib/loyaltyReminders";
+import { clearLocalStorageKeepingConsent, resetAnalytics } from "../lib/analytics";
 import {
   clearPendingSignup,
   getPendingSignupEmail,
@@ -124,7 +125,8 @@ export default function VerifyEmailPendingPage() {
     clearPendingSignup();
     stopRestTimer();
     syncLoyaltyReminders(null);
-    localStorage.clear();
+    resetAnalytics();
+    clearLocalStorageKeepingConsent();
     navigate("/login");
   };
 

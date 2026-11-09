@@ -415,6 +415,17 @@
       "delete": { "title": "Delete the set", "desc": "Remove this set." }
     }
   },
+  "consent": {
+    "title": "Help improve GymsTrack?",
+    "body": "If you agree, we measure anonymously how the app is used (screens opened, workouts finished…) to know what to improve.",
+    "point1": "Never your name, your email or the content of your workouts",
+    "point2": "No ads, never sold",
+    "point3": "Data hosted in Europe",
+    "change": "You can change your mind anytime in Settings.",
+    "policy": "Privacy policy",
+    "decline": "No thanks",
+    "accept": "I agree"
+  },
   "profile": {
     "title": "Settings",
     "data": "Data",
@@ -444,6 +455,10 @@
     "barModeTitle": "Loading-type inputs",
     "barModeDesc": "Bar and plates, weight per side, per dumbbell…",
     "dangerZone": "Danger zone",
+    "privacy": "Privacy",
+    "analyticsTitle": "Anonymous statistics",
+    "analyticsDesc": "Helps improve the app. No personal data.",
+    "analyticsAria": "Turn anonymous statistics on or off",
     "deleteAccount": "Delete account",
     "deleteAccountDesc": "All your data will be lost",
     "signOut": "Sign out",

@@ -11,6 +11,8 @@ import App from "./App.tsx";
 import { initSyncQueue } from "./lib/syncQueue";
 import { trackApiRequests } from "./lib/networkActivity";
 import { initTheme } from "./lib/theme";
+import { initSentry } from "./lib/sentry";
+import { initAnalytics } from "./lib/analytics";
 
 // A signed-in account's saved language always wins over whatever the browser
 // locale detector guessed, so a returning user sees their own preference
@@ -25,6 +27,8 @@ try {
   // Corrupt localStorage shouldn't block the app from booting.
 }
 
+initSentry();
+initAnalytics();
 initTheme();
 trackApiRequests();
 initSyncQueue();

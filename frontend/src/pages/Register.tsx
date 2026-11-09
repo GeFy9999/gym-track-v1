@@ -10,6 +10,7 @@ import GoogleLoginButton from "../components/GoogleLoginButton";
 import { API_URL } from "../lib/api";
 import { capturePendingPlan } from "../utils/pendingPlan";
 import { setPendingSignup } from "../utils/pendingSignup";
+import { track } from "../lib/analytics";
 
 const PASSWORD_RULES = [
   /.{8,}/,
@@ -123,6 +124,7 @@ export default function RegisterPage() {
 
       // No session yet: the account works once the email is confirmed.
       setPendingSignup(data.email, data.password);
+      track("signup_completed", { method: "email" });
       navigate("/verify-email-pending");
     } catch (err) {
       setServerError(

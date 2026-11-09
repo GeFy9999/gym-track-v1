@@ -2,9 +2,10 @@
 // marketing site (website/lib/privacyContent.ts and
 // frontend/src/legal/privacyContent.ts — keep both copies identical).
 // Written to cover Quebec's Law 25, Canada's PIPEDA, the EU/UK GDPR and the
-// California CCPA for a small app with no ads and no tracking.
+// California CCPA for a small app with no ads, and only opt-in anonymous
+// usage statistics (PostHog) plus error reports without personal data (Sentry).
 
-export const PRIVACY_LAST_UPDATED = "2026-11-04";
+export const PRIVACY_LAST_UPDATED = "2026-11-09";
 
 // A piece of text, or a link inside it. Links starting with "/" are app
 // routes; the site turns them into https://gymstrack.com links.
@@ -48,9 +49,11 @@ export const PRIVACY_CONTENT: Record<"fr" | "en", PrivacyContent> = {
           ["Abonnement : statut Pro, formule, dates de renouvellement, historique de fidélité et identifiants d'achat (Stripe ou Google Play). Nous ne voyons jamais ton numéro de carte."],
           ["Formulaire de contact : nom, courriel et message que tu nous envoies."],
           ["Données techniques : adresse IP et informations de requête, traitées par notre serveur pour la sécurité (par exemple limiter les abus) et, sur le web, pour estimer ta monnaie afin d'afficher un équivalent des prix (recherche faite sur notre serveur, adresse non conservée), sans profilage."],
+          ["Statistiques d'utilisation, seulement si tu les acceptes : écrans ouverts, séances terminées, début et annulation d'un achat, type d'appareil et version de l'app, liés à un identifiant aléatoire propre à ton appareil. Jamais ton nom, ton courriel, ton identifiant de compte ni le contenu de tes séances."],
+          ["Rapports d'erreur : quand l'app plante ou rencontre une erreur, le message technique, l'écran concerné, le type d'appareil et la version de l'app, sans ton nom, ton courriel, ni le contenu de tes séances."],
         ],
         paragraphs: [
-          ["Nous ne collectons pas ta localisation ni tes contacts, n'affichons aucune publicité et n'utilisons aucun outil de suivi, de statistiques ou d'enregistrement de session."],
+          ["Nous ne collectons pas ta localisation ni tes contacts, n'affichons aucune publicité et n'utilisons aucun outil de pistage publicitaire ni d'enregistrement de session (aucune capture de ton écran)."],
         ],
       },
       {
@@ -64,6 +67,8 @@ export const PRIVACY_CONTENT: Record<"fr" | "en", PrivacyContent> = {
         items: [
           ["Faire fonctionner l'app et ton compte, et fournir l'abonnement Pro — exécution du contrat."],
           ["Poids corporel, photos et connexion avec Google — ton consentement."],
+          ["Statistiques d'utilisation anonymes, pour savoir quoi améliorer — ton consentement, demandé au premier lancement et retirable à tout moment dans Paramètres → Confidentialité."],
+          ["Rapports d'erreur, pour corriger les bugs — notre intérêt légitime."],
           ["Sécurité, prévention de la fraude et des abus, et rappels liés à ton abonnement (par exemple activer ta réduction de fidélité) — notre intérêt légitime. Chaque rappel contient un lien de désabonnement."],
           ["Facturation et taxes — nos obligations légales."],
         ],
@@ -80,6 +85,8 @@ export const PRIVACY_CONTENT: Record<"fr" | "en", PrivacyContent> = {
           ["Stripe (États-Unis, Canada) — paiement des abonnements sur le web."],
           ["Resend (États-Unis) — envoi des courriels (vérification, mot de passe, rappels, formulaire de contact)."],
           ["Cloudflare (international) — DNS, protection du réseau et réception des courriels envoyés à support@."],
+          ["PostHog (Union européenne, Allemagne) — statistiques d'utilisation anonymes, seulement si tu les acceptes."],
+          ["Sentry (Union européenne, Allemagne) — rapports d'erreur."],
         ],
       },
       {
@@ -93,6 +100,7 @@ export const PRIVACY_CONTENT: Record<"fr" | "en", PrivacyContent> = {
         items: [
           ["Données du compte et d'entraînement : tant que ton compte existe. Elles sont supprimées immédiatement quand tu supprimes ton compte ; les copies de sauvegarde éventuelles sont effacées dans un délai de 30 jours."],
           ["Messages de contact : le temps de traiter ta demande, au plus 24 mois."],
+          ["Statistiques d'utilisation : au plus 12 mois. Rapports d'erreur : au plus 90 jours."],
           ["Données de paiement : conservées par Stripe ou Google selon leurs obligations fiscales et comptables."],
         ],
       },
@@ -112,7 +120,8 @@ export const PRIVACY_CONTENT: Record<"fr" | "en", PrivacyContent> = {
       {
         title: "Témoins (cookies) et stockage local",
         paragraphs: [
-          ["Nous n'utilisons aucun témoin publicitaire ou de statistiques. L'app enregistre seulement sur ton appareil ce qui est nécessaire à son fonctionnement (ta session de connexion, tes préférences et tes séances en attente de synchronisation hors ligne). Ces éléments sont strictement nécessaires et ne servent jamais à te suivre."],
+          ["Nous n'utilisons aucun témoin publicitaire. L'app enregistre sur ton appareil ce qui est nécessaire à son fonctionnement (ta session de connexion, tes préférences, ton choix concernant les statistiques et tes séances en attente de synchronisation hors ligne)."],
+          ["Si tu acceptes les statistiques d'utilisation, un identifiant aléatoire est aussi enregistré sur ton appareil pour les mesurer ; il est remplacé à chaque déconnexion. Si tu refuses, rien n'est enregistré ni envoyé. Tu peux changer d'avis à tout moment dans Paramètres → Confidentialité."],
         ],
       },
       {
@@ -161,9 +170,11 @@ export const PRIVACY_CONTENT: Record<"fr" | "en", PrivacyContent> = {
           ["Subscription: Pro status, plan, renewal dates, loyalty history and purchase identifiers (Stripe or Google Play). We never see your card number."],
           ["Contact form: the name, email and message you send us."],
           ["Technical data: IP address and request information, processed by our server for security (for example to limit abuse) and, on the web, to estimate your currency so prices can show an equivalent (looked up on our server, address not stored), without profiling."],
+          ["Usage statistics, only if you agree to them: screens opened, workouts finished, starting or cancelling a purchase, device type and app version, tied to a random identifier specific to your device. Never your name, email, account identifier or the content of your workouts."],
+          ["Error reports: when the app crashes or hits an error, the technical message, the screen involved, the device type and the app version, without your name, email or the content of your workouts."],
         ],
         paragraphs: [
-          ["We do not collect your location or contacts, show no ads, and use no tracking, analytics or session-recording tools."],
+          ["We do not collect your location or contacts, show no ads, and use no advertising tracking or session-recording tools (nothing ever captures your screen)."],
         ],
       },
       {
@@ -177,6 +188,8 @@ export const PRIVACY_CONTENT: Record<"fr" | "en", PrivacyContent> = {
         items: [
           ["Running the app and your account, and providing the Pro subscription — performance of the contract."],
           ["Body weight, photos and signing in with Google — your consent."],
+          ["Anonymous usage statistics, to know what to improve — your consent, asked on first launch and withdrawable anytime in Settings → Privacy."],
+          ["Error reports, to fix bugs — our legitimate interest."],
           ["Security, fraud and abuse prevention, and reminders about your subscription (for example activating your loyalty discount) — our legitimate interest. Every reminder includes an unsubscribe link."],
           ["Billing and taxes — our legal obligations."],
         ],
@@ -193,6 +206,8 @@ export const PRIVACY_CONTENT: Record<"fr" | "en", PrivacyContent> = {
           ["Stripe (United States, Canada) — subscription payments on the web."],
           ["Resend (United States) — sending emails (verification, password, reminders, contact form)."],
           ["Cloudflare (international) — DNS, network protection and receiving emails sent to support@."],
+          ["PostHog (European Union, Germany) — anonymous usage statistics, only if you agree to them."],
+          ["Sentry (European Union, Germany) — error reports."],
         ],
       },
       {
@@ -206,6 +221,7 @@ export const PRIVACY_CONTENT: Record<"fr" | "en", PrivacyContent> = {
         items: [
           ["Account and training data: as long as your account exists. It is deleted immediately when you delete your account; any backup copies are erased within 30 days."],
           ["Contact messages: as long as needed to handle your request, at most 24 months."],
+          ["Usage statistics: at most 12 months. Error reports: at most 90 days."],
           ["Payment data: kept by Stripe or Google according to their tax and accounting obligations."],
         ],
       },
@@ -225,7 +241,8 @@ export const PRIVACY_CONTENT: Record<"fr" | "en", PrivacyContent> = {
       {
         title: "Cookies and local storage",
         paragraphs: [
-          ["We use no advertising or analytics cookies. The app only stores on your device what it needs to work (your login session, your preferences and sessions waiting to sync while offline). These are strictly necessary and never used to track you."],
+          ["We use no advertising cookies. The app stores on your device what it needs to work (your login session, your preferences, your choice about statistics and sessions waiting to sync while offline)."],
+          ["If you agree to usage statistics, a random identifier is also stored on your device to measure them; it is replaced every time you sign out. If you decline, nothing is stored or sent. You can change your mind anytime in Settings → Privacy."],
         ],
       },
       {

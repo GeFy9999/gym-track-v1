@@ -415,6 +415,17 @@
       "delete": { "title": "Supprimer le set", "desc": "Retire cette série." }
     }
   },
+  "consent": {
+    "title": "Aider à améliorer GymsTrack ?",
+    "body": "Si tu acceptes, on mesure de façon anonyme comment l'app est utilisée (écrans ouverts, séances terminées…) pour savoir quoi améliorer.",
+    "point1": "Jamais ton nom, ton courriel ni le contenu de tes séances",
+    "point2": "Aucune publicité, aucune revente",
+    "point3": "Données hébergées en Europe",
+    "change": "Tu peux changer d'avis à tout moment dans Paramètres.",
+    "policy": "Politique de confidentialité",
+    "decline": "Non merci",
+    "accept": "J'accepte"
+  },
   "profile": {
     "title": "Paramètres",
     "data": "Données",
@@ -444,6 +455,10 @@
     "barModeTitle": "Saisie par charge",
     "barModeDesc": "Barre, plaques, par côté, par haltère…",
     "dangerZone": "Zone de danger",
+    "privacy": "Confidentialité",
+    "analyticsTitle": "Statistiques anonymes",
+    "analyticsDesc": "Aide à améliorer l'app. Aucune donnée personnelle.",
+    "analyticsAria": "Activer ou désactiver les statistiques anonymes",
     "deleteAccount": "Supprimer le compte",
     "deleteAccountDesc": "Toutes tes données seront perdues",
     "signOut": "Se déconnecter",
