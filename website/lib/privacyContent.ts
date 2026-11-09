@@ -49,7 +49,7 @@ export const PRIVACY_CONTENT: Record<"fr" | "en", PrivacyContent> = {
           ["Abonnement : statut Pro, formule, dates de renouvellement, historique de fidélité et identifiants d'achat (Stripe ou Google Play). Nous ne voyons jamais ton numéro de carte."],
           ["Formulaire de contact : nom, courriel et message que tu nous envoies."],
           ["Données techniques : adresse IP et informations de requête, traitées par notre serveur pour la sécurité (par exemple limiter les abus) et, sur le web, pour estimer ta monnaie afin d'afficher un équivalent des prix (recherche faite sur notre serveur, adresse non conservée), sans profilage."],
-          ["Statistiques d'utilisation, seulement si tu les acceptes : écrans ouverts, séances terminées, début et annulation d'un achat, type d'appareil et version de l'app, liés à un identifiant aléatoire propre à ton appareil. Jamais ton nom, ton courriel, ton identifiant de compte ni le contenu de tes séances."],
+          ["Statistiques d'utilisation, seulement si tu les acceptes : écrans ouverts, séances terminées, début et annulation d'un achat, type d'appareil et version de l'app, et sur notre site, pages visitées et clics sur les liens Google Play, inscription et connexion. Elles sont liées à un identifiant aléatoire propre à ton appareil ou ton navigateur. Jamais ton nom, ton courriel, ton identifiant de compte ni le contenu de tes séances."],
           ["Rapports d'erreur : quand l'app plante ou rencontre une erreur, le message technique, l'écran concerné, le type d'appareil et la version de l'app, sans ton nom, ton courriel, ni le contenu de tes séances."],
         ],
         paragraphs: [
@@ -121,7 +121,7 @@ export const PRIVACY_CONTENT: Record<"fr" | "en", PrivacyContent> = {
         title: "Témoins (cookies) et stockage local",
         paragraphs: [
           ["Nous n'utilisons aucun témoin publicitaire. L'app enregistre sur ton appareil ce qui est nécessaire à son fonctionnement (ta session de connexion, tes préférences, ton choix concernant les statistiques et tes séances en attente de synchronisation hors ligne)."],
-          ["Si tu acceptes les statistiques d'utilisation, un identifiant aléatoire est aussi enregistré sur ton appareil pour les mesurer ; il est remplacé à chaque déconnexion. Si tu refuses, rien n'est enregistré ni envoyé. Tu peux changer d'avis à tout moment dans Paramètres → Confidentialité."],
+          ["Si tu acceptes les statistiques d'utilisation, un identifiant aléatoire est aussi enregistré sur ton appareil pour les mesurer ; il est remplacé à chaque déconnexion. Si tu refuses, rien n'est enregistré ni envoyé. Tu peux changer d'avis à tout moment dans Paramètres → Confidentialité dans l'app, ou avec le lien « Statistiques » en bas de notre site."],
         ],
       },
       {
@@ -170,7 +170,7 @@ export const PRIVACY_CONTENT: Record<"fr" | "en", PrivacyContent> = {
           ["Subscription: Pro status, plan, renewal dates, loyalty history and purchase identifiers (Stripe or Google Play). We never see your card number."],
           ["Contact form: the name, email and message you send us."],
           ["Technical data: IP address and request information, processed by our server for security (for example to limit abuse) and, on the web, to estimate your currency so prices can show an equivalent (looked up on our server, address not stored), without profiling."],
-          ["Usage statistics, only if you agree to them: screens opened, workouts finished, starting or cancelling a purchase, device type and app version, tied to a random identifier specific to your device. Never your name, email, account identifier or the content of your workouts."],
+          ["Usage statistics, only if you agree to them: screens opened, workouts finished, starting or cancelling a purchase, device type and app version, and on our website, pages visited and clicks on the Google Play, sign-up and log-in links. They are tied to a random identifier specific to your device or browser. Never your name, email, account identifier or the content of your workouts."],
           ["Error reports: when the app crashes or hits an error, the technical message, the screen involved, the device type and the app version, without your name, email or the content of your workouts."],
         ],
         paragraphs: [
@@ -242,7 +242,7 @@ export const PRIVACY_CONTENT: Record<"fr" | "en", PrivacyContent> = {
         title: "Cookies and local storage",
         paragraphs: [
           ["We use no advertising cookies. The app stores on your device what it needs to work (your login session, your preferences, your choice about statistics and sessions waiting to sync while offline)."],
-          ["If you agree to usage statistics, a random identifier is also stored on your device to measure them; it is replaced every time you sign out. If you decline, nothing is stored or sent. You can change your mind anytime in Settings → Privacy."],
+          ["If you agree to usage statistics, a random identifier is also stored on your device to measure them; it is replaced every time you sign out. If you decline, nothing is stored or sent. You can change your mind anytime in Settings → Privacy in the app, or with the \"Statistics\" link at the bottom of our website."],
         ],
       },
       {
