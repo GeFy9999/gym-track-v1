@@ -230,6 +230,14 @@ const en: Dictionary = {
     contact: "Contact",
     rights: "All rights reserved.",
   },
+  consent: {
+    title: "Help improve GymsTrack?",
+    body: "If you agree, we anonymously count visits and a few clicks (like \"Google Play\") to know what interests you. Never your name or email, no ads, data hosted in Europe.",
+    policy: "Privacy policy",
+    decline: "No thanks",
+    accept: "I agree",
+    manage: "Statistics",
+  },
   contact: {
     title: "Contact support",
     subtitle:

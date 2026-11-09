@@ -1,13 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Dictionary, Locale } from "@/dictionaries";
+import { ConsentSettingsLink } from "@/components/ConsentBanner";
 
 type Props = {
   dict: Dictionary["footer"];
+  consentLabel: string;
   locale: Locale;
 };
 
-export default function Footer({ dict, locale }: Props) {
+export default function Footer({ dict, consentLabel, locale }: Props) {
   return (
     <footer className="border-t border-black/5 mt-auto">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 flex flex-col sm:flex-row items-center justify-between gap-6">
@@ -26,6 +28,7 @@ export default function Footer({ dict, locale }: Props) {
           <Link href={`/${locale}/contact`} className="hover:text-[#191714] transition-colors">
             {dict.contact}
           </Link>
+          <ConsentSettingsLink label={consentLabel} />
         </div>
 
         <p className="text-xs text-[#191714]/40">

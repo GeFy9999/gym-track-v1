@@ -44,7 +44,7 @@ export default async function Home({
         />
         <Faq dict={dict.faq} />
       </main>
-      <Footer dict={dict.footer} locale={locale as Locale} />
+      <Footer dict={dict.footer} consentLabel={dict.consent.manage} locale={locale as Locale} />
     </>
   );
 }

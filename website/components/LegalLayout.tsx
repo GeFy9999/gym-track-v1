@@ -29,7 +29,7 @@ export default function LegalLayout({ dict, locale, children }: Props) {
           </div>
         </div>
       </main>
-      <Footer dict={dict.footer} locale={locale} />
+      <Footer dict={dict.footer} consentLabel={dict.consent.manage} locale={locale} />
     </>
   );
 }
