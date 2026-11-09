@@ -26,6 +26,7 @@ import {
   clearFinishedExercises,
   unmarkExercisesFinished,
 } from "../utils/finishedExercises";
+import { track } from "../lib/analytics";
 
 type AbandonedSession = {
   id: string;
@@ -585,6 +586,7 @@ export default function DashboardPage() {
               },
               body: JSON.stringify({ durationMinutes }),
             });
+            track("workout_finished", { duration_minutes: durationMinutes ?? null });
           } else {
             await fetch(`${API_URL}/sessions/${session.id}`, {
               method: "DELETE",

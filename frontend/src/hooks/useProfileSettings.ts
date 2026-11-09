@@ -7,6 +7,7 @@ import { API_URL } from "../lib/api";
 import { useIsPro } from "./useIsPro";
 import { useRestTimerContext } from "../contexts/RestTimerContext";
 import { syncLoyaltyReminders } from "../lib/loyaltyReminders";
+import { clearLocalStorageKeepingConsent, resetAnalytics } from "../lib/analytics";
 import { formatMoney, getCachedStorePrices } from "../lib/storePrices";
 
 export function useProfileSettings() {
@@ -136,6 +137,7 @@ export function useProfileSettings() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.removeItem("weightSnooze");
+    resetAnalytics();
     navigate("/login");
   };
 
@@ -171,7 +173,8 @@ export function useProfileSettings() {
         headers: { Authorization: `Bearer ${token}` },
       });
       syncLoyaltyReminders(null);
-      localStorage.clear();
+      resetAnalytics();
+      clearLocalStorageKeepingConsent();
       navigate("/login");
     } catch (err) {
       console.error(err);

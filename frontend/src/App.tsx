@@ -15,6 +15,8 @@ import { Capacitor } from "@capacitor/core";
 import { App as CapacitorApp } from "@capacitor/app";
 import { syncLoyaltyReminders } from "./lib/loyaltyReminders";
 import { lazyPage } from "./lib/lazyPage";
+import AnalyticsConsent from "./components/AnalyticsConsent";
+import { clearLocalStorageKeepingConsent, trackScreen } from "./lib/analytics";
 // The entry screens for a signed-out visitor stay in the main bundle: as
 // their own chunk, they'd only be requested once the main JS had run — an
 // extra round trip before anything shows.
@@ -128,7 +130,7 @@ function checkSessionOnce(token: string): Promise<"ok" | "expired"> {
       if (res.status === 401 || res.status === 403) {
         // The session really is over (expired / revoked token).
         syncLoyaltyReminders(null);
-        localStorage.clear();
+        clearLocalStorageKeepingConsent();
         return "expired";
       }
       if (res.ok) {
@@ -239,6 +241,10 @@ function AppShell() {
   }, []);
 
   useEffect(() => {
+    trackScreen(location.pathname);
+  }, [location.pathname]);
+
+  useEffect(() => {
     const prefetch = () => ALL_PAGES.forEach((page) => page.preload());
     if ("requestIdleCallback" in window) {
       const id = window.requestIdleCallback(prefetch, { timeout: 4000 });
@@ -272,6 +278,7 @@ function AppShell() {
       <OfflineBanner />
       <NetworkIndicator />
       <UpdateGate />
+      <AnalyticsConsent />
       <div className="min-h-screen bg-[#e8e0d8] flex justify-center">
         <div className="w-full min-h-screen bg-[#faf6f1] relative">
           <Suspense fallback={<FullPageSpinner />}>

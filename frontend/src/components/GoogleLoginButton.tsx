@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Capacitor } from "@capacitor/core";
 import { GoogleSignIn } from "@capawesome/capacitor-google-sign-in";
 import { API_URL } from "../lib/api";
+import { track } from "../lib/analytics";
 
 const GOOGLE_CLIENT_ID =
   "535959553524-5nicf9d43pi0ssp9da782qb38em3anhn.apps.googleusercontent.com";
@@ -89,6 +90,8 @@ export default function GoogleLoginButton() {
       localStorage.setItem("user", JSON.stringify(data.user));
       if (!data.isNewUser) {
         localStorage.setItem(`onboardingDone_${data.user.id}`, "true");
+      } else {
+        track("signup_completed", { method: "google" });
       }
       if (data.user.language) {
         i18n.changeLanguage(data.user.language);
