@@ -4,12 +4,26 @@ import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router-dom";
 import { analyticsAvailable, getConsent, onConsentChange, setConsent } from "../lib/analytics";
 
-// Pages someone must be able to read before choosing.
-const HIDDEN_ON = ["/privacy", "/terms", "/legal", "/account-deletion"];
+// Sign-in screens (asked once they're in, not before), and pages someone
+// must be able to read before choosing.
+const HIDDEN_ON = [
+  "/login",
+  "/register",
+  "/forgot-password",
+  "/reset-password",
+  "/verify-email-pending",
+  "/verify-email",
+  "/privacy",
+  "/terms",
+  "/legal",
+  "/account-deletion",
+];
 
-// Asked once per device. "No" is exactly as easy as "Yes" (same size, same
-// row) and nothing is sent before an answer — both required in France (CNIL)
-// and Québec (Loi 25). The choice can be changed anytime in Profile.
+// Asked once per device, right after signing in or creating an account — on
+// top of the welcome screen, so it's the first thing a new user answers.
+// "No" is exactly as easy as "Yes" (same size, same row) and nothing is sent
+// before an answer — both required in France (CNIL) and Québec (Loi 25). The
+// choice can be changed anytime in Profile.
 export default function AnalyticsConsent() {
   const { t } = useTranslation();
   const location = useLocation();
@@ -17,7 +31,10 @@ export default function AnalyticsConsent() {
 
   useEffect(() => onConsentChange((c) => setPending(c === null)), []);
 
-  if (!pending || HIDDEN_ON.includes(location.pathname)) return null;
+  // Re-read on every navigation (useLocation re-renders): the token appears
+  // the moment sign-in succeeds.
+  const signedIn = Boolean(localStorage.getItem("token"));
+  if (!pending || !signedIn || HIDDEN_ON.includes(location.pathname)) return null;
 
   return createPortal(
     <div className="fixed inset-0 z-[70] flex items-end justify-center bg-black/30 animate-fade-in sm:items-center">
