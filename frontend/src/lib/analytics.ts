@@ -83,8 +83,15 @@ function load(): Promise<PostHog | null> {
         autocapture: false,
         capture_pageview: false, // sent by trackScreen with a cleaned path
         capture_pageleave: false,
+        // Off in code too, so turning them on in the PostHog dashboard
+        // (remote config) can never widen what the consent text promises.
         disable_session_recording: true,
         disable_surveys: true,
+        enable_heatmaps: false,
+        capture_heatmaps: false,
+        capture_dead_clicks: false,
+        capture_performance: false,
+        capture_exceptions: false,
         before_send: (event) => {
           if (!event) return event;
           const p = event.properties;
