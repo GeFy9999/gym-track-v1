@@ -8,6 +8,13 @@
    An element that must stay light in both themes (a switch's knob…) gets
    the `stay-light` class. */
 
+/* Google's sign-in button is a light-scheme iframe: inside a dark-scheme page
+   the browser paints it an opaque white backdrop (the white box around the
+   button). Matching its scheme keeps it transparent. */
+:root.dark iframe {
+  color-scheme: light;
+}
+
 :root.dark {
   color-scheme: dark;
 
