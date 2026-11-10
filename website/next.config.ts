@@ -30,6 +30,18 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
+  // Short links for social bios. Runs before proxy.ts, so the locale prefix
+  // is never added. Temporary (307) so the target can change later without
+  // browsers caching the old one.
+  async redirects() {
+    return [
+      {
+        source: "/googleplay",
+        destination: "https://play.google.com/store/apps/details?id=com.gymstrack.app",
+        permanent: false,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
