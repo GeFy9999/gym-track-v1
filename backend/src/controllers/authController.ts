@@ -11,6 +11,8 @@ import {
   updateRestTimerEnabled,
   updateBarbellModeEnabled,
   updateLanguage,
+  setReferralSource,
+  REFERRAL_SOURCES,
   forgotPassword,
   resetPassword,
   getMe,
@@ -254,6 +256,28 @@ authRouter.patch(
 
       await updateBarbellModeEnabled(userId, barbellModeEnabled);
       return res.status(200).json({ message: "Préférence mise à jour" });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      return res.status(400).json({ error: message });
+    }
+  },
+);
+
+// PATCH /api/auth/referral-source
+authRouter.patch(
+  "/referral-source",
+  authMiddleware,
+  async (req: AuthRequest, res) => {
+    try {
+      const userId = req.userId!;
+      const { referralSource } = req.body;
+
+      if (!(REFERRAL_SOURCES as readonly unknown[]).includes(referralSource)) {
+        return res.status(400).json({ error: "Source invalide" });
+      }
+
+      await setReferralSource(userId, referralSource);
+      return res.status(200).json({ message: "Source enregistrée" });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       return res.status(400).json({ error: message });

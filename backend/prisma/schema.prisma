@@ -33,6 +33,9 @@ model User {
   restTimerEnabled        Boolean               @default(false)
   barbellModeEnabled      Boolean               @default(false)
   language                String                @default("fr")
+  // Answer to "where did you hear about GymsTrack?" from the first-launch
+  // questionnaire. Set once, never overwritten.
+  referralSource          String?
   authProvider            String                @default("email")
   resetToken              String?
   resetTokenExpiry        DateTime?

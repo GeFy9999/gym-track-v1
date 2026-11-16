@@ -306,6 +306,25 @@ export const updateRestTimerEnabled = async (
   });
 };
 
+export const REFERRAL_SOURCES = [
+  "google_play",
+  "tiktok",
+  "youtube",
+  "instagram",
+  "google_search",
+  "friend",
+  "other",
+] as const;
+
+// Only the first answer counts: a later questionnaire (new device,
+// reinstall) never overwrites it.
+export const setReferralSource = async (userId: string, source: string) => {
+  await prisma.user.updateMany({
+    where: { id: userId, referralSource: null },
+    data: { referralSource: source },
+  });
+};
+
 export const updateLanguage = async (userId: string, language: string) => {
   await prisma.user.update({
     where: { id: userId },
