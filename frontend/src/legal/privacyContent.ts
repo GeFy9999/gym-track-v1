@@ -5,7 +5,7 @@
 // California CCPA for a small app with no ads, and only opt-in anonymous
 // usage statistics (PostHog) plus error reports without personal data (Sentry).
 
-export const PRIVACY_LAST_UPDATED = "2026-11-09";
+export const PRIVACY_LAST_UPDATED = "2026-11-15";
 
 // A piece of text, or a link inside it. Links starting with "/" are app
 // routes; the site turns them into https://gymstrack.com links.
@@ -43,7 +43,7 @@ export const PRIVACY_CONTENT: Record<"fr" | "en", PrivacyContent> = {
       {
         title: "Données que nous collectons",
         items: [
-          ["Compte : nom, adresse courriel, mot de passe (stocké chiffré, jamais en clair) ou compte Google associé, langue et préférences (unité de poids, minuteur de repos)."],
+          ["Compte : nom, adresse courriel, mot de passe (stocké chiffré, jamais en clair) ou compte Google associé, langue et préférences (unité de poids, minuteur de repos), et comment tu as connu GymsTrack si tu réponds à cette question facultative au premier lancement."],
           ["Entraînement : séances, exercices, séries, charges, répétitions, notes personnelles et exercices personnalisés."],
           ["Poids corporel et photos de progression, seulement si tu choisis de les ajouter."],
           ["Abonnement : statut Pro, formule, dates de renouvellement, historique de fidélité et identifiants d'achat (Stripe ou Google Play). Nous ne voyons jamais ton numéro de carte."],
@@ -68,6 +68,7 @@ export const PRIVACY_CONTENT: Record<"fr" | "en", PrivacyContent> = {
           ["Faire fonctionner l'app et ton compte, et fournir l'abonnement Pro — exécution du contrat."],
           ["Poids corporel, photos et connexion avec Google — ton consentement."],
           ["Statistiques d'utilisation anonymes, pour savoir quoi améliorer — ton consentement, demandé au premier lancement et retirable à tout moment dans Paramètres → Confidentialité."],
+          ["Comment tu as connu GymsTrack, pour savoir où faire connaître l'app — ton consentement : la question est facultative et peut être passée."],
           ["Rapports d'erreur, pour corriger les bugs — notre intérêt légitime."],
           ["Sécurité, prévention de la fraude et des abus, et rappels liés à ton abonnement (par exemple activer ta réduction de fidélité) — notre intérêt légitime. Chaque rappel contient un lien de désabonnement."],
           ["Facturation et taxes — nos obligations légales."],
@@ -164,7 +165,7 @@ export const PRIVACY_CONTENT: Record<"fr" | "en", PrivacyContent> = {
       {
         title: "Data we collect",
         items: [
-          ["Account: name, email address, password (stored encrypted, never in plain text) or linked Google account, language and preferences (weight unit, rest timer)."],
+          ["Account: name, email address, password (stored encrypted, never in plain text) or linked Google account, language and preferences (weight unit, rest timer), and how you heard about GymsTrack if you answer that optional question on first launch."],
           ["Training: sessions, exercises, sets, loads, reps, personal notes and custom exercises."],
           ["Body weight and progress photos, only if you choose to add them."],
           ["Subscription: Pro status, plan, renewal dates, loyalty history and purchase identifiers (Stripe or Google Play). We never see your card number."],
@@ -189,6 +190,7 @@ export const PRIVACY_CONTENT: Record<"fr" | "en", PrivacyContent> = {
           ["Running the app and your account, and providing the Pro subscription — performance of the contract."],
           ["Body weight, photos and signing in with Google — your consent."],
           ["Anonymous usage statistics, to know what to improve — your consent, asked on first launch and withdrawable anytime in Settings → Privacy."],
+          ["How you heard about GymsTrack, to know where to spread the word — your consent: the question is optional and can be skipped."],
           ["Error reports, to fix bugs — our legitimate interest."],
           ["Security, fraud and abuse prevention, and reminders about your subscription (for example activating your loyalty discount) — our legitimate interest. Every reminder includes an unsubscribe link."],
           ["Billing and taxes — our legal obligations."],
