@@ -7,7 +7,9 @@ import { analyticsAvailable, getConsent, onConsentChange, setConsent } from "../
 // Sign-in screens (asked once they're in, not before), and pages someone
 // must be able to read before choosing.
 const HIDDEN_ON = [
+  "/onboarding",
   "/login",
+  "/login/email",
   "/register",
   "/forgot-password",
   "/reset-password",

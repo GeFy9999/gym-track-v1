@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 // zod/mini: same checks as classic zod, a fraction of the bundle size.
 import * as z from "zod/mini";
@@ -11,6 +11,7 @@ import { API_URL } from "../lib/api";
 import { capturePendingPlan } from "../utils/pendingPlan";
 import { setPendingSignup } from "../utils/pendingSignup";
 import { track } from "../lib/analytics";
+import { isQuizDone } from "../lib/onboardingQuiz";
 
 const PASSWORD_RULES = [
   /.{8,}/,
@@ -35,6 +36,17 @@ type RegisterForm = {
 };
 
 export default function RegisterPage() {
+  const location = useLocation();
+  // First launch on this device: the questionnaire comes first, then back
+  // here with the same query (a plan picked on gymstrack.app).
+  if (!isQuizDone()) {
+    const next = encodeURIComponent(`/register${location.search}`);
+    return <Navigate to={`/onboarding?next=${next}`} replace />;
+  }
+  return <RegisterFormPage />;
+}
+
+function RegisterFormPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { t, i18n } = useTranslation();

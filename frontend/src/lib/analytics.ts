@@ -1,4 +1,5 @@
 import type { PostHog } from "posthog-js";
+import { QUIZ_DONE_KEY } from "./onboardingQuiz";
 
 // Anonymous product analytics (PostHog, EU servers), strictly opt-in: the
 // SDK isn't even downloaded until the person says yes on the consent sheet
@@ -135,6 +136,9 @@ export function resetAnalytics() {
  */
 export function clearLocalStorageKeepingConsent() {
   const consent = getConsent();
+  // Same for the first-launch questionnaire: answered once per device.
+  const quizDone = localStorage.getItem(QUIZ_DONE_KEY);
   localStorage.clear();
   if (consent) localStorage.setItem(CONSENT_KEY, consent);
+  if (quizDone) localStorage.setItem(QUIZ_DONE_KEY, quizDone);
 }

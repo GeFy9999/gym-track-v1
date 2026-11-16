@@ -11,6 +11,7 @@ import TourOverlay from "../components/TourOverlay";
 import PRCelebration from "../components/session/PRCelebration";
 import WorkoutSummary from "../components/session/WorkoutSummary";
 import { getWeightUnit } from "../utils/units";
+import { weightPromptNotBeforeKey } from "../lib/onboardingQuiz";
 import { useUiChrome } from "../contexts/UiChromeContext";
 import { getDateLocale } from "../i18n";
 import { getMuscleGroupLabel } from "../utils/muscleGroupLabel";
@@ -88,7 +89,6 @@ export default function DashboardPage() {
 
   // Onboarding
   const [showWelcome, setShowWelcome] = useState(false);
-  const [showOnboardingWeight, setShowOnboardingWeight] = useState(false);
   const { setNavHidden } = useUiChrome();
 
   useEffect(() => {
@@ -220,6 +220,11 @@ export default function DashboardPage() {
       const token = localStorage.getItem("token");
       if (!token) return;
 
+      // Weight given (or skipped) in the first-launch questionnaire: the
+      // weekly reminder starts with the next week.
+      const notBefore = localStorage.getItem(weightPromptNotBeforeKey(userId));
+      if (notBefore && new Date() < new Date(notBefore)) return;
+
       const snoozed = localStorage.getItem("weightSnooze");
       if (snoozed) {
         const snoozeDate = new Date(snoozed);
@@ -262,53 +267,7 @@ export default function DashboardPage() {
 
   const handleWelcomeNext = () => {
     setShowWelcome(false);
-    setShowOnboardingWeight(true);
     localStorage.setItem(`onboardingDone_${userId}`, "true");
-  };
-
-  const handleOnboardingWeightSave = async () => {
-    const token = localStorage.getItem("token");
-    if (!token || !bodyWeight) return;
-
-    try {
-      if (promptUnit !== getWeightUnit()) {
-        const unitRes = await fetch(`${API_URL}/auth/weight-unit`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ weightUnit: promptUnit }),
-        });
-        if (unitRes.ok) {
-          const stored = localStorage.getItem("user");
-          if (stored) {
-            const u = JSON.parse(stored);
-            u.weightUnit = promptUnit;
-            localStorage.setItem("user", JSON.stringify(u));
-          }
-        }
-      }
-
-      await fetch(`${API_URL}/body-weight`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ value: Number(bodyWeight) }),
-      });
-    } catch (err) {
-      console.error(err);
-    }
-
-    setShowOnboardingWeight(false);
-    setBodyWeight("");
-    setShowTour(true);
-  };
-
-  const handleOnboardingWeightSkip = () => {
-    setShowOnboardingWeight(false);
     setShowTour(true);
   };
 
@@ -920,85 +879,6 @@ export default function DashboardPage() {
             {t("dashboard.welcome.start")}
             <ChevronRight size={18} />
           </button>
-        </div>
-      )}
-
-      {/* Onboarding weight prompt */}
-      {showOnboardingWeight && (
-        <div className="fixed inset-0 bg-black/30 flex items-center-safe justify-center overflow-y-auto py-6 z-[60] px-6 animate-fade-in">
-          <div className="bg-[#faf6f1] rounded-3xl w-full max-w-sm shadow-2xl animate-scale-in overflow-hidden">
-            <div
-              className="px-6 pt-8 pb-6 text-center"
-              style={{ background: "#191714" }}
-            >
-              <div className="w-14 h-14 rounded-full bg-[#3d271a] flex items-center justify-center mx-auto mb-4">
-                <Scale size={24} className="text-[#f0994a]" />
-              </div>
-              <h2 className="text-xl font-black text-white uppercase tracking-wide">
-                {t("dashboard.onboardingWeight.title")}
-              </h2>
-              <p className="text-sm text-white/50 mt-1">
-                {t("dashboard.onboardingWeight.subtitle")}
-              </p>
-            </div>
-
-            <div className="px-5 pt-5 pb-6">
-              <div className="flex items-center justify-between bg-[#ece7dd] rounded-full pl-5 pr-1.5 py-1.5 mb-5">
-                <input
-                  type="number"
-                  value={bodyWeight}
-                  onChange={(e) => setBodyWeight(e.target.value)}
-                  placeholder="0"
-                  autoFocus
-                  className="w-20 bg-transparent text-4xl font-black text-gray-900 placeholder-gray-300 focus:outline-none"
-                />
-                <div className="relative flex w-28 bg-gray-300 rounded-full p-1">
-                  <div
-                    className="absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] rounded-full bg-[#191714] transition-transform duration-200 ease-out"
-                    style={{
-                      transform:
-                        promptUnit === "kg" ? "translateX(100%)" : "translateX(0)",
-                    }}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setPromptUnit("lb")}
-                    className={`relative z-10 flex-1 py-2 rounded-full text-xs font-bold uppercase transition-colors ${
-                      promptUnit === "lb" ? "text-white" : "text-gray-500"
-                    }`}
-                  >
-                    Lb
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setPromptUnit("kg")}
-                    className={`relative z-10 flex-1 py-2 rounded-full text-xs font-bold uppercase transition-colors ${
-                      promptUnit === "kg" ? "text-white" : "text-gray-500"
-                    }`}
-                  >
-                    Kg
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex gap-3">
-                <button
-                  onClick={handleOnboardingWeightSkip}
-                  className="flex-1 bg-[#ece7dd] text-gray-700 py-3.5 rounded-full font-bold uppercase tracking-wide text-sm transition-colors active:opacity-80"
-                >
-                  {t("dashboard.onboardingWeight.skip")}
-                </button>
-                <button
-                  onClick={handleOnboardingWeightSave}
-                  disabled={!bodyWeight}
-                  className="flex-1 bg-[#191714] disabled:opacity-40 text-white py-3.5 rounded-full font-bold uppercase tracking-wide text-sm transition-colors active:opacity-90 flex items-center justify-center gap-1.5"
-                >
-                  <Check size={16} strokeWidth={3} />
-                  {t("dashboard.onboardingWeight.continue")}
-                </button>
-              </div>
-            </div>
-          </div>
         </div>
       )}
 
