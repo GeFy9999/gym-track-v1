@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Capacitor } from "@capacitor/core";
 import { GoogleSignIn } from "@capawesome/capacitor-google-sign-in";
 import { API_URL } from "../lib/api";
+import { track } from "../lib/analytics";
 
 const GOOGLE_CLIENT_ID =
   "535959553524-5nicf9d43pi0ssp9da782qb38em3anhn.apps.googleusercontent.com";
@@ -35,7 +36,7 @@ declare global {
   }
 }
 
-function GoogleGlyph() {
+export function GoogleGlyph() {
   return (
     <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
       <path
@@ -58,7 +59,18 @@ function GoogleGlyph() {
   );
 }
 
-export default function GoogleLoginButton() {
+type GoogleLoginButtonProps = {
+  // Google's web button is drawn slightly enlarged so it fills its row; off
+  // when it has to line up with another full-width button.
+  enlarged?: boolean;
+  // "light": white button, for a dark background.
+  variant?: "dark" | "light";
+};
+
+export default function GoogleLoginButton({
+  enlarged = true,
+  variant = "dark",
+}: GoogleLoginButtonProps) {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -89,6 +101,8 @@ export default function GoogleLoginButton() {
       localStorage.setItem("user", JSON.stringify(data.user));
       if (!data.isNewUser) {
         localStorage.setItem(`onboardingDone_${data.user.id}`, "true");
+      } else {
+        track("signup_completed", { method: "google" });
       }
       if (data.user.language) {
         i18n.changeLanguage(data.user.language);
@@ -145,7 +159,7 @@ export default function GoogleLoginButton() {
       });
 
       window.google.accounts.id.renderButton(buttonRef.current, {
-        theme: "filled_black",
+        theme: variant === "light" ? "outline" : "filled_black",
         size: "large",
         text: "continue_with",
         shape: "pill",
@@ -180,7 +194,9 @@ export default function GoogleLoginButton() {
       <div className="w-full px-4">
         <button
           onClick={handleNativeSignIn}
-          className="w-full flex items-center justify-center gap-3 bg-black text-white py-3.5 rounded-full font-medium"
+          className={`w-full flex items-center justify-center gap-3 py-3.5 rounded-full font-medium ${
+            variant === "light" ? "stay-light bg-white text-[#191714]" : "bg-black text-white"
+          }`}
         >
           <GoogleGlyph />
           {t("common.continueWithGoogle")}
@@ -192,7 +208,10 @@ export default function GoogleLoginButton() {
   return (
     <div className="w-full px-4">
       <div ref={containerRef} className="w-full flex justify-center py-1">
-        <div ref={buttonRef} className="w-full origin-center scale-110" />
+        <div
+          ref={buttonRef}
+          className={`w-full origin-center ${enlarged ? "scale-110" : ""}`}
+        />
       </div>
     </div>
   );

@@ -29,6 +29,72 @@
     "history": "History",
     "profile": "Settings"
   },
+  "loginChoice": {
+    "title": "Create your account",
+    "subtitle": "Save your workouts, your progress, your settings and more.",
+    "email": "Continue with email",
+    "back": "Back"
+  },
+  "onboardingQuiz": {
+    "back": "Back",
+    "continue": "Continue",
+    "skip": "Skip",
+    "otherApp": {
+      "title": "Were you using another app?",
+      "subtitle": "To track your workouts",
+      "yes": "Yes",
+      "no": "No, I'm just starting"
+    },
+    "importInfo": {
+      "title": "Keep your history",
+      "subtitle": "Import your workouts from a CSV file",
+      "body": "Export your workouts as a CSV from your old app. Right after you sign in, we'll take you to the import screen to bring your whole history over."
+    },
+    "unit": {
+      "title": "Kilograms or pounds?",
+      "subtitle": "You can change this later in Settings.",
+      "kg": "Kilograms (kg)",
+      "lb": "Pounds (lb)"
+    },
+    "weight": {
+      "title": "How much do you weigh?",
+      "subtitle": "To track how it changes week to week.",
+      "decimal": "Decimal"
+    },
+    "restTimer": {
+      "title": "Turn on the rest timer?",
+      "subtitle": "It starts by itself after each set.",
+      "yes": "Yes",
+      "no": "Not now"
+    },
+    "restDuration": {
+      "title": "How long do you rest?",
+      "subtitle": "The default time between sets. You can adjust it during a workout."
+    },
+    "notifications": {
+      "title": "Turn on notifications",
+      "subtitle": "To know when your rest is over.",
+      "body": "We'll let you know when your rest is over, even when your phone is locked or you're in another app.",
+      "enable": "Turn on notifications",
+      "later": "Later"
+    },
+    "analytics": {
+      "subtitle": "One last question, promise."
+    },
+    "referral": {
+      "title": "Where did you hear about GymsTrack?",
+      "subtitle": "It helps us know where to find people like you.",
+      "sources": {
+        "google_play": "Google Play",
+        "tiktok": "TikTok",
+        "youtube": "YouTube",
+        "instagram": "Instagram",
+        "google_search": "Google search",
+        "friend": "A friend",
+        "other": "Other"
+      }
+    }
+  },
   "login": {
     "subtitle": "Log in to your account",
     "email": "Email",
@@ -143,12 +209,6 @@
       "title": "Welcome, {{name}}!",
       "subtitle": "Your space to track your workouts, your progress, and reach your goals.",
       "start": "Get started"
-    },
-    "onboardingWeight": {
-      "title": "What's your current weight?",
-      "subtitle": "We'll use this to track your progress",
-      "skip": "Skip",
-      "continue": "Continue"
     }
   },
   "stats": {
@@ -415,6 +475,17 @@
       "delete": { "title": "Delete the set", "desc": "Remove this set." }
     }
   },
+  "consent": {
+    "title": "Help improve GymsTrack?",
+    "body": "If you agree, we measure anonymously how the app is used (screens opened, workouts finished…) to know what to improve.",
+    "point1": "Never your name, your email or the content of your workouts",
+    "point2": "No ads, never sold",
+    "point3": "Data hosted in Europe",
+    "change": "You can change your mind anytime in Settings.",
+    "policy": "Privacy policy",
+    "decline": "No thanks",
+    "accept": "I agree"
+  },
   "profile": {
     "title": "Settings",
     "data": "Data",
@@ -444,6 +515,10 @@
     "barModeTitle": "Loading-type inputs",
     "barModeDesc": "Bar and plates, weight per side, per dumbbell…",
     "dangerZone": "Danger zone",
+    "privacy": "Privacy",
+    "analyticsTitle": "Anonymous statistics",
+    "analyticsDesc": "Helps improve the app. No personal data.",
+    "analyticsAria": "Turn anonymous statistics on or off",
     "deleteAccount": "Delete account",
     "deleteAccountDesc": "All your data will be lost",
     "signOut": "Sign out",

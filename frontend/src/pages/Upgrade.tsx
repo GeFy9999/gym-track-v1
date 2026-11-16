@@ -25,6 +25,7 @@ import {
   useStorePrices,
   type Plan,
 } from "../lib/storePrices";
+import { track } from "../lib/analytics";
 
 const PLAN_ORDER: Plan[] = ["monthly", "annual", "lifetime"];
 
@@ -260,6 +261,7 @@ export default function UpgradePage() {
   const handleCheckout = async () => {
     setError(null);
     setLoading(true);
+    track("checkout_started", { plan, platform: Capacitor.isNativePlatform() ? "google_play" : "stripe" });
 
     if (Capacitor.isNativePlatform()) {
       try {
@@ -269,7 +271,10 @@ export default function UpgradePage() {
         await pollAfterNativePurchase();
       } catch (err) {
         setLoading(false);
-        if (err instanceof PurchaseCancelledError) return;
+        if (err instanceof PurchaseCancelledError) {
+          track("checkout_cancelled", { plan, platform: "google_play" });
+          return;
+        }
         setError(err instanceof Error ? err.message : t("upgrade.errorGeneric"));
       }
       return;

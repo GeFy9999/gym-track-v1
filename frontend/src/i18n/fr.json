@@ -29,6 +29,72 @@
     "history": "Histo.",
     "profile": "Paramètres"
   },
+  "loginChoice": {
+    "title": "Crée ton compte",
+    "subtitle": "Enregistre tes entraînements, tes progrès, tes réglages et plus encore.",
+    "email": "Continuer avec le courriel",
+    "back": "Retour"
+  },
+  "onboardingQuiz": {
+    "back": "Retour",
+    "continue": "Continuer",
+    "skip": "Passer",
+    "otherApp": {
+      "title": "Tu utilisais une autre app ?",
+      "subtitle": "Pour suivre tes entraînements",
+      "yes": "Oui",
+      "no": "Non, je commence"
+    },
+    "importInfo": {
+      "title": "Garde ton historique",
+      "subtitle": "Importe tes séances depuis un fichier CSV",
+      "body": "Exporte tes séances en CSV depuis ton ancienne app. Juste après la connexion, on t'amène à l'importation pour retrouver tout ton historique."
+    },
+    "unit": {
+      "title": "Kilos ou livres ?",
+      "subtitle": "Tu pourras changer ça plus tard dans les réglages.",
+      "kg": "Kilogrammes (kg)",
+      "lb": "Livres (lb)"
+    },
+    "weight": {
+      "title": "Combien pèses-tu ?",
+      "subtitle": "Pour suivre ton évolution au fil des semaines.",
+      "decimal": "Décimale"
+    },
+    "restTimer": {
+      "title": "Activer le minuteur de repos ?",
+      "subtitle": "Il démarre tout seul après chaque série.",
+      "yes": "Oui",
+      "no": "Non, pas maintenant"
+    },
+    "restDuration": {
+      "title": "Combien de temps de repos ?",
+      "subtitle": "La durée par défaut entre tes séries. Tu peux l'ajuster pendant la séance."
+    },
+    "notifications": {
+      "title": "Active les notifications",
+      "subtitle": "Pour savoir quand ton repos est fini.",
+      "body": "On te prévient à la fin de ton repos, même quand ton téléphone est verrouillé ou que tu es dans une autre app.",
+      "enable": "Activer les notifications",
+      "later": "Plus tard"
+    },
+    "analytics": {
+      "subtitle": "Une dernière question, promis."
+    },
+    "referral": {
+      "title": "Où as-tu entendu parler de GymsTrack ?",
+      "subtitle": "Ça nous aide à savoir où te trouver.",
+      "sources": {
+        "google_play": "Google Play",
+        "tiktok": "TikTok",
+        "youtube": "YouTube",
+        "instagram": "Instagram",
+        "google_search": "Recherche Google",
+        "friend": "Un ami",
+        "other": "Autre"
+      }
+    }
+  },
   "login": {
     "subtitle": "Connecte-toi à ton compte",
     "email": "Courriel",
@@ -143,12 +209,6 @@
       "title": "Bienvenue, {{name}} !",
       "subtitle": "Ton espace pour suivre tes entraînements, ta progression et atteindre tes objectifs.",
       "start": "Commencer"
-    },
-    "onboardingWeight": {
-      "title": "Quel est ton poids actuel ?",
-      "subtitle": "On va utiliser ça pour suivre ton évolution",
-      "skip": "Passer",
-      "continue": "Continuer"
     }
   },
   "stats": {
@@ -415,6 +475,17 @@
       "delete": { "title": "Supprimer le set", "desc": "Retire cette série." }
     }
   },
+  "consent": {
+    "title": "Aider à améliorer GymsTrack ?",
+    "body": "Si tu acceptes, on mesure de façon anonyme comment l'app est utilisée (écrans ouverts, séances terminées…) pour savoir quoi améliorer.",
+    "point1": "Jamais ton nom, ton courriel ni le contenu de tes séances",
+    "point2": "Aucune publicité, aucune revente",
+    "point3": "Données hébergées en Europe",
+    "change": "Tu peux changer d'avis à tout moment dans Paramètres.",
+    "policy": "Politique de confidentialité",
+    "decline": "Non merci",
+    "accept": "J'accepte"
+  },
   "profile": {
     "title": "Paramètres",
     "data": "Données",
@@ -444,6 +515,10 @@
     "barModeTitle": "Saisie par charge",
     "barModeDesc": "Barre, plaques, par côté, par haltère…",
     "dangerZone": "Zone de danger",
+    "privacy": "Confidentialité",
+    "analyticsTitle": "Statistiques anonymes",
+    "analyticsDesc": "Aide à améliorer l'app. Aucune donnée personnelle.",
+    "analyticsAria": "Activer ou désactiver les statistiques anonymes",
     "deleteAccount": "Supprimer le compte",
     "deleteAccountDesc": "Toutes tes données seront perdues",
     "signOut": "Se déconnecter",

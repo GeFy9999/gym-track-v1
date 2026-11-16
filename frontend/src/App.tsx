@@ -1,5 +1,5 @@
 import { Alert } from "./components/Alert";
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { Suspense, useEffect, useState } from "react";
 import "./index.css";
 import BottomNav from "./components/bottomNav/index.tsx";
@@ -15,11 +15,21 @@ import { Capacitor } from "@capacitor/core";
 import { App as CapacitorApp } from "@capacitor/app";
 import { syncLoyaltyReminders } from "./lib/loyaltyReminders";
 import { lazyPage } from "./lib/lazyPage";
+import AnalyticsConsent from "./components/AnalyticsConsent";
+import { clearLocalStorageKeepingConsent, trackScreen } from "./lib/analytics";
+import { applyPendingQuizAnswers, isQuizDone } from "./lib/onboardingQuiz";
+
+// On launch, while an existing user's traces are still there (a session that
+// later expires wipes them): remembers they're past the first-launch
+// questionnaire, so the update never shows it to them.
+isQuizDone();
 // The entry screens for a signed-out visitor stay in the main bundle: as
 // their own chunk, they'd only be requested once the main JS had run — an
 // extra round trip before anything shows.
 import LoginPage from "./pages/Login.tsx";
 import RegisterPage from "./pages/Register.tsx";
+import LoginEmailPage from "./pages/LoginEmail.tsx";
+import OnboardingPage from "./pages/Onboarding.tsx";
 
 // Every page is its own chunk: the first screen (login, dashboard…) only
 // downloads its own code. The rest is prefetched once the app is idle —
@@ -128,7 +138,7 @@ function checkSessionOnce(token: string): Promise<"ok" | "expired"> {
       if (res.status === 401 || res.status === 403) {
         // The session really is over (expired / revoked token).
         syncLoyaltyReminders(null);
-        localStorage.clear();
+        clearLocalStorageKeepingConsent();
         return "expired";
       }
       if (res.ok) {
@@ -189,7 +199,10 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
     };
   }, [token, stopRestTimer]);
 
-  if (!token || expired) return <Navigate to="/login" replace />;
+  if (!token || expired) {
+    // First launch on this device: the questionnaire before signing in.
+    return <Navigate to={isQuizDone() ? "/login" : "/onboarding"} replace />;
+  }
   if (needsEmailVerification()) {
     return <Navigate to="/verify-email-pending" replace />;
   }
@@ -204,7 +217,9 @@ function AppShell() {
   const hideNav =
     navHidden ||
     [
+      "/onboarding",
       "/login",
+      "/login/email",
       "/register",
       "/forgot-password",
       "/reset-password",
@@ -237,6 +252,21 @@ function AppShell() {
   useEffect(() => {
     getApiHealth();
   }, []);
+
+  useEffect(() => {
+    trackScreen(location.pathname);
+  }, [location.pathname]);
+
+  // Just signed in after the first-launch questionnaire: its answers become
+  // the account's settings. Checked on every navigation, since every sign-in
+  // path (email, Google, email verification) ends with one.
+  const navigate = useNavigate();
+  useEffect(() => {
+    const applied = applyPendingQuizAnswers();
+    if (applied?.goToImport && location.pathname !== "/import") {
+      navigate("/import", { replace: true });
+    }
+  }, [location.pathname, navigate]);
 
   useEffect(() => {
     const prefetch = () => ALL_PAGES.forEach((page) => page.preload());
@@ -272,11 +302,14 @@ function AppShell() {
       <OfflineBanner />
       <NetworkIndicator />
       <UpdateGate />
+      <AnalyticsConsent />
       <div className="min-h-screen bg-[#e8e0d8] flex justify-center">
         <div className="w-full min-h-screen bg-[#faf6f1] relative">
           <Suspense fallback={<FullPageSpinner />}>
           <Routes>
+            <Route path="/onboarding" element={<OnboardingPage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/login/email" element={<LoginEmailPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route

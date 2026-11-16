@@ -79,6 +79,14 @@ export type Dictionary = {
     contact: string;
     rights: string;
   };
+  consent: {
+    title: string;
+    body: string;
+    policy: string;
+    decline: string;
+    accept: string;
+    manage: string;
+  };
   contact: {
     title: string;
     subtitle: string;

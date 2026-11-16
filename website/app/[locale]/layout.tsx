@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import "../globals.css";
 import { getDictionary, locales, type Locale } from "@/dictionaries";
 import { SITE_URL } from "@/lib/seo";
+import ConsentBanner from "@/components/ConsentBanner";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -50,11 +51,13 @@ export default async function RootLayout({
 }: LayoutProps<"/[locale]">) {
   const { locale } = await params;
   if (!locales.includes(locale as Locale)) notFound();
+  const dict = getDictionary(locale as Locale);
 
   return (
     <html lang={locale} className={`${outfit.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-[#faf6f1] font-sans">
         {children}
+        <ConsentBanner dict={dict.consent} locale={locale as Locale} />
       </body>
     </html>
   );

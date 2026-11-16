@@ -5,7 +5,7 @@ import LegalLayout from "@/components/LegalLayout";
 import { getDictionary, locales, type Locale } from "@/dictionaries";
 import { pageMetadata } from "@/lib/seo";
 
-const LAST_UPDATED = "2026-10-09";
+const LAST_UPDATED = "2026-11-09";
 
 export async function generateMetadata({
   params,
@@ -125,6 +125,20 @@ function ContentFr() {
       </section>
 
       <section>
+        <h2>Tes données et confidentialité</h2>
+        <p>
+          Le traitement de tes données personnelles est décrit dans notre{" "}
+          <Link href="/fr/privacy">politique de confidentialité</Link>. En résumé : nous ne vendons jamais tes données et
+          n&apos;affichons aucune publicité. Les statistiques d&apos;utilisation
+          anonymes sont facultatives : elles ne sont activées que si tu les
+          acceptes, et tu peux les désactiver à tout moment dans Paramètres →
+          Confidentialité. Pour corriger les bugs, l&apos;app peut nous envoyer
+          des rapports d&apos;erreur techniques, sans ton nom, ton courriel ni
+          le contenu de tes séances.
+        </p>
+      </section>
+
+      <section>
         <h2>Limitation de responsabilité</h2>
         <p>
           GymsTrack est un outil de suivi d&apos;entraînement et ne fournit
@@ -149,7 +163,8 @@ function ContentFr() {
         <p>
           Nous pouvons mettre à jour ces conditions occasionnellement. La
           date de dernière mise à jour en haut de cette page reflète la
-          version actuelle.
+          version actuelle ; en cas de changement important, nous t&apos;en
+          informerons dans l&apos;app ou par courriel.
         </p>
       </section>
 
@@ -258,6 +273,18 @@ function ContentEn() {
       </section>
 
       <section>
+        <h2>Your data and privacy</h2>
+        <p>
+          How we handle your personal data is described in our{" "}
+          <Link href="/en/privacy">privacy policy</Link>. In short: we never sell your data and show no ads.
+          Anonymous usage statistics are optional: they only turn on if you
+          agree to them, and you can turn them off anytime in Settings →
+          Privacy. To fix bugs, the app may send us technical error reports,
+          without your name, your email or the content of your workouts.
+        </p>
+      </section>
+
+      <section>
         <h2>Limitation of liability</h2>
         <p>
           GymsTrack is a workout-tracking tool and does not provide medical
@@ -281,7 +308,8 @@ function ContentEn() {
         <p>
           We may update these terms from time to time. The &quot;last
           updated&quot; date at the top of this page reflects the current
-          version.
+          version; for significant changes, we will let you know in the app
+          or by email.
         </p>
       </section>
 

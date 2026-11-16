@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   BASE_PRICES,
@@ -25,6 +25,7 @@ import {
   Sparkles,
   Moon,
   Star,
+  BarChart3,
 } from "lucide-react";
 import { getDateLocale } from "../i18n";
 import { useProfileSettings } from "../hooks/useProfileSettings";
@@ -36,6 +37,7 @@ import {
 import TourOverlay from "../components/TourOverlay";
 import LoyaltyTierBanner from "../components/LoyaltyTierBanner";
 import { canRateApp, openStoreListing } from "../lib/appReview";
+import { analyticsAvailable, getConsent, onConsentChange, setConsent } from "../lib/analytics";
 
 // Annual renewals are worth far more than monthly ones, so the loyalty
 // discount scales up accordingly: -$0.10/renewal (max -$1) monthly,
@@ -53,6 +55,8 @@ export default function ProfilePage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [theme, setTheme] = useState<ThemePreference>(getThemePreference);
+  const [analyticsOn, setAnalyticsOn] = useState(() => getConsent() === "granted");
+  useEffect(() => onConsentChange((c) => setAnalyticsOn(c === "granted")), []);
   // Loyalty amounts in the currency Google Play charges this user.
   const storePrices = useStorePrices();
   const {
@@ -663,6 +667,45 @@ export default function ProfilePage() {
           </button>
         </div>
       </div>
+
+      {/* Confidentialité */}
+      {analyticsAvailable() && (
+        <>
+          <p className="text-xs text-gray-900 uppercase tracking-widest font-bold mb-2 px-1">
+            {t("profile.privacy")}
+          </p>
+          <div className="bg-[#ece7dd] rounded-2xl mb-6 shadow-sm">
+            <div className="w-full flex items-center gap-3 px-4 py-4">
+              <div className="icon-tile w-9 h-9 rounded-xl bg-white/60 flex items-center justify-center flex-shrink-0">
+                <BarChart3 size={16} className="text-[#c9552c]" />
+              </div>
+              <div className="flex-1 text-left">
+                <p className="text-sm font-bold text-gray-900 uppercase">
+                  {t("profile.analyticsTitle")}
+                </p>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  {t("profile.analyticsDesc")}
+                </p>
+              </div>
+              <button
+                role="switch"
+                aria-checked={analyticsOn}
+                onClick={() => setConsent(analyticsOn ? "denied" : "granted")}
+                className={`w-11 h-6 rounded-full relative flex-shrink-0 transition-colors ${
+                  analyticsOn ? "bg-[#3a9e6e]" : "bg-gray-300"
+                }`}
+                aria-label={t("profile.analyticsAria")}
+              >
+                <span
+                  className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white stay-light shadow transition-transform ${
+                    analyticsOn ? "translate-x-5" : "translate-x-0"
+                  }`}
+                />
+              </button>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Zone de danger */}
       <p className="text-xs text-gray-900 uppercase tracking-widest font-bold mb-2 px-1">
